@@ -24,4 +24,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/law_assi:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bt-thema:latest
