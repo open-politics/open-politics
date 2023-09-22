@@ -1,3 +1,5 @@
+🚧 UNDER CONSTRUCTION 🚧
+
 Idea and Outline of the project
 
 Frontend:
@@ -16,7 +18,6 @@ Backend:
 LLM Chains/ Agents:
 0. Instruction sets for different roles and tasks (likely via dict)
 1. differentiation between summarising models and function calling models (or better instances)
-2. 
 
 
 
