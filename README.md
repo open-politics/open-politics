@@ -2,12 +2,12 @@
 
 **Idea and Outline of the project**
 
-Frontend:
+***Frontend:***
 - GUI with the ability to choose from a process "Vorgang" of the Bundestag.
 - The process details will be dissected and presented with related information presented in a graph/ node kind of way (similar to obsidian graph view).
 - Each Node will be have a card summarising its content and point to the most relevant related content/
 
-Backend:
+***Backend:***
 
 Django:
 - fetching relevant documents and process details via DIP api
