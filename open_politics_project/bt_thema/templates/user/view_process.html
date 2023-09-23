@@ -3,29 +3,19 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Vorgänge</h3>
-        </div>
-        <div class="card-body">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Beschreibung</th>
-                        <th>Zusammenfassung</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for process in processes %}
-                        <tr>
-                            <td>{{ process.name }}</td>
-                            <td>{{ process.description }}</td>
-                            <td>{{ process.status }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+<div class="master-card">
+    <div class="process-card">
+        <span class="process-card__number">1</span>
+        <span class="process-card__title">Title</span>
+        <span class="process-card__description">Description</span>
+        
+
+
+
     </div>
+
+
+
+
+</div>
 {% endblock %}
