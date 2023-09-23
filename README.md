@@ -50,3 +50,11 @@ Imagine a platform where citizens engage with an LLM (Large Language Model) or t
 
 ## MVP (Minimum Viable Product)
 - A single process with GUI
+
+
+## Usage (coming soon):
+- Clone the repo
+- Install dependencies
+- Run the Django server
+- Connect to the frontend
+- Run the LLM agent
