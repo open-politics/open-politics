@@ -1,62 +1,52 @@
-🚧 UNDER CONSTRUCTION 🚧
+# 🚧 UNDER CONSTRUCTION 🚧
 
-**Idea and Outline of the project**
+## Idea and Outline
 
-Imagine a platform where citizens could engage with an LLM or Teams of LLMs to understand proposed policies, their implications, and historical precedents. Such platforms could democratize access to political knowledge.
+Imagine a platform where citizens engage with an LLM (Large Language Model) or teams of LLMs to comprehend proposed policies, their implications, and historical precedents. This aims to democratize access to political knowledge.
 
-Core Idea: Readucing the contextual overhead of political processes
+**Core Idea:** Reducing the contextual overhead of political processes.
 
-Tasks:
-- Information summarisation
-- Q&A Chatbots (interactive information)
-- Historical Context
-- Monitoring and Alerts
-- Visual representation of pol. Data
+## Tasks
+- Information summarization
+- Q&A Chatbots (for interactive information)
+- Providing historical context
+- Monitoring and alerts
+- Visual representation of political data
 - Fact-checking
 
-Challenges:
-- Training Data Bias
-- Prompt Engineering
-- Parsing/ Formating outputs
+## Challenges
+- Addressing training data bias
+- Effective prompt engineering
+- Parsing/formatting outputs
 
-***Frontend:***
-- GUI with the ability to choose from a process "Vorgang" of the Bundestag.
-- The process details will be dissected and presented with related information presented in a graph/ node kind of way (similar to obsidian graph view).
-- Each Node will be have a card summarising its content and point to the most relevant related content/
+## Frontend
+- GUI offers a choice of a "Vorgang" process from the Bundestag.
+- Process details are dissected with related information shown in a graph or node manner (akin to Obsidian's graph view).
+- Each node features a card that summarizes its content and points to the most relevant related content.
+- **Design Tool:** Figma (details coming soon)
 
-Design:
-Figma (coming soon)
+## Backend
 
+### Django
+- Fetches relevant documents and process details via the DIP API.
 
-***Backend:***
+### Langchain
+- Parses the document structure (e.g., bold text, headlines, lists).
+- Summarizes the main document.
+- LLM agent decides which sections to summarize and analyze further.
+- Analysis identifies and prioritizes mentioned §s to fetch.
 
-Django:
-- fetching relevant documents and process details via DIP api
+### LLM Chains/Agents
+- Instruction sets for varied roles and tasks (most likely via dictionary).
+- Differentiation between summarizing models and function-calling models (or instances).
 
+## Patterns & Tools of Analysis for LLMs
+- **LangChain**
+- **Vector Databases:** Chroma or Pinecone
 
-Langchain:
-- parsing the document structure (bold text, headlines, lists)
-- summarising main document
-- LLM agent chooses which parts to summarise analyse further
-- analysis should return mentioned §s and decide which are important to fetch
-
-
-LLM Chains/ Agents:
-0. Instruction sets for different roles and tasks (likely via dict)
-1. differentiation between summarising models and function calling models (or better instances)
-
-
-Patterns & Tools of Anlaysis for Large Language Models
-Tools: 
-- LangChain
-- Vector Databases (Chroma or Pinecone)
-
-Patterns/ Papers:
+## Referenced Patterns/Papers
 - Reflexion
 - Tree of Thought
 
-
-
-
-MVP:
-- 1 Process with GUI
+## MVP (Minimum Viable Product)
+- A single process with GUI
