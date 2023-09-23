@@ -2,6 +2,26 @@
 
 **Idea and Outline of the project**
 
+Imagine a platform where citizens could engage with an LLM or Teams of LLMs to understand proposed policies, their implications, and historical precedents. Such platforms could democratize access to political knowledge.
+
+Core Idea: Readucing the contextual overhead of political processes
+
+Tasks:
+- Information summarisation
+- Q&A Chatbots (interactive information)
+- Historical Context
+- Monitoring and Alerts
+- Visual representation of pol. Data
+- Fact-checking
+
+Challenges:
+- Training Data Bias
+- Prompt Engineering
+- Parsing/ Formating outputs
+
+
+
+
 ***Frontend:***
 - GUI with the ability to choose from a process "Vorgang" of the Bundestag.
 - The process details will be dissected and presented with related information presented in a graph/ node kind of way (similar to obsidian graph view).
