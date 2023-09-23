@@ -1,0 +1,31 @@
+<!-- FILEPATH: /opt/open-politics/open_politics_project/bt_thema/templates/user/view_process.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Vorgänge</h3>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Beschreibung</th>
+                        <th>Zusammenfassung</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for process in processes %}
+                        <tr>
+                            <td>{{ process.name }}</td>
+                            <td>{{ process.description }}</td>
+                            <td>{{ process.status }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
