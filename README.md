@@ -19,13 +19,14 @@ Challenges:
 - Prompt Engineering
 - Parsing/ Formating outputs
 
-
-
-
 ***Frontend:***
 - GUI with the ability to choose from a process "Vorgang" of the Bundestag.
 - The process details will be dissected and presented with related information presented in a graph/ node kind of way (similar to obsidian graph view).
 - Each Node will be have a card summarising its content and point to the most relevant related content/
+
+Design:
+Figma (coming soon)
+
 
 ***Backend:***
 
@@ -45,7 +46,17 @@ LLM Chains/ Agents:
 1. differentiation between summarising models and function calling models (or better instances)
 
 
+Patterns & Tools of Anlaysis for Large Language Models
+Tools: 
+- LangChain
+- Vector Databases (Chroma or Pinecone)
+
+Patterns/ Papers:
+- Reflexion
+- Tree of Thought
+
+
 
 
 MVP:
-- 1 Process
+- 1 Process with GUI
