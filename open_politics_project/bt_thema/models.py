@@ -1,5 +1,5 @@
-# Models DIP Bundestag Documents
 from django.db import models
+
 
 class Vorgang(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -23,6 +23,7 @@ class Vorgang(models.Model):
     mitteilung = models.TextField(blank=True, null=True)
     vorgang_verlinkung = models.IntegerField(blank=True, null=True)
     sek = models.CharField(max_length=100, blank=True, null=True)
+    url = models.URLField(blank=True, null=True)
 
 class Vorgangsposition(models.Model):
     id = models.IntegerField(primary_key=True)
