@@ -5,7 +5,7 @@ from django.shortcuts import render
 from .models import *
 
 def hi(request):
-  return render(request, 'bt_thema/hi.html', {})
+  return render(request, 'hi.html', {})
 
 
 def get_vorgang(request, id):

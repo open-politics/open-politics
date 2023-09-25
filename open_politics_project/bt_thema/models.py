@@ -24,6 +24,7 @@ class Vorgang(models.Model):
     vorgang_verlinkung = models.IntegerField(blank=True, null=True)
     sek = models.CharField(max_length=100, blank=True, null=True)
     url = models.URLField(blank=True, null=True)
+    ai_summary = models.TextField(blank=True, null=True)
 
 class Vorgangsposition(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -50,6 +51,7 @@ class Vorgangsposition(models.Model):
     sek = models.CharField(max_length=100, blank=True, null=True)
     mitberaten = models.IntegerField(blank=True, null=True)
     abstract = models.TextField(blank=True, null=True)
+    ai_summary = models.TextField(blank=True, null=True)
 
 class Drucksache(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -70,6 +72,7 @@ class Drucksache(models.Model):
     vorgangsbezug_anzahl = models.IntegerField()
     ressort = models.CharField(max_length=100)
     anlagen = models.TextField(blank=True, null=True)
+    ai_summary = models.TextField(blank=True, null=True)
 
 class Plenarprotokoll(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -85,6 +88,7 @@ class Plenarprotokoll(models.Model):
     vorgangsbezug = models.IntegerField(blank=True, null=True)
     vorgangsbezug_anzahl = models.IntegerField()
     sitzungsbemerkung = models.CharField(max_length=100, blank=True, null=True)
+    ai_summary = models.TextField(blank=True, null=True)
 
 class Aktivitaet(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -99,6 +103,7 @@ class Aktivitaet(models.Model):
     vorgangsbezug_anzahl = models.IntegerField()
     deskriptor = models.CharField(max_length=100, blank=True, null=True)
     abstract = models.TextField(blank=True, null=True)
+    ai_summary = models.TextField(blank=True, null=True)
 
 class Person(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -111,3 +116,4 @@ class Person(models.Model):
     aktualisiert = models.DateTimeField()
     titel = models.TextField()
     person_roles = models.CharField(max_length=100, blank=True, null=True)
+    ai_summary = models.TextField(blank=True, null=True)
