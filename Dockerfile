@@ -18,8 +18,14 @@ COPY requirements.txt /app/
 RUN pip install --upgrade pip \
     && pip install -r requirements.txt
 
-RUN chmod +x start_server.sh
-
-
 # Copy current directory code to the container
 COPY . /app/
+
+# Make the start_server.sh script executable
+RUN chmod +x /app/start_server.sh
+
+# Run the application
+CMD ["/app/start_server.sh"]
+
+# Expose port 8000 for the application
+EXPOSE 8000
