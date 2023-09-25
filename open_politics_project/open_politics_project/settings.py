@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'bt_thema',
+
 ]
 
 MIDDLEWARE = [
@@ -115,7 +117,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -124,7 +126,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Path: open_politics_project/open_politics_project/settings.py
 # static settings for the project
-STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "bt_thema", "static"),]
+
+
 
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_root')
