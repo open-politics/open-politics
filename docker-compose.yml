@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  web:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"  
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles_root  
+      
+    command: ["python", "open_politics_project/manage.py", "runserver", "0.0.0.0:8080"]
+    environment:
+      - DEBUG=True  # Setting Django to run in debug mode, adjust as needed.
+
+volumes:
+  static_volume:
