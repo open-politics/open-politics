@@ -11,3 +11,6 @@ docker-compose build --no-cache
 
 # Start the services as defined in docker-compose.yml
 docker-compose up -d
+
+# List the running containers to verify
+docker-compose ps
