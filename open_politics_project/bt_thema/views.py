@@ -45,3 +45,8 @@ def receive_url(request, id):
     return JsonResponse(vorgang_data)
   except Vorgang.DoesNotExist:    return JsonResponse({"error": "Not found"}, status=404)
 
+
+# Render user/view_process.html template
+def process_view(request):
+  return render(request, 'user/view_process.html', {})
+
