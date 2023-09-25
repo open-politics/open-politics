@@ -18,5 +18,8 @@ COPY requirements.txt /app/
 RUN pip install --upgrade pip \
     && pip install -r requirements.txt
 
+RUN chmod +x start_server.sh
+
+
 # Copy current directory code to the container
 COPY . /app/
