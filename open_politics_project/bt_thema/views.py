@@ -4,6 +4,9 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from .models import *
 
+def hi(request):
+  return render(request, 'hi.html', {})
+
 
 def get_vorgang(request, id):
   try:
@@ -44,4 +47,9 @@ def receive_url(request, id):
     vorgang.save()
     return JsonResponse(vorgang_data)
   except Vorgang.DoesNotExist:    return JsonResponse({"error": "Not found"}, status=404)
+
+
+# Render user/view_process.html template
+def process_view(request):
+  return render(request, 'user/view_process.html', {})
 

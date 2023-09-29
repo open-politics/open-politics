@@ -20,3 +20,12 @@ RUN pip install --upgrade pip \
 
 # Copy current directory code to the container
 COPY . /app/
+
+# Make the start_server.sh script executable
+RUN chmod +x /app/start_server.sh
+
+# Run the application
+CMD ["/app/start_server.sh"]
+
+# Expose port 8000 for the application
+EXPOSE 8000
