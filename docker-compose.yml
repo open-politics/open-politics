@@ -10,10 +10,21 @@ services:
     volumes:
       - .:/app
       - static_volume:/app/staticfiles_root  
-      
-    command: ["python", "open_politics_project/manage.py", "runserver", "0.0.0.0:8080"]
+    command: ["/app/start_server.sh"]
     environment:
-      - DEBUG=True  # Setting Django to run in debug mode, adjust as needed.
+      - DEBUG=True
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+    - ./nginx:/etc/nginx/conf.d
+    - /etc/letsencrypt:/etc/letsencrypt
+    - /var/lib/letsencrypt:/var/lib/letsencrypt
+    depends_on:
+      - web
 
 volumes:
   static_volume:
