@@ -27,7 +27,7 @@ body {
     border: 1px solid black;
     border-radius: 10px;
     position: relative;
-    overflow: hidden;
+    overflow: hidden; 
     background-color: limegreen;
 }
 

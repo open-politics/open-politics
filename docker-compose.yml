@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"  
+      - "8000:8000"  
     volumes:
       - .:/app
       - static_volume:/app/staticfiles_root  
@@ -20,9 +20,10 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-    - ./nginx:/etc/nginx/conf.d
-    - /etc/letsencrypt:/etc/letsencrypt
-    - /var/lib/letsencrypt:/var/lib/letsencrypt
+      - ./nginx:/etc/nginx/conf.d
+      - /var/www/letsencrypt:/var/www/letsencrypt
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /var/lib/letsencrypt:/var/lib/letsencrypt
     depends_on:
       - web
 
