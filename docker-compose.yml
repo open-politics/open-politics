@@ -5,8 +5,7 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "8000:8000"  
+    #   - "8080:8080"  
     volumes:
       - .:/app
       - static_volume:/app/staticfiles_root  
@@ -17,12 +16,12 @@ services:
   nginx:
     image: nginx:latest
     ports:
-      - "80:80"
-      - "443:443"
+      - "80:80"       # Mapping the HTTP port
+      - "8443:8443"     # Mapping the HTTPS port
     volumes:
-      - ./nginx:/etc/nginx/conf.d
-      - /var/www/letsencrypt:/var/www/letsencrypt
-      - /etc/letsencrypt:/etc/letsencrypt
+      - ./nginx:/etc/nginx/conf.d            # Nginx configuration
+      - /var/www/letsencrypt:/var/www/letsencrypt    # Letsencrypt challenges
+      - /etc/letsencrypt:/etc/letsencrypt    # SSL certs
       - /var/lib/letsencrypt:/var/lib/letsencrypt
     depends_on:
       - web
