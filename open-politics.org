@@ -1,0 +1,37 @@
+server {
+    server_name open-politics.org www.open-politics.org;
+
+    location / {
+        proxy_pass http://127.0.0.1:4000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/letsencrypt;
+        try_files $uri =404;
+    }
+
+    listen 443 ssl; # Now listen on port 443 with SSL
+    ssl_certificate /etc/letsencrypt/live/open-politics.org/fullchain.pem; # Certbot's path to fullchain.pem for open-politics.org
+    ssl_certificate_key /etc/letsencrypt/live/open-politics.org/privkey.pem; # Certbot's path to privkey.pem for open-politics.org
+    include /etc/letsencrypt/options-ssl-nginx.conf; # Certbot's recommended SSL config
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # Certbot's recommended dhparam path
+
+}
+
+server {
+    if ($host = www.open-politics.org) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+    if ($host = open-politics.org) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+    listen 80;
+    server_name open-politics.org www.open-politics.org;
+    return 404; # managed by Certbot
+}
+

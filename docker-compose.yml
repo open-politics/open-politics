@@ -6,26 +6,19 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8181:8000"
-    volumes:
-      - .:/app
-      - static_volume:/app/staticfiles_root  
-    command: ["/app/start_server.sh"]
-    environment:
-      - DEBUG=True
-
-  nginx:
-    image: nginx:latest
-    ports:
-      - "8282:80"
-      - "4443:443"    # Mapping the HTTPS port
-    volumes:
-      - ./nginx:/etc/nginx/conf.d            # Nginx configuration
-      - /var/www/letsencrypt:/var/www/letsencrypt    # Letsencrypt challenges
-      - /etc/letsencrypt:/etc/letsencrypt    # SSL certs
-      - /var/lib/letsencrypt:/var/lib/letsencrypt
-    depends_on:
+      - "4000:4000"
+#    volumes:
+#      - static_volume:/app/staticfiles_root  
+    command: ["python", "open_politics_project/manage.py", "runserver", "0.0.0.0:4000"]
+    networks:
       - web
+    expose:
+      - "4000"
 
+
+networks:
+  web:
+    external: true
+    
 volumes:
   static_volume:

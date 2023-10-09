@@ -32,4 +32,4 @@ RUN chmod +x /app/start_server.sh
 CMD ["/app/start_server.sh"]
 
 # Expose port 8000 for the application
-EXPOSE 8000
+EXPOSE 4000
