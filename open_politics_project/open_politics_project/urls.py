@@ -19,6 +19,8 @@ from django.urls import path, re_path
 from django.views.static import serve
 from bt_thema import views as bt_thema_views
 from news import views as news_views
+from news import urls as news_urls
+from bt_thema import urls as bt_thema_urls
 
 
 
@@ -31,4 +33,4 @@ urlpatterns = [
     re_path(r'^\.well-known/acme-challenge/(?P<path>.+)$', serve, {
         'document_root': '/var/www/letsencrypt/',
     }),
-] + urls.urlpatterns
+] + news_urls.urlpatterns + bt_thema_urls.urlpatterns
