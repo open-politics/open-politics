@@ -18,11 +18,8 @@ from django.contrib import admin
 from django.urls import path, re_path
 from django.views.static import serve
 from bt_thema import views, urls
+from news import views, urls
 
-
-from django.urls import path, re_path
-from django.views.static import serve
-from bt_thema import views, urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
