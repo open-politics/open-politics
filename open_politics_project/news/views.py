@@ -20,14 +20,20 @@ def fetch_articles_api(request):
     return JsonResponse({'status': 'success'})
 
 def test_button(request):
-    return render(request, "news_button.html")
+    return render(request, "news/news_button.html")
 
 def news(request):
-    return render(request, "news/news.html")
+    return render(request, "news/news_home.html")
 
 class ArticleListView(ListView):
     model = NewsArticle
     template_name = 'news/articles_list.html'
     context_object_name = 'articles'
+
+
+def news_home(request):
+    return render(request, "news/news_home.html")
+
+
 
 

@@ -30,18 +30,24 @@ def call_with_search_parameters(options):
         if 'articles' in json_data:
             articles = json_data['articles']
             for article in articles:
+                source_name = article.get('source', {}).get('name', None)
+                source_url = article.get('source', {}).get('url', None)
+                if source_name is None or source_url is None:
+                    print(f"Warning: Missing source name or URL in article {article['title']}")
+                    continue
+
                 NewsArticle.objects.create(
-                    title=article['title'],
-                    description=article['description'],
-                    url=article['url'],
-                    url_to_image=article['urlToImage'],
-                    published_at=article['publishedAt'],
-                    content=article['content'],
-                    source=NewsSource.objects.get_or_create(
-                        name=article['source']['name'],
-                        url=article['source']['url']
-                    )[0]
-                )
+                title=article['title'],
+                description=article['description'],
+                url=article['url'],
+                url_to_image=article['urlToImage'],
+                published_at=article['publishedAt'],
+                content=article['content'],
+                source=NewsSource.objects.get_or_create(
+                    name=source_name,
+                    url=source_url
+                )[0]
+                                            )
             return articles
         else:
             print("Unexpected API response:", json_data)

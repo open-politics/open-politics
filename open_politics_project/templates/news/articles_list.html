@@ -1,20 +1,23 @@
 {% extends "base.html" %}
+
 {% block articles %}
+<style>
+ 
+</style>
+    <div class="article-container" style="color: black; background-color: aliceblue;">
+    <h2>Available Articles</h2>
 
-<div class="article-container" style="color: black; background-color: aliceblue;">
-<h2>Available Articles</h2>
-
-{% if articles %}
-<ul>
-    {% for article in articles %}
-    <li>
-        <strong>{{ article.title }}</strong><br>
-        <a href="{{ article.url }}" target="_blank">Read more</a>
-    </li>
-    {% endfor %}
-</ul>
-{% else %}
-<p>No articles available.</p>
-{% endif %}
+    {% if articles %}
+    <ul >
+        {% for article in articles %}
+        <li class="link-item"">
+            <strong>{{ article.title }}</strong><br>
+            <a href="{{ article.url }}" target="_blank">Read more</a>
+        </li>
+        {% endfor %}
+    </ul>   
+    {% else %}
+    <p>No articles available.</p>
+    {% endif %}
 
 {% endblock %}

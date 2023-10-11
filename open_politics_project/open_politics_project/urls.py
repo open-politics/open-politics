@@ -15,23 +15,23 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, re_path
+from django.urls import path, re_path, include
 from django.views.static import serve
 from bt_thema import views as bt_thema_views
 from news import views as news_views
 from news import urls as news_urls
 from bt_thema import urls as bt_thema_urls
+from . import views as views
 
 
 
 
 urlpatterns = [
-    path('', bt_thema_views.hi, name='hi'),
+    path('', views.home, name='home'),
     path('admin/', admin.site.urls),
-    #path('process/', views.process_view, name='process'),
-    path('receive-url/', bt_thema_views.receive_url_api, name='receive_url'),
-    path('receive-url/<int:id>/', bt_thema_views.receive_url_api, name='receive_url'),
+    path("", include("bt_thema.urls")),
+    path("", include("news.urls")),
     re_path(r'^\.well-known/acme-challenge/(?P<path>.+)$', serve, {
         'document_root': '/var/www/letsencrypt/',
     }),
-] + news_urls.urlpatterns + bt_thema_urls.urlpatterns
+]

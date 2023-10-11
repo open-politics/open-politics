@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>My Website</title>
+    <title>Open Politics Project</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Styleshee-->
@@ -14,22 +14,26 @@
     <!-- installing htmx via staticfiles-->
     <script src="{% static 'htmx/htmx.min.js' %}"></script>
     
-
   </head>
   <body>
-<!--   extending blocks -->
     {% block hi %}
+
     {% endblock %}
     
     {% block news_button %}
     {% endblock %}
 
+    {% block news_home %}
+    {% endblock %}
+
     {% block content %}
     {% endblock %}
-
+    
     {% block articles %}
     {% endblock %}
-
+    
+    {% block homme %}
+    {% endblock %}
   </body>
   <script>
     document.body.addEventListener('htmx:afterOnLoad', function(event){
