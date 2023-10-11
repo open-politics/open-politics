@@ -1,11 +1,11 @@
 import requests
 import json
-from django.http import JsonResponse
+from django.http import JsonResponse, request
 from django.shortcuts import render
 from .models import *
 
 def hi(request):
-  return render(request, 'hi.html', {})
+  return render(request, 'bt_thema/hi.html', {})
 
 
 def get_vorgang(request, id):
@@ -34,7 +34,7 @@ def get_drucksache(request, id):
   except Drucksache.DoesNotExist:
     return JsonResponse({"error": "Not found"}, status=404)
 
-def receive_url(request, id):
+def receive_url_api (request, id):
   try:
     vorgang = Vorgang.objects.get(pk=id)
     url = vorgang.url
@@ -51,5 +51,5 @@ def receive_url(request, id):
 
 # Render user/view_process.html template
 def process_view(request):
-  return render(request, 'user/view_process.html', {})
+  return render(request, 'bt_thema/user/view_process.html', {})
 

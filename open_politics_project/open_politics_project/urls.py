@@ -26,10 +26,11 @@ from bt_thema import urls as bt_thema_urls
 
 
 urlpatterns = [
+    path('', bt_thema_views.hi, name='hi'),
     path('admin/', admin.site.urls),
     #path('process/', views.process_view, name='process'),
-    path('receive-url/', bt_thema_views.receive_url, name='receive_url'),
-    path('receive-url/<int:id>/', bt_thema_views.receive_url, name='receive_url'),
+    path('receive-url/', bt_thema_views.receive_url_api, name='receive_url'),
+    path('receive-url/<int:id>/', bt_thema_views.receive_url_api, name='receive_url'),
     re_path(r'^\.well-known/acme-challenge/(?P<path>.+)$', serve, {
         'document_root': '/var/www/letsencrypt/',
     }),
