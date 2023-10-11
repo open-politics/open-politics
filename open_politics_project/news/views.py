@@ -12,4 +12,4 @@ def fetch_articles_api(request):
     return JsonResponse({'status': 'success'})
 
 def test_button(request):
-    return render(request, "test_button.html")
+    return render(request, "news_button.html")
