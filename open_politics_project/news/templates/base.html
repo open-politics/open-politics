@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Website</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Styleshee-->
+    <link rel="stylesheet" href="{% static 'styles_process.css' %}">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,900|Ubuntu&display=swap" rel="stylesheet">
+    <!-- installing htmx via staticfiles-->
+    <script src="{% static 'htmx/htmx.min.js' %}"></script>
+    
+
+  </head>
+  <body>
+<!--   extending block -->
+    {% block news_button %}
+    {% endblock %}
+
+  </body>
+</html>
