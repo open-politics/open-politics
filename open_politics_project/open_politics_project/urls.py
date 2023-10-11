@@ -17,16 +17,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path
 from django.views.static import serve
-from bt_thema import views, urls
-from news import views, urls
+from bt_thema import views as bt_thema_views
+from news import views as news_views
+
 
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     #path('process/', views.process_view, name='process'),
-    path('receive-url/', views.receive_url, name='receive_url'),
-    path('receive-url/<int:id>/', views.receive_url, name='receive_url'),
+    path('receive-url/', bt_thema_views.receive_url, name='receive_url'),
+    path('receive-url/<int:id>/', bt_thema_views.receive_url, name='receive_url'),
     re_path(r'^\.well-known/acme-challenge/(?P<path>.+)$', serve, {
         'document_root': '/var/www/letsencrypt/',
     }),
