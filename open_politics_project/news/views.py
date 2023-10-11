@@ -12,7 +12,10 @@ def fetch_articles_api(request):
         'pageSize': 50,
         'page': 1
     }
-    articles = call_with_search_parameters(default_options)  # or any other logic you want
+    articles = call_with_search_parameters(default_options)  
+    article_list = [{'title': article['title'], 'url': article['url']} for article in articles]
+
+
     # Save articles to DB (similar logic as the management command)
 
     return JsonResponse({'status': 'success'})

@@ -2,13 +2,16 @@
 {% load static %}
 {% block news_button %}
 
-
 <script src="https://unpkg.com/htmx.org"></script>
 
-<button style="color: white;"   hx-get="/api/fetch_articles/" hx-trigger="click" hx-target="#status" hx-swap="innerText">
+<button style="color: white;" hx-get="/api/fetch_articles/" hx-trigger="click" hx-target="#results" hx-swap="outerHTML">
     Fetch Articles
 </button>
-<div id="status"></div>
+<div id="results">
+    <div id="status"></div>
+    <ul id="articles-list">
+        <!-- Articles will be inserted here by htmx -->
+    </ul>
+</div>
 
 {% endblock %}
-
