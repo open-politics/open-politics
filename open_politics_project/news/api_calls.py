@@ -25,9 +25,31 @@ def call_with_search_parameters(options):
     call_parameters = {k: v for k, v in call_parameters.items() if v is not None}
 
     response = requests.get(url, params=call_parameters, headers={'Authorization': f'Bearer {api_key}'})
-    print("Status Code:", response.status_code)
-    print("Raw Response:", response.text)
-    return response.json()['articles']
+    if response.status_code == 200:
+        json_data = response.json()
+        if 'articles' in json_data:
+            articles = json_data['articles']
+            for article in articles:
+                NewsArticle.objects.create(
+                    title=article['title'],
+                    description=article['description'],
+                    url=article['url'],
+                    url_to_image=article['urlToImage'],
+                    published_at=article['publishedAt'],
+                    content=article['content'],
+                    source=NewsSource.objects.get_or_create(
+                        name=article['source']['name'],
+                        url=article['source']['url']
+                    )[0]
+                )
+            return articles
+        else:
+            print("Unexpected API response:", json_data)
+            return []
+    else:
+        print("API call failed with status code:", response.status_code)
+        print("Response text:", response.text)
+        return []
 
 
 def get_all_sources(language=None):
