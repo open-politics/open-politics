@@ -6,7 +6,13 @@ from news.api_calls import call_with_search_parameters
 from django.http import JsonResponse
 
 def fetch_articles_api(request):
-    articles = call_with_search_parameters()  # or any other logic you want
+    default_options = {
+        'country': 'de',
+        'q': 'Bundestag',
+        'pageSize': 50,
+        'page': 1
+    }
+    articles = call_with_search_parameters(default_options)  # or any other logic you want
     # Save articles to DB (similar logic as the management command)
 
     return JsonResponse({'status': 'success'})
