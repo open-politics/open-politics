@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>My Website</title>
+    <title>News</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Styleshee-->
@@ -13,13 +13,38 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,900|Ubuntu&display=swap" rel="stylesheet">
     <!-- installing htmx via staticfiles-->
     <script src="{% static 'htmx/htmx.min.js' %}"></script>
-    
-
   </head>
   <body>
-<!--   extending block -->
+    <!-- extending block -->
     {% block news_button %}
     {% endblock %}
-
   </body>
+  <!-- adding javascript-->
+  <script>
+    document.body.addEventListener('htmx:afterOnLoad', function(event){
+        var response = event.detail.xhr.response;
+        var jsonResponse = JSON.parse(response);
+        var articles = jsonResponse.articles;
+        var statusDiv = document.getElementById('status');
+        var articlesList = document.getElementById('articles-list');
+        
+        // Clear previous articles
+        articlesList.innerHTML = '';
+    
+        if(articles.length === 0) {
+            statusDiv.innerText = 'No articles found';
+            return;
+        }
+        
+        statusDiv.innerText = 'Fetched articles:';
+        articles.forEach(function(article){
+            var listItem = document.createElement('li');
+            var link = document.createElement('a');
+            link.href = article.url;
+            link.innerText = article.title;
+            listItem.appendChild(link);
+            articlesList.appendChild(listItem);
+        });
+    });
+  </script>    
 </html>
