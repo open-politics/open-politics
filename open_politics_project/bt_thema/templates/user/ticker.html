@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewsAPI with htmx</title>
+    <script src="https://unpkg.com/htmx.org@1.7.1"></script>
+</head>
+<body>
+
+<div hx-get="/fetch-news" hx-trigger="load" hx-target="#news-list">
+    <ul id="news-list">
+        <!-- Articles will be loaded here -->
+    </ul>
+</div>
+
+</body>
+</html>

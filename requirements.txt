@@ -3,3 +3,4 @@ langchain
 openai
 gunicorn
 certbot
+flask

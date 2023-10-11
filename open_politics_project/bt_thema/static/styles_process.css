@@ -5,6 +5,13 @@ body {
     background-color: black;
 }
 
+.top-class {
+    display: flex;
+    color: white;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100vh;
+}
 .hi-class {
     display: flex;
     color: white;

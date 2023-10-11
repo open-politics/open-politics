@@ -4,7 +4,7 @@ FROM python:3.11
 # Set environment variables
 ENV PYTHONUNBUFFERED 1
 
-# Create and set working directory
+    # Create and set working directory
 WORKDIR /app
 
 # Install system dependencies
