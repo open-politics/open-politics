@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from news.api_calls import call_with_search_parameters
+from news.models import NewsArticle, NewsSource
 
 # Create your views here.
 from django.http import JsonResponse
@@ -22,3 +23,11 @@ def fetch_articles_api(request):
 
 def test_button(request):
     return render(request, "news_button.html")
+
+from django.views.generic import ListView
+from news.models import NewsArticle
+
+class ArticleListView(ListView):
+    model = NewsArticle
+    template_name = 'article_list.html'
+    context_object_name = 'articles'
