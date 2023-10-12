@@ -64,6 +64,8 @@ def get_all_sources(language=None):
     response = requests.get(source_url, headers={'Authorization': f'Bearer {api_key}'}, params=params)
     return response.json()['sources']
 
+
+
 # Get all news sources 
 # --> sources = get_all_sources()
 # Get German news sources only 
