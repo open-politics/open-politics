@@ -114,10 +114,10 @@
 </style>
 
 <div class="main-container">
-    <div class="container-middle">
-       <h1> Entities / Actors </h1>
-       </p>
-    </div>
+    <div class="container-middle" hx-get="/visualize/" hx-trigger="load">
+        <h1>Entities / Actors</h1>
+        <div hx-target="this" hx-swap="outerHTML"></div> <!-- Placeholder for the image -->
+     </div> 
     <div class="container-right">
         <div class="rectangle">
             <div class="title">Artikel</div>
