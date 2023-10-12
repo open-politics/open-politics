@@ -2,14 +2,23 @@
 
 ## Idea and Outline
 
+This project aims to tackle two distinct problems:
+1. Navigating political situations, legislative documents, and political processes is difficult and time-consuming.
+2. Interacting with this data is often limited to a few experts.
+
+**Solution 1**
+A platform that offers a visual representation of political processes and thematic complexes and their related documents and news. 
+
+**Solution 2**
 Imagine a platform where citizens engage with an LLM (Large Language Model) or teams of LLMs to comprehend proposed policies, their implications, and historical precedents. This aims to democratize access to political knowledge.
 
 **Core Idea:** Reducing the contextual overhead of political processes.
 
 ## Tasks
 - Information summarization
+- Entity Extraction (Named Entity Recognition)
 - Q&A Chatbots (for interactive information)
-- Providing historical context
+- Providing historical context 
 - Monitoring and alerts
 - Visual representation of political data
 - Fact-checking
