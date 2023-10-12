@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import os
 import pandas as pd
 import plotly.express as px
+import openai
 
 
 
@@ -269,13 +270,49 @@ def score_to_color(score):
     # Here, we're assuming higher scores are "better" and will make the color more towards green
     return (1 - score, score, 0.5) 
 
+
+def most_important_entities(df):
+    for index, row, score in df.iterrows():
+        print(row['entities'][0]['entity_group'])
+        print(row['entities'][0]['score'])
+        print(row['entities'][0]['word'])
+
+def most_important_news_for_entity(df, articles):
+    template = """"
+    These following are the most important news articles about {entity} from the last 24 hours.
+    Write a 3 sentence summary for what is important to know right now.
+    Also write down their historic relation to other entities.
+    Here are the articles: {articles}.
+    And here are the other entities: {entities}.
+    """
+    articles = []
+    entities = []
+    for index, row in df.iterrows():
+        articles.append(row['title'])
+        entities.append(row['entities'][0]['word'])
+    entity = row['entities'][0]['entity_group']
+    
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    llm = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages = [{"role": "system", "content": 'You are a political news journalist tasked with Named Entity Recognition and Entity linking tasks.'},
+                    {"role": "user", "content": "These following are the articles about" + entity + "from the last 24 hours. Please give a short summary about what is important right now to know about this matter. No more than 3 sentences and just the plain answer." },
+                    {"role": "assistant", "Ok, show me the articles please": }
+                    {"role": "user", "content": "Here are the articles:" + articles },
+
+
+    )
+
+
+
 def main():
     df = call_with_search_parameters({'country': language, 'q': query, 'pageSize': pageSize})
     df = get_entities(df)
     #visualize_dataframe(df)
     #visualize_entities(df)
     #visualize_avg_scores(df)
-    visualize_query_entity_network(df, query)
+    #visualize_query_entity_network(df, query)
+    most_important_entities(df)
     print(df['entities'])
     print(df.iloc[0])
 

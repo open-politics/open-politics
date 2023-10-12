@@ -29,7 +29,9 @@ Imagine a platform where citizens engage with an LLM (Large Language Model) or t
 - Parsing/formatting outputs
 
 ## Frontend
-- GUI offers a choice of a "Vorgang" process from the Bundestag.
+- The frontend is largely built on htmx features and tries to stay within the realm of HTML and CSS and Hyperstate Media ()
+- GUI 1 offers a choice of a "Vorgang" process from the Bundestag.
+- GUI 2 offers a view of a thematic complex, planned are graph views, a timeline, and a actor/interests matrix.
 - Process details are dissected with related information shown in a graph or node manner (akin to Obsidian's graph view).
 - Each node features a card that summarizes its content and points to the most relevant related content.
 - **Design Tool:** Figma (details coming soon)
