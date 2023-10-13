@@ -105,7 +105,6 @@ def visualize_dataframe(df):
     
     plt.tight_layout()
     plt.show()
-
 # Scatter Plot (Deprecated)
 def visualize_entities(df):
     # Extracting entities and scores to be visualized
@@ -139,7 +138,6 @@ def visualize_entities(df):
 
     # Displaying the plot
     fig.show()
-
 # Network Graph (Deprecated)
 def visualize_entity_article_connections(entities, articles):
 
@@ -268,6 +266,8 @@ def score_to_color(score):
     # Convert the score to a color
     # Here, we're assuming higher scores are "better" and will make the color more towards green
     return (1 - score, score, 0.5) 
+
+
 
 
 def most_important_entities(df):
