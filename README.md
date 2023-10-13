@@ -29,11 +29,18 @@ A platform where political documents (e.g. the Bundestag) are parsed and analyse
 - Visual representation of political data
 - Fact-checking
 
-## Challenges
+## Data Science/ Code Challenges
 - Addressing training data bias
 - Effective prompt engineering
 - Parsing/formatting outputs
 - Training and fine-tuning LLMs
+
+## Journalistic Challenges
+- Balanced News Sources
+- Fact-checking
+- Interdependence of news sourcs
+- Interdependence of summaries
+
 
 
 ## Frontend
