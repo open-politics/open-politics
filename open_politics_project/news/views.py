@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from news.api_calls import call_with_search_parameters
 
-import matplotlib.pyplot as plt
+
 import io
 import openai
 import os
@@ -13,8 +13,7 @@ import sys
 import requests
 import pandas as pd
 
-import matplotlib
-matplotlib.use('Agg')
+
 
 
 def fetch_articles_api(request):
@@ -46,29 +45,6 @@ class ArticleListView(ListView):
 
 def news_home(request):
     return render(request, "news/news_home.html")
-
-
-def visualize_entity_article_connections(article):
-    # Sample entities (In a real use-case, you would dynamically extract entities from your articles or use some external service)
-    entities = [
-        {'word': 'Israel', 'score': 0.85},
-        {'word': 'Gaza', 'score': 0.61}
-    ]
-
-    # Fetch articles from the database
-    articles_data = NewsArticle.objects.all()[:10]  # Fetching first 10 articles, you can adjust this as per your requirements
-    articles = [article.title for article in articles_data]
-
-    G = nx.Graph()
-
-    # (rest of the function as before to generate the visualization...)
-
-    # Save figure to a BytesIO object
-    buf = io.BytesIO()
-    plt.savefig(buf, format="PNG")
-    buf.seek(0)
-
-    return FileResponse(buf, as_attachment=True, filename='network_graph.png')
 
 
 
