@@ -16,7 +16,7 @@ This project aims to tackle two distinct problems:
 A representation of political news and thematic complexes and their related documents and news. Offering summarisation for a give topic from the news, highlighting actors and interests.
 Various NLP techniques including LLMs provide a summarised view of the most relevant information.
 
-**Solution Componen 2**
+**Solution Component 2**
 A platform where political documents (e.g. the Bundestag) are parsed and analysed by LLMs. The LLMs are instructed to identify and extract relevant information from the documents. The extracted information is then used to generate a summary of the document and related information.
 
 
