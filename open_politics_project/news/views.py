@@ -5,7 +5,6 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from news.api_calls import call_with_search_parameters
 
-import networkx as nx
 import matplotlib.pyplot as plt
 import io
 import openai
