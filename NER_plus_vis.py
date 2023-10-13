@@ -57,9 +57,6 @@ def call_with_search_parameters(options):
         else:
             print("Unexpected API response:", json_data)
             return pd.DataFrame()
-        
-
-
 
 def get_entities(df):
     HUGGINGFACE_TOKEN = os.getenv("HUGGINGFACE_TOKEN")
@@ -291,14 +288,14 @@ def most_important_news_for_entity(df, articles):
         articles.append(row['title'])
         entities.append(row['entities'][0]['word'])
     entity = row['entities'][0]['entity_group']
-    
+
     openai.api_key = os.getenv("OPENAI_API_KEY")
     llm = openai.ChatCompletion.create(
         model="gpt-4",
         messages = [{"role": "system", "content": 'You are a political news journalist tasked with Named Entity Recognition and Entity linking tasks.'},
                     {"role": "user", "content": "These following are the articles about" + entity + "from the last 24 hours. Please give a short summary about what is important right now to know about this matter. No more than 3 sentences and just the plain answer." },
                     {"role": "assistant", "Ok, show me the articles please": }
-                    {"role": "user", "content": "Here are the articles:" + articles },
+                    {"role": "user", "content": "Here are the articles:" + articles },]
 
 
     )
