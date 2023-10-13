@@ -77,6 +77,7 @@ def get_entities(df):
             df.at[idx, 'entities'] = output
     return df
 
+# BAR Chart (Deprecated)
 def visualize_dataframe(df):
     # 1. Bar Chart for Entity Frequencies
     all_entities = [entity['entity_group'] for entities in df['entities'].dropna() for entity in entities]
@@ -105,6 +106,7 @@ def visualize_dataframe(df):
     plt.tight_layout()
     plt.show()
 
+# Scatter Plot (Deprecated)
 def visualize_entities(df):
     # Extracting entities and scores to be visualized
     data = []
@@ -138,7 +140,7 @@ def visualize_entities(df):
     # Displaying the plot
     fig.show()
 
-
+# Network Graph (Deprecated)
 def visualize_entity_article_connections(entities, articles):
 
 
