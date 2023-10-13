@@ -17,7 +17,6 @@
   </head>
   <body>
     {% block hi %}
-
     {% endblock %}
     
     {% block news_button %}
@@ -32,9 +31,14 @@
     {% block articles %}
     {% endblock %}
     
-    {% block homme %}
+    {% block home %}
     {% endblock %}
-  </body>
+
+    {% block search %}
+    {% endblock %}
+
+
+
   <script>
     document.body.addEventListener('htmx:afterOnLoad', function(event){
         var response = event.detail.xhr.response;

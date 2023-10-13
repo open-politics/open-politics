@@ -1,4 +1,4 @@
-<div id="search-container" style="height: 100px; width: 200px;">
+<div id="search-container">
     <form hx-get="{% url 'stream_synopsis' %}" hx-trigger="keyup delay:500ms" hx-target="#results" hx-indicator="#loading">
         <input type="text" name="query" placeholder="Search news...">
         <span id="loading" style="display:none;">Loading...</span>
