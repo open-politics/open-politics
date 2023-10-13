@@ -5,7 +5,6 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from news.api_calls import call_with_search_parameters
 
-
 import io
 import openai
 import os
