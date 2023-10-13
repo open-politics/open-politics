@@ -73,7 +73,7 @@ Figma (details coming soon)
 
 ## MVP (Minimum Viable Product)
 - A single process with GUI
-
+- A single news topic with GUI
 
 ## Usage (coming soon):
 - Clone the repo
@@ -81,3 +81,10 @@ Figma (details coming soon)
 - Run the Django server
 - Connect to the frontend
 - Run the LLM agent
+
+
+## Necessary API Keys/ Environment Variables:
+- DIP API (rgsaY4U.oZRQKUHdJhF9qguHMkwCGIoLaqEcaHjYLF)
+- NewsAPI API
+- OpenAI API
+- Huggingface Token
