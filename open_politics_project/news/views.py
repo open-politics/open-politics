@@ -124,7 +124,7 @@ def generate_synopsis(topic, df):
 #     query = request.GET.get('query', None)  # Get the query from the GET parameters
 
 #     if not query:  # Check if the query is provided
-#         return render(request, 'news/news_home.html', {})
+#         return render(request, 'news/synopsis.html', {})
 
 #     df = get_news_data(query)  # Fetch articles related to the query
 
