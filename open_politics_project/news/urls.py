@@ -9,6 +9,6 @@ urlpatterns = [
     path('test-button', views.test_button, name="test_button"),
     path('api/fetch_articles/', views.fetch_articles_api, name='fetch_articles_api'),
     path('articles/', ArticleListView.as_view(), name='article_list'),
-    path('visualize/', views.visualize_entity_article_connections, name='news_home'),
+    path('visualize/', views.news_home, name='news_home'),
     path('news_synopsis/', views.stream_synopsis, name='stream_synopsis'),
 ]
