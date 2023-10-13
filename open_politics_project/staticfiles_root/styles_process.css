@@ -5,6 +5,33 @@ body {
     background-color: black;
 }
 
+/* Site Header Styles */
+.site-header {
+    background-color: #333; /* Dark background for the header */
+    padding: 20px 0;        /* Space around content in the header */
+    text-align: center;     /* Centering header contents */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+    position: sticky;       /* Makes header sticky at top */
+    top: 0;                 /* Position for the sticky header */
+    z-index: 1000;          /* Ensures header is above other content */
+}
+
+.site-logo {
+    max-width: 50px;        /* Controls the size of the logo */
+    margin-right: 10px;     /* Space between the logo and the title */
+    vertical-align: middle; /* Aligns the logo with the title text */
+}
+
+h1 {
+    display: inline-block;  /* Allows logo and title to be side-by-side */
+    color: #fff;            /* White text for the title */
+    font-family: 'Ubuntu', sans-serif;  /* Uses the Google Font from your link */
+    font-weight: 900;       /* Makes the title bold */
+    font-size: 24px;        /* Size of the title */
+    margin: 0;              /* Removes default margin */
+}
+
+
 .top-class {
     display: flex;
     color: white;

@@ -145,20 +145,45 @@ def generate_synopsis(topic, df):
     return result
 
 
+# def stream_synopsis(request):
+#     print("stream_synopsis")
+#     query = request.GET.get('query', None)  # Get the query from the GET parameters
+
+#     if not query:  # Check if the query is provided
+#         return render(request, 'news/news_home.html', {})
+
+#     df = get_news_data(query)  # Fetch articles related to the query
+
+#     synopsis = generate_synopsis(query, df)  # Generate the synopsis using OpenAI
+
+
+#     return render(request, 'news/synopsis.html', {'synopsis': synopsis})
+
+
+# Fake synpopsis to save costs
 def stream_synopsis(request):
     print("stream_synopsis")
     query = request.GET.get('query', None)  # Get the query from the GET parameters
 
-    if not query:  # Check if the query is provided
-        return render(request, 'news/news_home.html', {})
+    # if not query:  # Check if the query is provided
+    #     return render(request, 'news/news_home.html', {})
 
-    df = get_news_data(query)  # Fetch articles related to the query
+    # df = get_news_data(query)  # Fetch articles related to the query
 
-    synopsis = generate_synopsis(query, df)  # Generate the synopsis using OpenAI
+    # synopsis = generate_synopsis(query, df)  # Generate the synopsis using OpenAI
 
 
-    return render(request, 'news/synopsis.html', {'synopsis': synopsis})
-    # return render(request, 'news/synopsis.html', {'synopsis': 'Test synopsis'*50})
+    # return render(request, 'news/synopsis.html', {'synopsis': synopsis})
+    return render(request, 'news/synopsis.html', {'synopsis': 'Test synopsis'*50})
+
+
+
+
+
+
+
+
+
 
 # def stream_articles(request):
 #     print("stream_articles")

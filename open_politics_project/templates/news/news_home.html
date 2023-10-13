@@ -11,13 +11,14 @@
     .container {
         display: grid;
         grid-template-columns: repeat(16, 1fr);
-        grid-template-rows: 1fr;
+        grid-template-rows: auto 1fr;
         justify-content: space-between;
-        align-items: center;
+        align-items: baseline;
         height: 100vh;
         background-size: cover;
         background-position: center;
         padding: 3rem;
+
     }
 
     /* Glassy card effect */
@@ -26,12 +27,15 @@
         backdrop-filter: blur(10px);
         border-radius: 20px;
         padding: 2rem;
+        margin-top: 1rem;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
     }
 
     /* Search container styles */
     #search-container {
-        grid-column: 1 / 9;
+        grid-column: 3 / 13;
+        grid-row: 2;
+        max-width: 100%;
         display: flex;
         flex-direction: column;
         background-image: url('https://source.unsplash.com/jQAk1lZL5Jk');
@@ -60,7 +64,7 @@
 
     /* Results container */
     #results {
-        margin-top: 2rem;
+        margin-top: 1rem;
         width: 80%;
         border-radius: 20px;
         max-height: 0;
@@ -77,6 +81,15 @@
         overflow: scroll;
     }
 
+    .search-title {
+        grid-column: 3 / 13;
+        grid-row: 1;
+        text-align: center;
+        color: white;
+        padding-bottom: 1rem;
+
+    }
+
     h3 {
         margin-bottom: 1rem;
         margin-top: 0;
@@ -84,7 +97,11 @@
 
 </style>
 
+
+
 <div class="container">
+    <h1 class="search-title"> Search News and get AI curated summaries </h1>
+
     <div id="search-container" class="glass-card">
         <form hx-get="/news_synopsis/" hx-trigger="keyup delay:5000ms" hx-target="#results" hx-indicator="#loading" hx-swap-oob="true">
             <input type="text" name="query" placeholder="Search news...">
@@ -95,9 +112,10 @@
             </div>
         </div>
     </div>
+    <p>This will only return Test Synopsis*50 while in development</p>
 </div>
 
-{% include "news/articles_list.html" %}
+
 
 
 

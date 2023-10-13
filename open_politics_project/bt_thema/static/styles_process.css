@@ -1,8 +1,33 @@
 /* FILEPATH: /opt/open-politics/open_politics_project/bt_thema/static/styles_process.css */
 body {
     margin: 0;
+
     font-family: 'Open Sans', sans-serif;
     background-color: black;
+}
+
+/* Site Header Styles */
+.site-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70px;  /* or whatever height you prefer */
+    background-color: #333; /* or any background color that you want for the header */
+}
+
+.site-logo {
+    max-width: 50px;        /* Controls the size of the logo */
+    margin-right: 10px;     /* Space between the logo and the title */
+    vertical-align: middle; /* Aligns the logo with the title text */
+}
+
+h1 {
+    display: inline-block;  /* Allows logo and title to be side-by-side */
+    color: #fff;            /* White text for the title */
+    font-family: 'Ubuntu', sans-serif;  /* Uses the Google Font from your link */
+    font-weight: 900;       /* Makes the title bold */
+    font-size: 24px;        /* Size of the title */
+    margin: 0;              /* Removes default margin */
 }
 
 .top-class {
