@@ -19,17 +19,19 @@ sources_choice = None
 if sources_choice == 'all' or sources_choice is None:
     sources = None
 elif sources_choice == 'trusted':
-    sources = 'bbc-news, the-wall-street-journal, the-washington-post, the-new-york-times, the-hill, the-guardian-uk, politico, al-jazeera-english', 'dw', 'politico', 'al-jazeera-english'
+    sources = 'bbc-news, the-wall-street-journal, the-washington-post, the-new-york-times, the-hill, the-guardian-uk, politico, al-jazeera-english', 'dw'
+    
 
 
 # Load the NER pipeline
 pipe = pipeline("token-classification", model="mdarhri00/named-entity-recognition")
 
 # Query News API
-api_key = os.environ.get('NEWS_API_KEY')
-url = 'https://newsapi.org/v2/top-headlines'
 
 def call_with_search_parameters(options):
+    api_key = os.environ.get('NEWS_API_KEY')
+    url = 'https://newsapi.org/v2/top-headlines'
+
     call_parameters = {
         #'country': options.get('country'),
         'category': options.get('category'),

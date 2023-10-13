@@ -14,9 +14,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
-COPY requirements.txt /app/
+COPY ./requirements.txt /app/requirements.txt
+
 RUN pip install --upgrade pip \
-    && pip install -r requirements.txt
+    && pip install -r app/requirements.txt
 
 # Copy current directory code to the container
 COPY . /app/

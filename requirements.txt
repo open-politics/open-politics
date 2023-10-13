@@ -4,3 +4,8 @@ openai
 gunicorn
 certbot
 flask
+pandas
+huggingface
+transformers
+networkx
+matplotlib
