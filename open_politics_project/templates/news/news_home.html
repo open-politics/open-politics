@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block news_home %}
 <style>
     /* Base styling */
@@ -84,6 +84,7 @@
 
     #news-results, #actors-results {
     margin-bottom: 1.5rem;
+    text-align: left;
     }
 
     #news-results h4, #actors-results h4 {
@@ -101,6 +102,24 @@
     #news-results li, #actors-results li {
         margin-bottom: 0.5rem;
     }
+
+    .giphy-embed {
+    border-radius: 500px;
+    margin: 0 auto;
+    display: block;
+    max-width: 100%; /* ensures the image doesn't exceed its container's width */
+    }
+
+    .loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    color: white;
+    height: 100%;    /* Add this */
+    width: 100%;     /* Add this */
+    }
 </style>
 <div class="container">
     <div class="search-title">
@@ -110,18 +129,37 @@
     <div class="search-container">
         <form id="search-form">
             <input type="text" name="query" placeholder="Search...">
-            <span class="loading" id="loading">Loading...</span>
+            <div class="loading" id="loading" style="display: none;">
+                <div style="width: auto">
+                    <img src="{% static 'media/spinner.gif' %}" width="auto" height="480" frameborder="0" class="giphy-embed" allowfullscreen></img>
+                </div>
+                <div style="margin-top: 20px; color: black; font-weight: bold;">
+                    Thinking...
+                </div>
+
+            </div>
         </form>
         <div id="results" class="glass-card">
             <div id="news-results"></div>
             <div id="actors-results"></div>
         </div>
     </div>
+    </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.0/marked.min.js" integrity="sha512-4+zFvAejSGVlybiAKYyAz3KMjmbIT7I+wXgx190ZAsT19L2z8S4htBy1scR7CyP9pDKNSaolJMLedCigA/gFVg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         let timer;
+        const loadingSpinner = document.getElementById('loading');
+
+        // Helper function to show and hide the loading spinner
+        function showLoadingSpinner() {
+            loadingSpinner.style.display = 'block';
+        }
+
+        function hideLoadingSpinner() {
+            loadingSpinner.style.display = 'none';
+        }
 
         // Helper function to render markdown content
         function renderMarkdown(contentId) {
@@ -133,6 +171,8 @@
         document.getElementById('search-form').querySelector('input[name="query"]').addEventListener('input', function() {
             clearTimeout(timer);
             timer = setTimeout(async function() {
+                showLoadingSpinner(); // Show spinner when fetching data
+
                 let queryValue = encodeURIComponent(document.getElementById('search-form').querySelector('input[name="query"]').value);
                 
                 // Fetch news results
@@ -151,6 +191,7 @@
                     renderMarkdown('actors-content');  // Parse and render markdown for actors
                 }
                 
+                hideLoadingSpinner(); // Hide spinner when data is loaded
             }, 500);
         });
     });

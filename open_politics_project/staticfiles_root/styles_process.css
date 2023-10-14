@@ -1,19 +1,18 @@
 /* FILEPATH: /opt/open-politics/open_politics_project/bt_thema/static/styles_process.css */
 body {
     margin: 0;
+
     font-family: 'Open Sans', sans-serif;
     background-color: black;
 }
 
 /* Site Header Styles */
 .site-header {
-    background-color: #333; /* Dark background for the header */
-    padding: 20px 0;        /* Space around content in the header */
-    text-align: center;     /* Centering header contents */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
-    position: sticky;       /* Makes header sticky at top */
-    top: 0;                 /* Position for the sticky header */
-    z-index: 1000;          /* Ensures header is above other content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70px;  /* or whatever height you prefer */
+    background-color: #333; /* or any background color that you want for the header */
 }
 
 .site-logo {
@@ -30,7 +29,6 @@ h1 {
     font-size: 24px;        /* Size of the title */
     margin: 0;              /* Removes default margin */
 }
-
 
 .top-class {
     display: flex;

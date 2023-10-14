@@ -11,6 +11,7 @@ import sys
 import requests
 import pandas as pd
 import logging
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -142,6 +143,33 @@ def stream_actors(request):
     
     return render(request, 'news/actors.html', {'actors': actors })
 
+
+
+# # Frontend rendering - News Summary
+# def stream_synopsis(request):
+#     print("stream_synopsis")
+#     query = request.GET.get('query', None)  # Get the query from the GET parameters
+
+#     if not query:  # Check if the query is provided
+#         return render(request, 'news/synopsis.html', {})
+
+#     # df = get_news_data(query)  # Fetch articles related to the query
+
+#     # synopsis = generate_synopsis(query, df)  # Generate the synopsis using OpenAI
+
+
+#     return render(request, 'news/synopsis.html', {'synopsis': 'synopsis'*50})
+
+# # Frontend rendering - Political Actors
+# def stream_actors(request):
+#     print("streaming actors")
+#     query = request.GET.get('query', None)
+
+#     # df = get_news_data(query)
+
+#     # actors = generate_actors(query, df)
+#     time.sleep(30)
+#     return render(request, 'news/actors.html', {'actors': 'actors'*50 })
 
 
 
