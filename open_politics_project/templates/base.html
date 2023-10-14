@@ -9,10 +9,14 @@
     <link rel="stylesheet" href="{% static 'styles_process.css' %}">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,900|Ubuntu&display=swap" rel="stylesheet">
     <!-- installing htmx via staticfiles-->
     <script src="{% static 'htmx/htmx.min.js' %}"></script>
+
+
+
     
   </head>
   <body>
@@ -43,31 +47,37 @@
 
 
 
-  <script>
-    document.body.addEventListener('htmx:afterOnLoad', function(event){
-        var response = event.detail.xhr.response;
-        var jsonResponse = JSON.parse(response);
-        var articles = jsonResponse.articles;
-        var statusDiv = document.getElementById('status');
-        var articlesList = document.getElementById('articles-list');
-        
-        // Clear previous articles
-        articlesList.innerHTML = '';
-    
-        if(articles.length === 0) {
-            statusDiv.innerText = 'No articles found';
-            return;
-        }
-        
-        statusDiv.innerText = 'Fetched articles:';
-        articles.forEach(function(article){
-            var listItem = document.createElement('li');
-            var link = document.createElement('a');
-            link.href = article.url;
-            link.innerText = article.title;
-            listItem.appendChild(link);
-            articlesList.appendChild(listItem);
-        });
-    });
-  </script> 
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          let timer;
+  
+          // Listener for search form
+          document.getElementById('search-form').querySelector('input[name="query"]').addEventListener('input', function() {
+              clearTimeout(timer);
+              timer = setTimeout(async function() {
+                  let queryValue = encodeURIComponent(document.getElementById('search-form').querySelector('input[name="query"]').value);
+                  
+                  // Fetch news results
+                  let newsResponse = await fetch('/news_synopsis/?query=' + queryValue);
+                  if (newsResponse.ok) {
+                      let newsMarkdown = await newsResponse.text();
+                      // Convert Markdown to HTML
+                      let newsHTML = marked(newsMarkdown);
+                      document.getElementById('news-results').innerHTML = newsHTML;
+                  }
+  
+                  // Fetch actors results
+                  let actorsResponse = await fetch('/news_actors/?query=' + queryValue);
+                  if (actorsResponse.ok) {
+                      let actorsMarkdown = await actorsResponse.text();
+                      // Convert Markdown to HTML
+                      let actorsHTML = marked(actorsMarkdown);
+                      document.getElementById('actors-results').innerHTML = actorsHTML;
+                  }
+                  
+              }, 500);
+          });
+      });
+  </script>
 </html>
+

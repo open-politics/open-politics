@@ -2,7 +2,6 @@
 {% load static %}
 {% block news_button %}
 
-<script src="https://unpkg.com/htmx.org"></script>
 
 <button style="color: white;" hx-get="/api/fetch_articles/" hx-trigger="click" hx-target="#results" hx-swap="outerHTML">
     Fetch Articles

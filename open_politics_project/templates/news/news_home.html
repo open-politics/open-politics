@@ -5,20 +5,21 @@
     /* Base styling */
     body {
         font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f7f7f7;
     }
 
     /* Container layout */
     .container {
-        display: grid;
-        grid-template-columns: repeat(16, 1fr);
-        grid-template-rows: auto 1fr;
-        justify-content: space-between;
-        align-items: baseline;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: start;
         height: 100vh;
+        background-image: url('https://source.unsplash.com/jQAk1lZL5Jk');
         background-size: cover;
         background-position: center;
-        padding: 3rem;
-
     }
 
     /* Glassy card effect */
@@ -27,32 +28,29 @@
         backdrop-filter: blur(10px);
         border-radius: 20px;
         padding: 2rem;
-        margin-top: 1rem;
+        margin: 1rem 0;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
     }
 
     /* Search container styles */
-    #search-container {
-        grid-column: 3 / 13;
-        grid-row: 2;
-        max-width: 100%;
-        display: flex;
-        flex-direction: column;
-        background-image: url('https://source.unsplash.com/jQAk1lZL5Jk');
-        align-items: center;
+    .search-container {
+        max-width: 600px;
         width: 100%;
+        padding: 1rem;
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        margin-top: 4em;
     }
 
     /* Form styles */
     form {
         display: flex;
-        align-items: center;
+        flex-direction: column;
         gap: 1rem;
-        width: 100%;
     }
 
     input[type="text"] {
-        flex: 1;
         padding: 0.5rem;
         border-radius: 10px;
         border: 1px solid rgba(0, 0, 0, 0.1);
@@ -65,66 +63,97 @@
     /* Results container */
     #results {
         margin-top: 1rem;
-        width: 80%;
+        max-height: 500px;
+        overflow-y: scroll;
         border-radius: 20px;
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.5s ease-in-out;
-        display: flex;
-        flex-direction: column;
-        justify-content: center; 
         padding: 2rem;
     }
 
-    #results.show {
-        max-height: 500px;
-        overflow: scroll;
-    }
-
     .search-title {
-        grid-column: 3 / 13;
-        grid-row: 1;
         text-align: center;
         color: white;
+        margin-top: 2em;
         padding-bottom: 1rem;
-
+        font-size: x-large;
     }
 
     h3 {
-        margin-bottom: 1rem;
-        margin-top: 0;
+        margin: 0;
     }
 
+
+    #news-results, #actors-results {
+    margin-bottom: 1.5rem;
+    }
+
+    #news-results h4, #actors-results h4 {
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+        padding-bottom: 0.5rem;
+    }
+
+    #news-results ul, #actors-results ul {
+        list-style: disc;
+        padding-left: 20px;
+    }
+
+    #news-results li, #actors-results li {
+        margin-bottom: 0.5rem;
+    }
 </style>
-
-
-
 <div class="container">
-    <h1 class="search-title"> Search News and get AI curated summaries </h1>
+    <div class="search-title">
+        <h3>Search News and Actors</h3>
+    </div>
 
-    <div id="search-container" class="glass-card">
-        <form hx-get="/news_synopsis/" hx-trigger="keyup delay:5000ms" hx-target="#results" hx-indicator="#loading" hx-swap-oob="true">
-            <input type="text" name="query" placeholder="Search news...">
-            <span id="loading">Loading...</span>
+    <div class="search-container">
+        <form id="search-form">
+            <input type="text" name="query" placeholder="Search...">
+            <span class="loading" id="loading">Loading...</span>
         </form>
         <div id="results" class="glass-card">
-
-            </div>
+            <div id="news-results"></div>
+            <div id="actors-results"></div>
         </div>
     </div>
-    <p>This will only return Test Synopsis*50 while in development</p>
 </div>
-
-
-
-
-
-
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.0/marked.min.js" integrity="sha512-4+zFvAejSGVlybiAKYyAz3KMjmbIT7I+wXgx190ZAsT19L2z8S4htBy1scR7CyP9pDKNSaolJMLedCigA/gFVg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
-    document.getElementById('results').addEventListener('htmx:afterSwap', function(){
-    this.classList.add('show');
-});
+    document.addEventListener('DOMContentLoaded', function() {
+        let timer;
+
+        // Helper function to render markdown content
+        function renderMarkdown(contentId) {
+            const content = document.getElementById(contentId);
+            content.innerHTML = marked.parse(content.textContent);  // Use marked.parse() here
+        }
+
+        // Listener for search form
+        document.getElementById('search-form').querySelector('input[name="query"]').addEventListener('input', function() {
+            clearTimeout(timer);
+            timer = setTimeout(async function() {
+                let queryValue = encodeURIComponent(document.getElementById('search-form').querySelector('input[name="query"]').value);
+                
+                // Fetch news results
+                let newsResponse = await fetch('/news_synopsis/?query=' + queryValue);
+                if (newsResponse.ok) {
+                    let newsHTML = await newsResponse.text();
+                    document.getElementById('news-results').innerHTML = newsHTML;
+                    renderMarkdown('synopsis-content');  // Parse and render markdown for synopsis
+                }
+
+                // Fetch actors results
+                let actorsResponse = await fetch('/news_actors/?query=' + queryValue);
+                if (actorsResponse.ok) {
+                    let actorsHTML = await actorsResponse.text();
+                    document.getElementById('actors-results').innerHTML = actorsHTML;
+                    renderMarkdown('actors-content');  // Parse and render markdown for actors
+                }
+                
+            }, 500);
+        });
+    });
 </script>
 
 {% endblock %}

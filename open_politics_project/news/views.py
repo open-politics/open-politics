@@ -4,32 +4,18 @@ from django.http import FileResponse
 from django.shortcuts import render
 from django.http import JsonResponse
 from news.api_calls import call_with_search_parameters
-
 import io
 import openai
 import os
 import sys
 import requests
 import pandas as pd
+import logging
 
+logger = logging.getLogger(__name__)
 
-def fetch_articles_api(request):
-    default_options = {
-        'country': 'de',
-        'q': 'Bundestag',
-        'pageSize': 50,
-        'page': 1
-    }
-    articles = call_with_search_parameters(default_options)  
-    article_list = [{'title': article['title'], 'url': article['url']} for article in articles]
-
-
-    # Save articles to DB (similar logic as the management command)
-
-    return JsonResponse({'status': 'success'})
-
-def test_button(request):
-    return render(request, "news/news_button.html")
+def news_home(request):
+    return render(request, "news/news_home.html")
 
 def news(request):
     return render(request, "news/news_home.html")
@@ -40,18 +26,9 @@ class ArticleListView(ListView):
     context_object_name = 'articles'
 
 
-def news_home(request):
-    return render(request, "news/news_home.html")
-
-
-
-def get_image(request):
-    image_url = visualize_entity_article_connections()
-    return render(request, 'image_template.html', {'image_url': image_url})
-
-
+# News API
 def get_news_data(query, pageSize=40, sources_choice=None):
-    print("fetching news data")
+    sources_choice = 'all'
     if sources_choice == 'all' or sources_choice is None:
         sources = None
     elif sources_choice == 'trusted':
@@ -70,6 +47,9 @@ def get_news_data(query, pageSize=40, sources_choice=None):
 
     response = requests.get(url, params=call_parameters, headers={'Authorization': f'Bearer {api_key}'})
 
+    # Initialize df as an empty DataFrame at the start
+    df = pd.DataFrame()
+
     if response.status_code == 200:
         json_data = response.json()
         if 'articles' in json_data:
@@ -83,19 +63,39 @@ def get_news_data(query, pageSize=40, sources_choice=None):
                 if not title or not content:
                     print(f"Warning: Missing title or content in article {article['title']}")
                     continue
-                # print(f"Source: {source}")
-                # print(f"Title: {title}")
-                # print(f"Content: {content}")
-                # print("-" * 50)  # Print a separator for better readability
-    print("news_fetched")
+    print(df)
     return df
 
-
+# OpenAI API - News Summary
 def generate_synopsis(topic, df):
     print("generate_synopsis")
-    template = "These following are the most important news articles about {topic} from the last 24 hours. Please provide a balanced synopsis of the topic and the related news"
-        # concentate articles into one string
-        
+    articles = []
+    for index, row in df.iterrows():
+        articles.append(row['title'])
+    articles = ' '.join(articles)
+
+
+
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    openai.api_key = OPENAI_API_KEY
+    if not OPENAI_API_KEY:
+        logger.error("OpenAI API Key not found!")
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages = [{"role": "system", "content": 'You are a political news journalist tasked with Named Entity Recognition and Entity linking tasks. You return only an bullet point list in markdown'},
+                    {"role": "user", "content": "These following are the articles about" + topic + "from the last 24 hours. Please give a short summary about what is important right now to know about this matter. No more than 10 sentences and just the plain answer." },
+                    {"role": "assistant", "content" : "Ok, show me the articles please" },
+                    {"role": "user", "content": "Here are the articles:\n" + articles }],
+        stream=False,
+                                                                                                        )
+    result = response.choices[0]['message']['content']
+    print("synopsis generatd")
+    print(len(result))
+    return result
+
+# OpenAI API - Political Actors
+def generate_actors(topic, df):
+    print("extracting actors") 
     articles = []
     for index, row in df.iterrows():
         articles.append(row['title'])
@@ -104,51 +104,43 @@ def generate_synopsis(topic, df):
 
     openai.api_key = os.getenv("OPENAI_API_KEY")
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages = [{"role": "system", "content": 'You are a political news journalist tasked with Named Entity Recognition and Entity linking tasks.'},
-                    {"role": "user", "content": "These following are the articles about" + topic + "from the last 24 hours. Please give a short summary about what is important right now to know about this matter. No more than 10 sentences and just the plain answer." },
+        model="gpt-4",
+        messages = [{"role": "system", "content": 'You are a political news journalist tasked with Named Entity Recognition and Entity linking tasks. You return only a numbered list in markdown'},
+                    {"role": "user", "content": "These following are the articles about" + topic + "from the last 24 hours. Please write out political actors relevant to this matter. No more than 5 actors and just the plain answer." },
                     {"role": "assistant", "content" : "Ok, show me the articles please" },
                     {"role": "user", "content": "Here are the articles:\n" + articles }],
         stream=False,
                                                                                                         )
     result = response.choices[0]['message']['content']
-    print("synopsis generated")
+    print("actors generated")
     print(len(result))
     return result
 
-
-# def stream_synopsis(request):
-#     print("stream_synopsis")
-#     query = request.GET.get('query', None)  # Get the query from the GET parameters
-
-#     if not query:  # Check if the query is provided
-#         return render(request, 'news/synopsis.html', {})
-
-#     df = get_news_data(query)  # Fetch articles related to the query
-
-#     synopsis = generate_synopsis(query, df)  # Generate the synopsis using OpenAI
-
-
-#     return render(request, 'news/synopsis.html', {'synopsis': synopsis})
-
-
-# Fake synpopsis to save costs
+# Frontend rendering - News Summary
 def stream_synopsis(request):
     print("stream_synopsis")
     query = request.GET.get('query', None)  # Get the query from the GET parameters
 
-    # if not query:  # Check if the query is provided
-    #     return render(request, 'news/news_home.html', {})
+    if not query:  # Check if the query is provided
+        return render(request, 'news/synopsis.html', {})
 
-    # df = get_news_data(query)  # Fetch articles related to the query
+    df = get_news_data(query)  # Fetch articles related to the query
 
-    # synopsis = generate_synopsis(query, df)  # Generate the synopsis using OpenAI
-
-
-    # return render(request, 'news/synopsis.html', {'synopsis': synopsis})
-    return render(request, 'news/synopsis.html', {'synopsis': 'Test synopsis'*50})
+    synopsis = generate_synopsis(query, df)  # Generate the synopsis using OpenAI
 
 
+    return render(request, 'news/synopsis.html', {'synopsis': synopsis})
+
+# Frontend rendering - Political Actors
+def stream_actors(request):
+    print("streaming actors")
+    query = request.GET.get('query', None)
+
+    df = get_news_data(query)
+
+    actors = generate_actors(query, df)
+    
+    return render(request, 'news/actors.html', {'actors': actors })
 
 
 
@@ -157,17 +149,45 @@ def stream_synopsis(request):
 
 
 
-# def stream_articles(request):
-#     print("stream_articles")
+
+''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Fake synpopsis to save costs
+# def stream_synopsis(request):
+#     print("stream_synopsis")
 #     query = request.GET.get('query', None)  # Get the query from the GET parameters
 
-#     if not query:  # Check if the query is provided
-#         return render(request, 'news/news_home.html', {})
+#     # if not query:  # Check if the query is provided
+#     #     return render(request, 'news/news_home.html', {})
 
-#     df = get_news_data(query)  # Fetch articles related to the query
+#     # df = get_news_data(query)  # Fetch articles related to the query
 
-#     #synopsis = generate_synopsis(query, df)  # Generate the synopsis using OpenAI
+#     # synopsis = generate_synopsis(query, df)  # Generate the synopsis using OpenAI
 
 
-#     #return render(request, 'news/news_home.html', {'synopsis': synopsis})
-#     return render(request, 'news/articles_list.html', {'articles': df})
+#     # return render(request, 'news/synopsis.html', {'synopsis': synopsis})
+#     return render(request, 'news/synopsis.html', {'synopsis': 'Test synopsis'*50})
+
+# Fake actors to save costs
+# def stream_actors(request):
+#     print("streaming actors")
+#     query = request.GET.get('query', None)
+
+#     # df = get_news_data(query)
+
+#     # actors = generate_actors(query, df)
+
+#     # return render(request, 'news/actors.html', {'actors': actors })
