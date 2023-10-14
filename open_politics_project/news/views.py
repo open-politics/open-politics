@@ -13,8 +13,6 @@ import requests
 import pandas as pd
 
 
-
-
 def fetch_articles_api(request):
     default_options = {
         'country': 'de',

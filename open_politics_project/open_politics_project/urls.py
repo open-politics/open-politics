@@ -27,7 +27,7 @@ from . import views as views
 
 
 urlpatterns = [
-    path('', views.home, name='home'),
+    path('', news_views.news_home, name='home'),
     path('admin/', admin.site.urls),
     path("", include("bt_thema.urls")),
     path("", include("news.urls")),
