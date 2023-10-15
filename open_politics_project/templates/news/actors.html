@@ -1,2 +1,14 @@
 <h3 style="font-weight: bold; color: chocolate;">Actors of the matters</h3>
-<div id="actors-content" style="color:aliceblue">{{ actors }}</div>
+{% for actor in actors %}
+    <div class="actor-card" style="color: gray; padding: 10px; margin: 5px; border: 1px solid gray; border-radius: 10px; transition: transform 0.2s, box-shadow 0.2s; /* animation effect */">
+        <h2>{{ actor.name }}</h2>
+        <p>{{ actor.summary|safe }}</p>
+    </div>
+{% endfor %}
+
+<style>
+    .actor-card:hover {
+        transform: scale(1.05); /* this enlarges the card a bit when hovered */
+        box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2); /* gives a subtle shadow */
+    }
+</style>

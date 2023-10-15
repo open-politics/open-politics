@@ -67,6 +67,39 @@ def get_news_data(query, pageSize=40, sources_choice=None):
     print(df)
     return df
 
+def generate_wikipedia_summaries(actors_string):
+    # Split the actors_string by newline characters and strip spaces
+    actors = [actor.strip() for actor in actors_string.split('\n') if actor.strip()]
+    
+    actor_summaries = []
+    
+    for actor in actors:
+        summary = get_wikipedia_summary(actor)
+        actor_summaries.append({
+            'name': actor,
+            'summary': summary
+        })
+
+    return actor_summaries
+
+# Wikipedia API
+def get_wikipedia_summary(actor_name):
+    endpoint = "https://en.wikipedia.org/w/api.php"
+    parameters = {
+        "action": "query",
+        "format": "json",
+        "prop": "extracts",
+        "exintro": True,
+        "titles": actor_name
+    }
+    
+    response = requests.get(endpoint, params=parameters)
+    data = response.json()
+
+    pages = data["query"]["pages"]
+    for page_id, page_content in pages.items():
+        return page_content.get("extract", "")
+
 # OpenAI API - News Summary
 def generate_synopsis(topic, df):
     print("generate_synopsis")
@@ -94,6 +127,16 @@ def generate_synopsis(topic, df):
     print(len(result))
     return result
 
+def parse_actors(actors_string):
+    # Split by newline
+    lines = actors_string.strip().split("\n")
+    
+    # Remove the number and dot prefix and strip extra spaces
+    parsed_actors = [line.split(". ", 1)[-1].strip() for line in lines]
+    
+    return parsed_actors
+
+
 # OpenAI API - Political Actors
 def generate_actors(topic, df):
     print("extracting actors") 
@@ -106,18 +149,21 @@ def generate_actors(topic, df):
     openai.api_key = os.getenv("OPENAI_API_KEY")
     response = openai.ChatCompletion.create(
         model="gpt-4",
-        messages = [{"role": "system", "content": 'You are a political news journalist tasked with Named Entity Recognition and Entity linking tasks. You return only a numbered list in markdown'},
+        messages = [{"role": "system", "content": 'You are a political news journalist tasked with Named Entity Recognition and Entity linking tasks. You return only a newline separated numbered list in markdown'},
                     {"role": "user", "content": "These following are the articles about" + topic + "from the last 24 hours. Please write out political actors relevant to this matter. No more than 5 actors and just the plain answer." },
                     {"role": "assistant", "content" : "Ok, show me the articles please" },
                     {"role": "user", "content": "Here are the articles:\n" + articles }],
         stream=False,
                                                                                                         )
     result = response.choices[0]['message']['content']
+    # Extracting actor names from markdown list
+
     print("actors generated")
     print(len(result))
     return result
 
-# Frontend rendering - News Summary
+
+#Frontend rendering - News Summary
 def stream_synopsis(request):
     print("stream_synopsis")
     query = request.GET.get('query', None)  # Get the query from the GET parameters
@@ -138,11 +184,23 @@ def stream_actors(request):
     query = request.GET.get('query', None)
 
     df = get_news_data(query)
-
-    actors = generate_actors(query, df)
+    raw_actors_md = generate_actors(query, df)
     
-    return render(request, 'news/actors.html', {'actors': actors })
+    # Parsing the markdown list to get plain actor names
+    parsed_actors = parse_actors(raw_actors_md)
 
+    actors_with_summaries = []
+
+    # Fetch Wikipedia summary for each actor
+    for actor in parsed_actors:
+        summary = get_wikipedia_summary(actor)
+        actor_data = {
+            'name': actor,
+            'summary': summary
+        }
+        actors_with_summaries.append(actor_data)
+
+    return render(request, 'news/actors.html', {'actors': actors_with_summaries})
 
 
 # # Frontend rendering - News Summary
@@ -158,64 +216,14 @@ def stream_actors(request):
 #     # synopsis = generate_synopsis(query, df)  # Generate the synopsis using OpenAI
 
 
-#     return render(request, 'news/synopsis.html', {'synopsis': 'synopsis'*50})
+#     return render(request, 'news/synopsis.html', {'synopsis': 'synopsis \n'*20})
 
 # # Frontend rendering - Political Actors
 # def stream_actors(request):
 #     print("streaming actors")
 #     query = request.GET.get('query', None)
 
-#     # df = get_news_data(query)
-
-#     # actors = generate_actors(query, df)
-#     time.sleep(30)
-#     return render(request, 'news/actors.html', {'actors': 'actors'*50 })
+#     actors = ['Hamas', 'Benjamin Netanyahu', 'Joe Biden', 'Sen. Ted Cruz', 'Hezbollah'] 
+#     return render(request, 'news/actors.html', {'actors': actors})
 
 
-
-
-
-
-
-
-''
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Fake synpopsis to save costs
-# def stream_synopsis(request):
-#     print("stream_synopsis")
-#     query = request.GET.get('query', None)  # Get the query from the GET parameters
-
-#     # if not query:  # Check if the query is provided
-#     #     return render(request, 'news/news_home.html', {})
-
-#     # df = get_news_data(query)  # Fetch articles related to the query
-
-#     # synopsis = generate_synopsis(query, df)  # Generate the synopsis using OpenAI
-
-
-#     # return render(request, 'news/synopsis.html', {'synopsis': synopsis})
-#     return render(request, 'news/synopsis.html', {'synopsis': 'Test synopsis'*50})
-
-# Fake actors to save costs
-# def stream_actors(request):
-#     print("streaming actors")
-#     query = request.GET.get('query', None)
-
-#     # df = get_news_data(query)
-
-#     # actors = generate_actors(query, df)
-
-#     # return render(request, 'news/actors.html', {'actors': actors })

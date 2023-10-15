@@ -16,10 +16,11 @@
         flex-direction: column;
         align-items: center;
         justify-content: start;
-        height: 100vh;
+        min-height: 100vh;
+        max-height: fit-content;
         background-image: url('https://source.unsplash.com/jQAk1lZL5Jk');
         background-size: cover;
-        background-position: center;
+        background-position: initial;
     }
 
     /* Glassy card effect */
@@ -140,8 +141,8 @@
             </div>
         </form>
         <div id="results" class="glass-card">
-            <div id="news-results"></div>
-            <div id="actors-results"></div>
+            <div class="glass-card" id="news-results"></div>
+            <div class="glass-card" id="actors-results"></div>
         </div>
     </div>
     </div>
