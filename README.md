@@ -2,6 +2,20 @@
 
 **Catchphrase:** Reducing politic's contextual overhead.
 
+## Table of Contents
+- [Why does this project exist?](#why-does-this-project-exist)
+- [Idea and Outline](#idea-and-outline)
+- [Tasks](#tasks)
+- [Data Science/ Code Challenges](#data-science-code-challenges)
+- [Journalistic Challenges](#journalistic-challenges)
+- [Quality Assurance](#quality-assurance)
+- [Frontend](#frontend)
+- [Backend](#backend)
+- [Usage](#usage)
+- [Necessary API Keys/ Environment Variables](#necessary-api-keys-environment-variables)
+- [Contributing](#contributing)
+- [Contact](#contact)
+
 # Why does this project exist?
 - All things regarding politics, be that news or legislative procedures and documents are hard to understand. Many people don't have the time to read through all the documents and news articles.
 - The goal of this project is to make political processes more accessible and understandable for everyone.
@@ -116,3 +130,15 @@ python manage.py runserver
 - NewsAPI API
 - OpenAI API
 - Huggingface Token
+
+## Contributing
+
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make, especially in the form of questions or proposals, are greatly appreciated.
+
+- If you have a question or proposal, please feel free to add it as an issue in the GitHub repository.
+- If you're looking to contribute directly to the code base, please approach via email so we can set up a team or arrange a discussion.
+
+
+## Contact
+
+For any inquiries, questions, or proposals, please feel free to reach out at jimvwagner@googlemail.com. I'm open to discussions and collaborations!
