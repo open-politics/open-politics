@@ -6,7 +6,7 @@
 - All things regarding politics, be that news or legislative procedures and documents are hard to understand. Many people don't have the time to read through all the documents and news articles.
 - The goal of this project is to make political processes more accessible and understandable for everyone.
 
-## Idea and Outline
+# Idea and Outline
 This project aims to tackle two distinct problems:
 
 1. Navigating political situations, legislative documents, and political processes is difficult and time-consuming.
