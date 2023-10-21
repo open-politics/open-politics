@@ -85,14 +85,18 @@ This project aims to tackle two distinct problems:
 
 
 ## Referenced Patterns/Papers
-- Reflexion
-- Tree of Thought
-- Voyager
+- Reflexion [https://arxiv.org/abs/2303.11366]
+- Tree of Thought [https://arxiv.org/abs/2305.10601]
+- Chain of Thought [https://arxiv.org/abs/2201.11903]
+- Voyager [https://arxiv.org/abs/2305.16291]
 
- with GUI
+
 
 ## Usage (coming soon):
 - Clone the repo
+```
+git clone https://github.com/JimVincentW/open-politics.git
+```
 - Install dependencies with
 ```
 pip install -r requirements.txt
