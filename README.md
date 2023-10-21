@@ -1,6 +1,6 @@
 # 🚧 UNDER CONSTRUCTION 🚧
 
-**Catchphrase:** Reducing politic's contextual overhead.
+**Catchphrase:** Reducing politics contextual overhead.
 
 ## Table of Contents
 - [Why does this project exist?](#why-does-this-project-exist)
