@@ -90,6 +90,7 @@ This project aims to tackle two distinct problems:
 
 ### Database 
 - Vector Databases
+- SQLite (for current scale)
 - Neo4js
 
 ## Patterns & Tools of Analysis for LLMs
