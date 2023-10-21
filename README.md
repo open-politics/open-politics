@@ -49,7 +49,7 @@ This project aims to tackle two distinct problems:
 
 
 
-## Frontend
+# Frontend
 
 ### Vision
 ![Open Politics Vision](assets/images/open-politics-website-vision.png)
@@ -57,7 +57,7 @@ This project aims to tackle two distinct problems:
 - The frontend rendering and server communication is largely built on htmx features and tries to stay within the realm of HTML and CSS and Hyperstate Media, calling assets asynchronously.
 
 
-## Backend
+# Backend
 
 ### Django
 
