@@ -1,6 +1,6 @@
 # 🚧 UNDER CONSTRUCTION 🚧
 
-**Catchphrase:** Reducing politic's conteextual overhead.
+**Catchphrase:** Reducing politic's contextual overhead.
 
 # Why does this project exist?
 - All things regarding politics, be that news or legislative procedures and documents are hard to understand. Many people don't have the time to read through all the documents and news articles.
@@ -41,7 +41,7 @@ This project aims to tackle two distinct problems:
 ## Journalistic Challenges
 - Balanced News Sources
 - Fact-checking
-- Interdependence of news sourcs
+- Interdependence of news sources
 - Interdependence of summaries
 
 ## Quality Assurance
@@ -102,11 +102,11 @@ git clone https://github.com/JimVincentW/open-politics.git
 pip install -r requirements.txt
 ```
 - Run the Django server
-''''
+```
 python manage.py makemigrations
 python manage.py migrate
 python manage.py runserver
-''''
+```
 - Connect to the frontend (open 127.0.0.1:8000 in your browser)
 - Run the LLM agent (query the API)
 
