@@ -12,12 +12,15 @@ This project aims to tackle two distinct problems:
 1. Navigating political situations, legislative documents, and political processes is difficult and time-consuming.
 2. Interacting with this data is often limited to a few experts.
 
-**Solution Component 1**
-A representation of political news and thematic complexes and their related documents and news. Offering summarisation for a give topic from the news, highlighting actors and interests.
-Various NLP techniques including LLMs provide a summarised view of the most relevant information.
-
-**Solution Component 2**
-A platform where political documents (e.g. the Bundestag) are parsed and analysed by LLMs. The LLMs are instructed to identify and extract relevant information from the documents. The extracted information is then used to generate a summary of the document and related information.
+**Solution Components:**
+- News (Summarisation)
+- Actors & Interests (Matrix)
+- Background (filling the training cut-off)
+- Hard Data Views (%s, numbers, etc.)
+- Timeline View (of processes, events, and news)
+- Graph View (of actors, interests, and processes)
+- Chatbot (Q&A)
+- Outlook (generative)
 
 
 ## Tasks
@@ -44,6 +47,12 @@ A platform where political documents (e.g. the Bundestag) are parsed and analyse
 
 
 ## Frontend
+
+### Vision
+![Open Politics Vision](assets/images/open-politics-website-vision.png)
+
+
+
 - The frontend rendering and server communication is largely built on htmx features and tries to stay within the realm of HTML and CSS and Hyperstate Media, calling assets asynchronously.
 - Long-term wise Component 1 & 2 are complementary, for now they serve independent purposes.
 - Component 1 offers a view of a thematic news complex, planned are graph views, a timeline, and a actor/interests matrix.
