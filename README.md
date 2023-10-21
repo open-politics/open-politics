@@ -81,7 +81,7 @@ This project aims to tackle two distinct problems:
 ### Langchain
 - Each component requires different solutions
 - - Langchain teams, agents, and chains are used to deliver rich and relevant information.
-- - Elaborate processes are done with tree tree-of-thought, chain-of-thought and reflextion (see papers).
+- - Elaborate processes are done with tree tree-of-thought, chain-of-thought and reflexion (see papers).
 - - Some tools require automatic code generation (e.g., for the graph or timeline view).
 - - Some tools require a more interactive approach (e.g., for the chatbot).
 - Sets of instructions are used to generate the output.
