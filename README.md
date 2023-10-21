@@ -83,7 +83,7 @@ This project aims to tackle two distinct problems:
 - - Langchain teams, agents, and chains are used to deliver rich and relevant information.
 - - Elaborate processes are done with tree tree-of-thought, chain-of-thought and reflextion (see papers).
 - - Some tools require automatic code generation (e.g., for the graph or timeline view).
-- Parses the document structure (e.g., bold text, headlines, lists).
+- - Some tools require a more interactive approach (e.g., for the chatbot).
 - Sets of instructions are used to generate the output.
 - Sets of instructions and sets of data are retrievable via Vecor Storage Querying (e.g., Chroma or Pinecone).
 
