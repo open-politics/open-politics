@@ -142,3 +142,6 @@ Contributions are what make the open-source community such an amazing place to l
 ## Contact
 
 For any inquiries, questions, or proposals, please feel free to reach out at jimvwagner@googlemail.com. I'm open to discussions and collaborations!
+
+## License
+- [MIT](https://choosealicense.com/licenses/mit/)
