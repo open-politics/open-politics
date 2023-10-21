@@ -85,10 +85,10 @@ This project aims to tackle two distinct problems:
 
 
 ## Referenced Patterns/Papers
-- Reflexion [https://arxiv.org/abs/2303.11366]
-- Tree of Thought [https://arxiv.org/abs/2305.10601]
-- Chain of Thought [https://arxiv.org/abs/2201.11903]
-- Voyager [https://arxiv.org/abs/2305.16291]
+- [Reflexion](https://arxiv.org/abs/2303.11366)
+- [Tree of Thought](https://arxiv.org/abs/2305.10601)
+- [Chain of Thought](https://arxiv.org/abs/2201.11903)
+- [Voyager](https://arxiv.org/abs/2305.16291)
 
 
 
