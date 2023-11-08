@@ -79,6 +79,12 @@ This project aims to tackle two distinct problems:
 
 
 ### Langchain
+08.11 Update after OpenAI DevDay:
+- the available context length is now 128k tokens, which is a huge improvement
+- the ecosystem is now heavily evolving on agents-based sytems
+- our purpose will need multple agents, as we need to address different tasks
+
+
 - Each component requires different solutions
 - - Langchain teams, agents, and chains are used to deliver rich and relevant information.
 - - Elaborate processes are done with tree tree-of-thought, chain-of-thought and reflexion (see papers).
