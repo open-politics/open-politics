@@ -2,152 +2,188 @@
 {% load static %}
 {% block news_home %}
 <style>
-    /* Base styling */
     body {
-        font-family: Arial, sans-serif;
+        font-family: 'Poppins', sans-serif;
         margin: 0;
         padding: 0;
-        background-color: #f7f7f7;
+        background-color: #121212; /* Dark background */
+        color: #ffffff; /* Light text */
+        filter: url(#grainy-effect); /* Apply grainy effect */
     }
-
-    /* Container layout */
+    
+    /* Container Layout */
     .container {
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: start;
+        flex-wrap: wrap; /* Ensure wrapping on smaller screens */
         min-height: 100vh;
-        max-height: fit-content;
-        background-image: url('https://source.unsplash.com/jQAk1lZL5Jk');
-        background-size: cover;
-        background-position: initial;
+        background-image: linear-gradient(to right bottom, #6dd5ed, #2193b0);
+        color: #ffffff;
+        padding: 20px; /* Add some padding */
+        box-sizing: border-box; /* Include padding in width calculation */
+        /* space evenly horizontally */
+        justify-content: space-evenly;
+        /* space evenly vertically */
+        align-items: center;
+        
+    }
+    /* Settings Form Column */
+
+    .docker {
+        background-color: rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+        display: flex;
+        height: 50%%;
+        width: auto;
     }
 
-    /* Glassy card effect */
-    .glass-card {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        padding: 2rem;
-        margin: 1rem 0;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
-    }
-
-    /* Search container styles */
-    .search-container {
-        max-width: 600px;
+    
+    .agent-form {
         width: 100%;
-        padding: 1rem;
-        text-align: center;
-        background-color: rgba(255, 255, 255, 0.2);
-        border-radius: 20px;
-        margin-top: 4em;
+        height: 100%;
+        max-width: 600px; /* Limit width on larger screens */
+    }
+    .main-content {
+        flex-grow: 1; /* Allow to grow to fill remaining space */
+        padding: 20px;
+        box-sizing: border-box; /* Include padding in width calculation */
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-left: 10px; /* Ensure there's space between the settings and content */
+        }
+
+
+
+    /* Glassmorphism Effect */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        padding: 20px;
+        width: auto;
+        margin: 10px 0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsive grid with minimum size for items */
+        grid-gap: 20px; /* Space between grid items */
+        padding: 20px; /* Padding around the entire grid */
+        background-color: #121212; /* Match the body background */
+    }
+    .grid-item {
+        background: #1e1e1e; /* Slightly lighter than the body for contrast */
+        border-radius: 10px; /* Rounded corners */
+        padding: 20px; /* Padding inside each grid item */
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+        transition: transform 0.2s; /* Smooth transition for interactions */
     }
 
-    /* Form styles */
-    form {
+    
+    .grid-item:hover {
+        transform: translateY(-5px); /* Slight raise effect on hover */
+    }
+    /* Settings Form and Main Content */
+    .settings-form {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(5px);
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        margin: 0 auto; /* Center the form in its container */
+        width: 90%; /* Give some space from the container */
+        max-width: 500px; /* Maximum width of the form */
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: 10px; /* Space between child elements */
+        transition: box-shadow 0.3s ease; /* Smooth shadow transition */
+        height: calc(100% - 40px); /* Adjust height automatically */
     }
-
-    input[type="text"] {
-        padding: 0.5rem;
+    .settings-form:hover {
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Slightly larger shadow on hover */
+    }
+    
+    /* Form Elements Styling */
+    .agent_runner {
         border-radius: 10px;
-        border: 1px solid rgba(0, 0, 0, 0.1);
+        margin: 0 auto; /* Center the form in its container */
+
+        height: 100%;
+        width: 100%%;
+        position: relative;
     }
 
-    #loading {
-        display: none;
+    input[type="text"], .form-check-input {
+        border: none;
+        {% comment %} box-shadow: inset 2px 2px 16px #000000, /* For the inset top and left shadow */
+                    inset -5px -5px 63px #000000; /* For the inset bottom and right highlight */ {% endcomment %}
+        border-radius: 10px; /* Rounded corners for the inputs */
+        padding: 10px;
+        margin: 5px 0; /* Spacing between form elements */
+        width: calc(100% - 20px); /* Adjust width to account for padding */
+    }
+    h3, label, button {
+        color: #ffffff; /* Ensuring all text is light-colored */
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Soft shadow for text for better readability */
     }
 
-    /* Results container */
-    #results {
-        margin-top: 1rem;
-        max-height: 500px;
-        overflow-y: scroll;
-        border-radius: 20px;
-        padding: 2rem;
-    }
-
-    .search-title {
-        text-align: center;
+    button {
+        background: rgba(0, 255, 0, 0.30);
+        border: none;
+        {% comment %} box-shadow: 2px 2px 5px #ffffff, /* For the outset top and left shadow */
+                    -5px -5px 10px #ffffff; /* For the outset bottom and right highlight */ {% endcomment %}
+        border-radius: 10px; /* Rounded corners for the button */
         color: white;
-        margin-top: 2em;
-        padding-bottom: 1rem;
-        font-size: x-large;
+        padding: 10px;
+        margin: 5px 0; /* Spacing between form elements */
+        width: calc(100% - 20px); /* Adjust width to account for padding */
+        cursor: pointer;
+        transition: background-color 0.3s ease; /* Smooth transition for hover effect */
     }
-
-    h3 {
-        margin: 0;
+    
+    button:hover {
+        background-color: #107c8c; /* Darken button on hover */
     }
-
-
-    #news-results, #actors-results {
-    margin-bottom: 1.5rem;
-    text-align: left;
+    .form-check {
+        display: flex;
+        align-items: center; /* Align checkbox and label */
+        gap: 5px; /* Space between checkbox and label */
     }
-
-    #news-results h4, #actors-results h4 {
-        font-size: 1.4rem;
-        margin-bottom: 1rem;
-        border-bottom: 2px solid rgba(255, 255, 255, 0.5);
-        padding-bottom: 0.5rem;
+    input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
     }
-
-    #news-results ul, #actors-results ul {
-        list-style: disc;
-        padding-left: 20px;
-    }
-
-    #news-results li, #actors-results li {
-        margin-bottom: 0.5rem;
-    }
-
-    .giphy-embed {
-    border-radius: 500px;
-    margin: 0 auto;
-    display: block;
-    max-width: 100%; /* ensures the image doesn't exceed its container's width */
-    }
-
-    .loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    color: white;
-    height: 100%;    /* Add this */
-    width: 100%;     /* Add this */
-    }
+    
+    {% comment %} /* Responsive Design */
+    @media (max-width: 768px) {
+        .settings-form, .main-content {
+            flex-basis: 100%;
+            max-width: 100%; /* Full width on small screens */
+            margin-right: 0; /* Remove margin for settings form */
+            margin-left: 0; /* Remove margin for main content */
+        }
+    } {% endcomment %}
+ 
+   
 </style>
-<div class="container">
-    <div class="search-title">
-        <h3>Search News and Actors</h3>
-    </div>
+{% include 'news/hero_tools.html' %}
+<body>
+ 
+    
+    
+    <div class="container">
+   
 
-    <div class="search-container">
-        <form id="search-form">
-            <input type="text" name="query" placeholder="Search...">
-            <div class="loading" id="loading" style="display: none;">
-                <div style="width: auto">
-                    <img src="{% static 'media/spinner.gif' %}" width="auto" height="480" frameborder="0" class="giphy-embed" allowfullscreen></img>
-                </div>
-                <div style="margin-top: 20px; color: black; font-weight: bold;">
-                    Thinking...
-                </div>
+ 
+</body>
 
-            </div>
-        </form>
-        <div id="results" class="glass-card">
-            <div class="glass-card" id="news-results"></div>
-            <div class="glass-card" id="actors-results"></div>
-        </div>
-    </div>
-    </div>
-</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.0/marked.min.js" integrity="sha512-4+zFvAejSGVlybiAKYyAz3KMjmbIT7I+wXgx190ZAsT19L2z8S4htBy1scR7CyP9pDKNSaolJMLedCigA/gFVg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<!-- Include HTMX -->
+<script src="https://unpkg.com/htmx.org"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         let timer;
@@ -195,7 +231,19 @@
                 hideLoadingSpinner(); // Hide spinner when data is loaded
             }, 500);
         });
+
+        // Handle the streamed response
+        document.body.addEventListener('htmx:afterOnLoad', function(event) {
+            let content = event.detail.value;
+            // Update the DOM with the streamed content
+            document.getElementById('streamed-results').innerHTML += content;
+        });
+    });
+    document.body.addEventListener('htmx:configRequest', function(event) {
+        var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        event.detail.headers['X-CSRFToken'] = csrfToken;
     });
 </script>
 
 {% endblock %}
+
