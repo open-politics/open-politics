@@ -2,6 +2,14 @@
 
 **Catchphrase:** Reducing politics contextual overhead.
 
+This project is currently in development and the mission and vision statements will soon be released. 
+
+Please contact me if you are interested in providing help.
+Currently needed:
+- Data Scraper Modules 
+- Prompt Engineering suggestions
+- Networking 
+
 ## Table of Contents
 - [Why does this project exist?](#why-does-this-project-exist)
 - [Idea and Outline](#idea-and-outline)
