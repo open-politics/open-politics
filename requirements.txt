@@ -9,3 +9,4 @@ huggingface
 transformers
 networkx
 matplotlib
+celery
