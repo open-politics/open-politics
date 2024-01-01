@@ -11,6 +11,11 @@ class NewsSource(models.Model):
     language = models.CharField(max_length=255, null=True, blank=True)
     country = models.CharField(max_length=255, null=True, blank=True)
     
+class Article(models.Model):
+    url = models.URLField(unique=True)
+    headline = models.TextField()
+    content = models.TextField()
+    source = models.CharField(max_length=255)
 
 class NewsArticle(models.Model):
     source = models.ForeignKey(NewsSource, on_delete=models.CASCADE)
@@ -24,3 +29,24 @@ class NewsArticle(models.Model):
 
     def __str__(self):
         return self.title
+
+class Conversation(models.Model): 
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    input_text = models.TextField()
+    intermediate_output = models.TextField(blank=True)
+    final_output = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class ConversationResponse(models.Model): 
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE)
+    response_text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class ConversationResponseVote(models.Model):
+    conversation_response = models.ForeignKey(ConversationResponse, on_delete=models.CASCADE)
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    vote = models.IntegerField() # 1 for upvote, -1 for downvote
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

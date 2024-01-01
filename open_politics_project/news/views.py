@@ -1,4 +1,16 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent.parent / 'test_scripts'))
+
 from news.models import NewsArticle, NewsSource
+from django.http import StreamingHttpResponse
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts import ChatPromptTemplate
+from langchain.schema.output_parser import StrOutputParser
+from langchain.schema import SystemMessage, ChatMessage
+from langchain.schema.runnable import RunnableParallel, RunnablePassthrough
+
+from langchain.callbacks.base import BaseCallbackHandler
 from django.views.generic import ListView
 from django.http import FileResponse
 from django.shortcuts import render
@@ -12,14 +24,24 @@ import requests
 import pandas as pd
 import logging
 import time
+from queue import Queue
+import threading
+from django.http import StreamingHttpResponse
+from django.views.decorators.csrf import csrf_exempt
+
 
 logger = logging.getLogger(__name__)
 
+
 def news_home(request):
-    return render(request, "news/news_home.html")
+    return render(request, "news/news_home.html", {'range_20': range(20)})
+
 
 def news(request):
-    return render(request, "news/news_home.html")
+    return render(request, "news/news_home.html", {'range_20': range(20)})
+
+def tools(request):
+    return render(request, "news/hero_tools.html")
 
 class ArticleListView(ListView):
     model = NewsArticle
@@ -32,44 +54,52 @@ class ArticleListView(ListView):
 ## Helper functions
 
 # News from the last 24 hours
-def get_news_data(query, pageSize=40, sources_choice=None):
-    sources_choice = 'all'
-    if sources_choice == 'all' or sources_choice is None:
-        sources = None
-    elif sources_choice == 'trusted':
-        sources = 'bbc-news, the-wall-street-journal, the-washington-post, the-new-york-times, the-hill, the-guardian-uk, politico, al-jazeera-english, dw'
+# def get_news_data(query, pageSize=40, sources_choice=None):
+#     sources_choice = 'all'
+#     if sources_choice == 'all' or sources_choice is None:
+#         sources = None
+#     elif sources_choice == 'trusted':
+#         sources = 'bbc-news, the-wall-street-journal, the-washington-post, the-new-york-times, the-hill, the-guardian-uk, politico, al-jazeera-english, dw'
     
-    api_key = os.environ.get('NEWS_API_KEY')
-    url = 'https://newsapi.org/v2/top-headlines'
+#     api_key = os.environ.get('NEWS_API_KEY')
+#     url = 'https://newsapi.org/v2/top-headlines'
 
-    call_parameters = {
-        'q': query,
-        'pageSize': pageSize,
-        'sources': sources
-    }
-    # Filter out None values to prevent sending empty parameters
-    call_parameters = {k: v for k, v in call_parameters.items() if v is not None}
+#     call_parameters = {
+#         'q': query,
+#         'pageSize': pageSize,
+#         'sources': sources
+#     }
+#     # Filter out None values to prevent sending empty parameters
+#     call_parameters = {k: v for k, v in call_parameters.items() if v is not None}
 
-    response = requests.get(url, params=call_parameters, headers={'Authorization': f'Bearer {api_key}'})
+#     response = requests.get(url, params=call_parameters, headers={'Authorization': f'Bearer {api_key}'})
 
-    # Initialize df as an empty DataFrame at the start
-    df = pd.DataFrame()
+#     # Initialize df as an empty DataFrame at the start
+#     df = pd.DataFrame()
 
-    if response.status_code == 200:
-        json_data = response.json()
-        if 'articles' in json_data:
-            articles = json_data['articles']
-            df = pd.DataFrame(articles, columns=['source', 'author', 'title', 'description', 'url', 'urlToImage', 'publishedAt', 'content'])
+#     if response.status_code == 200:
+#         json_data = response.json()
+#         if 'articles' in json_data:
+#             articles = json_data['articles']
+#             df = pd.DataFrame(articles, columns=['source', 'author', 'title', 'description', 'url', 'urlToImage', 'publishedAt', 'content'])
             
-            for article in articles:
-                source = article.get('source', {}).get('name', None)
-                title = article.get('title')
-                content = article.get('content')
-                if not title or not content:
-                    print(f"Warning: Missing title or content in article {article['title']}")
-                    continue
-    print(df)
-    return df
+#             for article in articles:
+#                 source = article.get('source', {}).get('name', None)
+#                 title = article.get('title')
+#                 content = article.get('content')
+#                 if not title or not content:
+#                     print(f"Warning: Missing title or content in article {article['title']}")
+#                     continue
+#     print(df)
+#     return df
+from django.shortcuts import render
+from test_scripts.vector_stocks import get_news_data
+
+def get_news_data_view(request):
+    if request.method == 'POST':
+        query = request.POST.get('query')
+        news_data = get_news_data(query)
+        return render(request, 'news_data.html', {'news_data': news_data})
 
 # Helper function to generate a list of Wikipedia summaries for a list of actors
 def generate_wikipedia_summaries(actors_string):
@@ -84,6 +114,7 @@ def generate_wikipedia_summaries(actors_string):
             'name': actor,
             'summary': summary
         })
+
 
     return actor_summaries
 
@@ -105,7 +136,49 @@ def get_wikipedia_summary(actor_name):
     for page_id, page_content in pages.items():
         return page_content.get("extract", "")
 
-# Helper function to parse the markdown list of actors
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent.parent / 'test_scripts'))
+
+from django.http import JsonResponse
+
+from test_scripts.chain_1 import extract_news_content
+
+def wikipedia_api(request):
+    if request.method == 'POST':
+        wikipedia_query = request.POST.get('wikipedia_query')
+        if wikipedia_query is None:
+            return JsonResponse({'error': 'No Wikipedia query provided'})
+
+        # This line was changed from get_wikipedia_content to extract_news_content 
+        result = extract_news_content(wikipedia_query)
+
+        # Check if it's an htmx request
+        if 'HX-Request' in request.headers:
+            return render(request, 'news/wikipedia_result.html', {'result': result})
+        
+        return JsonResponse({'result': result})
+    else:
+        return JsonResponse({'error': 'Invalid request method'})
+
+
+def ner_api(request):
+    if request.method == 'POST':
+        ner_query = request.POST.get('ner_query')
+        if ner_query is None:
+            return JsonResponse({'error': 'No NER query provided'})
+
+        result = extract_news_content(ner_query)
+
+        # Check if it's an htmx request
+        if 'HX-Request' in request.headers:
+            return render(request, 'news/ner_result.html', {'result': result})
+        
+        return JsonResponse({'result': result})
+    else:
+        return JsonResponse({'error': 'Invalid request method'})
+    
+
 def parse_actors(actors_string):
     # Split by newline
     lines = actors_string.strip().split("\n")
@@ -146,9 +219,6 @@ def generate_synopsis(topic, df):
     print("synopsis generatd")
     print(len(result))
     return result
-
-
-
 
 
 # OpenAI API - Political Actors
@@ -224,6 +294,42 @@ def stream_actors(request):
 
     return render(request, 'news/actors.html', {'actors': actors_with_summaries})
 
+class CustomStreamingCallbackHandler(BaseCallbackHandler):
+    def __init__(self, queue):
+        super().__init__()
+        self.queue = queue
+
+    def on_llm_new_token(self, token: str, **kwargs) -> None:
+        self.queue.put(token)
+
+def openai_response_generator(queue, input_text):
+    # Initialize the custom callback handler with the queue
+    custom_handler = CustomStreamingCallbackHandler(queue)
+
+    # Initialize ChatOpenAI with the custom handler
+    llm = ChatOpenAI(
+        model_name="gpt-4-1106-preview",
+        streaming=True,
+        callback_manager=custom_handler
+    )
+
+
+def query(request):
+    if request.method == 'POST':
+        input_text = request.POST.get('input_text', '')
+        queue = Queue()
+
+        # Start the thread for processing
+        task = threading.Thread(target=openai_response_generator, args=(queue, input_text))
+        task.start()
+
+        # Streaming response setup
+        def generate_stream(q):
+            while True:  # Implement a condition to break this loop as needed
+                stream = q.get()
+                yield stream
+
+        return StreamingHttpResponse(generate_stream(queue), content_type="text/event-stream")
 
 
 
