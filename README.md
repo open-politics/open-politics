@@ -8,7 +8,7 @@ Please contact me if you are interested in providing help.
 Currently needed:
 - Data Scraper Modules 
 - Prompt Engineering suggestions
-- Networking 
+- Networking & Marketing
 
 ## Table of Contents
 - [Why does this project exist?](#why-does-this-project-exist)
