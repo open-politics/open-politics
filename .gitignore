@@ -5,3 +5,4 @@ __pycache__
 .env
 .local_restart_script.sh
 .dip-openapi.yaml
+open_politics_project/test_scripts/
