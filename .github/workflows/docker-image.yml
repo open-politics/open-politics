@@ -37,6 +37,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            git config --global --add safe.directory /opt/open-politics
             cd /opt/open-politics/  
             git pull
             docker-compose down
