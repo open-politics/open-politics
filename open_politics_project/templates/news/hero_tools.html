@@ -33,53 +33,53 @@
     font-family: "Gil Sans", sans-serif; /* Use Gil Sans as the font */
   }
   
-.grid-item.valtracker > * {
-    color: black; /* Change this to any color you want */
+  .grid-item.valtracker > * {
+      color: black; /* Change this to any color you want */
+      display: flex;
+      flex-direction: row;
+      background-clip: text;
+      background-image: linear-gradient(90deg, red, blue);
+      font-size: 22px;
+  }
+
+  .grid-item.github {
     display: flex;
-    flex-direction: row;
-    background-clip: text;
-    background-image: linear-gradient(90deg, red, blue);
-    font-size: 22px;
-}
+    flex-direction: column; /* Stacks children vertically */
+    justify-content: center; /* Centers children vertically */
+    align-items: center;  /* Centers children horizontally */
+    /* The rest of your styles */
+  }
 
-.grid-item.github {
-  display: flex;
-  flex-direction: column; /* Stacks children vertically */
-  justify-content: center; /* Centers children vertically */
-  align-items: center;  /* Centers children horizontally */
-  /* The rest of your styles */
-}
+  .search-form {
+    display: flex;        /* Enables flexbox */
+    justify-content: center; /* Centers children horizontally */
+    align-items: center;  /* Centers children vertically */
+    width: 100%;          /* Takes full width of the parent */
+    margin-top: 20px;     /* Add space on top if needed */
+  }
 
-.search-form {
-  display: flex;        /* Enables flexbox */
-  justify-content: center; /* Centers children horizontally */
-  align-items: center;  /* Centers children vertically */
-  width: 100%;          /* Takes full width of the parent */
-  margin-top: 20px;     /* Add space on top if needed */
-}
+  .search-form input {
+    width: 100%;          /* Takes full width of the parent */
+    height: 40px;         /* Specify height */
+    padding: 0 10px;      /* Adds some padding to the left and right */
+    border: 1px solid #ccc; /* Add a gray border */
+    border-radius: 5px;   /* Rounded corners */
+    font-size: 16px;      /* Specify font size */
+    outline: none;        /* Removes the blue outline */
+  }
 
-.search-form input {
-  width: 100%;          /* Takes full width of the parent */
-  height: 40px;         /* Specify height */
-  padding: 0 10px;      /* Adds some padding to the left and right */
-  border: 1px solid #ccc; /* Add a gray border */
-  border-radius: 5px;   /* Rounded corners */
-  font-size: 16px;      /* Specify font size */
-  outline: none;        /* Removes the blue outline */
-}
-
-.search-form button {
-  height: 40px;         /* Specify height */
-  width: 40px;          /* Specify width */
-  border: none;         /* Removes borders */
-  background-color: #333; /* Specify background color */
-  color: white;         /* Specify text color */
-  font-size: 16px;      /* Specify font size */
-  cursor: pointer;      /* Change mouse pointer on hover */
-  outline: none;        /* Removes the blue outline */
-  border-radius: 5px;   /* Rounded corners */
-  margin-left: -40px;   /* Negative margin to pull the button left */
-}
+  .search-form button {
+    height: 40px;         /* Specify height */
+    width: 40px;          /* Specify width */
+    border: none;         /* Removes borders */
+    background-color: #333; /* Specify background color */
+    color: white;         /* Specify text color */
+    font-size: 16px;      /* Specify font size */
+    cursor: pointer;      /* Change mouse pointer on hover */
+    outline: none;        /* Removes the blue outline */
+    border-radius: 5px;   /* Rounded corners */
+    margin-left: -40px;   /* Negative margin to pull the button left */
+  }
 
 
 
@@ -128,6 +128,39 @@
 </style>
 
 <section class="section">
+  
+  <div class="grid-item valtracker">
+    <h2> Welcome </h2>
+    <h3> To Open Politics </h3>
+    <p> A place to learn about the political process and the people who make it happen. </p>
+    <p> Click on the icons below to learn more about the different aspects of the political process. </p>
+    <p> Click on the maximize button to learn more about a specific topic. </p>
+    <span> If you have used the tool before be welcome to use the search bar to find a specific topic. </span>
+    <span> <i class="fas fa-arrow-down"></i> </span>
+    <h1> Please note: this project is not online. </h1>
+    <h3> This is just a temporary staging demo. </h3>
+    <h3> Please research the code or read the readme for more information. </h3>
+    <a href="https://github.com/JimVincentW/open-politics">GitHub Repository</a>
+    <button class="special-maximize-button">
+      <i class="fas fa-expand"></i> 
+    </button>
+    <button class="special-minimize-button">
+      <i class="fas fa-compress"></i> 
+    </button>
+  </div>
+  <div class="grid-item github">
+    <h1> Search Actors </h1>
+    <h3> Research an arbitrary question into the news </h3>
+    <p> We will scrape the news and retrieve the articles most relevant to your question. </p>
+    <p> Afterwards we will perform various Entitiy Recognition tasks to find entitites. We will filter the list a bit and voila! </p>
+    <p> If you want to learn more about the process click on the maximize button or check our code on how we filter (The code will be annotated for easy understanding) </p>
+    <form class="search-form" hx-post="" hx-target="#search-results">
+      <input type="text" name="search" placeholder="Search..">
+      <button type="submit"> <i class="fas fa-search" style='position: middle;'></i> </button>
+  </div>
+  <div class="grid-item">
+   
+  </div>
   <div class="grid-container">
     <div class="grid-item valtracker">
       <h2> Welcome </h2>
