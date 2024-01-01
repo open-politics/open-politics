@@ -1,4 +1,4 @@
-name: Build and Push Docker image
+name: Build, Push and Deploy Docker image
 
 on:
   push:
@@ -26,6 +26,10 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/bt-thema:latest
 
+  deploy-to-server:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
         with:
@@ -35,7 +39,6 @@ jobs:
           script: |
             cd /opt/open-politics/  
             git pull
-            docker-compose prune -f
             docker-compose down
             docker-compose pull
             docker-compose up -d
