@@ -10,3 +10,8 @@ transformers
 networkx
 matplotlib
 celery
+yfinance
+qdrant-client
+plotly
+bs4
+sentence_transformers
