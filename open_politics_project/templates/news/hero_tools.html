@@ -34,11 +34,9 @@
   }
   
   .grid-item.valtracker > * {
-      color: black; /* Change this to any color you want */
+      color: white; /* Change this to any color you want */
       display: flex;
       flex-direction: row;
-      background-clip: text;
-      background-image: linear-gradient(90deg, red, blue);
       font-size: 22px;
   }
 
@@ -130,17 +128,15 @@
 <section class="section">
   
   <div class="grid-item valtracker">
-    <h2> Welcome </h2>
-    <h3> To Open Politics </h3>
-    <p> A place to learn about the political process and the people who make it happen. </p>
-    <p> Click on the icons below to learn more about the different aspects of the political process. </p>
-    <p> Click on the maximize button to learn more about a specific topic. </p>
-    <span> If you have used the tool before be welcome to use the search bar to find a specific topic. </span>
-    <span> <i class="fas fa-arrow-down"></i> </span>
+
     <h1> Please note: this project is not online. </h1>
-    <h3> This is just a temporary staging demo. </h3>
+    <h3> This is just a temporary staging demo for development purposes. </h3>
     <h3> Please research the code or read the readme for more information. </h3>
     <a href="https://github.com/JimVincentW/open-politics">GitHub Repository</a>
+    <h3> This project is a work in progress. </h3>
+    <h3> Please contact me if you have any questions. </h3> 
+    <span> <i class="fas fa-arrow-down"></i> </span>
+    
     <button class="special-maximize-button">
       <i class="fas fa-expand"></i> 
     </button>
@@ -150,10 +146,6 @@
   </div>
   <div class="grid-item github">
     <h1> Search Actors </h1>
-    <h3> Research an arbitrary question into the news </h3>
-    <p> We will scrape the news and retrieve the articles most relevant to your question. </p>
-    <p> Afterwards we will perform various Entitiy Recognition tasks to find entitites. We will filter the list a bit and voila! </p>
-    <p> If you want to learn more about the process click on the maximize button or check our code on how we filter (The code will be annotated for easy understanding) </p>
     <form class="search-form" hx-post="" hx-target="#search-results">
       <input type="text" name="search" placeholder="Search..">
       <button type="submit"> <i class="fas fa-search" style='position: middle;'></i> </button>
@@ -165,10 +157,6 @@
     <div class="grid-item valtracker">
       <h2> Welcome </h2>
       <h3> To Open Politics </h3>
-      <p> A place to learn about the political process and the people who make it happen. </p>
-      <p> Click on the icons below to learn more about the different aspects of the political process. </p>
-      <p> Click on the maximize button to learn more about a specific topic. </p>
-      <span> If you have used the tool before be welcome to use the search bar to find a specific topic. </span>
       <span> <i class="fas fa-arrow-down"></i> </span>
       <button class="special-maximize-button">
         <i class="fas fa-expand"></i> 
@@ -182,7 +170,6 @@
       <h3> Research an arbitrary question into the news </h3>
       <p> We will scrape the news and retrieve the articles most relevant to your question. </p>
       <p> Afterwards we will perform various Entitiy Recognition tasks to find entitites. We will filter the list a bit and voila! </p>
-      <p> If you want to learn more about the process click on the maximize button or check our code on how we filter (The code will be annotated for easy understanding) </p>
       <form class="search-form" hx-post="" hx-target="#search-results">
         <input type="text" name="search" placeholder="Search..">
         <button type="submit"> <i class="fas fa-search" style='position: middle;'></i> </button>
