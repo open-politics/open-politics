@@ -37,5 +37,5 @@ jobs:
             git pull
             docker-compose prune -f
             docker-compose down
-            docker-compose build --no-cach
+            docker-compose pull
             docker-compose up -d
