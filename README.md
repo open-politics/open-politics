@@ -9,6 +9,11 @@ Currently needed:
 - Data Scraper Modules 
 - Prompt Engineering suggestions
 - Networking & Marketing
+- Frontend/ UX/ UI work
+
+## Coming soon: release of data scraper interface to provide extensibility for the project.
+- The idea is that people can choose source x and build a datascraper for it, which will then be integrated into the project.
+- Generally if you want to start directly, passing a dataframe with the columns "Headline", "Content", "Source", "Date" and "URL" will be super fine.
 
 ## Table of Contents
 - [Why does this project exist?](#why-does-this-project-exist)
@@ -25,8 +30,8 @@ Currently needed:
 - [Contact](#contact)
 
 # Why does this project exist?
-- All things regarding politics, be that news or legislative procedures and documents are hard to understand. Many people don't have the time to read through all the documents and news articles.
-- The goal of this project is to make political processes more accessible and understandable for everyone.
+- All things regarding politics, be that news, conflicts, relationships, legislative procedures or documents are hard to understand. Many people don't have the time to read through all the documents and news articles necessary to gain a broad and well-informed understanding of a political situation.
+- The goal of this project is to make politics more accessible and understandable for everyone by the means of data science and AI.
 
 # Idea and Outline
 This project aims to tackle two distinct problems:
@@ -37,7 +42,7 @@ This project aims to tackle two distinct problems:
 **Solution Components:**
 - News (Summarisation)
 - Actors & Interests (Matrix)
-- Background (filling the training cut-off)
+- Background filling (the training cut-off)
 - Hard Data Views (%s, numbers, etc.)
 - Timeline View (of processes, events, and news)
 - Graph View (of actors, interests, and processes)
@@ -54,10 +59,11 @@ This project aims to tackle two distinct problems:
 - Visual representation of political data
 - Fact-checking
 
-## Data Science/ Code Challenges
+## Challenges
 - Addressing training data bias
 - Effective prompt engineering
-- Parsing/formatting outputs
+- Creating Datasets & Benchmarks
+- Robust and scalable data pipelines
 - Training and fine-tuning LLMs
 
 ## Journalistic Challenges
@@ -67,7 +73,7 @@ This project aims to tackle two distinct problems:
 - Interdependence of summaries
 
 ## Quality Assurance
-- Automatic Evaluation of Results Pipelines needed (conciseness, accuracy, etc.)
+- Automatic Evaluation of Results Pipelines needed (conciseness, accuracy, bias weighting etc.)
 
 
 
@@ -85,12 +91,18 @@ This project aims to tackle two distinct problems:
 
 - Django is used as a backend framework to serve the frontend and to communicate with the LLMs.
 
+### Database
+- Intermediate article data storage 
+- Qdrant vector storage
+- Agent-Search dataset (for smaller "ground truth" data points)
+
 
 ### Langchain
+- The LLM domain AI is now heavily evolving on agents-based sytems
+- Our purpose will need multple agents, as we need to address different tasks
+
 08.11 Update after OpenAI DevDay:
 - the available context length is now 128k tokens, which is a huge improvement
-- the ecosystem is now heavily evolving on agents-based sytems
-- our purpose will need multple agents, as we need to address different tasks
 
 
 - Each component requires different solutions
@@ -110,14 +122,12 @@ This project aims to tackle two distinct problems:
 ## Patterns & Tools of Analysis for LLMs
 - Instruction Sets
 - Skill/ Instruction Vector Storage
-- Voyager Paper Technique
 
 
-## Referenced Patterns/Papers
+## Referenced Patterns/Papers (will be extended in a notion doc)
 - [Reflexion](https://arxiv.org/abs/2303.11366)
 - [Tree of Thought](https://arxiv.org/abs/2305.10601)
 - [Chain of Thought](https://arxiv.org/abs/2201.11903)
-- [Voyager](https://arxiv.org/abs/2305.16291)
 
 
 
