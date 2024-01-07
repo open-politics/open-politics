@@ -1,4 +1,7 @@
-# 🚧 UNDER CONSTRUCTION 🚧
+#### 🚧 UNDER CONSTRUCTION 🚧
+# 🌐 Open Politics 
+## A project to make politics more accessible and understandable for everyone by the means of data science and AI.
+
 
 **Catchphrase:** Reducing politics contextual overhead.
 
