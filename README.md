@@ -91,6 +91,18 @@ This project aims to tackle two distinct problems:
 ## Architecture Outline (v0.1)
 ![Open Politics Architecture](assets/images/open-politics-architecture.png)
 
+## Notes on model usage
+- The usage of any LLM or LMM models is a highly interesting and complex topic.
+- We can opt to use most powerful models (with often proprietary architecture and training data) or open-source models (with often less powerful architecture and training data) but for the benefit of reproducibility and transparency. There are tasks that are essentially total other domains of each other. Using GPT-4 for complex reasoning tasks is probably more interesting than using a Mistral model for it. Meanwhile we can relatively quickly fine-tune such a model for task delegation or classification tasks.
+- Model interfaces should be generally model-agnostic and open to frequent change and testing.
+- Current hot open-source models:
+- - Sensei-7b (due to its special recursive researching  functionality)
+- - Mistral / Mixtral MoE
+- - LLama models
+- - Mamba
+
+
+
 
 ### Django
 
