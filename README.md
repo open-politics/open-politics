@@ -97,8 +97,8 @@ This project aims to tackle two distinct problems:
 - Model interfaces should be generally model-agnostic and open to frequent change and testing.
 - Current hot open-source models:
 - - Sensei-7b (due to its special recursive researching  functionality)
-- - Mistral / Mixtral MoE
-- - LLama models
+- - Mistral / Mixtral MoE (due to its "multiple-expert models" and task-specific routing architecture)
+- - LLaMa/ LLaVa models
 - - Mamba
 
 
