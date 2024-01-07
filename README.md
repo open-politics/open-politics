@@ -77,9 +77,9 @@ Currently needed:
 ## Architecture Outline (v0.1)
 ![Open Politics Architecture](assets/images/op-architecture.png)
 
-## Notes on model usage
-- The usage of any LLM or LMM models is a highly interesting and complex topic.
-- We can opt to use most powerful models (with often proprietary architecture and training data) or open-source models (with often less powerful architecture and training data) but for the benefit of reproducibility and transparency. There are tasks that are essentially total other domains of each other. Using GPT-4 for complex reasoning tasks is probably more interesting than using a Mistral model for it. Meanwhile we can relatively quickly fine-tune such a model for task delegation or classification tasks.
+#### Notes on model usage
+- The question of any or which LLM or LMM models to use is a highly interesting and complex topic.
+- We can opt to use most powerful models (with often proprietary architecture and training data) or open-source models (with often less powerful architecture and training data) but for the benefit of reproducibility and transparency. The tasks are in a wider array of functional domains. Using GPT-4 for complex reasoning tasks is probably more interesting than using a Mistral-7b model for it. Meanwhile we can relatively quickly fine-tune such a model for task delegation or classification tasks.
 - Model interfaces should be generally model-agnostic and open to frequent change and testing.
 - Current hot open-source models:
 - - Sensei-7b (due to its special recursive researching  functionality)
@@ -90,6 +90,8 @@ Currently needed:
 08.11 Update after OpenAI DevDay:
 - the available context length is now 128k tokens, which is a huge improvement for processing larger documents
 
+07.01 First finetunes for Mixtral MoE are available. Training a team of own experts could be a very interesting approach.
+
 
 ### Django
 
@@ -97,22 +99,20 @@ Currently needed:
 - Views render data, if you need to rawdog, build a python script that outputs and parses into a dataframe, json, direct into html - we will find a way to integrate it.
 
 
-### Database
-- Intermediate article data storage 
-- Qdrant vector storage
+### Database(s)
+- Intermediate article data storage (SQLite)
+- Vector storage (Qdrant)
 - Agent-Search dataset (for smaller "ground truth" data points)
 
 
 ### Agent Systems
-- The LLM domain AI is now heavily evolving on agents-based sytems
-- Our purpose will need multple agents, as we need to address different tasks
-
-- Each component of a "briefing" requires different solutions
+- The LLM domain AI is now heavily evolving on agents-based sytems.
 - - LLM Agent teams and chains are used to deliver rich and relevant information.
 - - Elaborate processes are done with tree tree-of-thought, chain-of-thought and reflexion (see papers).
 - - Some tools require automatic code generation (e.g., for the graph or timeline view).
-- Sets of instructions are used to generate the output.
-- Sets of instructions and sets of data are retrievable via Vecor Storage Querying (Qdrant)
+- - Agent sustems need their own modular tools (like search functions, data connectors, data pipelines, data storage, etc.).
+- - Sets of instructions are used to generate the output.
+- - Sets of instructions and sets of data are retrievable via Vecor Storage Querying (Qdrant)
 
 #### Agent-Search/ SciPhi Project
 - The SciPhi work has done some incredible things. 
@@ -129,21 +129,10 @@ Currently needed:
 - Marvun is a lightweight and powerful framework for LLM-centered classification and validation systems. Like Pydantic for LLMs.
 
 
-### Database 
-- Vector Databases
-- SQLite (for current scale)
-- Neo4js
-
-## Patterns & Tools of Analysis for LLMs
-- Instruction Sets
-- Skill/ Instruction Vector Storage
-
-
 ## Referenced Patterns/Papers (will be extended in a notion doc)
 - [Reflexion](https://arxiv.org/abs/2303.11366)
 - [Tree of Thought](https://arxiv.org/abs/2305.10601)
 - [Chain of Thought](https://arxiv.org/abs/2201.11903)
-
 
 
 ## Usage (coming soon):
@@ -170,6 +159,8 @@ python manage.py runserver
 - NewsAPI API
 - OpenAI API
 - Huggingface Token
+- Agent-Search API
+
 
 ## Contributing
 
