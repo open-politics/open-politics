@@ -69,6 +69,8 @@ Currently needed:
 
 # Frontend
 
+#### A comprehensive UX/UI concept is needed.
+
 ### Vision
 ![Open Politics Vision](assets/images/open-politics-website-vision.png)
 
