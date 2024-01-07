@@ -89,7 +89,7 @@ This project aims to tackle two distinct problems:
 # Backend
 
 ## Architecture Outline (v0.1)
-![Open Politics Architecture](assets/images/open-politics-architecture.png)
+![Open Politics Architecture](assets/images/op-architecture.png)
 
 ## Notes on model usage
 - The usage of any LLM or LMM models is a highly interesting and complex topic.
@@ -107,6 +107,8 @@ This project aims to tackle two distinct problems:
 ### Django
 
 - Django is used as a backend framework to serve the frontend and to communicate with the LLMs.
+- Views render data, if you need to rawdog, build a python script that outputs and parses into a dataframe, json, direct into html - we will find a way to integrate it.
+- 
 
 ### Database
 - Intermediate article data storage 
