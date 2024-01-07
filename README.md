@@ -101,14 +101,15 @@ This project aims to tackle two distinct problems:
 - - LLaMa/ LLaVa models
 - - Mamba
 
-
+08.11 Update after OpenAI DevDay:
+- the available context length is now 128k tokens, which is a huge improvement for processing larger documents
 
 
 ### Django
 
 - Django is used as a backend framework to serve the frontend and to communicate with the LLMs.
 - Views render data, if you need to rawdog, build a python script that outputs and parses into a dataframe, json, direct into html - we will find a way to integrate it.
-- 
+
 
 ### Database
 - Intermediate article data storage 
@@ -116,21 +117,30 @@ This project aims to tackle two distinct problems:
 - Agent-Search dataset (for smaller "ground truth" data points)
 
 
-### Langchain
+### Agent Systems
 - The LLM domain AI is now heavily evolving on agents-based sytems
 - Our purpose will need multple agents, as we need to address different tasks
 
-08.11 Update after OpenAI DevDay:
-- the available context length is now 128k tokens, which is a huge improvement
-
-
-- Each component requires different solutions
-- - Langchain teams, agents, and chains are used to deliver rich and relevant information.
+- Each component of a "briefing" requires different solutions
+- - LLM Agent teams and chains are used to deliver rich and relevant information.
 - - Elaborate processes are done with tree tree-of-thought, chain-of-thought and reflexion (see papers).
 - - Some tools require automatic code generation (e.g., for the graph or timeline view).
-- - Some tools require a more interactive approach (e.g., for the chatbot).
 - Sets of instructions are used to generate the output.
-- Sets of instructions and sets of data are retrievable via Vecor Storage Querying (e.g., Chroma or Pinecone).
+- Sets of instructions and sets of data are retrievable via Vecor Storage Querying (Qdrant)
+
+#### Agent-Search/ SciPhi Project
+- The SciPhi work has done some incredible things. 
+- - First they created a production-ready, open-source vector storage dataset and system with over one billion embeddings. 
+- - They also trained Sensei-7b, a model that can recursively research and answer questions.
+- - They also provide a comprehensive search engine for the dataset and the web.
+
+#### LangChain
+- Langchain is a very well integrated and powerful framework for LLM interaction and chaining.
+- Many state-of-the-art prompt engineering techniques are implemented in Langchain.
+- Data connectors and data pipelines are widely available.
+
+#### Marvin
+- Marvun is a lightweight and powerful framework for LLM-centered classification and validation systems. Like Pydantic for LLMs.
 
 
 ### Database 
