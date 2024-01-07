@@ -19,7 +19,7 @@ Currently needed:
 - [Why does this project exist?](#why-does-this-project-exist)
 - [Idea and Outline](#idea-and-outline)
 - [Tasks](#tasks)
-- [Data Science/ Code Challenges](#data-science-code-challenges)
+- [Data Challenges](#data-science-code-challenges)
 - [Journalistic Challenges](#journalistic-challenges)
 - [Quality Assurance](#quality-assurance)
 - [Frontend](#frontend)
@@ -59,7 +59,7 @@ This project aims to tackle two distinct problems:
 - Visual representation of political data
 - Fact-checking
 
-## Challenges
+## Data Challenges
 - Addressing training data bias
 - Effective prompt engineering
 - Creating Datasets & Benchmarks
