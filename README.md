@@ -37,12 +37,15 @@ Currently needed:
 
 ## Tasks
 - Information summarization
+- Vector storage & retrieval 
+- Information clustering
 - Entity Extraction (Named Entity Recognition)
 - Q&A Chatbots (for interactive information)
 - Providing historical context 
-- Monitoring and alerts
+- Statment & Intention decoding
 - Visual representation of political data
-- Fact-checking
+- Monitoring and alerts
+- Fact-checking (information triangulation)
 
 ## Data Challenges
 - Addressing training data bias
@@ -59,7 +62,6 @@ Currently needed:
 
 ## Quality Assurance
 - Automatic Evaluation of Results Pipelines needed (conciseness, accuracy, bias weighting etc.)
-
 
 
 # Frontend
