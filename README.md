@@ -34,22 +34,6 @@ Currently needed:
 - All things regarding politics, be that news, conflicts, relationships, legislative procedures or documents are hard to understand. Many people don't have the time to read through all the documents and news articles necessary to gain a broad and well-informed understanding of a political situation.
 - The goal of this project is to make politics more accessible and understandable for everyone by the means of data science and AI.
 
-# Idea and Outline
-This project aims to tackle two distinct problems:
-
-1. Navigating political situations, legislative documents, and political processes is difficult and time-consuming.
-2. Interacting with this data is often limited to a few experts.
-
-**Solution Components:**
-- News (Summarisation)
-- Actors & Interests (Matrix)
-- Background filling (the training cut-off)
-- Hard Data Views (%s, numbers, etc.)
-- Timeline View (of processes, events, and news)
-- Graph View (of actors, interests, and processes)
-- Chatbot (Q&A)
-- Outlook (generative)
-
 
 ## Tasks
 - Information summarization
