@@ -24,6 +24,7 @@ Currently needed:
 - [Quality Assurance](#quality-assurance)
 - [Frontend](#frontend)
 - [Backend](#backend)
+- [Architecture](#architecture)
 - [Usage](#usage)
 - [Necessary API Keys/ Environment Variables](#necessary-api-keys-environment-variables)
 - [Contributing](#contributing)
@@ -86,6 +87,10 @@ This project aims to tackle two distinct problems:
 
 
 # Backend
+
+## Architecture Outline (v0.1)
+![Open Politics Architecture](assets/images/open-politics-architecture.png)
+
 
 ### Django
 
