@@ -16,24 +16,71 @@
     <!-- installing htmx via staticfiles-->
     <script src="{% static 'htmx/htmx.min.js' %}"></script>
 
-
+    <style>
+      .cookie-banner {
+        position: fixed; /* Fixed positioning to stick to the viewport */
+        bottom: 0; /* Align to the bottom of the viewport */
+        left: 0; /* Align to the left side of the viewport */
+        width: 100%; /* Full width */
+        background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
+        color: white; /* Text color */
+        text-align: center; /* Center the text */
+        padding: 10px; /* Padding for aesthetics */
+        z-index: 10000; /* High z-index to ensure it appears above other content */
+        display: none; /* Initially hidden */
+    }
+    
+    .cookie-banner p {
+        margin: 0;
+        display: inline-block;
+        vertical-align: middle;
+    }
+    
+    .cookie-banner a {
+        color: #fff;
+        text-decoration: underline;
+    }
+    
+    .cookie-btn {
+        background-color: #f1f1f1;
+        color: black;
+        border: none;
+        padding: 10px 20px;
+        margin-left: 20px;
+        cursor: pointer;
+        display: inline-block;
+        vertical-align: middle;
+    }
+    
+    .cookie-btn:hover {
+        background-color: #ddd;
+    }
+    
+    
+    </style>    
 
     
   </head>
   <body>
-    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-      <defs>
-          <filter id="grainy-effect">
-              <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="1" result="turbulence"/>
-              <feComponentTransfer in="turbulence" result="contrastAdjust">
-                  <feFuncA type="discrete" tableValues="0.1 0.3" />
-              </feComponentTransfer>
-              <feGaussianBlur in="contrastAdjust" stdDeviation="1" result="blur"/>
-              <feBlend in="SourceGraphic" in2="blur" mode="soft-light"/>
-          </filter>
-      </defs>
-  </svg>
-  
+      <div id="cookie-banner" class="cookie-banner">
+        <p>This website uses cookies to ensure you get the best experience on our website. 
+        <a href="#">Learn More</a></p>
+        <button id="cookie-btn" class="cookie-btn">Got it!</button>
+    </div>
+    
+      <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <defs>
+            <filter id="grainy-effect">
+                <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="1" result="turbulence"/>
+                <feComponentTransfer in="turbulence" result="contrastAdjust">
+                    <feFuncA type="discrete" tableValues="0.1 0.3" />
+                </feComponentTransfer>
+                <feGaussianBlur in="contrastAdjust" stdDeviation="1" result="blur"/>
+                <feBlend in="SourceGraphic" in2="blur" mode="soft-light"/>
+            </filter>
+        </defs>
+    </svg>
+    
     <header class="site-header" style='background-color: #fbecb2ff; filter: url(#grainy-effect);'>
       <img src="{% static 'media/logo.svg' %}" alt="Open Politics Logo" class="site-logo">
       <h1 style='color: black;'>Open Politics Project</h1>
@@ -59,7 +106,23 @@
     {% block search %}
     {% endblock %}
 
-
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const cookieBanner = document.getElementById('cookie-banner');
+    
+        // Check if cookie already set
+        if (!localStorage.getItem('cookieBannerDisplayed')) {
+            cookieBanner.style.display = 'block'; // Show the banner
+        }
+    
+        // Event listener for the 'Got it!' button
+        document.getElementById('cookie-btn').addEventListener('click', function() {
+            cookieBanner.style.display = 'none'; // Hide the banner
+            localStorage.setItem('cookieBannerDisplayed', 'true'); // Set a flag in localStorage
+        });
+    });
+    
+    </script>    
 
     <script>
       document.addEventListener('DOMContentLoaded', function() {
@@ -93,5 +156,6 @@
           });
       });
   </script>
+
 </html>
 
