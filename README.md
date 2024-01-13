@@ -71,6 +71,7 @@ Currently needed:
 - The models should be able to be trained on the fly and to be fine-tuned for specific tasks.
 
 - Current hot take: Mixtral MoE-8x7b with experts in different political reporting or analysis domains.
+- https://www.together.ai/ seems like a lightweight way to train and deploy models.
 
 
 
