@@ -17,12 +17,13 @@ Currently needed:
 13.01.2024 Update:
 - A interdisciplinary collaboration framework is needed.
 - Within the next week a Discord server will be set up to discuss the project and to provide an initial platform for collaboration.
-
+- If you feel proficient in these kind of things, please feel free to contact me.
 
 
 ## Coming soon: release of data scraper interface to provide extensibility for the project.
 - The idea is that people can choose source x and build a datascraper for it, which will then be integrated into the project.
 - Generally if you want to start directly, passing a dataframe with the columns "Headline", "Content", "Source", "Date" and "URL" will be super fine.
+
 
 ## Table of Contents
 - [Why does this project exist?](#why-does-this-project-exist)
