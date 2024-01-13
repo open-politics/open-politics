@@ -105,7 +105,8 @@ Currently needed:
 
 # Backend
 
-## Architecture Outline (v0.1)
+## Architecture 
+- Outline (v0.1)
 ![Open Politics Architecture](assets/images/op-architecture.png)
 
 #### Notes on model usage
