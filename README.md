@@ -10,9 +10,11 @@ This project is currently in development and the mission and vision statements w
 Please contact me if you are interested in providing help.
 Currently needed:
 - Data Scraper Modules 
+- Interdisciplinary collaboration on the instruction sets for the LLMs 
 - Prompt Engineering suggestions
 - Networking & Marketing
 - Frontend/ UX/ UI work
+
 
 13.01.2024 Update:
 - A interdisciplinary collaboration framework is needed.
@@ -29,6 +31,7 @@ Currently needed:
 - [Why does this project exist?](#why-does-this-project-exist)
 - [Idea and Outline](#idea-and-outline)
 - [Tasks](#tasks)
+- [AI Models](#ai-models)
 - [Data Challenges](#data-science-code-challenges)
 - [Journalistic Challenges](#journalistic-challenges)
 - [Quality Assurance](#quality-assurance)
@@ -56,6 +59,21 @@ Currently needed:
 - Visual representation of political data
 - Monitoring and alerts
 - Fact-checking (information triangulation)
+
+## AI Models
+- Open-Source is our friend.
+- More concrete information on the actual setup is layed out in the [Architecture](#architecture) section.
+
+- Generally, a dataset- and model-agnostic approach is needed. 
+
+- While GPT-4(V) is currently the leading model, it is important for our API calls to be independent of OpenAI's private ownership. They can change their API model endpoints at any time. We would need to test every version of that.
+- Furthermore, open-source will be our best friend with an increasing dataset of processed political information (like question-answer pairs, summaries, etc.).
+- The models should be able to be trained on the fly and to be fine-tuned for specific tasks.
+
+- Current hot take: Mixtral MoE-8x7b with experts in different political reporting or analysis domains.
+
+
+
 
 ## Data Challenges
 - Addressing training data bias
