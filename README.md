@@ -108,7 +108,7 @@ Currently needed:
 ### Django
 
 - Django is used as a backend framework to serve the frontend and to communicate with the LLMs.
-- Views render data, if you need to rawdog, build a python script that outputs and parses into a dataframe, json, direct into html - we will find a way to integrate it.
+- Views render data, if you need to rawdog, build a python script that outputs and parses into a dataframe, json, or direct into Django views - we will find a way to integrate it.
 
 
 ### Database(s)
@@ -138,7 +138,7 @@ Currently needed:
 - Data connectors and data pipelines are widely available.
 
 #### Marvin
-- Marvun is a lightweight and powerful framework for LLM-centered classification and validation systems. Like Pydantic for LLMs.
+- Marvin is a lightweight and powerful framework for LLM-centered classification and validation systems. Like Pydantic for LLMs.
 
 
 ## Referenced Patterns/Papers (will be extended in a notion doc)
