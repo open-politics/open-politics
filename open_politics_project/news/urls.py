@@ -11,7 +11,5 @@ urlpatterns = [
     path('news_actors/', views.stream_actors, name='stream_actors'),
     path('query/', views.query, name='query'),
     path('tools', views.tools, name='tools'),
-    path('wikipedia_api/', views.wikipedia_api, name='wikipedia_api'),    
-    path('ner_api/', views.ner_api, name='ner_api'),
     
 ]
