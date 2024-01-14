@@ -1,6 +1,5 @@
 import sys
 from pathlib import Path
-sys.path.append(str(Path(__file__).resolve().parent.parent.parent / 'test_scripts'))
 
 from news.models import NewsArticle, NewsSource
 from django.http import StreamingHttpResponse
@@ -93,13 +92,12 @@ class ArticleListView(ListView):
 #     print(df)
 #     return df
 from django.shortcuts import render
-from test_scripts.vector_stocks import get_news_data
 
-def get_news_data_view(request):
-    if request.method == 'POST':
-        query = request.POST.get('query')
-        news_data = get_news_data(query)
-        return render(request, 'news_data.html', {'news_data': news_data})
+# def get_news_data_view(request):
+#     if request.method == 'POST':
+#         query = request.POST.get('query')
+#         news_data = get_news_data(query)
+#         return render(request, 'news_data.html', {'news_data': news_data})
 
 # Helper function to generate a list of Wikipedia summaries for a list of actors
 def generate_wikipedia_summaries(actors_string):
@@ -138,29 +136,10 @@ def get_wikipedia_summary(actor_name):
 
 import sys
 from pathlib import Path
-sys.path.append(str(Path(__file__).resolve().parent.parent.parent / 'test_scripts'))
 
 from django.http import JsonResponse
 
-from test_scripts.chain_1 import extract_news_content
-
-def wikipedia_api(request):
-    if request.method == 'POST':
-        wikipedia_query = request.POST.get('wikipedia_query')
-        if wikipedia_query is None:
-            return JsonResponse({'error': 'No Wikipedia query provided'})
-
-        # This line was changed from get_wikipedia_content to extract_news_content 
-        result = extract_news_content(wikipedia_query)
-
-        # Check if it's an htmx request
-        if 'HX-Request' in request.headers:
-            return render(request, 'news/wikipedia_result.html', {'result': result})
-        
-        return JsonResponse({'result': result})
-    else:
-        return JsonResponse({'error': 'Invalid request method'})
-
+from test_scripts import extract_news_content
 
 def ner_api(request):
     if request.method == 'POST':
