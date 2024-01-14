@@ -139,24 +139,7 @@ from pathlib import Path
 
 from django.http import JsonResponse
 
-from test_scripts import extract_news_content
 
-def ner_api(request):
-    if request.method == 'POST':
-        ner_query = request.POST.get('ner_query')
-        if ner_query is None:
-            return JsonResponse({'error': 'No NER query provided'})
-
-        result = extract_news_content(ner_query)
-
-        # Check if it's an htmx request
-        if 'HX-Request' in request.headers:
-            return render(request, 'news/ner_result.html', {'result': result})
-        
-        return JsonResponse({'result': result})
-    else:
-        return JsonResponse({'error': 'Invalid request method'})
-    
 
 def parse_actors(actors_string):
     # Split by newline
