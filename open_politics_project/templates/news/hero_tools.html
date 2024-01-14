@@ -13,12 +13,13 @@
     </div>
     <div class="grid-item card">
       <h1> Search Actors </h1>
+      <h2> Currenyly offline due to missing resources </h2>
       <h3> Research an arbitrary question into the news </h3>
       <p> We will scrape the news and retrieve the articles most relevant to your question. </p>
-      <p> Afterwards we will perform various Entitiy Recognition tasks to find entitites. We will filter the list a bit and voila! </p>
+      <p> Afterwards we will run inference on some Named Entitiy Recognition models </p>
       <form class="search-form" hx-post="" hx-target="#search-results">
         <input type="text" name="search" placeholder="Search..">
-        <button type="submit"> <i class="fas fa-search" style='position: middle;'></i> </button>
+        <button type="submit"> <i class="fas fa-search" style='position: middle; padding-left:-5px;'></i> </button>
       </form>
   </div>
 </section>
