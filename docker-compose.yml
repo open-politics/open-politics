@@ -9,7 +9,7 @@ services:
       - "4000:4000"
 #    volumes:
 #      - static_volume:/app/staticfiles_root  
-    command: ["gunicorn", "open_politics_project.wsgi:application", "--bind", "0.0.0.0:4000", "--workers", "3"]
+    command: ["python", "manage.py", "runserver", "0.0.0.0:4000"]
     networks:
       - web
     expose:
