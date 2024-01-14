@@ -1,0 +1,276 @@
+/* New color scheme */
+:root {
+  --main-bg-color: #212121;
+  --main-text-color: #FBECB2;
+  --highlight-bg-color: #D0C4FF; /* This is the base color for the highlight */
+}
+
+@import url('https://fonts.cdnfonts.com/css/alfa-slab-one');
+
+/* Global styles */
+* {
+  font-family: 'Alfa Slab One', sans-serif;
+  /* Other global styles can go here */
+}
+
+body {
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    background: url('media/sama.png') center/cover no-repeat; 
+    background-size: 50%;
+    background-color: var(--main-bg-color);
+}
+
+
+
+body, h1, h2, h3, h4, p, a {
+  color: var(--main-text-color);
+}
+
+/* Site Header Styles */
+.site-header {
+    display: flex;
+    justify-content: flex-start; /* Orient to the left */
+    align-items: center;
+    padding-left: calc(50vw - 600px); /* Center the header */
+    height: 70px;  /* or whatever height you prefer */
+
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.5), var(--main-bg-color)); /* Adjust the gradient */
+}
+
+.side-title {
+    color: black;
+    margin-left: -100px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Add a big shadow */
+}
+
+.site-title-logo {
+    max-width: 50px;        /* Controls the size of the logo */
+    margin-right: -15px;     /* Space between the logo and the title */
+    margin-top: 6px;
+    vertical-align: middle; /* Aligns the logo with the title text */
+}
+
+/* Circular design element with color streaks */
+.circular-design-element {
+  background-image: url('/open_politics_project/staticfiles_root/media/sama.png');
+  background-size: cover;
+  border-radius: 50%; /* Makes the element circular */
+  width: 300px; /* Set the size of your element */
+  height: 300px;
+  position: relative; /* Position it relative to its container */
+  overflow: hidden; /* Ensure no overflow from the content */
+  mix-blend-mode: screen; /* Blend mode example, you can choose others as well */
+}
+
+
+
+
+/* Highlight background with opacity */
+.highlight-bg {
+    background-color: var(--highlight-bg-color);
+    opacity: 0.5;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 255, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+
+.section {
+    height: calc(100vh + 200px);
+    
+}
+
+.grid-container {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    grid-gap: 30px;
+    padding: 10px;
+    height: 1200px; /* Adjust as needed */
+    max-width: 1200px;
+    margin: auto;
+    margin-top: 40px;
+    overflow: hidden; /* Hide scrollbars */
+}
+
+.grid-item {
+    width: 100%; /* Adjust as needed */
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background-blend-mode: multiply;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+
+    
+}
+
+
+.grid-item.highlight > * {
+    color: white; /* Change this to any color you want */
+    gap: 10px;
+}
+
+.grid-item.content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100%;
+}
+
+
+.search-form {
+    display: flex;        /* Enables flexbox */
+    justify-content: center; /* Centers children horizontally */
+    align-items: center;  /* Centers children vertically */
+    width: 100%;          /* Takes full width of the parent */
+    margin-top: 20px;     /* Add space on top if needed */
+}
+
+.search-form input {
+    width: 100%;          /* Takes full width of the parent */
+    height: 40px;         /* Specify height */
+    padding: 0 10px;      /* Adds some padding to the left and right */
+    border: 1px solid #ccc; /* Add a gray border */
+    border-radius: 5px;   /* Rounded corners */
+    font-size: 16px;      /* Specify font size */
+    outline: none;        /* Removes the blue outline */
+}
+
+.search-form button {
+    height: 40px;         /* Specify height */
+    width: 40px;          /* Specify width */
+    border: none;         /* Removes borders */
+    background-color: #333; /* Specify background color */
+    color: white;         /* Specify text color */
+    font-size: 16px;      /* Specify font size */
+    cursor: pointer;      /* Change mouse pointer on hover */
+    outline: none;        /* Removes the blue outline */
+    border-radius: 5px;   /* Rounded corners */
+    margin-left: -40px;   /* Negative margin to pull the button left */
+}
+
+.grid-item.maximized {
+    grid-column: 1 / -1; /* Span all columns */
+    grid-row: 1 / -1; /* Span all rows */
+    z-index: 10; /* Above other items */
+    transition: all 3s ease; /* Smooth transition */
+}
+
+/* Styles for maximize and minimize buttons */
+.special-maximize-button,
+.special-minimize-button {
+    height: 30px;
+    width: 30px;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    padding: 5px;
+    cursor: pointer;
+    background-color: rgba(128, 128, 128, 0.5);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 1em;
+    outline: none;
+    display: none; /* Initially hidden */
+}
+
+.special-maximize-button:hover,
+.special-minimize-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.special-minimize-button {
+    display: none; /* Initially hidden */
+}
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: repeat(2, 1fr); /* Adjust for smaller screens */
+    }
+}
+
+.grid-item:hover {
+    transform: translateY(-5px); /* Slight raise effect on hover */
+}
+
+/* Settings Form and Main Content */
+.settings-form {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    margin: 0 auto; /* Center the form in its container */
+    width: 90%; /* Give some space from the container */
+    max-width: 500px; /* Maximum width of the form */
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Space between child elements */
+    transition: box-shadow 0.3s ease; /* Smooth shadow transition */
+    height: calc(100% - 40px); /* Adjust height automatically */
+}
+
+.settings-form:hover {
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Slightly larger shadow on hover */
+}
+
+/* Form Elements Styling */
+.agent_runner {
+    border-radius: 10px;
+    margin: 0 auto; /* Center the form in its container */
+    height: 100%;
+    width: 100%%;
+    position: relative;
+}
+
+input[type="text"],
+.form-check-input {
+    border: none;
+    /* box-shadow: inset 2px 2px 16px #000000, */
+    /*             inset -5px -5px 63px #000000; */
+    /* border-radius: 10px; */
+    padding: 10px;
+    margin: 5px 0;
+    width: calc(100% - 20px);
+}
+
+h3, label, button {
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+button {
+    background: rgba(0, 255, 0, 0.30);
+    border: none;
+    /* box-shadow: 2px 2px 5px #ffffff, */
+    /*             -5px -5px 10px #ffffff; */
+    border-radius: 10px;
+    color: white;
+    padding: 10px;
+    margin: 5px 0;
+    width: calc(100% - 20px);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #107c8c;
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}

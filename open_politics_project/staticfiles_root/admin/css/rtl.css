@@ -13,7 +13,7 @@ th {
     margin-right: 1.5em;
 }
 
-.viewlink, .addlink, .changelink {
+.viewlink, .addlink, .changelink, .hidelink {
     padding-left: 0;
     padding-right: 16px;
     background-position: 100% 1px;
@@ -105,6 +105,16 @@ thead th.sorted .text {
 #changelist table tbody td:first-child, #changelist table tbody th:first-child {
     border-right: none;
     border-left: none;
+}
+
+.paginator .end {
+    margin-left: 6px;
+    margin-right: 0;
+}
+
+.paginator input {
+    margin-left: 0;
+    margin-right: auto;
 }
 
 /* FORMS */
@@ -285,4 +295,8 @@ form .form-row p.datetime {
 .inline-related h3 span.delete label {
     margin-left: inherit;
     margin-right: 2px;
+}
+
+.selector .selector-chooser {
+    margin: 0;
 }

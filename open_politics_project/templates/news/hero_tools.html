@@ -1,151 +1,17 @@
 {% load static  %}
 
-<style>
-
-  .section {
-    height: calc(100vh + 200px);
-  }
-  .grid-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2 columns */
-    grid-template-rows: repeat(2, 1fr); /* 2 rows */
-    grid-gap: 30px;
-    padding: 10px;
-    height: 1200px; /* Adjust as needed */
-    max-width: 1200px;
-    margin: auto;
-    margin-top: 40px;
-    overflow: hidden; /* Hide scrollbars */
-  }
-  
-
-  .grid-item {
-    background-image: linear-gradient(to right bottom, #6dd5ed, #2193b0);
-    box-sizing: border-box;
-    align-items: center;
-    justify-content: center;
-    border-radius: 5px;
-    color: white;
-    background-color: #333;
-    position: relative; /* Needed for absolute positioning of buttons */
-    width: 100%; /* Take full width of the cell */
-    height: 100%; /* Take full height of the cell */
-    font-family: "Gil Sans", sans-serif; /* Use Gil Sans as the font */
-  }
-  
-  .grid-item.valtracker > * {
-      color: white; /* Change this to any color you want */
-      display: flex;
-      flex-direction: row;
-      font-size: 22px;
-  }
-
-  .grid-item.github {
-    display: flex;
-    flex-direction: column; /* Stacks children vertically */
-    justify-content: center; /* Centers children vertically */
-    align-items: center;  /* Centers children horizontally */
-    /* The rest of your styles */
-  }
-
-  .search-form {
-    display: flex;        /* Enables flexbox */
-    justify-content: center; /* Centers children horizontally */
-    align-items: center;  /* Centers children vertically */
-    width: 100%;          /* Takes full width of the parent */
-    margin-top: 20px;     /* Add space on top if needed */
-  }
-
-  .search-form input {
-    width: 100%;          /* Takes full width of the parent */
-    height: 40px;         /* Specify height */
-    padding: 0 10px;      /* Adds some padding to the left and right */
-    border: 1px solid #ccc; /* Add a gray border */
-    border-radius: 5px;   /* Rounded corners */
-    font-size: 16px;      /* Specify font size */
-    outline: none;        /* Removes the blue outline */
-  }
-
-  .search-form button {
-    height: 40px;         /* Specify height */
-    width: 40px;          /* Specify width */
-    border: none;         /* Removes borders */
-    background-color: #333; /* Specify background color */
-    color: white;         /* Specify text color */
-    font-size: 16px;      /* Specify font size */
-    cursor: pointer;      /* Change mouse pointer on hover */
-    outline: none;        /* Removes the blue outline */
-    border-radius: 5px;   /* Rounded corners */
-    margin-left: -40px;   /* Negative margin to pull the button left */
-  }
-
-
-
-  .grid-item.maximized {
-    grid-column: 1 / -1; /* Span all columns */
-    grid-row: 1 / -1; /* Span all rows */
-    z-index: 10; /* Above other items */
-    transition: all 3s ease; /* Smooth transition */
-
-  }
-
-  /* Styles for maximize and minimize buttons */
-  .special-maximize-button,
-  .special-minimize-button {
-    height: 30px;
-    width: 30px;
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    padding: 5px;
-    cursor: pointer;
-    background-color: rgba(128, 128, 128, 0.5);
-    color: white;
-    border: none;
-    border-radius: 30px;
-    font-size: 1em;
-    outline: none;
-    display: none; /* Initially hidden */
-  }
-
-  .special-maximize-button:hover,
-  .special-minimize-button:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-
-  .special-minimize-button {
-    display: none; /* Initially hidden */
-  }
-  
-  /* Responsive design adjustments */
-  @media (max-width: 768px) {
-    .grid-container {
-      grid-template-columns: repeat(2, 1fr); /* Adjust for smaller screens */
-    }
-  }
-</style>
-
 <section class="section">
   <div class="grid-container">
-    <div class="grid-item valtracker">
-    <h1> Welcome </h2>
-    <h3> To Open Politics </h3>
-    <h4> and this ttestt line </h4>
-    <h2> Please note: this project is not online. </h1>
-    <h3> This is just a temporary staging demo for development purposes. </h3>
-    <h3> Please research the code or read the readme for more information. </h3>
-    <a href="https://github.com/JimVincentW/open-politics">GitHub Repository</a>
-    <h3> This project is a work in progress. </h3>
-    <h3> Please contact me if you have any questions. </h3> 
-      <span> <i class="fas fa-arrow-down"></i> </span>
-      <button class="special-maximize-button">
-        <i class="fas fa-expand"></i> 
-      </button>
-      <button class="special-minimize-button">
-        <i class="fas fa-compress"></i> 
-      </button>
+    <div class="grid-item card highlight">
+      <div class="content">
+        <h1>Welcome to Open Politics</h1>
+        <h2>Please note: this project is not online.</h2>
+        <p>This is just a temporary staging demo for development purposes. Please research the code or read the readme for more information.</p>
+        <a href="https://github.com/JimVincentW/open-politics">GitHub Repository</a>
+        <p>This project is a work in progress. Please contact me if you have any questions.</p> 
+      </div>
     </div>
-    <div class="grid-item github">
+    <div class="grid-item card">
       <h1> Search Actors </h1>
       <h3> Research an arbitrary question into the news </h3>
       <p> We will scrape the news and retrieve the articles most relevant to your question. </p>
@@ -154,29 +20,6 @@
         <input type="text" name="search" placeholder="Search..">
         <button type="submit"> <i class="fas fa-search" style='position: middle;'></i> </button>
       </form>
-      <button class="special-maximize-button">
-        <i class="fas fa-expand"></i> 
-      </button>
-      <button class="special-minimize-button">
-        <i class="fas fa-compress"></i> 
-      </button>
-    </div>
-    <div class="grid-item docker">
-      <button class="special-maximize-button">
-        <i class="fas fa-expand"></i> 
-      </button>
-      <button class="special-minimize-button">
-        <i class="fas fa-compress"></i> 
-      </button>
-    </div>
-    <div class="grid-item listing">
-      <button class="special-maximize-button">
-        <i class="fas fa-expand"></i> 
-      </button>
-      <button class="special-minimize-button">
-        <i class="fas fa-compress"></i> 
-      </button>
-    </div>
   </div>
 </section>
 

@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Styleshee-->
-    <link rel="stylesheet" href="{% static 'styles_process.css' %}">
+    <link rel="stylesheet" href="{% static 'styles_main.css' %}">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
@@ -15,75 +15,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <!-- installing htmx via staticfiles-->
     <script src="{% static 'htmx/htmx.min.js' %}"></script>
-
-    <style>
-      .cookie-banner {
-        position: fixed; /* Fixed positioning to stick to the viewport */
-        bottom: 0; /* Align to the bottom of the viewport */
-        left: 0; /* Align to the left side of the viewport */
-        width: 100%; /* Full width */
-        background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
-        color: white; /* Text color */
-        text-align: center; /* Center the text */
-        padding: 10px; /* Padding for aesthetics */
-        z-index: 10000; /* High z-index to ensure it appears above other content */
-        display: none; /* Initially hidden */
-    }
-    
-    .cookie-banner p {
-        margin: 0;
-        display: inline-block;
-        vertical-align: middle;
-    }
-    
-    .cookie-banner a {
-        color: #fff;
-        text-decoration: underline;
-    }
-    
-    .cookie-btn {
-        background-color: #f1f1f1;
-        color: black;
-        border: none;
-        padding: 10px 20px;
-        margin-left: 20px;
-        cursor: pointer;
-        display: inline-block;
-        vertical-align: middle;
-    }
-    
-    .cookie-btn:hover {
-        background-color: #ddd;
-    }
-    
-    
-    </style>    
-
-    
+    <link rel="stylesheet" href="{% static 'styles_main.css' %}">
+ 
   </head>
   <body>
-      <div id="cookie-banner" class="cookie-banner">
-        <p>This website barely uses cookies. Only to save your session. We do not collect any personalized data. 
-        <button id="cookie-btn" class="cookie-btn">Got it!</button>
-    </div>
-    
-      <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-        <defs>
-            <filter id="grainy-effect">
-                <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="1" result="turbulence"/>
-                <feComponentTransfer in="turbulence" result="contrastAdjust">
-                    <feFuncA type="discrete" tableValues="0.1 0.3" />
-                </feComponentTransfer>
-                <feGaussianBlur in="contrastAdjust" stdDeviation="1" result="blur"/>
-                <feBlend in="SourceGraphic" in2="blur" mode="soft-light"/>
-            </filter>
-        </defs>
-    </svg>
-    
-    <header class="site-header" style='background-color: #fbecb2ff; filter: url(#grainy-effect);'>
-      <img src="{% static 'media/logo.svg' %}" alt="Open Politics Logo" class="site-logo">
-      <h1 style='color: black;'>Open Politics Project</h1>
+    <header class="site-header">
+        <img src="{% static 'media/sama.png' %}" alt="Open Politics Logo" class="site-title-logo">
+      <h1 class='site-title'>pen Politics Project</h1>
     </header>
+    
     {% block hi %}
     {% endblock %}
     
