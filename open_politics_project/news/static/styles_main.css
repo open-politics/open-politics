@@ -150,7 +150,7 @@ body, h1, h2, h3, h4, p, a {
     cursor: pointer;      /* Change mouse pointer on hover */
     outline: none;        /* Removes the blue outline */
     border-radius: 5px;   /* Rounded corners */
-    margin-left: -40px;   /* Negative margin to pull the button left */
+    margin-left: -45px;   /* Negative margin to pull the button left */
 }
 
 .grid-item.maximized {
