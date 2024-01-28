@@ -32,6 +32,8 @@ ALLOWED_HOSTS = ['open-politics.org', 'www.open-politics.org', 'web', 'localhost
 # Application definition
 
 INSTALLED_APPS = [
+    'authentification',
+    'corsheaders',
     'django.contrib.admin', 
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,9 +41,26 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bt_thema',
-     'news',
+    'news',
+    'channels',
+    'rest_framework',
+    'rest_framework.authtoken',
 
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORSE_ALLOW_CREDENTIALS = True
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = '/accounts/login/'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -53,11 +72,16 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # or 'cache' for cache-backed sessions
+SESSION_CACHE_ALIAS = 'default'
+SESSION_COOKIE_NAME = 'sessionid'  # Ensure the correct cookie name
+
+
 ROOT_URLCONF = 'open_politics_project.urls'
 
 
 WSGI_APPLICATION = 'open_politics_project.wsgi.application'
-
+ASGI_APPLICATION = 'open_politics_project.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

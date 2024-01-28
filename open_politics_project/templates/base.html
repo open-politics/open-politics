@@ -20,9 +20,32 @@
   </head>
   <body>
     <header class="site-header">
-        <img src="{% static 'media/sama.png' %}" alt="Open Politics Logo" class="site-title-logo">
-      <h1 class='site-title'>pen Politics Project</h1>
-    </header>
+      <div class="header-container">
+          <!-- Title Container -->
+          <div class="title-container">
+              <h1 class='site-title'>Open Politics Project</h1>
+          </div>
+  
+          <!-- GitHub and Authentication Container -->
+          <div class="auth-container">
+              <div>
+                  <img src="{% static 'media/github-mark.svg' %}" alt="GitHub Logo" class="github-logo">
+              </div>
+              {% if user.is_authenticated %}
+              <form id="logout-form" method="POST" action="{% url 'logout' %}">
+                  {% csrf_token %}
+                  <button class="logout" type="submit">Logout</button>
+              </form>
+              {% else %}
+              <form id="login-form" method="GET" action="{% url 'login' %}">
+                  {% csrf_token %}
+                  <button class="login" type="submit">Login</button>
+              </form>
+              {% endif %} 
+          </div>
+      </div>
+  </header>
+  
     
     {% block hi %}
     {% endblock %}
@@ -64,36 +87,27 @@
     </script>    
 
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-          let timer;
-  
-          // Listener for search form
-          document.getElementById('search-form').querySelector('input[name="query"]').addEventListener('input', function() {
-              clearTimeout(timer);
-              timer = setTimeout(async function() {
-                  let queryValue = encodeURIComponent(document.getElementById('search-form').querySelector('input[name="query"]').value);
-                  
-                  // Fetch news results
-                  let newsResponse = await fetch('/news_synopsis/?query=' + queryValue);
-                  if (newsResponse.ok) {
-                      let newsMarkdown = await newsResponse.text();
-                      // Convert Markdown to HTML
-                      let newsHTML = marked(newsMarkdown);
-                      document.getElementById('news-results').innerHTML = newsHTML;
-                  }
-  
-                  // Fetch actors results
-                  let actorsResponse = await fetch('/news_actors/?query=' + queryValue);
-                  if (actorsResponse.ok) {
-                      let actorsMarkdown = await actorsResponse.text();
-                      // Convert Markdown to HTML
-                      let actorsHTML = marked(actorsMarkdown);
-                      document.getElementById('actors-results').innerHTML = actorsHTML;
-                  }
-                  
-              }, 500);
-          });
-      });
+      // Assuming you have the token stored in a variable 'token'
+      const socket = new WebSocket(`ws://127.0.0.1:8000/chat/get-data/?token=${token}`);
+
+      socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        console.log(data);
+      }
+
+      socket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+      }
+
+      document.querySelector('#chat-message-submit').onclick = function(e) {
+        const messageInputDom = document.querySelector('#chat-message-input');
+        const message = messageInputDom.value;
+        socket.send(JSON.stringify({
+          'message': message
+        }));
+        messageInputDom.value = '';
+      };
+
   </script>
 
 </html>

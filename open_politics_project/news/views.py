@@ -1,13 +1,13 @@
 import sys
 from pathlib import Path
-
 from news.models import NewsArticle, NewsSource
 from django.http import StreamingHttpResponse
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema.output_parser import StrOutputParser
-from langchain.schema import SystemMessage, ChatMessage
+from langchain.prompts import BasePromptTemplate
 from langchain.schema.runnable import RunnableParallel, RunnablePassthrough
+from django.views.decorators.http import require_http_methods
 
 from langchain.callbacks.base import BaseCallbackHandler
 from django.views.generic import ListView
@@ -16,6 +16,8 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from news.api_calls import call_with_search_parameters
 import io
+from django.contrib.auth import login
+
 import openai
 import os
 import sys
@@ -27,10 +29,87 @@ from queue import Queue
 import threading
 from django.http import StreamingHttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from .models import Conversation, ChatMessages
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.forms import UserCreationForm
+from django.urls import reverse_lazy
+from django.views import generic
+from django.contrib.sessions.models import Session
+import requests
+from .serializers import ChatMessageSerializer, ConversationSerializer
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import authentication_classes, permission_classes, api_view
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import JSONParser
+from django.http import JsonResponse
+from langchain.memory.chat_message_histories.in_memory import ChatMessageHistory
+from langchain.memory import ConversationBufferMemory
+from langchain.chains import ConversationChain
+from langchain_together import Together
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import authenticate, login
+from langchain_core.runnables import chain
+from langchain_core.runnables import RunnableLambda
+from langchain_together import Together
 
 
-logger = logging.getLogger(__name__)
 
+
+llm = Together(
+    model="mistralai/Mistral-7B-Instruct-v0.1",
+    temperature=0.5,
+    max_tokens=256,
+    top_k=1,
+    together_api_key=str(os.environ.get("TOGETHER_API_KEY"))
+)
+non_streaming_model_runnable = RunnableLambda(llm)
+memory = ConversationBufferMemory()
+
+
+class SignUpView(generic.CreateView):
+    form_class = UserCreationForm
+    success_url = reverse_lazy('login')
+    template_name = 'registration/signup.html'
+
+    def form_valid(self, form):
+        # Call the parent class's form_valid method to create the user
+        response = super().form_valid(form)
+
+        # Generate a token for the newly registered user
+        user = self.object
+        token, created = Token.objects.get_or_create(user=user)
+        print(token)
+        print(token.key)
+
+        if created:
+            # Log the user in by creating a session
+            login(self.request, user)
+            return JsonResponse({'token': token.key}, status=201)
+        else:
+            # Handle the case where token creation failed
+            return JsonResponse({'error': 'Token creation failed'}, status=500)
+    
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def custom_login_view(request):
+    if request.method == 'GET':
+        return render(request, 'registration/login.html')  # Path to your login template
+
+    # POST request handling
+    username = request.POST.get('username')
+    password = request.POST.get('password')
+    user = authenticate(username=username, password=password)
+    if user:
+        login(request, user)
+        token, created = Token.objects.get_or_create(user=user)
+        return JsonResponse({'token': token.key})
+    else:
+        return JsonResponse({'error': 'Invalid Credentials'}, status=400)
+
+memory = ConversationBufferMemory()
 
 def news_home(request):
     return render(request, "news/news_home.html", {'range_20': range(20)})
@@ -41,6 +120,175 @@ def news(request):
 
 def tools(request):
     return render(request, "news/hero_tools.html")
+
+API_URL = "https://api-inference.huggingface.co/models/czearing/article-title-generator"
+headers = {"Authorization": str("Bearer" + os.environ.get("HUGGINGFACE_TOKEN"))}
+
+
+def generate_title(payload):
+        response = requests.post(API_URL, headers=headers, json=payload)
+
+        # Check if the response is successful
+        if response.status_code == 200:
+            data = response.json()
+            return data[0]['generated_text']
+        else:
+            import random
+            title = str("Conversation"+str(random.randint(0,10000)))
+            data = title
+            return data
+ 
+        
+
+def retrieve_conversation(title, user):
+    # number of conversations
+    num_recent_conversations = 4
+
+    # Retrieve the most recent conversation history from the database
+    conversation_obj = Conversation.objects.get(title=title, user=user)
+    conversation_id = getattr(conversation_obj, 'id')
+    
+    # Retrieve recent conversation messages
+    conversation_context = ChatMessages.objects.filter(
+        conversation_id=conversation_id
+    ).order_by('-timestamp')[:num_recent_conversations:-1]
+    
+    # Storing the retrived data from db to model memory 
+    lst = []
+    for msg in conversation_context:
+        input_msg = getattr(msg, 'user_response')
+        output_msg = getattr(msg, 'ai_response')
+        lst.append({"input": input_msg, "output": output_msg})
+    
+    for x in lst:
+        inputs = {"input": x["input"]}
+        outputs = {"output": x["output"]}
+        memory.save_context(inputs, outputs)
+    
+   
+    retrieved_chat_history = ChatMessageHistory(
+        messages=memory.chat_memory.messages
+    )
+
+    return retrieved_chat_history
+
+# Function to store the conversation to DB
+def store_message(user_response, ai_response, conversation_id):
+    ChatMessages.objects.create(
+        user_response=user_response,
+        ai_response=ai_response,
+        conversation_id=conversation_id,
+    )
+
+# Function to create a Conversation in DB
+def store_title(title, user):
+    Conversation.objects.create(
+        title=title,
+        user=user
+    )
+
+
+# creating a new conversation or continuing old conversation, NEEDS WORK!
+@csrf_exempt
+@api_view(['POST', 'GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def chat(request):
+    #get chat history
+    if request.method == 'GET':
+        request_data = JSONParser().parse(request)
+        provided_title = request_data.get('title')
+        user = request.user
+        if provided_title:
+            conversation_title = Conversation.objects.get(
+                title=provided_title, user=user)
+            conversation_id = getattr(conversation_title, 'id')
+            ChatObj = ChatMessages.objects.filter(
+                conversation_id=conversation_id).order_by('timestamp')
+            Chat = ChatMessageSerializer(ChatObj, many=True)
+            return JsonResponse(Chat.data, safe=False)
+        else:
+            return JsonResponse({'error': 'Title not provided'}, status=400)
+
+    #create new chat or continue old conversation by providing title
+    elif request.method == 'POST':
+        request_data = JSONParser().parse(request)
+        prompt = request_data.get('prompt')
+        user = request.user
+        provided_title = request_data.get('title')
+        if provided_title:
+            # Create a ChatMessageHistory instance
+            retrieved_chat_history = retrieve_conversation(
+                provided_title, user)
+
+        else:
+            memory.clear()
+            retrieved_chat_history = ChatMessageHistory(messages=[])
+            # Generate a default title if not provided
+            title = generate_title({
+                "inputs": "Blauer Bär"
+            })
+            store_title(title, user)
+        reloaded_chain = ConversationChain(
+            llm=llm,
+            memory=ConversationBufferMemory(
+                chat_memory=retrieved_chat_history),
+            verbose=True,
+        )
+        response = reloaded_chain.predict(input=prompt)
+
+        conversation_title = Conversation.objects.get(title=title, user=user)
+        conversation_id = getattr(conversation_title, 'id')
+        store_message(prompt, response, conversation_id)
+
+        return JsonResponse({
+            'ai_responce': response,
+            'title':title
+        }, status=201)
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])  
+def get_title(request):
+    user=request.user
+    titles= Conversation.objects.filter(user=user)
+    serialized= ConversationSerializer(titles, many=True)
+    return JsonResponse(serialized.data, safe=False)
+
+# Delete a conversation by providing title of conversation
+@csrf_exempt   
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated]) 
+def delete_conversation(request):
+    user=request.user
+    data= JSONParser().parse(request)
+    title= data.get('title')
+    obj=Conversation.objects.get(user=user, title=title)
+    obj.delete()
+    return JsonResponse("Deleted succesfully", safe=False)
+
+@csrf_exempt   
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_data(request):
+    request_data = JSONParser().parse(request)
+    provided_title = request_data.get('title')
+    user = request.user
+    if provided_title:
+        conversation_title = Conversation.objects.get(
+            title=provided_title, user=user)
+        conversation_id = getattr(conversation_title, 'id')
+        ChatObj = ChatMessages.objects.filter(
+            conversation_id=conversation_id).order_by('timestamp')
+        Chat = ChatMessageSerializer(ChatObj, many=True)
+        return JsonResponse(Chat.data, safe=False)
+    else:
+        return JsonResponse({'error': 'Title not provided'}, status=400)
+
+
 
 class ArticleListView(ListView):
     model = NewsArticle

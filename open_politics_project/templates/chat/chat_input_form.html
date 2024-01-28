@@ -1,0 +1,15 @@
+<form method="post" hx-post="/chat/" hx-target="#message-area" hx-swap="beforeend">
+    {% csrf_token %}
+    <input type="hidden" name="conversation_id" value="{{ conversation_id }}" id="conversation-id">
+    <div class="input-group">
+        <input type="text" name="prompt" placeholder="Type a message..." class="input-field">
+        <button type="submit" class="send-button">Send</button>
+    </div>
+</form>
+<script>
+    document.body.addEventListener('htmx:configRequest', function(event) {
+        var token = sessionStorage.getItem('authToken');
+        console.log(token);
+        event.detail.headers['Authorization'] = 'Token ' + token;
+    });
+</script>

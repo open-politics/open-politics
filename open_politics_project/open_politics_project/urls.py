@@ -17,20 +17,18 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path, include
 from django.views.static import serve
-from bt_thema import views as bt_thema_views
-from news import views as news_views
-from news import urls as news_urls
-from bt_thema import urls as bt_thema_urls
-from . import views as views
-
-
-
+from . import views
+from django.contrib import admin
+from django.urls import path, re_path, include
+from django.views.static import serve
+from news.views import SignUpView
 
 urlpatterns = [
-    path('', news_views.news_home, name='home'),
+    path('', views.news_home, name='home'),
     path('admin/', admin.site.urls),
     path("", include("bt_thema.urls")),
     path("", include("news.urls")),
+    path("", include("authentification.urls")),
     re_path(r'^\.well-known/acme-challenge/(?P<path>.+)$', serve, {
         'document_root': '/var/www/letsencrypt/',
     }),

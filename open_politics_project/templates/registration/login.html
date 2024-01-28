@@ -1,0 +1,67 @@
+<!-- registration/login.html -->
+{% extends 'base.html' %}  <!-- or your base template -->
+
+{% block content %}
+<form method="post" id="login-form">
+    {% csrf_token %}
+    <label for="username">Username:</label>
+    <input type="text" name="username" id="username" required>
+    <label for="password">Password:</label>
+    <input type="password" name="password" id="password" required>
+    <button type="submit">Login</button>
+</form>
+
+<script>
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+    
+        var formData = new FormData(this);
+        var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+        fetch('/login/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.token) {
+                sessionStorage.setItem('authToken', data.token);
+                window.location.href = '/'; // Redirect to the homepage
+            } else {
+                alert('Login failed');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+    
+</script>    
+<script>
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        var formData = new FormData(this);
+        var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch('/login/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response data here
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+</script>
+
+{% endblock %}

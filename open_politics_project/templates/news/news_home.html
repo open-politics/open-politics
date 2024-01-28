@@ -6,65 +6,40 @@
 
 <!-- Include HTMX -->
 <script src="https://unpkg.com/htmx.org"></script>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        let timer;
-        const loadingSpinner = document.getElementById('loading');
+        var wsStart = 'ws://';
+        if (window.location.protocol === 'https:') {
+            wsStart = 'wss://';
+        }
+        var endpoint = wsStart + window.location.host + window.location.pathname;
+        var socket = new WebSocket(endpoint);
 
-        // Helper function to show and hide the loading spinner
-        function showLoadingSpinner() {
-            loadingSpinner.style.display = 'block';
+        socket.onmessage = function(e) {
+            console.log('Message:', e);
+            var data = JSON.parse(e.data);
+            var message = data['message'];
+            document.getElementById('messages-area').innerText += '\n' + message;
         }
 
-        function hideLoadingSpinner() {
-            loadingSpinner.style.display = 'none';
+        socket.onopen = function(e) {
+            console.log('Open', e);
         }
 
-        // Helper function to render markdown content
-        function renderMarkdown(contentId) {
-            const content = document.getElementById(contentId);
-            content.innerHTML = marked.parse(content.textContent);  // Use marked.parse() here
+        socket.onerror = function(e) {
+            console.log('Error', e);
         }
 
-        // Listener for search form
-        document.getElementById('search-form').querySelector('input[name="query"]').addEventListener('input', function() {
-            clearTimeout(timer);
-            timer = setTimeout(async function() {
-                showLoadingSpinner(); // Show spinner when fetching data
+        socket.onclose = function(e) {
+            console.log('Close', e);
+        }
 
-                let queryValue = encodeURIComponent(document.getElementById('search-form').querySelector('input[name="query"]').value);
-                
-                // Fetch news results
-                let newsResponse = await fetch('/news_synopsis/?query=' + queryValue);
-                if (newsResponse.ok) {
-                    let newsHTML = await newsResponse.text();
-                    document.getElementById('news-results').innerHTML = newsHTML;
-                    renderMarkdown('synopsis-content');  // Parse and render markdown for synopsis
-                }
-
-                // Fetch actors results
-                let actorsResponse = await fetch('/news_actors/?query=' + queryValue);
-                if (actorsResponse.ok) {
-                    let actorsHTML = await actorsResponse.text();
-                    document.getElementById('actors-results').innerHTML = actorsHTML;
-                    renderMarkdown('actors-content');  // Parse and render markdown for actors
-                }
-                
-                hideLoadingSpinner(); // Hide spinner when data is loaded
-            }, 500);
-        });
-
-        // Handle the streamed response
-        document.body.addEventListener('htmx:afterOnLoad', function(event) {
-            let content = event.detail.value;
-            // Update the DOM with the streamed content
-            document.getElementById('streamed-results').innerHTML += content;
-        });
-    });
-    document.body.addEventListener('htmx:configRequest', function(event) {
-        var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        event.detail.headers['X-CSRFToken'] = csrfToken;
+        document.getElementById('send-button').onclick = function(e) {
+            var messageInput = document.getElementById('message-input');
+            var message = messageInput.value;
+            socket.send(JSON.stringify({'message': message}));
+            messageInput.value = '';
+        }
     });
 </script>
 

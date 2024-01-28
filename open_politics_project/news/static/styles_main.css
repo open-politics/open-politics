@@ -30,12 +30,27 @@ body, h1, h2, h3, h4, p, a {
 /* Site Header Styles */
 .site-header {
     display: flex;
-    justify-content: flex-start; /* Orient to the left */
+    justify-content: space-between; /* Spread the child elements across the full width */
     align-items: center;
-    padding-left: calc(50vw - 600px); /* Center the header */
-    height: 70px;  /* or whatever height you prefer */
+    padding: 0 20px; /* Add some padding on the sides */
+    height: 70px;
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.5), var(--main-bg-color));
+}
 
-    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.5), var(--main-bg-color)); /* Adjust the gradient */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.title-container {
+    /* Styles for the title container */
+}
+
+.auth-container {
+    display: flex;
+    align-items: center;
+    /* Add any additional styles needed for spacing or alignment */
 }
 
 .side-title {
@@ -49,6 +64,66 @@ body, h1, h2, h3, h4, p, a {
     margin-right: -15px;     /* Space between the logo and the title */
     margin-top: 6px;
     vertical-align: middle; /* Aligns the logo with the title text */
+}
+
+.login {
+    height: 100%;
+    width: 100%;
+    margin-left: 80px;
+}
+
+.logout{
+height: 100%; width: 100%; margin-left: 80px;
+}
+
+#logout-form > button {
+    margin-left: auto;
+    margin-right: 20px;
+    background-color: transparent;
+}
+
+#login-form > button {
+    margin-left: auto;
+    margin-right: 20px;
+    background-color: transparent;
+}
+
+.github-logo{
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    color: white;
+    background-color: transparent; /* Default background color */
+    transition: background-color 0.3s;  
+}
+
+
+/* Additional CSS for Mobile Screens */
+@media screen and (max-width: 768px) {
+    .site-header {
+        /* Adjust the header for smaller screens */
+        padding: 0 10px; /* Less padding */
+    }
+
+    .header-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .site-title {
+        margin-top: 50px;
+        font-size: 20px; /* Smaller font size for the title */
+    }
+
+    .auth-container {
+        margin-top: 10px; /* Add space between title and buttons */
+        flex-direction: row; /* Keep buttons inline */
+        justify-content: flex-start;
+    }
+
+    .github-logo, .login, .logout {
+        /* Adjust the size if necessary */
+    }
 }
 
 /* Circular design element with color streaks */
