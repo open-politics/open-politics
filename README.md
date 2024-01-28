@@ -21,6 +21,9 @@ Currently needed:
 - Within the next week a Discord server will be set up to discuss the project and to provide an initial platform for collaboration.
 - If you feel proficient in these kind of things, please feel free to contact me.
 
+28.01.2024 Update:
+[SSARE](https://github.com/JimVincentW/SSARE) is beeing developed as the backend semantic search engine for the project. It is a lightweight search engine for scraping, storing and querying news articles.
+
 
 ## Coming soon: release of data scraper interface to provide extensibility for the project.
 - The idea is that people can choose source x and build a datascraper for it, which will then be integrated into the project.
