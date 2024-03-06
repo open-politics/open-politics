@@ -1,351 +1,219 @@
-/* New color scheme */
+/* Root Definitions and General Styles */
 :root {
-  --main-bg-color: #212121;
-  --main-text-color: #FBECB2;
-  --highlight-bg-color: #D0C4FF; /* This is the base color for the highlight */
+    --main-bg-color: #ffffff;
+    --main-text-color: #333333;
+    --highlight-bg-color: #007bff;
+    --button-text-color: #ffffff;
 }
 
-@import url('https://fonts.cdnfonts.com/css/alfa-slab-one');
-
-/* Global styles */
 * {
-  font-family: 'Alfa Slab One', sans-serif;
-  /* Other global styles can go here */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-    margin: 0;
-    font-family: 'Open Sans', sans-serif;
-    background: url('media/sama.png') center/cover no-repeat; 
-    background-size: 50%;
+    font-family: 'SuisseNeue-Monitor', sans-serif;
+    color: var(--main-text-color);
     background-color: var(--main-bg-color);
+    max-width: 1200px;
+    margin: 0 auto;
+    line-height: 1.6;
 }
 
-
-
-body, h1, h2, h3, h4, p, a {
-  color: var(--main-text-color);
+/* Typography */
+@font-face {
+    font-family: "SuisseNeue-Medium";
+    src: url("fonts/SuisseNeue-Medium-WebS.woff2") format("woff2");
+    font-weight: 500;
 }
 
-/* Site Header Styles */
-.site-header {
-    display: flex;
-    justify-content: space-between; /* Spread the child elements across the full width */
-    align-items: center;
-    padding: 0 20px; /* Add some padding on the sides */
-    height: 70px;
-    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.5), var(--main-bg-color));
+@font-face {
+    font-family: "SuisseNeue-Monitor";
+    src: url("fonts/SuisseScreen-Monitor-WebS.woff2") format("woff2");
+    font-weight: 500;
 }
+
+@font-face {
+    font-family: "SuisseNeue-Regular";
+    src: url("fonts/SuisseNeue-Regular-WebS.woff2") format("woff2");
+    font-weight: 400;
+}
+
 
 .header-container {
     display: flex;
-    justify-content: space-between;
+    align-items: flex-end;
+    justify-content: space-around;
+    max-width: 1200px;
+    height: 100%;
+    padding-top: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+
+.site-header {
+    background-color: var(--main-bg-color);
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    position: relative;
+    top: 0;
+    left: 0;
     width: 100%;
+    /* box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); */
+    z-index: 1000;
+    margin: 0 auto;
 }
 
 .title-container {
-    /* Styles for the title container */
-}
-
-.auth-container {
     display: flex;
     align-items: center;
-    /* Add any additional styles needed for spacing or alignment */
 }
 
-.side-title {
-    color: black;
-    margin-left: -100px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Add a big shadow */
+.site-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--main-text-color);
 }
+
 
 .site-title-logo {
-    max-width: 50px;        /* Controls the size of the logo */
-    margin-right: -15px;     /* Space between the logo and the title */
-    margin-top: 6px;
-    vertical-align: middle; /* Aligns the logo with the title text */
+    max-width: 50px;
+    margin-right: 10px;
 }
 
-.login {
-    height: 100%;
-    width: 100%;
-    margin-left: 80px;
-}
-
-.logout{
-height: 100%; width: 100%; margin-left: 80px;
-}
-
-#logout-form > button {
-    margin-left: auto;
-    margin-right: 20px;
-    background-color: transparent;
-}
-
-#login-form > button {
-    margin-left: auto;
-    margin-right: 20px;
-    background-color: transparent;
-}
-
-.github-logo{
-    display: inline-block;
-    width: 40px;
-    height: 40px;
-    color: white;
-    background-color: transparent; /* Default background color */
-    transition: background-color 0.3s;  
-}
-
-
-/* Additional CSS for Mobile Screens */
-@media screen and (max-width: 768px) {
-    .site-header {
-        /* Adjust the header for smaller screens */
-        padding: 0 10px; /* Less padding */
-    }
-
-    .header-container {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .site-title {
-        margin-top: 50px;
-        font-size: 20px; /* Smaller font size for the title */
-    }
-
-    .auth-container {
-        margin-top: 10px; /* Add space between title and buttons */
-        flex-direction: row; /* Keep buttons inline */
-        justify-content: flex-start;
-    }
-
-    .github-logo, .login, .logout {
-        /* Adjust the size if necessary */
-    }
-}
-
-/* Circular design element with color streaks */
-.circular-design-element {
-  background-image: url('/open_politics_project/staticfiles_root/media/sama.png');
-  background-size: cover;
-  border-radius: 50%; /* Makes the element circular */
-  width: 300px; /* Set the size of your element */
-  height: 300px;
-  position: relative; /* Position it relative to its container */
-  overflow: hidden; /* Ensure no overflow from the content */
-  mix-blend-mode: screen; /* Blend mode example, you can choose others as well */
-}
-
-
-
-
-/* Highlight background with opacity */
-.highlight-bg {
-    background-color: var(--highlight-bg-color);
-    opacity: 0.5;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 255, 0.5);
-    backdrop-filter: blur(5px);
-}
-
-
-.section {
-    height: calc(100vh + 200px);
-    
-}
-
-.grid-container {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    grid-gap: 30px;
-    padding: 10px;
-    height: 1200px; /* Adjust as needed */
-    max-width: 1200px;
-    margin: auto;
-    margin-top: 40px;
-    overflow: hidden; /* Hide scrollbars */
-}
-
-.grid-item {
-    width: 100%; /* Adjust as needed */
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    background-blend-mode: multiply;
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
-
-    
-}
-
-
-.grid-item.highlight > * {
-    color: white; /* Change this to any color you want */
-    gap: 10px;
-}
-
-.grid-item.content {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    height: 100%;
-}
-
-
-.search-form {
-    display: flex;        /* Enables flexbox */
-    justify-content: center; /* Centers children horizontally */
-    align-items: center;  /* Centers children vertically */
-    width: 100%;          /* Takes full width of the parent */
-    margin-top: 20px;     /* Add space on top if needed */
-}
-
-.search-form input {
-    width: 100%;          /* Takes full width of the parent */
-    height: 40px;         /* Specify height */
-    padding: 0 10px;      /* Adds some padding to the left and right */
-    border: 1px solid #ccc; /* Add a gray border */
-    border-radius: 5px;   /* Rounded corners */
-    font-size: 16px;      /* Specify font size */
-    outline: none;        /* Removes the blue outline */
-}
-
-.search-form button {
-    height: 40px;         /* Specify height */
-    width: 40px;          /* Specify width */
-    border: none;         /* Removes borders */
-    background-color: #333; /* Specify background color */
-    color: white;         /* Specify text color */
-    font-size: 16px;      /* Specify font size */
-    cursor: pointer;      /* Change mouse pointer on hover */
-    outline: none;        /* Removes the blue outline */
-    border-radius: 5px;   /* Rounded corners */
-    margin-left: -45px;   /* Negative margin to pull the button left */
-}
-
-.grid-item.maximized {
-    grid-column: 1 / -1; /* Span all columns */
-    grid-row: 1 / -1; /* Span all rows */
-    z-index: 10; /* Above other items */
-    transition: all 3s ease; /* Smooth transition */
-}
-
-/* Styles for maximize and minimize buttons */
-.special-maximize-button,
-.special-minimize-button {
-    height: 30px;
-    width: 30px;
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    padding: 5px;
-    cursor: pointer;
-    background-color: rgba(128, 128, 128, 0.5);
-    color: white;
-    border: none;
-    border-radius: 30px;
-    font-size: 1em;
-    outline: none;
-    display: none; /* Initially hidden */
-}
-
-.special-maximize-button:hover,
-.special-minimize-button:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
-.special-minimize-button {
-    display: none; /* Initially hidden */
-}
-
-/* Responsive design adjustments */
-@media (max-width: 768px) {
-    .grid-container {
-        grid-template-columns: repeat(2, 1fr); /* Adjust for smaller screens */
-    }
-}
-
-.grid-item:hover {
-    transform: translateY(-5px); /* Slight raise effect on hover */
-}
-
-/* Settings Form and Main Content */
-.settings-form {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(5px);
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-    margin: 0 auto; /* Center the form in its container */
-    width: 90%; /* Give some space from the container */
-    max-width: 500px; /* Maximum width of the form */
-    display: flex;
-    flex-direction: column;
-    gap: 10px; /* Space between child elements */
-    transition: box-shadow 0.3s ease; /* Smooth shadow transition */
-    height: calc(100% - 40px); /* Adjust height automatically */
-}
-
-.settings-form:hover {
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Slightly larger shadow on hover */
-}
-
-/* Form Elements Styling */
-.agent_runner {
-    border-radius: 10px;
-    margin: 0 auto; /* Center the form in its container */
-    height: 100%;
-    width: 100%%;
-    position: relative;
-}
-
-input[type="text"],
-.form-check-input {
-    border: none;
-    /* box-shadow: inset 2px 2px 16px #000000, */
-    /*             inset -5px -5px 63px #000000; */
-    /* border-radius: 10px; */
-    padding: 10px;
-    margin: 5px 0;
-    width: calc(100% - 20px);
-}
-
-h3, label, button {
-    color: #ffffff;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
 
 button {
-    background: rgba(0, 255, 0, 0.30);
+    background-color: transparent;
+    color: var(--main-text-color);
+    padding: 10px 5px;
     border: none;
-    /* box-shadow: 2px 2px 5px #ffffff, */
-    /*             -5px -5px 10px #ffffff; */
-    border-radius: 10px;
-    color: white;
-    padding: 10px;
-    margin: 5px 0;
-    width: calc(100% - 20px);
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 button:hover {
-    background-color: #107c8c;
+    background-color: var(--highlight-bg-color);
+    color: var(--button-text-color);
 }
 
-.form-check {
+/* Navigation */
+.nav-container {
+    display: flex;
+    margin-left: auto;
+}
+
+nav a {
+    color: var(--main-text-color);
+    text-decoration: none;
+    margin: 0 15px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+nav a:hover {
+    background-color: var(--highlight-bg-color);
+    color: var(--button-text-color);
+    border-radius: 0.25rem;
+}
+
+/* Authentication */
+.auth-container {
     display: flex;
     align-items: center;
-    gap: 5px;
 }
 
-input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
+.github-logo {
+    max-height: 30px;
+    margin-right: 10px;
 }
+
+.highlights-container {
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;  
+    
+}
+
+.highlight-text {
+    padding-bottom: 2em;
+    
+}
+
+.highlight-link {
+    padding: 3px;
+    padding-right: 5px;
+    background: linear-gradient(to right, #ffffff, #87ceeb);
+
+}
+.highlight-link:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s;
+}
+.orange {
+    background: linear-gradient(to right, #ffffff, orange);
+}
+.violet {
+    background: linear-gradient(to right, #ffffff, violet);
+}
+
+/* Headline */
+.headline {
+    padding: 2rem 0;
+    font-size: 3.5rem;
+    text-align: center;
+    letter-spacing: 0.1em; /* Adjust as needed for character spacing */
+    word-spacing: 0.2em;
+}
+
+.shimmer {
+    animation: shimmer 2s infinite linear;
+}
+
+.ast {
+    margin-right: -20px;
+}
+
+@keyframes shimmer {
+    0% { color: red; }
+    20% { color: orange; }
+    40% { color: yellow; }
+    60% { color: green; }
+    80% { color: blue; }
+    100% { color: violet; }
+}
+
+.blinking-cursor {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    from, to { color: transparent; }
+    50% { color: var(--main-text-color); }
+}
+
+/* Utility and Responsive Styles */
+.line1 {
+    background-color: #d1d1d1;
+    height: 1px;
+    margin: 32px 0;
+}
+
+.right-aligned-text {
+    text-align: right; /* Align text to the right */
+    margin-left: auto; /* This will push the block to the right */
+    padding: 1rem; /* Optional padding */
+    margin-top: 2rem;
+}
+
+
+
+.description {
+    margin: 1em 0;
+    color: grey; /* Replace with the actual color from the design */
+  }
+ 

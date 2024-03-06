@@ -1,0 +1,32 @@
+{% load static %}
+<div class="header-container">
+    <div class="site-header">
+        <div class="title-container">
+            {% comment %} <img src="{% static 'media/sama.png' %}" alt="Open Politics Logo" class="site-title-logo"> {% endcomment %}
+            <h1 class='site-title'>Open Politics Project</h1>
+        </div>
+
+        <nav class="nav-container">
+            <a href="#about">About</a>
+            <a href="#news">News</a>
+            <a href="https://github.com/JimVincentW/SSARE">GitHub</a>
+            <a href="#contact">Contact</a>
+        </nav>
+
+        <div class="auth-container">
+                <img src="{% static 'media/github-mark.svg' %}" alt="GitHub Logo" class="github-logo">
+                {% if user.is_authenticated %}
+                <form id="logout-form" method="POST" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button class="logout" type="submit">Logout</button>
+                </form>
+                {% else %}
+                <form id="login-form" method="GET" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <button class="login" type="submit">Login</button>
+                </form>
+                {% endif %}
+            </div>
+    </div>
+</div>
+<div class='line1'></div>

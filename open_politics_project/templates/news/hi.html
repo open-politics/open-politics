@@ -1,0 +1,71 @@
+<div class="headline">
+    <span> What are you </span>
+    <span class='shimmer ast'>*</span>
+    <span is="type-async" class='ast shimmer' id="type-text"></span>
+    <span class="blinking-cursor">_</span>
+    <span> for? </span>
+  </div>
+  <div class='right-aligned-text'>
+  <p class="highlight-text medium">
+    Take part in the worlds freshest news data project out there.
+  </p>
+<p class='highlight-text'>Research with ease, what is hard to keep track of.
+  <div class='highlights-container'>
+    <p class='highlight-link'>Ask AI about the News</p>
+    <p class='highlight-link orange'>Use data analysis scripts on the news</p>
+    <p class='highlight-link violet'>Contribute your own sources or analysis scripts</p> 
+  </div>
+</div>
+<script>
+    const sleep = time => new Promise(resolve => setTimeout(resolve, time));
+
+    class TypeAsync extends HTMLSpanElement {
+        get typeInterval() {
+            const randomMs = 100 * Math.random();
+            return randomMs < 50 ? 10 : randomMs;
+        }
+        
+        async type(text) {
+            for (let character of text) {
+                if (character === '*') {
+                    this.innerHTML += '<span class="shimmer">*</span>';
+                } else {
+                    this.innerText += character;
+                }
+                await sleep(this.typeInterval);
+            }
+        }
+        
+        async delete(text) {
+            for (let character of text) {
+                this.innerText = this.innerText.slice(0, this.innerText.length - 1);
+                await sleep(this.typeInterval);
+            }
+        }
+    }
+
+    customElements.define('type-async', TypeAsync, { extends: 'span' });
+
+    async function init() {
+        const node = document.querySelector("#type-text");
+        const words = ['looking', 'researching', 'rooting']; // add your words here
+        let counter = 0;
+        
+        await sleep(1000);
+        node.innerText = "";
+        await node.type('');
+        
+        while (true) {
+            await node.type(words[counter]);
+            if (counter === words.length - 1) {
+                break;
+            }
+            await sleep(2000);
+            await node.delete(words[counter]);
+            counter++;
+        }
+    }
+    
+    init();
+</script>
+

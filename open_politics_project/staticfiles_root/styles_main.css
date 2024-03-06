@@ -1,0 +1,211 @@
+/* Root Definitions and General Styles */
+:root {
+    --main-bg-color: #ffffff;
+    --main-text-color: #333333;
+    --highlight-bg-color: #007bff;
+    --button-text-color: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'SuisseNeue-Monitor', sans-serif;
+    color: var(--main-text-color);
+    background-color: var(--main-bg-color);
+    max-width: 1200px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Typography */
+@font-face {
+    font-family: "SuisseNeue-Medium";
+    src: url("fonts/SuisseNeue-Medium-WebS.woff2") format("woff2");
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: "SuisseNeue-Monitor";
+    src: url("fonts/SuisseScreen-Monitor-WebS.woff2") format("woff2");
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: "SuisseNeue-Regular";
+    src: url("fonts/SuisseNeue-Regular-WebS.woff2") format("woff2");
+    font-weight: 400;
+}
+
+
+
+.site-header {
+    background-color: var(--main-bg-color);
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 0 56px;
+    /* box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); */
+    z-index: 1000;
+    margin: 0 auto;
+}
+
+.header-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.title-container {
+    display: flex;
+    align-items: center;
+}
+
+.site-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--main-text-color);
+}
+
+
+.site-title-logo {
+    max-width: 50px;
+    margin-right: 10px;
+}
+
+.login-button {
+    background-color: var(--highlight-bg-color);
+    color: var(--button-text-color);
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.login-button:hover {
+    background-color: #0056b3;
+}
+/* Navigation */
+.nav-container {
+    display: flex;
+    margin-left: auto;
+}
+
+nav a {
+    color: var(--main-text-color);
+    text-decoration: none;
+    margin: 0 15px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+nav a:hover {
+    background-color: var(--highlight-bg-color);
+    color: var(--button-text-color);
+    border-radius: 0.25rem;
+}
+
+/* Authentication */
+.auth-container {
+    display: flex;
+    align-items: center;
+}
+
+.github-logo {
+    max-height: 30px;
+    margin-right: 10px;
+}
+
+.highlights-container {
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;  
+    
+}
+
+.highlight-text {
+    padding-bottom: 2em;
+    
+}
+
+.highlight-link {
+    padding: 3px;
+    padding-right: 5px;
+    background: linear-gradient(to right, #ffffff, #87ceeb);
+
+}
+.highlight-link:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s;
+}
+.orange {
+    background: linear-gradient(to right, #ffffff, orange);
+}
+.violet {
+    background: linear-gradient(to right, #ffffff, violet);
+}
+
+/* Headline */
+.headline {
+    padding: 2rem 0;
+    font-size: 3.5rem;
+    text-align: center;
+    letter-spacing: 0.1em; /* Adjust as needed for character spacing */
+    word-spacing: 0.2em;
+}
+
+.shimmer {
+    animation: shimmer 2s infinite linear;
+}
+
+.ast {
+    margin-right: -20px;
+}
+
+@keyframes shimmer {
+    0% { color: red; }
+    20% { color: orange; }
+    40% { color: yellow; }
+    60% { color: green; }
+    80% { color: blue; }
+    100% { color: violet; }
+}
+
+.blinking-cursor {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    from, to { color: transparent; }
+    50% { color: var(--main-text-color); }
+}
+
+/* Utility and Responsive Styles */
+.line1 {
+    background-color: #d1d1d1;
+    height: 1px;
+    margin: 64px 0;
+}
+
+.right-aligned-text {
+    text-align: right; /* Align text to the right */
+    margin-left: auto; /* This will push the block to the right */
+    padding: 1rem; /* Optional padding */
+    margin-top: 2rem;
+}
+
+
+
+.description {
+    margin: 1em 0;
+    color: grey; /* Replace with the actual color from the design */
+  }
+ 

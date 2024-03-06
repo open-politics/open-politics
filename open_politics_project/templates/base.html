@@ -19,36 +19,12 @@
  
   </head>
   <body>
-    <header class="site-header">
-      <div class="header-container">
-          <!-- Title Container -->
-          <div class="title-container">
-              <h1 class='site-title'>Open Politics Project</h1>
-          </div>
+    {% include 'header.html' %}
   
-          <!-- GitHub and Authentication Container -->
-          <div class="auth-container">
-              <div>
-                  <img src="{% static 'media/github-mark.svg' %}" alt="GitHub Logo" class="github-logo">
-              </div>
-              {% if user.is_authenticated %}
-              <form id="logout-form" method="POST" action="{% url 'logout' %}">
-                  {% csrf_token %}
-                  <button class="logout" type="submit">Logout</button>
-              </form>
-              {% else %}
-              <form id="login-form" method="GET" action="{% url 'login' %}">
-                  {% csrf_token %}
-                  <button class="login" type="submit">Login</button>
-              </form>
-              {% endif %} 
-          </div>
-      </div>
-  </header>
-  
+    {% include 'news/hi.html' %}
+
+    {% include 'news/ssare.html' %}
     
-    {% block hi %}
-    {% endblock %}
     
     {% block news_button %}
     {% endblock %}
