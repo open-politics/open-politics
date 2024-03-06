@@ -143,6 +143,12 @@ nav a:hover {
     padding-bottom: 2em;
     
 }
+.highlight-link-head {
+    padding: 3px;
+    padding-right: 5px;
+    background: linear-gradient(to left, #ffffff, #87ceeb);
+    text-align: left;
+}
 
 .highlight-link {
     padding: 3px;
@@ -150,15 +156,22 @@ nav a:hover {
     background: linear-gradient(to right, #ffffff, #87ceeb);
 
 }
+
 .highlight-link:hover {
     transform: scale(1.1);
     transition: transform 0.3s;
 }
-.orange {
+.orange-r {
     background: linear-gradient(to right, #ffffff, orange);
 }
-.violet {
+.violet-r {
     background: linear-gradient(to right, #ffffff, violet);
+}
+.orange-l {
+    background: linear-gradient(to left, #ffffff, orange);
+}
+.violet-l {
+    background: linear-gradient(to left, #ffffff, violet);
 }
 
 /* Headline */
@@ -175,8 +188,9 @@ nav a:hover {
 }
 
 .ast {
-    margin-right: -20px;
+    margin-right: -2rem;
 }
+
 
 @keyframes shimmer {
     0% { color: red; }
@@ -210,10 +224,60 @@ nav a:hover {
     margin-top: 2rem;
 }
 
+.left-aligned-text {
+    text-align: left; /* Align text to the right */
+    margin-left: auto; /* This will push the block to the right */
+    padding: 1rem; /* Optional padding */
+    margin-top: 2rem;
+}
+
 
 
 .description {
     margin: 1em 0;
     color: grey; /* Replace with the actual color from the design */
   }
- 
+
+  .left-aligned-container {
+    max-width: 1000px;
+    display: grid;
+    flex-direction: column;
+    align-items: center;
+    justify-content: end;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    background-color: transparent;
+    border-radius: 5px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    padding-top: 5rem;
+
+}
+.card:hover {
+    transform: scale(1.1);
+    transition: transform 0.5s ease; /* Adjust the duration and timing function as needed */
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.card-content {
+    margin-bottom: 0.5rem;
+}
+
+.card-description {
+    color: #777777;
+}
+
+.card-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+}
