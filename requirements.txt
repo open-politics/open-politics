@@ -15,5 +15,5 @@ qdrant-client
 plotly
 bs4
 sentence_transformers
-agent_search
 django-cors-headers
+pip install channels
