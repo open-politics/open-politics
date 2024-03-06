@@ -17,27 +17,15 @@
     </div>
     <div class='left-aligned-container'>
         <div class="card">
-            <h3 class="card-title">Ask AI about the News</h3>
+            <h3 class="card-title">Explore SSARE</h3>
             <div class="card-content">
-                <p class="card-description">Get instant answers and insights from AI about the latest news.</p>
+                <p class="card-description">SSARE short for Semantic Search Article Recommendation Engine</p>
+                <p class="card-description">We open source a political news scraping and analysis plattform. 
+                    The first step is search engine that shows you relevant news. This is SSARE - an API-reachable endpoint for news information spaces.
+                    The efforts can be fully retraced and modified - explore SSARE's information spaces.
+                </p>
             </div>
         </div>
-
-        <div class="card orange-card">
-            <h3 class="card-title">Use data analysis scripts on the news</h3>
-            <div class="card-content">
-                <p class="card-description">Leverage powerful data analysis scripts to gain valuable insights from the news.</p>
-            </div>
-        </div>
-
-        <div class="card violet-card">
-            <h3 class="card-title">Contribute your own sources or analysis scripts</h3>
-            <div class="card-content">
-                <p class="card-description">Share your own sources or analysis scripts to contribute to the open-source news project.</p>
-            </div>
-        </div>
-    </div>
-
 </div>
 <script>
     const sleep = time => new Promise(resolve => setTimeout(resolve, time));
@@ -71,7 +59,7 @@
 
     async function init() {
         const node = document.querySelector("#type-text");
-        const words = ['looking', 'researching', 'rooting']; // add your words here
+        const words = ['looking', 'researching', 'rooting', 'developing', 'asking']; // add your words here
         let counter = 0;
         
         await sleep(1000);
