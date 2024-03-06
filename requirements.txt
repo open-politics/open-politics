@@ -16,4 +16,4 @@ plotly
 bs4
 sentence_transformers
 django-cors-headers
-pip install channels
+channels
