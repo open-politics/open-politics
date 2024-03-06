@@ -16,3 +16,4 @@ plotly
 bs4
 sentence_transformers
 agent_search
+corsheaders
