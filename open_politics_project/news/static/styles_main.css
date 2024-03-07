@@ -16,7 +16,7 @@ body {
     font-family: 'SuisseNeue-Monitor', sans-serif;
     color: var(--main-text-color);
     background-color: var(--main-bg-color);
-    max-width: calc(100vw - 100px); /* Subtract 50px from each side */
+    max-width: 1600px;
     margin: 0 50px; /* Add 50px to each side */
     line-height: 1.6;
 }
@@ -45,7 +45,7 @@ body {
     display: flex;
     align-items: flex-end;
     justify-content: space-around;
-    max-width: 1200px;
+    max-width: 1600px;
     height: 100%;
     padding-top: 1rem;
     padding-left: 1rem;
@@ -158,7 +158,7 @@ nav a:hover {
 }
 
 .highlight-link:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
     transition: transform 0.3s;
 }
 .orange-r {
