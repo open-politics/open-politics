@@ -17,3 +17,5 @@ bs4
 sentence_transformers
 django-cors-headers
 channels
+djangorestframework
+langchain_together
