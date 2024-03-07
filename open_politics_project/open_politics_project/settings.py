@@ -57,7 +57,14 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
 }
-
+CHANNEL_LAYERS = {
+     'default': {
+         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+         'CONFIG': {
+             "hosts": [('127.0.0.1', 6379)],
+         },
+     },
+}
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_URL = '/accounts/login/'
