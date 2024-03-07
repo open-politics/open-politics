@@ -10,11 +10,9 @@
     display:flex;
     color: var(--c);
     font-family: 'SuisseNeue-Monitor', sans-serif;
-    {% comment %} align-items:center;
-    justify-content:center; {% endcomment %}
-    height: 400px;
-    background: radial-gradient(#ffffff54 2px, transparent 0) 0 0;
-  }
+      height: 400px;
+      background: radial-gradient(#ffffff54 2px, transparent 0) 0 0;
+    }
 
 .form{
   position: relative;
@@ -58,7 +56,7 @@ input{
 .form-title{
       clip-path:polygon(0 0, 0 0, 0 100%, 0 100%);
   animation: text linear 1s forwards;
-  animarion-delay: 1s;
+  animation-delay: 1s;
 }
 @keyframes gradient {
     0% {

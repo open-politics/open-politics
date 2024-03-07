@@ -16,8 +16,8 @@ body {
     font-family: 'SuisseNeue-Monitor', sans-serif;
     color: var(--main-text-color);
     background-color: var(--main-bg-color);
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: calc(100vw - 100px); /* Subtract 50px from each side */
+    margin: 0 50px; /* Add 50px to each side */
     line-height: 1.6;
 }
 
