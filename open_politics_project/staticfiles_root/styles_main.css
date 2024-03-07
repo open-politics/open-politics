@@ -41,27 +41,30 @@ body {
 }
 
 
+.header-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    max-width: 1200px;
+    height: 100%;
+    padding-top: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
 
 .site-header {
     background-color: var(--main-bg-color);
     display: flex;
     justify-content: center; /* Center horizontally */
     align-items: center; /* Center vertically */
-    position: fixed;
+    position: relative;
     top: 0;
     left: 0;
     width: 100%;
-    padding: 0 56px;
     /* box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); */
     z-index: 1000;
     margin: 0 auto;
-}
-
-.header-container {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-around;
-    width: 100%;
 }
 
 .title-container {
@@ -81,19 +84,24 @@ body {
     margin-right: 10px;
 }
 
-.login-button {
-    background-color: var(--highlight-bg-color);
-    color: var(--button-text-color);
-    padding: 10px 20px;
+
+button {
+    background-color: transparent;
+    color: var(--main-text-color);
+    padding: 10px 5px;
+    border: none;
     border-radius: 5px;
-    font-size: 16px;
+    font-size: 14px;
+    font-weight: bold;
     text-decoration: none;
     transition: background-color 0.3s, color 0.3s;
 }
 
-.login-button:hover {
-    background-color: #0056b3;
+button:hover {
+    background-color: var(--highlight-bg-color);
+    color: var(--button-text-color);
 }
+
 /* Navigation */
 .nav-container {
     display: flex;
@@ -135,6 +143,12 @@ nav a:hover {
     padding-bottom: 2em;
     
 }
+.highlight-link-head {
+    padding: 3px;
+    padding-right: 5px;
+    background: linear-gradient(to left, #ffffff, #87ceeb);
+    text-align: left;
+}
 
 .highlight-link {
     padding: 3px;
@@ -142,15 +156,22 @@ nav a:hover {
     background: linear-gradient(to right, #ffffff, #87ceeb);
 
 }
+
 .highlight-link:hover {
     transform: scale(1.1);
     transition: transform 0.3s;
 }
-.orange {
+.orange-r {
     background: linear-gradient(to right, #ffffff, orange);
 }
-.violet {
+.violet-r {
     background: linear-gradient(to right, #ffffff, violet);
+}
+.orange-l {
+    background: linear-gradient(to left, #ffffff, orange);
+}
+.violet-l {
+    background: linear-gradient(to left, #ffffff, violet);
 }
 
 /* Headline */
@@ -167,8 +188,9 @@ nav a:hover {
 }
 
 .ast {
-    margin-right: -20px;
+    margin-right: -2rem;
 }
+
 
 @keyframes shimmer {
     0% { color: red; }
@@ -192,11 +214,18 @@ nav a:hover {
 .line1 {
     background-color: #d1d1d1;
     height: 1px;
-    margin: 64px 0;
+    margin: 32px 0;
 }
 
 .right-aligned-text {
     text-align: right; /* Align text to the right */
+    margin-left: auto; /* This will push the block to the right */
+    padding: 1rem; /* Optional padding */
+    margin-top: 2rem;
+}
+
+.left-aligned-text {
+    text-align: left; /* Align text to the right */
     margin-left: auto; /* This will push the block to the right */
     padding: 1rem; /* Optional padding */
     margin-top: 2rem;
@@ -208,4 +237,48 @@ nav a:hover {
     margin: 1em 0;
     color: grey; /* Replace with the actual color from the design */
   }
- 
+
+  .left-aligned-container {
+    max-width: 1000px;
+    display: grid;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    background-color: transparent;
+    border-radius: 5px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    padding-top: 5rem;
+    text-align: end;
+
+}
+.card:hover {
+    transform: scale(1.1);
+    transition: transform 0.5s ease; /* Adjust the duration and timing function as needed */
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.card-content {
+    margin-bottom: 0.5rem;
+}
+
+.card-description {
+    color: #777777;
+}
+
+.card-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+}
