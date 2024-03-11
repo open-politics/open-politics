@@ -1,6 +1,15 @@
 version: '3'
 
 services:
+  redis:
+    image: redis:latest
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./core/configs/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "6379:6379"
+    networks:
+      - web
   web:
     build: 
       context: .
@@ -10,6 +19,8 @@ services:
 #    volumes:
 #      - static_volume:/app/staticfiles_root  
     command: ["python", "open_politics_project/manage.py", "runserver", "0.0.0.0:4000"]
+    environment:
+      - HUGGINGFACE_TOKEN=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
     networks:
       - web
     expose:
@@ -22,4 +33,3 @@ networks:
     
 volumes:
   static_volume:
-  

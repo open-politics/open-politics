@@ -19,3 +19,4 @@ django-cors-headers
 channels
 djangorestframework
 langchain_together
+rest_framework
