@@ -1,6 +1,6 @@
 #### 🚧 UNDER CONSTRUCTION 🚧
 # 🌐 Open Politics 
-## A project to make politics more accessible and understandable for everyone by the means of data science and AI.
+## Democratising Political Intelligence
 
 ### Onboarding:
 Open Politics is a plattform to democratize political intelligence. 
