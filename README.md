@@ -2,6 +2,32 @@
 # 🌐 Open Politics 
 ## A project to make politics more accessible and understandable for everyone by the means of data science and AI.
 
+### Onboarding:
+Open Politics is a plattform to democratize political intelligence. The mission is to create a 
+data-science and AI toolkit to analyze, summarize, and visualize political information.
+
+Open Politics has its own stable Datastream which has plenty of news sources it is connected to.
+
+The current toolkit looks like this:
+[SSARE - (Semantic Search Article Recommendation Engine)](https://github.com/JimVincentW/SSARE)
+A microservice infrastructure continuously scrapes newssites and stores them in a vector storage and a relational database (Postgres).
+Sources can be added with Python scripts which yield a dataframe with: URL | Headline | Paragraphs | Source.
+
+Engine X - (LLM Agent System):
+The current protoype iterates around this agent system. 
+
+
+The Webapp:
+The Django Webapp basically runs scripts and hacks together HTMX template renderings. The requirements for each script can be so different. This current approach should enable faster iteration and more flexibility.
+
+
+## Developer Jour Fixe 
+- Every Wednesday 15:30 Berlin Time
+- [Discord Server](https://discord.gg/KAFPp2KQ?event=1219348620860588123)
+
+Join and talk about the project, ask questions, propose ideas, or just listen in.
+
+
 
 **Catchphrase:** Reducing politics contextual overhead.
 
@@ -16,19 +42,8 @@ Currently needed:
 - Frontend/ UX/ UI work
 
 
-13.01.2024 Update:
-- A interdisciplinary collaboration framework is needed.
-- Within the next week a Discord server will be set up to discuss the project and to provide an initial platform for collaboration.
-- If you feel proficient in these kind of things, please feel free to contact me.
 
-28.01.2024 Update:
-[SSARE](https://github.com/JimVincentW/SSARE) is beeing developed as the backend semantic search engine for the project. It is a lightweight search engine for scraping, storing and querying news articles.
-
-
-## Coming soon: release of data scraper interface to provide extensibility for the project.
-- The idea is that people can choose source x and build a datascraper for it, which will then be integrated into the project.
-- Generally if you want to start directly, passing a dataframe with the columns "Headline", "Content", "Source", "Date" and "URL" will be super fine.
-
+## SSARE (Sustainable Software Architecture and Research Engineering)
 
 ## Table of Contents
 - [Why does this project exist?](#why-does-this-project-exist)
@@ -52,6 +67,13 @@ Currently needed:
 
 
 ## Tasks
+
+MVP Elements:
+- Issue Area Identification
+- Actor Identification / Named Entity Recognition
+- Stance Triangulation
+
+Including but not limited to tasks like:
 - Information summarization
 - Vector storage & retrieval 
 - Information clustering
@@ -67,14 +89,10 @@ Currently needed:
 - Open-Source is our friend.
 - More concrete information on the actual setup is layed out in the [Architecture](#architecture) section.
 
-- Generally, a dataset- and model-agnostic approach is needed. 
+- We try to optimize this as much as possible.
 
-- While GPT-4(V) is currently the leading model, it is important for our API calls to be independent of OpenAI's private ownership. They can change their API model endpoints at any time. We would need to test every version of that.
-- Furthermore, open-source will be our best friend with an increasing dataset of processed political information (like question-answer pairs, summaries, etc.).
-- The models should be able to be trained on the fly and to be fine-tuned for specific tasks.
 
-- Current hot take: Mixtral MoE-8x7b with experts in different political reporting or analysis domains.
-- https://www.together.ai/ seems like a lightweight way to train and deploy models.
+
 
 
 
