@@ -3,21 +3,24 @@
 ## A project to make politics more accessible and understandable for everyone by the means of data science and AI.
 
 ### Onboarding:
-Open Politics is a plattform to democratize political intelligence. The mission is to create a 
+Open Politics is a plattform to democratize political intelligence. 
+
+The mission is to create a 
 data-science and AI toolkit to analyze, summarize, and visualize political information.
 
 Open Politics has its own stable Datastream which has plenty of news sources it is connected to.
 
 The current toolkit looks like this:
-[SSARE - (Semantic Search Article Recommendation Engine)](https://github.com/JimVincentW/SSARE)
+
+#### [SSARE - (Semantic Search Article Recommendation Engine)](https://github.com/JimVincentW/SSARE)
 A microservice infrastructure continuously scrapes newssites and stores them in a vector storage and a relational database (Postgres).
 Sources can be added with Python scripts which yield a dataframe with: URL | Headline | Paragraphs | Source.
 
-Engine X - (LLM Agent System):
+#### Engine X - (LLM Agent System):
 The current protoype iterates around this agent system. 
 
 
-The Webapp:
+####The Webapp:
 The Django Webapp basically runs scripts and hacks together HTMX template renderings. The requirements for each script can be so different. This current approach should enable faster iteration and more flexibility.
 
 
@@ -26,7 +29,6 @@ The Django Webapp basically runs scripts and hacks together HTMX template render
 - [Discord Server](https://discord.gg/KAFPp2KQ?event=1219348620860588123)
 
 Join and talk about the project, ask questions, propose ideas, or just listen in.
-
 
 
 **Catchphrase:** Reducing politics contextual overhead.
