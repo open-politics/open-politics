@@ -319,7 +319,6 @@ nav a:hover {
     .headline {
         font-size: 20px;
     }
-
     .nav-container {
         margin-left: 0;
         margin-top: 1rem;
@@ -328,7 +327,6 @@ nav a:hover {
     nav a {
         margin: 0 10px;
     }
-
     .blinking-cursor {
         display: none;
     }
@@ -336,7 +334,6 @@ nav a:hover {
     .auth-container {
         margin-top: 1rem;
     }
-
     body > div.headline > span:nth-child(5) {
         padding-top: 5px;
     }
