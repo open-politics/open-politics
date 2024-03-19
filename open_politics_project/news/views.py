@@ -114,6 +114,8 @@ memory = ConversationBufferMemory()
 def news_home(request):
     return render(request, "news/news_home.html", {'range_20': range(20)})
 
+def about(request):
+    return render(request, "news/about.html" )
 
 def news(request):
     return render(request, "news/news_home.html", {'range_20': range(20)})
@@ -123,7 +125,6 @@ def tools(request):
 
 API_URL = "https://api-inference.huggingface.co/models/czearing/article-title-generator"
 headers = {"Authorization": str("Bearer" + os.environ.get("HUGGINGFACE_TOKEN"))}
-
 
 def generate_title(payload):
         response = requests.post(API_URL, headers=headers, json=payload)
@@ -136,9 +137,7 @@ def generate_title(payload):
             import random
             title = str("Conversation"+str(random.randint(0,10000)))
             data = title
-            return data
- 
-        
+            return data    
 
 def retrieve_conversation(title, user):
     # number of conversations

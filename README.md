@@ -16,6 +16,7 @@ The current toolkit looks like this:
 A microservice infrastructure continuously scrapes newssites and stores them in a vector storage and a relational database (Postgres).
 Sources can be added with Python scripts which yield a dataframe with: URL | Headline | Paragraphs | Source.
 
+
 #### Engine X - (LLM Agent System):
 The current protoype iterates around this agent system. 
 

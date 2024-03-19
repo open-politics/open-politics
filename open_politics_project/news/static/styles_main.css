@@ -70,18 +70,26 @@ body {
 .title-container {
     display: flex;
     align-items: center;
+    text-decoration: none; /* Remove link underline */
+
 }
 
 .site-title {
     font-size: 24px;
     font-weight: bold;
     color: var(--main-text-color);
+    text-decoration: none; /* Remove link underline */
 }
 
 
 .site-title-logo {
     max-width: 50px;
     margin-right: 10px;
+}
+
+.site-title-link, .site-title-link:hover, .site-title-link:visited, .site-title-link:active {
+    text-decoration: none;
+    color: var(--main-text-color);
 }
 
 
@@ -106,13 +114,20 @@ button:hover {
 .nav-container {
     display: flex;
     margin-left: auto;
+    
 }
 
 nav a {
     color: var(--main-text-color);
     text-decoration: none;
-    margin: 0 15px;
     transition: background-color 0.3s, color 0.3s;
+    padding: 2px 7px;
+    margin: 1px 2px;
+}
+
+nav a:hover {
+    background-color: var(--highlight-bg-color);
+    color: var(--button-text-color);
 }
 
 nav a:hover {
@@ -146,14 +161,14 @@ nav a:hover {
 .highlight-link-head {
     padding: 3px;
     padding-right: 5px;
-    background: linear-gradient(to left, #ffffff, #87ceeb);
     text-align: left;
+    text-decoration: none;
 }
 
 .highlight-link {
     padding: 3px;
     padding-right: 5px;
-    background: linear-gradient(to right, #ffffff, #87ceeb);
+    text-decoration: none;
 
 }
 
@@ -304,6 +319,7 @@ nav a:hover {
     .headline {
         font-size: 20px;
     }
+
     .nav-container {
         margin-left: 0;
         margin-top: 1rem;
@@ -312,6 +328,7 @@ nav a:hover {
     nav a {
         margin: 0 10px;
     }
+
     .blinking-cursor {
         display: none;
     }
@@ -319,6 +336,7 @@ nav a:hover {
     .auth-container {
         margin-top: 1rem;
     }
+
     body > div.headline > span:nth-child(5) {
         padding-top: 5px;
     }

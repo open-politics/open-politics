@@ -9,10 +9,14 @@
 .ssare {
     display:flex;
     color: var(--c);
-    font-family: 'SuisseNeue-Monitor', sans-serif;
-      height: 400px;
-      background: radial-gradient(#ffffff54 2px, transparent 0) 0 0;
-    }
+    font-family: 'SuissNeue-Monitor', sans-serif;
+    {% comment %} align-items:center;{% endcomment %}
+    justify-content:center; 
+    height: 400px;
+    padding-right: 5px;
+    margin-bottom: 100px;
+    /* background: radial-gradient(#ffffff54 2px, transparent 0) 0 0; */
+  }
 
 .form{
   position: relative;
@@ -79,7 +83,7 @@ input{
     border-radius: var(--r);
     border:none;
     width: 100%;
-    background: rgba(#fff, 0.1);
+    background: rgba(0, 191, 255, 0.15);
     backdrop-filter: blur(2px);
     text-shadow: 0.25em  0.25em 1px #00000010;
   

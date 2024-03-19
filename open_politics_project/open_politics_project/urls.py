@@ -24,7 +24,7 @@ from django.views.static import serve
 from news.views import SignUpView
 
 urlpatterns = [
-    path('', views.news_home, name='home'),
+    path('', views.home, name='home'),
     path('admin/', admin.site.urls),
     path("", include("bt_thema.urls")),
     path("", include("news.urls")),
