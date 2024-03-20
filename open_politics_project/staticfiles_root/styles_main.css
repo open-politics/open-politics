@@ -115,6 +115,10 @@ nav a {
     transition: background-color 0.3s, color 0.3s;
 }
 
+.ul {
+    list-style: none !important;
+}
+
 nav a:hover {
     background-color: var(--highlight-bg-color);
     color: var(--button-text-color);
@@ -141,6 +145,7 @@ nav a:hover {
 
 .highlight-text {
     padding-bottom: 2em;
+    list-style: none;
     
 }
 .highlight-link-head {
