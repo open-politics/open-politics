@@ -16,8 +16,8 @@ body {
     font-family: 'SuisseNeue-Monitor', sans-serif;
     color: var(--main-text-color);
     background-color: var(--main-bg-color);
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: 1600px;
+    margin: 0 50px; /* Add 50px to each side */
     line-height: 1.6;
 }
 
@@ -45,7 +45,7 @@ body {
     display: flex;
     align-items: flex-end;
     justify-content: space-around;
-    max-width: 1200px;
+    max-width: 1600px;
     height: 100%;
     padding-top: 1rem;
     padding-left: 1rem;
@@ -59,7 +59,7 @@ body {
     justify-content: center; /* Center horizontally */
     align-items: center; /* Center vertically */
     position: relative;
-    top: 0;
+    top: 10px;
     left: 0;
     width: 100%;
     /* box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); */
@@ -70,18 +70,26 @@ body {
 .title-container {
     display: flex;
     align-items: center;
+    text-decoration: none; /* Remove link underline */
+
 }
 
 .site-title {
     font-size: 24px;
     font-weight: bold;
     color: var(--main-text-color);
+    text-decoration: none; /* Remove link underline */
 }
 
 
 .site-title-logo {
     max-width: 50px;
     margin-right: 10px;
+}
+
+.site-title-link, .site-title-link:hover, .site-title-link:visited, .site-title-link:active {
+    text-decoration: none;
+    color: var(--main-text-color);
 }
 
 
@@ -106,17 +114,20 @@ button:hover {
 .nav-container {
     display: flex;
     margin-left: auto;
+    
 }
 
 nav a {
     color: var(--main-text-color);
     text-decoration: none;
-    margin: 0 15px;
     transition: background-color 0.3s, color 0.3s;
+    padding: 2px 7px;
+    margin: 1px 2px;
 }
 
-.ul {
-    list-style: none !important;
+nav a:hover {
+    background-color: var(--highlight-bg-color);
+    color: var(--button-text-color);
 }
 
 nav a:hover {
@@ -145,25 +156,24 @@ nav a:hover {
 
 .highlight-text {
     padding-bottom: 2em;
-    list-style: none;
     
 }
 .highlight-link-head {
     padding: 3px;
     padding-right: 5px;
-    background: linear-gradient(to left, #ffffff, #87ceeb);
     text-align: left;
+    text-decoration: none;
 }
 
 .highlight-link {
     padding: 3px;
     padding-right: 5px;
-    background: linear-gradient(to right, #ffffff, #87ceeb);
+    text-decoration: none;
 
 }
 
 .highlight-link:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
     transition: transform 0.3s;
 }
 .orange-r {
@@ -210,6 +220,7 @@ nav a:hover {
     animation: blink 1s step-end infinite;
 }
 
+
 @keyframes blink {
     from, to { color: transparent; }
     50% { color: var(--main-text-color); }
@@ -236,14 +247,12 @@ nav a:hover {
     margin-top: 2rem;
 }
 
-
-
 .description {
     margin: 1em 0;
     color: grey; /* Replace with the actual color from the design */
-  }
+}
 
-  .left-aligned-container {
+.left-aligned-container {
     max-width: 1000px;
     display: grid;
     flex-direction: column;
@@ -260,8 +269,8 @@ nav a:hover {
     margin-bottom: 1rem;
     padding-top: 5rem;
     text-align: end;
-
 }
+
 .card:hover {
     transform: scale(1.1);
     transition: transform 0.5s ease; /* Adjust the duration and timing function as needed */
