@@ -11,7 +11,6 @@ from langchain.chains import LLMChain
 import openai
 import json
 
-openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 if True:
     with open("vorgangsdaten_buffer.json", "r") as file:

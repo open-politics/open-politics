@@ -18,7 +18,10 @@ from news.api_calls import call_with_search_parameters
 import io
 from django.contrib.auth import login
 
-import openai
+from openai import OpenAI
+
+client = OpenAI(api_key=OPENAI_API_KEY,
+api_key=os.getenv("OPENAI_API_KEY"))
 import os
 import sys
 import requests
@@ -413,18 +416,15 @@ def generate_synopsis(topic, df):
     print(articles)
 
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-    openai.api_key = OPENAI_API_KEY
     if not OPENAI_API_KEY:
         logger.error("OpenAI API Key not found!")
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages = [{"role": "system", "content": 'You are an AI-driven news analyst programmed to extract and link named entities from textual data. You return only an bullet point list in markdown'},
-                    {"role": "user", "content": "Provide a concise summary of the primary events, key stakeholders, and strategic implications related to conflict/topic" + topic + "from the last 24 hours. Instructions: 1. Focus on high-level developments and strategic shifts. 2. Exclude individual anecdotes, isolated incidents, or stories unless they have broader strategic or symbolic significance. 3. Highlight any international involvements or reactions. 4. Prioritize information from reputable news sources and downplay tabloid or less verified news. 5. Offer a balanced perspective, taking into account various viewpoints. 6. No more than 10 sentences and just the plain answer." },
-                    {"role": "assistant", "content" : "Ok, show me the articles please" },
-                    {"role": "user", "content": "Here are the articles:\n" + articles }],
-        stream=False,
-                                                                                                        )
-    result = response.choices[0]['message']['content']
+    response = client.chat.completions.create(model="gpt-4",
+    messages = [{"role": "system", "content": 'You are an AI-driven news analyst programmed to extract and link named entities from textual data. You return only an bullet point list in markdown'},
+                {"role": "user", "content": "Provide a concise summary of the primary events, key stakeholders, and strategic implications related to conflict/topic" + topic + "from the last 24 hours. Instructions: 1. Focus on high-level developments and strategic shifts. 2. Exclude individual anecdotes, isolated incidents, or stories unless they have broader strategic or symbolic significance. 3. Highlight any international involvements or reactions. 4. Prioritize information from reputable news sources and downplay tabloid or less verified news. 5. Offer a balanced perspective, taking into account various viewpoints. 6. No more than 10 sentences and just the plain answer." },
+                {"role": "assistant", "content" : "Ok, show me the articles please" },
+                {"role": "user", "content": "Here are the articles:\n" + articles }],
+    stream=False)
+    result = response.choices[0].message.content
     print("synopsis generatd")
     print(len(result))
     return result
@@ -448,16 +448,13 @@ def generate_actors(topic, df):
 
 
 
-    openai.api_key = os.getenv("OPENAI_API_KEY")
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages = [{"role": "system", "content": f'You are a political news journalist with expertise in Named Entity Recognition and Entity Linking. Your mission is to sift through news articles and identify the most pertinent political actors associated with a given topic, focusing on the context and relevance. Ensure that the list is selective, concise, and prioritizes the most significant entities. You return only an bullet point list in markdown'},
-                    {"role": "user", "content": "The following are articles about" + topic + "from the past 24 hours. Identify the top political actors from these articles, ensuring they hold substantial relevance to the topic. No more than 5 actors and just the plain answer." },
-                    {"role": "assistant", "content" : "Ok, show me the articles please" },
-                    {"role": "user", "content": "Here are the articles:\n" + articles }],
-        stream=False,
-                                                                                                        )
-    result = response.choices[0]['message']['content']
+    response = client.chat.completions.create(model="gpt-4",
+    messages = [{"role": "system", "content": f'You are a political news journalist with expertise in Named Entity Recognition and Entity Linking. Your mission is to sift through news articles and identify the most pertinent political actors associated with a given topic, focusing on the context and relevance. Ensure that the list is selective, concise, and prioritizes the most significant entities. You return only an bullet point list in markdown'},
+                {"role": "user", "content": "The following are articles about" + topic + "from the past 24 hours. Identify the top political actors from these articles, ensuring they hold substantial relevance to the topic. No more than 5 actors and just the plain answer." },
+                {"role": "assistant", "content" : "Ok, show me the articles please" },
+                {"role": "user", "content": "Here are the articles:\n" + articles }],
+    stream=False)
+    result = response.choices[0].message.content
     # Extracting actor names from markdown list
 
     print("actors generated")
