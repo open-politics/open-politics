@@ -20,8 +20,6 @@ from django.contrib.auth import login
 
 from openai import OpenAI
 
-client = OpenAI(api_key=OPENAI_API_KEY,
-api_key=os.getenv("OPENAI_API_KEY"))
 import os
 import sys
 import requests
