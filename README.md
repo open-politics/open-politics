@@ -32,21 +32,12 @@ The Django Webapp basically runs scripts and hacks together HTMX template render
 Join and talk about the project, ask questions, propose ideas, or just listen in.
 
 
-**Catchphrase:** Reducing politics contextual overhead.
-
-This project is currently in development and the mission and vision statements will soon be released. 
-
-Please contact me if you are interested in providing help.
 Currently needed:
 - Data Scraper Modules 
 - Interdisciplinary collaboration on the instruction sets for the LLMs 
 - Prompt Engineering suggestions
-- Networking & Marketing
 - Frontend/ UX/ UI work
 
-
-
-## SSARE (Sustainable Software Architecture and Research Engineering)
 
 ## Table of Contents
 - [Why does this project exist?](#why-does-this-project-exist)
