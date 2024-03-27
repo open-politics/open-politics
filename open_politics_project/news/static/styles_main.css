@@ -36,6 +36,12 @@ body {
 }
 
 @font-face {
+    font-family: "SuisseNeue-MonitorBold";
+    src: url("fonts/SuisseScreen-Bold-WebXL.woff2") format("woff2");
+    font-weight: bold;
+}
+
+@font-face {
     font-family: "SuisseNeue-Regular";
     src: url("fonts/SuisseNeue-Regular-WebS.woff2") format("woff2");
     font-weight: 400;
@@ -51,6 +57,9 @@ body {
     padding-left: 1rem;
     padding-right: 1rem;
 }
+
+
+
 
 .site-header {
     background-color: var(--main-bg-color);
@@ -249,7 +258,7 @@ nav a:hover {
 .line1 {
     background-color: #d1d1d1;
     height: 1px;
-    margin: 32px 0;
+    margin: 25px 0;
 }
 
 .right-aligned-text {
