@@ -1,72 +1,59 @@
 #### 🚧 UNDER CONSTRUCTION 🚧
 # 🌐 Open Politics 
 ## Democratising Political Intelligence
-
 ### Onboarding:
-Open Politics is a plattform to democratize political intelligence. 
+Open Politics is a platform to democratize political intelligence. The mission is to create a data-science and AI toolkit to analyze, summarize, and visualize political information.
 
-The mission is to create a 
-data-science and AI toolkit to analyze, summarize, and visualize political information.
+## Table of Contents
+- [Why Open Politics Exists](#why-open-politics-exists)
+- [Update: SSARE Release](#update-ssare-release)
+- [The Webapp](#the-webapp)
+- [Engage! Developer Jour Fixe](#engage-developer-jour-fixe)
+- [Tasks](#tasks)
+- [AI Models](#ai-models)
+- [Data Challenges](#data-challenges)
+- [Journalistic Challenges](#journalistic-challenges)
+- [Quality Assurance](#quality-assurance)
+- [Architecture](#architecture)
+  - [Frontend](#frontend)
+  - [Backend](#backend)
+  - [Database(s)](#databases)
+  - [Agent Systems](#agent-systems)
+- [Usage](#usage)
+- [Necessary API Keys/Environment Variables](#necessary-api-keysenvironment-variables)
+- [Contributing](#contributing)
+- [Contact](#contact)
+- [License](#license)
 
-Open Politics has its own stable Datastream which has plenty of news sources it is connected to.
+# Why Open Politics Exists
+- All things regarding politics, be they news, conflicts, relationships, legislative procedures, or documents, are hard to understand. Many people don't have the time to read through all the documents and news articles necessary to gain a broad and well-informed understanding of a political situation.
+- The goal of this project is to make politics more accessible and understandable for everyone through the means of data science and AI.
 
-The current toolkit looks like this:
-
+### Update: SSARE Release
 #### [SSARE - (Semantic Search Article Recommendation Engine)](https://github.com/JimVincentW/SSARE)
-A microservice infrastructure continuously scrapes newssites and stores them in a vector storage and a relational database (Postgres).
-Sources can be added with Python scripts which yield a dataframe with: URL | Headline | Paragraphs | Source.
+SSARE is Open Politics' data aggregation system and vector storage endpoint. It aims to create up-to-date and relevant datasets for the LLMs to work with. A microservice infrastructure continuously scrapes news sites and stores them in a vector storage and a relational database (Postgres). Sources can be added with Python scripts which yield a dataframe with: URL | Headline | Paragraphs | Source. Just clone the service, add your scripts and bring your own data endpoint into production.
 
+#### The Webapp:
+The Django Webapp should basically run scripts and hack together HTMX template renderings. 
+The requirements for each script can be very different. And because this project aims to incorporate a wide range of data science and AI tools, the scripts can be very different in their nature.
+Also, the community should be able to contribute their own scripts and tools. HTMX is a great way to render the output of these scripts in a clean and fast way.
 
-#### Engine X - (LLM Agent System):
-The current protoype iterates around this agent system. 
-
-
-####The Webapp:
-The Django Webapp basically runs scripts and hacks together HTMX template renderings. The requirements for each script can be so different. This current approach should enable faster iteration and more flexibility.
-
-
-## Developer Jour Fixe 
+## Engage! Developer Jour Fixe 
+- Interested in the project? Want to contribute? Share a thought?
 - Every Wednesday 15:30 Berlin Time
 - [Discord Server](https://discord.gg/KAFPp2KQ?event=1219348620860588123)
-
-Join and talk about the project, ask questions, propose ideas, or just listen in.
-
-
+Join and talk about the project, ask questions, propose ideas, or just listen in.  
 Currently needed:
 - Data Scraper Modules 
 - Interdisciplinary collaboration on the instruction sets for the LLMs 
 - Prompt Engineering suggestions
-- Frontend/ UX/ UI work
-
-
-## Table of Contents
-- [Why does this project exist?](#why-does-this-project-exist)
-- [Idea and Outline](#idea-and-outline)
-- [Tasks](#tasks)
-- [AI Models](#ai-models)
-- [Data Challenges](#data-science-code-challenges)
-- [Journalistic Challenges](#journalistic-challenges)
-- [Quality Assurance](#quality-assurance)
-- [Frontend](#frontend)
-- [Backend](#backend)
-- [Architecture](#architecture)
-- [Usage](#usage)
-- [Necessary API Keys/ Environment Variables](#necessary-api-keys-environment-variables)
-- [Contributing](#contributing)
-- [Contact](#contact)
-
-# Why does this project exist?
-- All things regarding politics, be that news, conflicts, relationships, legislative procedures or documents are hard to understand. Many people don't have the time to read through all the documents and news articles necessary to gain a broad and well-informed understanding of a political situation.
-- The goal of this project is to make politics more accessible and understandable for everyone by the means of data science and AI.
-
+- Frontend/UX/UI work
 
 ## Tasks
-
 MVP Elements:
 - Issue Area Identification
 - Actor Identification / Named Entity Recognition
 - Stance Triangulation
-
 Including but not limited to tasks like:
 - Information summarization
 - Vector storage & retrieval 
@@ -74,22 +61,15 @@ Including but not limited to tasks like:
 - Entity Extraction (Named Entity Recognition)
 - Q&A Chatbots (for interactive information)
 - Providing historical context 
-- Statment & Intention decoding
+- Statement & Intention decoding
 - Visual representation of political data
 - Monitoring and alerts
 - Fact-checking (information triangulation)
 
 ## AI Models
 - Open-Source is our friend.
-- More concrete information on the actual setup is layed out in the [Architecture](#architecture) section.
-
+- More concrete information on the actual setup is laid out in the [Architecture](#architecture) section.
 - We try to optimize this as much as possible.
-
-- DSY
-
-
-
-
 
 ## Data Challenges
 - Addressing training data bias
@@ -107,80 +87,50 @@ Including but not limited to tasks like:
 ## Quality Assurance
 - Automatic Evaluation of Results Pipelines needed (conciseness, accuracy, bias weighting etc.)
 
-
-# Frontend
-
+# Architecture
+## Frontend
 #### A comprehensive UX/UI concept is needed.
-
 ### Vision
 ![Open Politics Vision](assets/images/open-politics-website-vision.png)
+- The frontend rendering and server communication is largely built on HTMX features and tries to stay within the realm of HTML, CSS, and Hyperstate Media, calling assets asynchronously.
 
-- The frontend rendering and server communication is largely built on htmx features and tries to stay within the realm of HTML and CSS and Hyperstate Media, calling assets asynchronously.
-
-
-# Backend
-
-## Architecture 
-- Outline (v0.1)
-![Open Politics Architecture](assets/images/op-architecture.png)
-
-#### Notes on model usage
-- The question of any or which LLM or LMM models to use is a highly interesting and complex topic.
-- We can opt to use most powerful models (with often proprietary architecture and training data) or open-source models (with often less powerful architecture and training data) but for the benefit of reproducibility and transparency. The tasks are in a wider array of functional domains. Using GPT-4 for complex reasoning tasks is probably more interesting than using a Mistral-7b model for it. Meanwhile we can relatively quickly fine-tune such a model for task delegation or classification tasks.
-- Model interfaces should be generally model-agnostic and open to frequent change and testing.
-- Current hot open-source models:
-- - Sensei-7b (due to its special recursive researching  functionality)
-- - Mistral / Mixtral MoE (due to its "multiple-expert models" and task-specific routing architecture)
-- - LLaMa/ LLaVa models
-- - Mamba
-
-08.11 Update after OpenAI DevDay:
-- the available context length is now 128k tokens, which is a huge improvement for processing larger documents
-
-07.01 First finetunes for Mixtral MoE are available. Training a team of own experts could be a very interesting approach.
-
-
+## Backend
 ### Django
-
 - Django is used as a backend framework to serve the frontend and to communicate with the LLMs.
-- Views render data, if you need to rawdog, build a python script that outputs and parses into a dataframe, json, or direct into Django views - we will find a way to integrate it.
-
+- Views render data. If you need to rawdog, build a Python script that outputs and parses into a dataframe, JSON, or directly into Django views - we will find a way to integrate it.
 
 ### Database(s)
 - Intermediate article data storage (SQLite)
 - Vector storage (Qdrant)
 - Agent-Search dataset (for smaller "ground truth" data points)
 
-
 ### Agent Systems
-- The LLM domain AI is now heavily evolving on agents-based sytems.
-- - LLM Agent teams and chains are used to deliver rich and relevant information.
-- - Elaborate processes are done with tree tree-of-thought, chain-of-thought and reflexion (see papers).
-- - Some tools require automatic code generation (e.g., for the graph or timeline view).
-- - Agent sustems need their own modular tools (like search functions, data connectors, data pipelines, data storage, etc.).
-- - Sets of instructions are used to generate the output.
-- - Sets of instructions and sets of data are retrievable via Vecor Storage Querying (Qdrant)
+- The LLM domain AI is now heavily evolving on agent-based systems.
+  - LLM Agent teams and chains are used to deliver rich and relevant information.
+  - Elaborate processes are done with tree-of-thought, chain-of-thought, and reflection (see papers).
+  - Some tools require automatic code generation (e.g., for the graph or timeline view).
+  - Agent systems need their own modular tools (like search functions, data connectors, data pipelines, data storage, etc.).
+  - Sets of instructions are used to generate the output.
+  - Sets of instructions and sets of data are retrievable via Vector Storage Querying (Qdrant).
 
-#### Agent-Search/ SciPhi Project
+#### Agent-Search/SciPhi Project
 - The SciPhi work has done some incredible things. 
-- - First they created a production-ready, open-source vector storage dataset and system with over one billion embeddings. 
-- - They also trained Sensei-7b, a model that can recursively research and answer questions.
-- - They also provide a comprehensive search engine for the dataset and the web.
+  - First, they created a production-ready, open-source vector storage dataset and system with over one billion embeddings. 
+  - They also trained Sensei-7b, a model that can recursively research and answer questions.
+  - They also provide a comprehensive search engine for the dataset and the web.
 
 #### LangChain
-- Langchain is a very well integrated and powerful framework for LLM interaction and chaining.
+- Langchain is a very well-integrated and powerful framework for LLM interaction and chaining.
 - Many state-of-the-art prompt engineering techniques are implemented in Langchain.
 - Data connectors and data pipelines are widely available.
 
 #### Marvin
-- Marvin is a lightweight and powerful framework for LLM-centered classification and validation systems. Like Pydantic for LLMs.
-
+- Marvin is a lightweight and powerful framework for LLM-centered classification and validation systems, like Pydantic for LLMs.
 
 ## Referenced Patterns/Papers (will be extended in a notion doc)
 - [Reflexion](https://arxiv.org/abs/2303.11366)
 - [Tree of Thought](https://arxiv.org/abs/2305.10601)
 - [Chain of Thought](https://arxiv.org/abs/2201.11903)
-
 
 ## Usage (coming soon):
 - Clone the repo
@@ -200,25 +150,19 @@ python manage.py runserver
 - Connect to the frontend (open 127.0.0.1:8000 in your browser)
 - Run the LLM agent (query the API)
 
-
-## Necessary API Keys/ Environment Variables:
+## Necessary API Keys/Environment Variables:
 - DIP API (rgsaY4U.oZRQKUHdJhF9qguHMkwCGIoLaqEcaHjYLF)
 - NewsAPI API
 - OpenAI API
 - Huggingface Token
 - Agent-Search API
 
-
 ## Contributing
-
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make, especially in the form of questions or proposals, are greatly appreciated.
-
 - If you have a question or proposal, please feel free to add it as an issue in the GitHub repository.
 - If you're looking to contribute directly to the code base, please approach via email so we can set up a team or arrange a discussion.
 
-
 ## Contact
-
 For any inquiries, questions, or proposals, please feel free to reach out at jimvwagner@googlemail.com. I'm open to discussions and collaborations!
 
 ## License
