@@ -1,8 +1,10 @@
 #### 🚧 UNDER CONSTRUCTION 🚧
 # 🌐 Open Politics 
-## Democratising Political Intelligence
+## Open Source Political Intelligence
 ### Onboarding:
-Open Politics' vision is to democratise political intelligence. The mission is to create an open-source data science and AI toolkit to analyze, summarize, and visualize political information.
+Open Politics' vision is to democratise political intelligence. 
+
+The mission is to create an open-source data science and AI toolkit to analyze, summarize, and visualize political information.
 
 ## Table of Contents
 - [Why Open Politics Exists](#why-open-politics-exists)
@@ -26,19 +28,21 @@ Open Politics' vision is to democratise political intelligence. The mission is t
 - [License](#license)
 
 # Why Open Politics Exists
-- All things regarding politics, be they news, conflicts, relationships, legislative procedures, or documents, are hard to understand. Many people don't have the time to read through all the documents and news articles necessary to gain a broad and well-informed understanding of a political situation.
+- All things regarding politics, be they news, conflicts or legislative procedures, are hard to keep track of. Its hard to find the time to read through all the documents and news articles necessary to gain a broad and well-informed understanding of political situations. Technology offers great possibilities to make such processes more accessible. Recently, the advent of Large Language Models has extended the capabilities of textual analysis and understanding. Especially with the ability to formulate tasks in natural language opens up new possibilities for analysing text data.
+- This project aims to combine the best of natural language LLM interfacing and classical Data Science methods to build tools that provide a comprehensive overview of political topics, including summaries of news articles, information about political actors, and the relationships between them.
 - The goal of this project is to make politics more accessible and understandable for everyone through the means of data science and AI.
 
 ### Update: SSARE Release
 #### [SSARE - (Semantic Search Article Recommendation Engine)](https://github.com/JimVincentW/SSARE)
 SSARE is Open Politics' data aggregation system and vector storage endpoint. It aims to create up-to-date and relevant datasets for the LLMs to work with. A microservice infrastructure continuously scrapes news sites and stores them in a vector storage and a relational database (Postgres). Sources can be added with Python scripts which yield a dataframe with: URL | Headline | Paragraphs | Source. Just clone the service, add your scripts and bring your own data endpoint into production.
 
-#### The Webapp:
-The Django Webapp should basically run scripts and hack together HTMX template renderings. 
-The requirements for each script can be very different. And because this project aims to incorporate a wide range of data science and AI tools, the scripts can be very different in their nature.
-Also, the community should be able to contribute their own scripts and tools. HTMX is a great way to render the output of these scripts in a clean and fast way.
+### The Webapp:
+This Django Webapp should basically run scripts and hack together HTMX template renderings. The idea is a collection of analysis scripts.
+The requirements for each script and their underlying methods can be very different in their nature. 
+Also, the community should be able to contribute their own scripts and tools. Javascript is too much overhead for this project. HTMX is a great way to render the output of these scripts in a clean and fast way, and everybody can just contribute their methods with full HTML designs.
+We will shortly release a contribution tutorial how you can pack your script and connect it to the platform.
 
-## Engage! Developer Jour Fixe 
+## Want to engage? Look into our Developer Jour Fixe!
 - Interested in the project? Want to contribute? Share a thought?
 - Every Wednesday 15:30 Berlin Time
 - [Discord Server](https://discord.gg/KAFPp2KQ?event=1219348620860588123)
