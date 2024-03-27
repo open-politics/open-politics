@@ -74,8 +74,9 @@ Including but not limited to tasks like:
 
 ## AI Models
 - Open-Source is our friend.
+- Developing consistent and reliable AI methods is hard with API based models. We thus aim to use open-source models and frameworks, e.g. Ollama and Huggingface for model inference and Langchain for prompt engineering.
 - More concrete information on the actual setup is laid out in the [Architecture](#architecture) section.
-- We try to optimize this as much as possible.
+
 
 ## Data Challenges
 - Addressing training data bias
