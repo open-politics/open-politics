@@ -1,10 +1,12 @@
 #### 🚧 UNDER CONSTRUCTION 🚧
 # 🌐 Open Politics 
 ## Open Source Political Intelligence
+![Open Politics Vision](assets/images/political_intelligence.jpeg)
+
 ### Onboarding:
 Open Politics' vision is to democratise political intelligence. 
 
-The mission is to create an open-source data science and AI toolkit to analyze, summarize, and visualize political information.
+The mission is to create an open-source data science and AI toolkit to analyse, summarise, and visualise political information.
 
 ## Table of Contents
 - [Why Open Politics Exists](#why-open-politics-exists)
