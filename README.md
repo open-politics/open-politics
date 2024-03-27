@@ -32,7 +32,7 @@ The mission is to create an open-source data science and AI toolkit to analyse, 
 # Why Open Politics Exists
 - All things regarding politics, be they news, conflicts or legislative procedures, are hard to keep track of. Its hard to find the time to read through all the documents and news articles necessary to gain a broad and well-informed understanding of political situations. Technology offers great possibilities to make such processes more accessible. Recently, the advent of Large Language Models has extended the capabilities of textual analysis and understanding. Especially the ability to formulate tasks in natural language opens up new possibilities for analysing text data. Potentially revolutionising the way qualitative and quantitative research can be combined.
 - This project aims to combine the best of natural language LLM interfacing and classical Data Science methods to build tools that provide a comprehensive overview of political topics, including summaries of news articles, information about political actors, and the relationships between them.
-- The goal of this project is to make politics more accessible and understandable for everyone through the means of data science and AI.
+- The goal of this project is to make politics more accessible and understandable for everyone.
 
 ### Update: SSARE Release
 #### [SSARE - (Semantic Search Article Recommendation Engine)](https://github.com/JimVincentW/SSARE)
