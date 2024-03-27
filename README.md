@@ -60,6 +60,7 @@ MVP Elements:
 - Issue Area Identification
 - Actor Identification / Named Entity Recognition
 - Stance Triangulation
+
 Including but not limited to tasks like:
 - Information summarization
 - Vector storage & retrieval 

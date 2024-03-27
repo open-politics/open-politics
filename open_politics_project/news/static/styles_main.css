@@ -482,6 +482,7 @@ nav a:hover {
     }
 
     .headline {
+        display: flex;
         max-width: 350px;
         min-height: 425px;
         padding: 2rem 0;
