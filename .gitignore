@@ -6,3 +6,4 @@ __pycache__
 .local_restart_script.sh
 .dip-openapi.yaml
 open_politics_project/test_scripts/
+db.sqlite3
