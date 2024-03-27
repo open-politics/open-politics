@@ -17,7 +17,7 @@ body {
     font-family: 'SuisseNeue-Monitor', sans-serif;
     color: var(--main-text-color);
     background-color: var(--main-bg-color);
-    max-width: 1600px;
+    max-width: 100%;
     margin: 0 20px; /* Add 20px to each side for mobile */
     line-height: 1.6;
 }
@@ -429,6 +429,12 @@ nav a:hover {
         background-color: var(--highlight-bg-color);
         color: var(--button-text-color);
     }
+
+    body > div.right-aligned-text > strong > strong > a:hover {
+        color: white;
+        border: 1px solid blue;
+        background-color: black;
+    };
 
     nav a:hover {
         background-color: var(--highlight-bg-color);
