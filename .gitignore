@@ -7,3 +7,4 @@ __pycache__
 .dip-openapi.yaml
 open_politics_project/test_scripts/
 db.sqlite3
+open-politics.org
