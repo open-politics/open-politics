@@ -1,3 +1,4 @@
+
 /* Root Definitions and General Styles */
 :root {
     --main-bg-color: #ffffff;
@@ -17,7 +18,7 @@ body {
     color: var(--main-text-color);
     background-color: var(--main-bg-color);
     max-width: 1600px;
-    margin: 0 50px; /* Add 50px to each side */
+    margin: 0 20px; /* Add 20px to each side for mobile */
     line-height: 1.6;
 }
 
@@ -40,7 +41,6 @@ body {
     font-weight: 400;
 }
 
-
 .header-container {
     display: flex;
     align-items: flex-end;
@@ -52,12 +52,12 @@ body {
     padding-right: 1rem;
 }
 
-
 .site-header {
     background-color: var(--main-bg-color);
     display: flex;
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
+    justify-content: space-between; /* Updated to space-between */
+    align-items: center; /* Updated to align-items */
+    padding: 1rem; /* Added padding */
     position: relative;
     top: 10px;
     left: 0;
@@ -65,13 +65,13 @@ body {
     /* box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); */
     z-index: 1000;
     margin: 0 auto;
+    box-sizing: border-box;
 }
 
 .title-container {
     display: flex;
     align-items: center;
     text-decoration: none; /* Remove link underline */
-
 }
 
 .site-title {
@@ -81,17 +81,18 @@ body {
     text-decoration: none; /* Remove link underline */
 }
 
-
 .site-title-logo {
     max-width: 50px;
     margin-right: 10px;
 }
 
-.site-title-link, .site-title-link:hover, .site-title-link:visited, .site-title-link:active {
+.site-title-link,
+.site-title-link:hover,
+.site-title-link:visited,
+.site-title-link:active {
     text-decoration: none;
     color: var(--main-text-color);
 }
-
 
 button {
     background-color: transparent;
@@ -112,9 +113,9 @@ button:hover {
 
 /* Navigation */
 .nav-container {
-    display: flex;
-    margin-left: auto;
-    
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 nav a {
@@ -144,20 +145,20 @@ nav a:hover {
 
 .github-logo {
     max-height: 30px;
-    margin-right: 10px;
+    /* margin-right: 10px;
+    padding-left: 25px; */
 }
 
 .highlights-container {
     flex-direction: column;
     justify-content: center;
-    align-items: flex-end;  
-    
+    align-items: flex-end;
 }
 
 .highlight-text {
     padding-bottom: 2em;
-    
 }
+
 .highlight-link-head {
     padding: 3px;
     padding-right: 5px;
@@ -169,22 +170,25 @@ nav a:hover {
     padding: 3px;
     padding-right: 5px;
     text-decoration: none;
-
 }
 
 .highlight-link:hover {
     transform: scale(1.05);
     transition: transform 0.3s;
 }
+
 .orange-r {
     background: linear-gradient(to right, #ffffff, orange);
 }
+
 .violet-r {
     background: linear-gradient(to right, #ffffff, violet);
 }
+
 .orange-l {
     background: linear-gradient(to left, #ffffff, orange);
 }
+
 .violet-l {
     background: linear-gradient(to left, #ffffff, violet);
 }
@@ -206,24 +210,39 @@ nav a:hover {
     margin-right: -2rem;
 }
 
-
 @keyframes shimmer {
-    0% { color: red; }
-    20% { color: orange; }
-    40% { color: yellow; }
-    60% { color: green; }
-    80% { color: blue; }
-    100% { color: violet; }
+    0% {
+        color: red;
+    }
+    20% {
+        color: orange;
+    }
+    40% {
+        color: yellow;
+    }
+    60% {
+        color: green;
+    }
+    80% {
+        color: blue;
+    }
+    100% {
+        color: violet;
+    }
 }
 
 .blinking-cursor {
     animation: blink 1s step-end infinite;
 }
 
-
 @keyframes blink {
-    from, to { color: transparent; }
-    50% { color: var(--main-text-color); }
+    from,
+    to {
+        color: transparent;
+    }
+    50% {
+        color: var(--main-text-color);
+    }
 }
 
 /* Utility and Responsive Styles */
@@ -234,7 +253,7 @@ nav a:hover {
 }
 
 .right-aligned-text {
-    text-align: right; /* Align text to the right */
+    text-align: center; /* Align text to the right */
     margin-left: auto; /* This will push the block to the right */
     padding: 1rem; /* Optional padding */
     margin-top: 2rem;
@@ -295,4 +314,245 @@ nav a:hover {
     height: 200px;
     object-fit: cover;
     border-radius: 5px;
+}
+
+/* General Styles for Mobile */
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+}
+
+.burger-menu {
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    justify-content: space-around;
+    height: 25px; /* Adjust size accordingly */
+    width: 35px; /* Adjust width accordingly */
+    cursor: pointer;
+}
+
+.burger-bar {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background: var(--main-text-color);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.nav-toggle:checked ~ .nav-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0;
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    background: var(--main-bg-color);
+    border-top: 1px solid #ccc;
+}
+
+.nav-toggle:checked ~ .burger-menu .burger-bar:nth-child(2) {
+    opacity: 0;
+}
+
+.nav-toggle:checked ~ .burger-menu .burger-bar:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+.nav-toggle:checked ~ .burger-menu .burger-bar:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+.nav-container {
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+@media (min-width: 601px) {
+    .site-header {
+        color: black !important;
+        /* Adjust the alignment of flex items */
+        justify-content: space-between; /* Adjust as needed */
+        align-items: center;
+        padding: 0 1rem; /* Set padding to ensure content is not touching the edges */
+    }
+
+    .nav-container {
+        display: flex; /* Ensure the nav container is flex */
+        flex-direction: row;
+        justify-content: flex-end; /* Align nav items to the end of the container */
+        align-items: center; /* Center align the nav items */
+    }
+
+    .nav-container a,
+    .auth-container button {
+        text-decoration: none !important;
+        margin-left: 1rem; /* Add space between nav items */
+        padding: 0.5rem; /* Add padding for clickable area */
+        color: black;
+        font-family: "SuisseNeue-Monitor"
+    }
+
+    .title-container {
+        /* If the title is not aligning correctly, check its container styles */
+        flex-grow: 1; /* Allows it to use up any available space */
+        display: flex;
+        align-items: center;
+        justify-content: flex-start; /* Aligns the title to the start of the container */
+    }
+    .site-title {
+        width: auto; /* Reset to default */
+    }
+
+    .site-title-link {
+        margin-right: 0; /* Remove the margin that was added for mobile */
+    }
+
+    .site-header {
+        display: flex;
+        justify-content: space-between;
+    }
+    button:hover {
+        background-color: var(--highlight-bg-color);
+        color: var(--button-text-color);
+    }
+
+    nav a:hover {
+        background-color: var(--highlight-bg-color);
+        color: var(--button-text-color);
+        border-radius: 0.25rem;
+    }
+    .nav-container nav a:hover, .site-title-link:hover {
+        background-color: var(--highlight-bg-color);
+        color: var(--button-text-color);
+        border-radius: 0.25rem;
+        transition: background-color 0.3s, color 0.3s; /* Ensure transitions are defined */
+    }
+
+
+    .highlight-link:hover {
+        transform: scale(1.05);
+        transition: transform 0.3s;
+    }
+
+    .card:hover {
+        transform: scale(1.1);
+        transition: transform 0.5s ease;
+    }
+    .nav-container a:hover {
+        background-color: var(--highlight-bg-color);
+        color: var(--button-text-color);
+        border-radius: 0.2rem;
+        filter: brightness(120%); /* Apply brightness filter */
+        transition: background-color 0.3s, color 0.3s, filter 0.3s; /* Add transition for smooth effect */
+    }
+    .right-aligned-text a {
+        text-decoration: none;
+        color: black;
+        border: 1px solid black;
+        padding: 5px 10px;
+        z-index: 1000;
+    }
+
+}
+
+/* Mobile Styles */
+@media (max-width: 600px) {
+    body {
+        margin: 0 10px; /* Adjust margin for smaller screens */
+    }
+
+    .headline {
+        max-width: 350px;
+        min-height: 425px;
+        padding: 2rem 0;
+        font-size: 3.5rem;
+        text-align: center;
+        letter-spacing: 0.1em; /* Adjust as needed for character spacing */
+        word-spacing: 0.07em;
+    }
+    .burger-menu {
+        display: block; /* Show burger menu on mobile */
+    }
+
+    .nav-container {
+        display: none; 
+        position: absolute;
+        right: 0;
+        top: 58px; /* Adjust the top value to be just below your header */
+        flex-direction: column;
+        background-color: var(--main-bg-color);
+        width: 100%;
+    }
+
+    .nav-toggle:checked + .burger-menu + .nav-container,
+    .nav-toggle:checked ~ .nav-container {
+        display: block; /* This will display the nav container when the burger is checked */
+        /* The rest of your styles for the nav container when the burger menu is toggled */
+    }
+
+    /* Adjust the site title for smaller screens */
+    .title-container,
+    .site-title {
+        display: block; /* Ensure that the title is always displayed */
+        width: calc(100% - 50px); /* Adjust the width so that the title doesn't overlap the burger menu */
+        text-align: left; /* Adjust as necessary */
+    }
+
+    /* Ensure the site title is clickable and has room so it doesn't overlap with the burger menu */
+    .site-title-link {
+        display: inline-block; /* or 'block' depending on your layout */
+        width: auto; /* Adjust as necessary */
+        margin-right: 50px; /* Give space for the burger menu */
+        text-decoration: none; /* This is likely already in your CSS */
+    }
+
+    .burger-menu {
+        display: flex; /* Only show the burger menu on mobile */
+        /* Rest of the burger menu styles */
+    }
+
+    /* Styling nav links inside the burger menu */
+    .nav-container a {
+        padding: 10px; /* Add padding to increase tap target size */
+        display: block; /* Make the links take up their own line */
+        text-decoration: none;
+        color: black;
+
+    }
+
+    
+    .card {
+        padding-top: 3rem; /* Adjust padding for smaller screens */
+    }
+
+    .card-title {
+        font-size: 1.2rem; /* Decrease font size for smaller screens */
+    }
+
+    .card-image {
+        height: 150px; /* Decrease image height for smaller screens */
+    }
+    
+    .right-aligned-text {
+        text-align: left;
+        margin-left: auto;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+
+    .right-aligned-text a {
+        text-decoration: none;
+        color: black;
+        border: 1px solid black;
+        padding: 5px 10px;
+    }
+
+    .mod {
+        margin-top: -2.5rem;
+    }
 }

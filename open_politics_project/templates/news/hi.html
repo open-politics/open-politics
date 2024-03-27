@@ -4,30 +4,35 @@
     <span is="type-async" class='ast shimmer' id="type-text"></span>
     <span class="blinking-cursor">_</span>
     <span> for? </span>
-  </div>
-  <div class='right-aligned-text'>
-    <p class="highlight-text medium"><strong>Take part in the worlds freshest news data project out there.<strong></p>
-    <p class='highlight-text'>Research with ease, what is hard to keep track of.</p> 
-    <p class='highlight-text'>Open Source and Free.</p> 
-  </div>
-    {% comment %} <div class='highlights-container'>
-        <p class='highlight-link'>Ask AI about the News</p>
-        <p class='highlight-link orange-r'>Use data analysis scripts on the news</p>
-        <p class='highlight-link violet-r'>Contribute your own sources or analysis scripts</p> 
-    </div>
-    </div>
-    <div class='left-aligned-container'>
-        <div class="card">
-            <h3 class="card-title">Explore SSARE</h3>
-            <div class="card-content">
-                <p class="card-description">SSARE short for Semantic Search Article Recommendation Engine</p>
-                <p class="card-description">We open source a political news scraping and analysis plattform. 
-                    The first step is search engine that shows you relevant news. This is SSARE - an API-reachable endpoint for news information spaces.
-                    The efforts can be fully retraced and modified - explore SSARE's information spaces.
-                </p>
-            </div>
+</div>
+<div class='right-aligned-text'>
+    <p class="highlight-text medium"><strong>Rethinking News Analysis with Open Source & AI.<strong></p>
+    <p class='highlight-text'>Navigate news with next-gen tools.</p> 
+    <br></br>
+    <p class='highlight-text mod'>Come back soon or look into the project:</p>
+
+    <a href="https://github.com/JimVincentW/open-politics" class="button">GitHub Repo</a>
+</div>
+
+
+{% comment %} <div class='highlights-container'>
+    <p class='highlight-link'>Ask AI about the News</p>
+    <p class='highlight-link orange-r'>Use data analysis scripts on the news</p>
+    <p class='highlight-link violet-r'>Contribute your own sources or analysis scripts</p> 
+</div>
+</div>
+<div class='left-aligned-container'>
+    <div class="card">
+        <h3 class="card-title">Explore SSARE</h3>
+        <div class="card-content">
+            <p class="card-description">SSARE short for Semantic Search Article Recommendation Engine</p>
+            <p class="card-description">We open source a political news scraping and analysis plattform. 
+                The first step is search engine that shows you relevant news. This is SSARE - an API-reachable endpoint for news information spaces.
+                The efforts can be fully retraced and modified - explore SSARE's information spaces.
+            </p>
         </div>
     </div>
+</div>
 </div> {% endcomment %}
 <script>
     const sleep = time => new Promise(resolve => setTimeout(resolve, time));
@@ -61,12 +66,12 @@
 
     async function init() {
         const node = document.querySelector("#type-text");
-        const words = ['looking', 'researching', 'rooting', 'developing', 'asking']; // add your words here
+        const words = ['looking', 'researching', 'rooting  ', 'developing', 'asking']; // add your words here
         let counter = 0;
         
         await sleep(1000);
         node.innerText = "";
-        await node.type('');
+        await node.type(' ');
         
         while (true) {
             await node.type(words[counter]);
@@ -81,4 +86,3 @@
     
     init();
 </script>
-
