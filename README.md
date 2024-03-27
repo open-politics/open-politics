@@ -2,7 +2,7 @@
 # 🌐 Open Politics 
 ## Democratising Political Intelligence
 ### Onboarding:
-Open Politics is a platform to democratize political intelligence. The mission is to create a data-science and AI toolkit to analyze, summarize, and visualize political information.
+Open Politics' vision is to democratise political intelligence. The mission is to create an open-source data science and AI toolkit to analyze, summarize, and visualize political information.
 
 ## Table of Contents
 - [Why Open Politics Exists](#why-open-politics-exists)
