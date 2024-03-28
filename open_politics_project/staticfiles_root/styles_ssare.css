@@ -10,7 +10,6 @@
     display:flex;
     color: var(--c);
     font-family: 'SuissNeue-Monitor', sans-serif;
-    /* {% comment %} align-items:center;{% endcomment %} */
     justify-content:center; 
     height: 400px;
     padding-right: 5px;

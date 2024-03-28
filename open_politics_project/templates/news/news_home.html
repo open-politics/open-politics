@@ -1,47 +1,103 @@
 {% extends "base.html" %}
+
 {% load static %}
+
 {% block news_home %}
+<style>
 
-{% include 'news/hero_tools.html' %}
+    .tldr-wrapper {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
 
-<!-- Include HTMX -->
+    h2 {
+        color: #333;
+    }
+
+    body > div.tldr-wrapper > div.tldr-body > div.search-bar {
+        margin-top: 2rem;
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+    }
+
+    body > div.tldr-wrapper > div.tldr-body > button {
+        margin-top: 2rem;
+    }
+    
+    .button {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    
+    .button:hover {
+        background-color: #0056b3;
+    }
+
+    .language-options {
+        margin-top: 1rem;
+        display: flex;
+        justify-content: left;
+
+    }
+
+    .boxes {
+        display: none;
+        margin: 5px;
+        padding: 5px;
+        padding-top: 5px;
+        border: 1px solid black;
+        border-radius: 5px;
+    }
+    body > div.tldr-wrapper > div.tldr-body > form > button {
+        margin-top: 2rem;
+    }
+    .tldr-body {
+        margin-top: 2rem;
+    
+    }
+</style>    
+{% if user.is_authenticated %}
+<div class='tldr-wrapper'>
+    <div class='tldr-header'>
+        <h1>TLDR Summary Generator</h1>
+    </div>
+    <div class='tldr-body'>
+        <!-- Begin Form -->
+        <form hx-get="{% url 'fetch_tldr' %}" hx-target="#tldr-container">
+            <div class="search-bar" style='border: 1px solid black; border-radius: 5px;'>
+                <input type="text" name="query" placeholder="Search..." class="search-input">
+            </div>
+
+            <button type="submit" class="button">Fetch TLDR</button>
+        </form>
+        <!-- End Form -->
+        <div id="articles-output">
+            <!-- Articles will be rendered here -->
+        </div>
+        <div id="tldr-container">
+            <!-- HTMX will update this container with the response from the server -->
+        </div>
+    </div>
+</div>
 <script src="https://unpkg.com/htmx.org"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var wsStart = 'ws://';
-        if (window.location.protocol === 'https:') {
-            wsStart = 'wss://';
-        }
-        var endpoint = wsStart + window.location.host + window.location.pathname;
-        var socket = new WebSocket(endpoint);
-
-        socket.onmessage = function(e) {
-            console.log('Message:', e);
-            var data = JSON.parse(e.data);
-            var message = data['message'];
-            document.getElementById('messages-area').innerText += '\n' + message;
-        }
-
-        socket.onopen = function(e) {
-            console.log('Open', e);
-        }
-
-        socket.onerror = function(e) {
-            console.log('Error', e);
-        }
-
-        socket.onclose = function(e) {
-            console.log('Close', e);
-        }
-
-        document.getElementById('send-button').onclick = function(e) {
-            var messageInput = document.getElementById('message-input');
-            var message = messageInput.value;
-            socket.send(JSON.stringify({'message': message}));
-            messageInput.value = '';
-        }
-    });
-</script>
+{% else %}
+<div class='tldr-wrapper'>
+    <div class='tldr-header'>
+        <h1>TLDR Summary Generator</h1>
+    </div>
+    <div class='tldr-body'>
+        <h2>Sign in to use the TLDR Summary Generator</h2>
+    </div>
+</div>
+{% endif %}
 
 {% endblock %}
-

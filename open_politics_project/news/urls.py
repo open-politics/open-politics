@@ -1,9 +1,11 @@
 from django.urls import path, include
-from .views import ArticleListView, SignUpView
 from django.contrib.auth.views import LogoutView, LoginView
-from . import views
-from .views import custom_login_view
+from news.views.old_views import SignUpView, custom_login_view, ArticleListView
 from django.contrib import admin
+from news.views import *
+
+views = old_views
+module_views = module_views
 
 urlpatterns = [
     path('news/', views.news_home, name="news_home"),
@@ -22,4 +24,5 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('login/', custom_login_view, name='login'),
     path('about/', views.about, name='about'),
+    path('fetch-tldr/', module_views.tldr_view, name='fetch_tldr'),
 ]

@@ -8,7 +8,6 @@ from langchain.schema.output_parser import StrOutputParser
 from langchain.prompts import BasePromptTemplate
 from langchain.schema.runnable import RunnableParallel, RunnablePassthrough
 from django.views.decorators.http import require_http_methods
-
 from langchain.callbacks.base import BaseCallbackHandler
 from django.views.generic import ListView
 from django.http import FileResponse
@@ -30,7 +29,7 @@ from queue import Queue
 import threading
 from django.http import StreamingHttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import Conversation, ChatMessages
+from ..models import Conversation, ChatMessages
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
@@ -39,7 +38,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.sessions.models import Session
 import requests
-from .serializers import ChatMessageSerializer, ConversationSerializer
+from ..serializers import ChatMessageSerializer, ConversationSerializer
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import authentication_classes, permission_classes, api_view
 from rest_framework.authentication import TokenAuthentication
@@ -56,6 +55,7 @@ from langchain_core.runnables import chain
 from langchain_core.runnables import RunnableLambda
 from langchain_together import Together
 
+logger = logging.getLogger(__name__)
 
 
 
@@ -583,3 +583,22 @@ def query(request):
 #     #     actors_with_summaries.append(actor_data)
 
 #     return render(request, 'news/actors.html', {'actors': [{"name": "Actor 1", "summary": "This is a summary of actor 1"}, {"name": "Actor 2", "summary": "This is a summary of actor 2"}]})
+
+
+def call_tldr_service(request):
+    # URL of the FastAPI TLDR service
+    url = "http://localhost:6969/generate-tldr/"
+    
+    # Example: Call the service (adjust with actual request details)
+    # If your service requires data, use requests.post() and send the data
+    response = requests.get(url)
+    
+    if response.status_code == 200:
+        # Assuming the service returns JSON with a 'tldr_summary' key
+        data = response.json()
+        tldr_summary = data.get("tldr_summary", "No summary provided.")
+        
+        return JsonResponse({"summary": tldr_summary})
+    else:
+        return JsonResponse({"error": "Failed to fetch summary."})
+

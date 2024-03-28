@@ -1,0 +1,248 @@
+<style>
+    /* Existing CSS styles */
+    .tilesWrap {
+        display: flex;
+        overflow-x: auto;
+        padding: 10px 0;
+        -webkit-overflow-scrolling: touch;
+    }
+    .article-card {
+        /* Adjust the width if necessary to fit your design */
+        flex: 0 0 auto; /* Prevents cards from shrinking */
+        margin: 10px;
+        min-width: 200px; /* Adjust based on your content */
+    }
+    
+    /* Optional: Makes the scrollbar more appealing */
+    ::-webkit-scrollbar {
+        height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    .article-card {
+        display: inline-block;
+        width: 20%;
+        min-width: 200px;
+        max-width: 230px;
+        position: relative;
+        vertical-align: top;
+        margin: 10px;
+        min-height: 25vh;
+        border: 1px solid #252727;
+        text-align: left;
+    }
+
+    .article-card h2 {
+        font-size: 14px;
+        margin: 0;
+        margin-bottom: 5px;
+        position: absolute;
+        color: white;
+        font-family: 'SuisseNeue-Bold', sans-serif;
+        top: 50px;
+        transition: all 0.3s ease-in-out;
+        top: 15px;
+        left: 15px;
+    }
+
+    .article-card h3 {
+        font-size: 20px;
+        color: #b7b7b7;
+        margin-bottom: 5px;
+    }
+
+    .article-card p {
+        font-size: 16px;
+        line-height: 18px;
+        color: white;
+        margin-top: 5px;
+    }
+
+    .article-card .toggle-button {
+        background: rgba(0, 0, 0, 0.5);
+        {% comment %} border: 1px solid #b7b7b7; {% endcomment %}
+        padding: 10px 20px;
+        color: white;
+        border-radius: 3px;
+        position: relative;
+        transition: all 0.3s ease-in-out;
+        cursor: pointer;
+        overflow: hidden;
+    }
+
+    .article-card .toggle-button:before {
+        content: '';
+        position: absolute;
+        height: 100%;
+        width: 120%;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        top: 0;
+        opacity: 0;
+        left: -140px;
+        border-radius: 0 20px 20px 0;
+        z-index: -1;
+    }
+
+    .article-card:hover .toggle-button {
+        transform: translateY(5px);
+        opacity: 1;
+    }
+
+    .article-card .toggle-button:hover {
+        color: white;
+    }
+
+    .article-card .toggle-button:hover:before {
+        left: 0;
+        opacity: 1;
+    }
+
+    .article-card:hover h2 {
+        transform: translateY(-2px);
+        color: white;
+    }
+
+    .article-card:before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        z-index: -1;
+        background: #fff;
+        transform: skew(2deg, 2deg);
+    }
+
+    .article-card:after {
+        content: '';
+        position: absolute;
+        width: 40%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .article-card:nth-child(1):before {
+        background: #C9FFBF;
+        background: -webkit-linear-gradient(to right, #FFAFBD, #C9FFBF);
+        background: linear-gradient(to right, #FFAFBD, #C9FFBF);
+    }
+
+    .article-card:nth-child(2):before {
+        background: #f2709c;
+        background: -webkit-linear-gradient(to right, #ff9472, #f2709c);
+        background: linear-gradient(to right, #ff9472, #f2709c);
+    }
+
+    .article-card:nth-child(3):before {
+        background: #c21500;
+        background: -webkit-linear-gradient(to right, #ffc500, #c21500);
+        background: linear-gradient(to right, #ffc500, #c21500);
+    }
+
+    .article-card:nth-child(4):before {
+        background: #FC354C;
+        background: -webkit-linear-gradient(to right, #0ABFBC, #FC354C);
+        background: linear-gradient(to right, #0ABFBC, #FC354C);
+    }
+
+    .article-card img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: blur(1px) brightness(0.7);
+        z-index: -1;
+    }
+
+    .article-card .content {
+        padding: 20px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .article-card .title {
+        color: white;
+        position: relative;
+        height: 50px;
+        z-index: 1;
+    }
+    
+    #tldr-output{
+        max-height: 500px;
+        overflow-y: auto;
+        font-family: 'Arial', sans-serif;
+        font-size: 18px;
+        color: #333;
+        background-color: aqua;
+        padding: 30px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    
+    }
+
+    #tldr-output h2 {
+        left: -10px;
+    }
+
+    #tldr-output h3 {
+        font-size: 20px;
+        color: #333;
+        margin-bottom: 5px;
+    }
+</style>
+
+<!-- Existing HTML code -->
+<div id="tldr-output">
+    {{ tldr|safe }}
+</div>
+
+<!-- Existing HTML code -->
+<div id="articles-output" class="tilesWrap">
+    {% for article in articles %}
+    <div class="article-card">
+        <div class="title">
+            <a href="{{ article.url }}">
+                <h2>{{ article.url|cut:"https://www."|slice:":20" }}</h2>
+            </a>
+        </div>
+        <div class="content">
+            <h3>{{ article.title }}</h3>
+            <p>{{ article.summary|slice:":200" }}</p>
+        </div>
+            <div class="toggle-button" onclick="toggleContent(this)">Read more
+                <a href="{{ article.url }}"></a>
+            </div>  
+            <img src="https://source.unsplash.com/featured/?{{ article.url|cut:"https://www."|slice:":20" }}" alt="Unsplash Image">
+        </div>
+        {% endfor %}
+    </div>
+
+<!-- Existing JavaScript code -->
+<script>
+    function toggleContent(button) {
+        var card = button.parentNode;
+        card.classList.toggle("expanded");
+        if (card.classList.contains("expanded")) {
+            button.innerHTML = "Minimize";
+        } else {
+            button.innerHTML = "Read more";
+        }
+    }
+</script>

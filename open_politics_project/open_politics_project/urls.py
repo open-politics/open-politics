@@ -21,7 +21,7 @@ from . import views
 from django.contrib import admin
 from django.urls import path, re_path, include
 from django.views.static import serve
-from news.views import SignUpView
+from news.views import *
 
 urlpatterns = [
     path('', views.home, name='home'),

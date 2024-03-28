@@ -104,6 +104,7 @@ body {
 }
 
 button {
+    width: 100%;
     background-color: transparent;
     color: var(--main-text-color);
     padding: 10px 5px;
@@ -170,7 +171,6 @@ nav a:hover {
 
 #login-form > button {
     margin: 0.5rem;
-    margin-top: 20px;
     padding: 0.5rem;
     border: 1px solid black;
     background-color: var(--highlight-bg-color);
