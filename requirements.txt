@@ -6,7 +6,7 @@ certbot
 flask
 pandas
 huggingface
-transformers
+# transformers
 networkx
 matplotlib
 celery
@@ -14,7 +14,7 @@ yfinance
 qdrant-client
 plotly
 bs4
-sentence_transformers
+# sentence_transformers
 django-cors-headers
 channels
 djangorestframework
