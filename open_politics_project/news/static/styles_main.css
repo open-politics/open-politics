@@ -152,10 +152,35 @@ nav a:hover {
     align-items: center;
 }
 
+#login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+#login-form > label {
+    margin: 0.5rem;
+}
+
+#login-form > input {
+    margin: 0.5rem;
+    max-width: 200px;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+#login-form > button {
+    margin: 0.5rem;
+    margin-top: 20px;
+    padding: 0.5rem;
+    border: 1px solid black;
+    background-color: var(--highlight-bg-color);
+    color: var(--button-text-color);
+    cursor: pointer;
+    max-width: 200px;
+}
+
 .github-logo {
     max-height: 30px;
-    /* margin-right: 10px;
-    padding-left: 25px; */
 }
 
 .highlights-container {
@@ -186,21 +211,7 @@ nav a:hover {
     transition: transform 0.3s;
 }
 
-.orange-r {
-    background: linear-gradient(to right, #ffffff, orange);
-}
 
-.violet-r {
-    background: linear-gradient(to right, #ffffff, violet);
-}
-
-.orange-l {
-    background: linear-gradient(to left, #ffffff, orange);
-}
-
-.violet-l {
-    background: linear-gradient(to left, #ffffff, violet);
-}
 
 /* Headline */
 .headline {

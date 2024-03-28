@@ -8,3 +8,4 @@ __pycache__
 open_politics_project/test_scripts/
 db.sqlite3
 .DS_Store
+open-politics.org/
