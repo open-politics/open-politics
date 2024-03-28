@@ -104,6 +104,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://www.open-politics.org',  # If you also serve traffic over HTTP
     'https://subdomain.open-politics.org',  # If applicable
 ]
+CSRF_COOKIE_DOMAIN = '.open-politics.org'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # or 'cache' for cache-backed sessions
 SESSION_CACHE_ALIAS = 'default'
