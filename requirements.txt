@@ -22,4 +22,4 @@ langchain_together
 langchain_openai
 langchain_core
 markdown
-newsapi
+newsapi-python
