@@ -20,6 +20,7 @@ services:
     command: ["python", "open_politics_project/manage.py", "runserver", "0.0.0.0:4000"]
     environment:
       - HUGGINGFACE_TOKEN=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
+      - NEWS_API_KEY=47d333159d8745c1b51cacd5440d65c1
     networks:
       - web
     expose:
