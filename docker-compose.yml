@@ -10,14 +10,13 @@ services:
       - "6379:6379"
     networks:
       - web
+
   web:
     build: 
       context: .
       dockerfile: Dockerfile
     ports:
       - "4000:4000"
-#    volumes:
-#      - static_volume:/app/staticfiles_root  
     command: ["python", "open_politics_project/manage.py", "runserver", "0.0.0.0:4000"]
     environment:
       - HUGGINGFACE_TOKEN=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
@@ -26,6 +25,15 @@ services:
     expose:
       - "4000"
 
+  tldr_1:
+    build:
+      context: ./core/modules/tldr_1
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    ports:
+      - "6969:6969"
+    networks:
+      - web
 
 networks:
   web:
