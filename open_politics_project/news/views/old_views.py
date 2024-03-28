@@ -16,7 +16,7 @@ from django.http import JsonResponse
 from news.api_calls import call_with_search_parameters
 import io
 from django.contrib.auth import login
-
+from django.shortcuts import redirect
 from openai import OpenAI
 
 import os
@@ -93,6 +93,7 @@ class SignUpView(generic.CreateView):
             # Handle the case where token creation failed
             return JsonResponse({'error': 'Token creation failed'}, status=500)
     
+
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def custom_login_view(request):
@@ -105,10 +106,11 @@ def custom_login_view(request):
     user = authenticate(username=username, password=password)
     if user:
         login(request, user)
-        token, created = Token.objects.get_or_create(user=user)
-        return JsonResponse({'token': token.key})
+        # Redirect to the homepage upon successful login
+        return redirect('/')
     else:
-        return JsonResponse({'error': 'Invalid Credentials'}, status=400)
+        # Return to the login page with an error message
+        return render(request, 'registration/login.html', {'error': 'Invalid Credentials'})
 
 memory = ConversationBufferMemory()
 
