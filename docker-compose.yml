@@ -25,15 +25,15 @@ services:
     expose:
       - "4000"
 
-  tldr_1:
-    build:
-      context: ./core/modules/tldr_1
-    environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-    ports:
-      - "6969:6969"
-    networks:
-      - web
+  # tldr_1:
+  #   build:
+  #     context: ./core/modules/tldr_1
+  #   environment:
+  #     - OPENAI_API_KEY=${OPENAI_API_KEY}
+  #   ports:
+  #     - "6969:6969"
+  #   networks:
+  #     - web
 
 networks:
   web:
