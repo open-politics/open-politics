@@ -98,7 +98,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
-CSRF_TRUSTED_ORIGINS = ['https://open-politics.org']
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://www.open-politics.org',
+    'http://www.open-politics.org',  # If you also serve traffic over HTTP
+    'https://subdomain.open-politics.org',  # If applicable
+]
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # or 'cache' for cache-backed sessions
 SESSION_CACHE_ALIAS = 'default'
