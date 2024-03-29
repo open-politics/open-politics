@@ -19,26 +19,31 @@ services:
       - "4000:4000"
     command: ["python", "open_politics_project/manage.py", "runserver", "0.0.0.0:4000"]
     environment:
-      - HUGGINGFACE_TOKEN=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
-      - NEWS_API_KEY=47d333159d8745c1b51cacd5440d65c1
+      HUGGINGFACE_TOKEN: ${HUGGINGFACE_TOKEN}
+      NEWS_API_KEY: ${NEWS_API_KEY}
     networks:
       - web
     expose:
       - "4000"
 
-  # tldr_1:
-  #   build:
-  #     context: ./core/modules/tldr_1
-  #   environment:
-  #     - OPENAI_API_KEY=${OPENAI_API_KEY}
-  #   ports:
-  #     - "6969:6969"
-  #   networks:
-  #     - web
+  postgres:
+    image: postgres:latest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    networks:
+      - web
+    ports:
+      - "5432:5432"
+    expose:
+      - "5432"
 
 networks:
   web:
     external: true
-    
+
 volumes:
-  static_volume:
+  postgres_data:
