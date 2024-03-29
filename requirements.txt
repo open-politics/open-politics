@@ -25,3 +25,4 @@ markdown
 newsapi-python
 django-environ
 psycopg2-binary
+django-environ
