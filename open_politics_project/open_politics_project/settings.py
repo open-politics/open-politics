@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
 from pathlib import Path
+import environ
+
+# Read the .env file
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -126,7 +131,7 @@ DATABASES = {
         'NAME': os.getenv('POSTGRES_DB', 'default_db_name'),
         'USER': os.getenv('POSTGRES_USER', 'default_user'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'default_password'),
-        'HOST': 'postgres',  # Matches the service name in docker-compose
+        'HOST': 'localhost',  # Matches the service name in docker-compose
         'PORT': '5432',
     }
 }

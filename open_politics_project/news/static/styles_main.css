@@ -5,6 +5,8 @@
     --main-text-color: #333333;
     --highlight-bg-color: #007bff;
     --button-text-color: #ffffff;
+    --dark-bg-color: #121212; /* Example dark background color */
+    --dark-text-color: #ffffff; /* Example light text color for dark mode */
 }
 
 * {
@@ -21,6 +23,36 @@ body {
     margin: 0 20px; /* Add 20px to each side for mobile */
     line-height: 1.6;
 }
+
+.invert-colors {
+    background-color: var(--dark-bg-color);
+    color: var(--dark-text-color);
+}
+
+.invert-colors nav a,
+.invert-colors .site-title,
+.invert-colors button,
+.invert-colors, .invert-colors .site-header, .invert-colors .nav-container button {
+    color: var(--dark-text-color);
+    
+}
+
+.invert-colors .site-header  {
+    background-color: var(--dark-bg-color);
+    
+}
+
+.invert-colors > div.site-header > div.nav-container a {
+    color: var(--dark-text-color);
+    background-color: var(--dark-bg-color);
+}
+
+
+/* You can also adjust the colors of other elements like links, headers, etc. */
+.invert-colors a {
+    color: white; /* Example link color for dark mode */
+}
+  
 
 /* Typography */
 @font-face {
@@ -117,8 +149,7 @@ button {
 }
 
 button:hover {
-    background-color: var(--highlight-bg-color);
-    color: var(--button-text-color);
+    border: 1px solid blue;
 }
 
 /* Navigation */
@@ -163,24 +194,34 @@ nav a:hover {
 }
 
 #login-form > input {
-    margin: 0.5rem;
+    margin: 0;
     max-width: 200px;
     border: 1px solid black;
     border-radius: 5px;
 }
 
 #login-form > button {
-    margin: 0.5rem;
-    padding: 0.5rem;
-    border: 1px solid black;
-    background-color: var(--highlight-bg-color);
-    color: var(--button-text-color);
+    margin: 0;
     cursor: pointer;
     max-width: 200px;
 }
 
 .github-logo {
     max-height: 30px;
+
+}
+
+.dark-mode-button {
+    background-color: transparent;
+    color: var(--main-text-color);
+    padding: 10px 5px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+    max-width: fit-content;
 }
 
 .highlights-container {
@@ -370,7 +411,6 @@ nav a:hover {
     position: absolute;
     top: 100%;
     width: 100%;
-    background: var(--main-bg-color);
     border-top: 1px solid #ccc;
 }
 
@@ -406,12 +446,12 @@ nav a:hover {
         flex-direction: row;
         justify-content: flex-end; /* Align nav items to the end of the container */
         align-items: center; /* Center align the nav items */
+        max-width: 330px;
     }
 
     .nav-container a,
     .auth-container button {
         text-decoration: none !important;
-        margin-left: 1rem; /* Add space between nav items */
         padding: 0.5rem; /* Add padding for clickable area */
         color: black;
         font-family: "SuisseNeue-Monitor"
@@ -436,9 +476,16 @@ nav a:hover {
         display: flex;
         justify-content: space-between;
     }
+
+    a:hover {
+        color: white;
+        border: 1px solid blue;
+        background-color: black;
+    }
     button:hover {
-        background-color: var(--highlight-bg-color);
-        color: var(--button-text-color);
+        color: white;
+        border: 1px solid blue;
+        background-color: black;
     }
 
     body > div.right-aligned-text > strong > strong > a:hover {
@@ -461,7 +508,6 @@ nav a:hover {
 
 
     .highlight-link:hover {
-        transform: scale(1.05);
         transition: transform 0.3s;
     }
 
@@ -478,11 +524,14 @@ nav a:hover {
     }
     .right-aligned-text a {
         text-decoration: none;
-        color: black;
         border: 1px solid black;
         padding: 5px 10px;
         z-index: 1000;
     }
+    .invert-colors > .right-aligned-text a {
+        border: 1px solid white; /* or another property to make it different from the default */
+    }
+
 
 }
 
@@ -514,6 +563,10 @@ nav a:hover {
         flex-direction: column;
         background-color: var(--main-bg-color);
         width: 100%;
+    }
+
+    .invert-colors .nav-container {
+        background-color: var(--dark-bg-color); /* Adjust as needed */
     }
 
     .nav-toggle:checked + .burger-menu + .nav-container,
@@ -582,4 +635,24 @@ nav a:hover {
     .mod {
         margin-top: -2.5rem;
     }
+    .invert-colors > div.site-header > div.nav-container a,
+    .invert-colors > div.site-header > div.nav-container .div,
+    .invert-colors .auth-container {
+        color: var(--dark-text-color);
+        background-color: var(--dark-bg-color);
+    }
+    .invert-colors .nav-container .dark-mode-button {
+        border: none;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: background-color 0.3s, color 0.3s;
+        background-color: transparent;
+        color: white;
+        max-width: fit-content;
+        margin-left: 0.2rem;
+    }
+    
+
 }

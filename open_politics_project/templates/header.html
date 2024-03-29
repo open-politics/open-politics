@@ -30,7 +30,39 @@
                 </form>
                 {% endif %}
             </div>
+            <button id="toggle-dark-mode" class="dark-mode-button">
+                <i class="fas fa-sun"></i> <!-- Light mode icon -->
+            </button>
         </div>
     </div>
 </div>
 <div class='line1'></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggleButton = document.getElementById('toggle-dark-mode');
+        const icon = toggleButton.querySelector('i');
+    
+        // Check the stored theme preference and update the UI accordingly
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'dark') {
+            document.body.classList.add('invert-colors');
+            icon.className = 'fas fa-moon';
+        } else {
+            icon.className = 'fas fa-sun';
+        }
+    
+        // Toggle dark mode on button click
+        toggleButton.addEventListener('click', () => {
+            document.body.classList.toggle('invert-colors');
+            const isDarkMode = document.body.classList.contains('invert-colors');
+    
+            // Update icon based on the current mode
+            icon.className = isDarkMode ? 'fas fa-moon' : 'fas fa-sun';
+    
+            // Save theme preference
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        });
+    });
+  </script>
+  
