@@ -64,6 +64,47 @@
         margin-top: 2rem;
     
     }
+
+    /* Loading spinner styles */
+    .spinner {
+        display: none;
+        position: fixed;
+        margin-top: 6rem;
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-left-color: #007bff;
+        border-radius: 50%;
+        animation: spin 1s ease-in-out infinite;
+        margin-top: -7.5rem;
+        margin-left: 20rem;
+    }
+    
+    .spinner::after {
+        content: " ";
+        display: none;
+        width: 16px;
+        height: 16px;
+        margin: 1px;
+        border-radius: 50%;
+        border: 5px solid #007bff;
+        border-color: #007bff transparent #007bff transparent;
+        animation: spin 1.2s linear infinite;
+    }
+    .spinner div {
+        animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        transform-origin: 21px 21px;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
 </style>    
 {% if user.is_authenticated %}
 <div class='tldr-wrapper'>
@@ -76,9 +117,11 @@
             <div class="search-bar" style='border: 1px solid black; border-radius: 5px;'>
                 <input type="text" name="query" placeholder="Search..." class="search-input">
             </div>
-
+            
+            <!-- Move the spinner outside the button -->
             <button type="submit" class="button">Fetch TLDR</button>
         </form>
+        <span class="spinner"></span>
         <!-- End Form -->
         <div id="articles-output">
             <!-- Articles will be rendered here -->
@@ -99,5 +142,14 @@
     </div>
 </div>
 {% endif %}
+<script>
+    document.body.addEventListener('htmx:afterRequest', function() {
+        document.querySelector('.spinner').style.display = 'none';
+    });
 
+    document.body.addEventListener('htmx:beforeRequest', function() {
+        document.querySelector('.spinner').style.display = 'inline-block';
+    });
+</script>
+    
 {% endblock %}
