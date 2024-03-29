@@ -1,4 +1,4 @@
-version: '3'
+version: '3.9'
 
 services:
   redis:
@@ -19,9 +19,9 @@ services:
       - "4000:4000"
     command: ["python", "open_politics_project/manage.py", "runserver", "0.0.0.0:4000"]
     environment:
-      HUGGINGFACE_TOKEN: ${HUGGINGFACE_TOKEN}
-      NEWS_API_KEY: ${NEWS_API_KEY}
-       - RUNNING_IN_DOCKER=true
+      - HUGGINGFACE_TOKEN=${HUGGINGFACE_TOKEN}
+      - NEWS_API_KEY=${NEWS_API_KEY}
+      - RUNNING_IN_DOCKER=true
     networks:
       - web
     expose:
@@ -32,9 +32,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     networks:
       - web
     ports:
