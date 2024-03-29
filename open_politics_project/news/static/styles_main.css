@@ -154,7 +154,7 @@ button:hover {
 
 /* Navigation */
 .nav-container {
-    display: none; /* Hidden by default */
+    display: none; 
     flex-direction: column;
     align-items: flex-start;
 }
