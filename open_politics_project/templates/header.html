@@ -44,13 +44,13 @@
         const icon = toggleButton.querySelector('i');
     
         // Check the stored theme preference and update the UI accordingly
-        const currentTheme = localStorage.getItem('theme');
+        {% comment %} const currentTheme = localStorage.getItem('theme');
         if (currentTheme === 'dark') {
             document.body.classList.add('invert-colors');
             icon.className = 'fas fa-moon';
         } else {
             icon.className = 'fas fa-sun';
-        }
+        } {% endcomment %}
     
         // Toggle dark mode on button click
         toggleButton.addEventListener('click', () => {
