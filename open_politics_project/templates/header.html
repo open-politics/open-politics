@@ -1,68 +1,91 @@
 {% load static %}
+<!-- header.html -->
+<nav class="bg-white dark:bg-black text-gray-900 dark:text-white">
+    <div class="max-w-0.8 mx-auto px-4">
+        <div class="flex justify-between">
+            <div class="flex space-x-4">
+                <!-- logo -->
+                <div>
+                    <a href="https://open-politics.org" class="flex items-center py-5 px-2 text-gray-700 hover:text-gray-900 dark:text-white">
+                        <span class="font-bold">Open Politics Project</span>
+                    </a>
+                </div>
+            </div>
 
-<div class="site-header">
-    <input type="checkbox" id="nav-toggle" class="nav-toggle" hidden>
-    <label for="nav-toggle" class="burger-menu">
-        <span class="burger-bar"></span>
-        <span class="burger-bar"></span>
-        <span class="burger-bar"></span>
-    </label>
-    <div class="title-container">
-        <a href="https://open-politics.org" class='site-title'>Open Politics Project</a>
-    </div>
-        <div class="nav-container">
-            <a href="{% url 'about' %}">About</a>
-            <a href="#news">News</a>
-            <a href="mailto:engage@open-politics.org">Contact</a>
-            <a href="https://github.com/JimVincentW/open-politics">
-                <img src="{% static 'media/github-mark.svg' %}" alt="GitHub Logo" class="github-logo">
-            </a>
-            <div class="auth-container">
+            <!-- secondary nav -->
+            <div class="hidden md:flex items-center space-x-1">
+                <a href="{% url 'about' %}" class="py-5 px-3 text-gray-700 dark:text-white hover:text-gray-900">About</a>
+                <a href="#news" class="py-5 px-3 text-gray-700  hover:text-gray-900 dark:text-white">News</a>
+                <a href="mailto:engage@open-politics.org" class="py-5 px-3 text-gray-700 hover:text-gray-900 dark:text-white">Contact</a>
+                <!-- GitHub Icon -->
+                <a href="https://github.com/JimVincentW/open-politics" class="py-5 px-3">
+                        <img src="{% static 'media/github-mark.svg' %}" alt="GitHub Logo" class="h-6 dark:invert">
+                </a>
+                <!-- Authentication Links -->
                 {% if user.is_authenticated %}
-                <form id="logout-form" method="POST" action="{% url 'logout' %}">
-                    {% csrf_token %}
-                    <button class="logout" type="submit">Logout</button>
+                <form id="logout-form" method="POST" action="{% url 'logout' %}" class="py-5 px-3 dark:text-white">
+                        {% csrf_token %}
+                        <button type="submit" class="text-gray-700 hover:text-gray-900 dark:text-white">Logout</button>
                 </form>
                 {% else %}
-                <form id="login-form" method="GET" action="{% url 'login' %}">
-                    {% csrf_token %}
-                    <button class="login" type="submit">Login</button>
+                <form id="login-form" method="GET" action="{% url 'login' %}" class="py-5 px-3 dark:text-white">
+                        {% csrf_token %}
+                        <button type="submit" class="text-gray-700 hover:text-gray-900 dark:text-white">Login</button>
                 </form>
                 {% endif %}
+                <!-- Dark Mode Toggle Button -->
+                <button id="toggle-dark-mode" class="py-5 px-3 dark:text-white">
+                        <i class="fas fa-moon"></i> <!-- Change icon based on theme -->
+                </button>
             </div>
-            <button id="toggle-dark-mode" class="dark-mode-button">
-                <i class="fas fa-sun"></i> <!-- Light mode icon -->
-            </button>
+
+            <!-- mobile button goes here -->
+            <div class="md:hidden flex items-center">
+                <button class="mobile-menu-button">
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
-</div>
-<div class='line1'></div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const toggleButton = document.getElementById('toggle-dark-mode');
-        const icon = toggleButton.querySelector('i');
-    
-        // Check the stored theme preference and update the UI accordingly
-        {% comment %} const currentTheme = localStorage.getItem('theme');
-        if (currentTheme === 'dark') {
-            document.body.classList.add('invert-colors');
-            icon.className = 'fas fa-moon';
-        } else {
-            icon.className = 'fas fa-sun';
-        } {% endcomment %}
-    
-        // Toggle dark mode on button click
-        toggleButton.addEventListener('click', () => {
-            document.body.classList.toggle('invert-colors');
-            const isDarkMode = document.body.classList.contains('invert-colors');
-    
-            // Update icon based on the current mode
-            icon.className = isDarkMode ? 'fas fa-moon' : 'fas fa-sun';
-    
-            // Save theme preference
-            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-        });
-    });
-  </script>
+    <!-- mobile menu -->
+    <div class="mobile-menu hidden md:hidden">
+        <a href="{% url 'about' %}" class="block py-2 px-4 text-sm hover:bg-gray-200">About</a>
+        <a href="#news" class="block py-2 px-4 text-sm hover:bg-gray-200">News</a>
+        <a href="mailto:engage@open-politics.org" class="block py-2 px-4 text-sm hover:bg-gray-200">Contact</a>
+        <a href="https://github.com/JimVincentW/open-politics" class="block py-2 px-4 text-sm hover:bg-gray-200">
+            <img src="{% static 'media/github-mark.svg' %}" alt="GitHub Logo" class="h-6 dark:invert">
+        </a>
+        <!-- Authentication Links for Mobile -->
+        {% if user.is_authenticated %}
+        <form id="logout-form" method="POST" action="{% url 'logout' %}" class="block py-2 px-4 text-sm hover:bg-gray-200">
+                {% csrf_token %}
+                <button type="submit" class="w-full text-left">Logout</button>
+        </form>
+        {% else %}
+        <form id="login-form" method="GET" action="{% url 'login' %}" class="block py-2 px-4 text-sm hover:bg-gray-200">
+                {% csrf_token %}
+                <button type="submit" class="w-full text-left">Login</button>
+        </form>
+        {% endif %}
+        <button id="toggle-dark-mode" class="py-5 px-3 dark:text-white">
+                <i class="fas fa-moon"></i> <!-- Change icon based on theme -->
+        </button>
+    </div>
+</nav>
+
+<div class="flex justify-center items-center dark:bg-gray-800">
+    <div class="w-10/12 border-b border-black dark:border-white mx-2"></div>
+</div><script>
+// Toggle mobile menu
+document.addEventListener('DOMContentLoaded', () => {
+    const menuButton = document.querySelector('.mobile-menu-button');
+    const mobileMenu = document.querySelector('.mobile-menu');
   
+    menuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+  });
+</script>
