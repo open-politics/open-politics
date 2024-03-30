@@ -23,9 +23,5 @@ langchain_openai
 langchain_core
 markdown
 newsapi-python
-<<<<<<< Updated upstream
 django-environ
 psycopg2-binary
-=======
->>>>>>> Stashed changes
-django-environ
