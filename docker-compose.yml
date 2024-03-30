@@ -19,6 +19,7 @@ services:
       - "4000:4000"
     command: ["python", "open_politics_project/manage.py", "runserver", "0.0.0.0:4000"]
     environment:
+<<<<<<< Updated upstream
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB
@@ -26,6 +27,10 @@ services:
       - NEWS_API_KEY
       - OPENAI_API_KEY
       - RUNNING_IN_DOCKER=true
+=======
+      HUGGINGFACE_TOKEN: ${HUGGINGFACE_TOKEN}
+      NEWS_API_KEY: ${NEWS_API_KEY}
+>>>>>>> Stashed changes
     networks:
       - web
     expose:
@@ -36,9 +41,15 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
+<<<<<<< Updated upstream
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB
+=======
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+>>>>>>> Stashed changes
     networks:
       - web
     ports:
