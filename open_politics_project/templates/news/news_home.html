@@ -6,17 +6,20 @@
 
 {% if user.is_authenticated %}
 <div class='tldr-wrapper dark:bg-black flex flex-col justify-center items-center h-screen bg-white' style='margin-top: -5rem'>
-        <div class='tldr-header'>
-            <h1 class="text-white text-4xl" style='margin-top: -5rem'>TLDR Summary Generator</h1>
+        <div class='tldr-header ml-6'>
+            <h1 class="text-black dark:text-white text-4xl" style='margin-top: -5rem'>TLDR Summary Generator</h1>
         </div>
-        <div class='tldr-body'>
+        <div class='tldr-body max-w-sm flex items-center justify-center'>
             <form hx-get="{% url 'fetch_tldr' %}" hx-target="#tldr-container">
                 <div class="search-bar flex items-center justify-center mt-8">
                     <input type="text" name="query" placeholder="Search..." class="search-input px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    <button type="submit" class="button border-red-100 ml-4 text-white dark:text-black">Fetch TLDR</button>
+                    <button type="submit" class="button border-red-100 ml-4 text-black dark:text-white">Fetch TLDR</button>
                 </div>
             </form>
-            <span class="spinner"></span>
+            <!-- Spinner -->    
+            <div class="spinner hidden fa-rainbow">
+                <div class="loader"></div> <!-- You can add your spinner HTML here -->
+            </div>
             <div id="articles-output">
             </div>
             <div id="tldr-container">
@@ -36,12 +39,11 @@
 {% endif %}
 <script>
     document.body.addEventListener('htmx:afterRequest', function() {
-        document.querySelector('.spinner').style.display = 'none';
+        document.querySelector('.spinner').classList.add('hidden');
     });
 
     document.body.addEventListener('htmx:beforeRequest', function() {
-        document.querySelector('.spinner').style.display = 'inline-block';
+        document.querySelector('.spinner').classList.remove('hidden');
     });
 </script>
-    
 {% endblock %}
