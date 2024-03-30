@@ -1,26 +1,36 @@
-<div id="articles-output" class="flex flex-row overflow-x-auto p-2 space-x-4 bg-violet-200">
+<!-- TailwindCSS version of your HTML code -->
+<div id="tldr-output" class="max-h-[500px] overflow-y-auto font-sans text-lg text-gray-800 bg-aqua-200 p-8 rounded-md shadow-sm">
+    {{ tldr|safe }}
+</div>
+
+<div id="articles-output" class="tilesWrap flex overflow-x-auto py-2.5 space-x-2.5">
     {% for article in articles %}
-    <div class="flex-none min-w-[200px] max-w-[230px] bg-gray-800 text-white p-4 rounded-lg shadow-md relative">
-        <a href="{{ article.url }}" class="stretched-link">
-            <h2 class="font-bold text-lg mb-1 truncate">{{ article.title }}</h2>
-        </a>
-        <p class="text-gray-300 text-sm">{{ article.summary|slice:":200" }}</p>
-        <div onclick="toggleContent(this)" class="cursor-pointer text-blue-500 hover:text-blue-700 mt-2">
-            Read more
+    <div class="article-card flex flex-shrink-0 flex-col relative m-2.5 min-w-[200px] w-[20%] max-w-[230px] min-h-[5vh] border border-gray-700 text-left align-top">
+        <div class="title relative h-12 z-10">
+            <a href="{{ article.url }}">
+                <h2 class="text-xs mb-1.25 absolute text-white font-bold top-3.75 left-3.75 transition-all ease-in-out">{{ article.url|cut:"https://www."|slice:":20" }}</h2>
+            </a>
         </div>
-        <img src="{{ article.image_url }}" alt="" class="absolute top-0 left-0 w-full h-full object-cover rounded-lg">
+        <div class="content relative z-10 p-5">
+            <h3 class="text-xl text-gray-400 mb-1.25">{{ article.title }}</h3>
+            <p class="text-base leading-7 text-white mt-1.25">{{ article.summary|slice:":200" }}</p>
+        </div>
+        <div class="toggle-button relative cursor-pointer overflow-hidden bg-black bg-opacity-50 text-white rounded-md transition-all ease-in-out m-2.5 p-2.5" onclick="toggleContent(this)">Read more
+            <a href="{{ article.url }}"></a>
+        </div>  
+        <img src="https://source.unsplash.com/featured/?{{ article.url|cut:"https://www."|slice:":20" }}" alt="Unsplash Image" class="absolute top-0 left-0 w-full h-full object-cover filter blur-sm brightness-75 z-[-1]">
     </div>
     {% endfor %}
-  </div>
+</div>
 
-<!-- Existing JavaScript code -->
+<!-- Keep your existing JavaScript as is -->
 <script>
     function toggleContent(button) {
         var card = button.parentNode;
         card.classList.toggle("expanded");
         if (card.classList.contains("expanded")) {
             button.innerHTML = "Minimize";
-        } else {
+        } else {    
             button.innerHTML = "Read more";
         }
     }

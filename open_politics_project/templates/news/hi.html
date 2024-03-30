@@ -1,7 +1,7 @@
 <div class="bg-white text-black p-8 dark:bg-black dark:text-white">
     <div class="flex flex-col justify-center items-center h-screen" style="margin-top: -1rem;">
         <div class="text-center mb-12">
-            <h1 class="text-6xl font-bold leading-none" style="margin-top: -8rem;">
+            <h1 class="text-6xl font-bold leading-none sd:mt-8" style="margin-top: -8rem;">
                 <div class="fixed-height">What are you</div>
                 <div class="fixed-height flex justify-center">
                     <span id="shimmer-ast" class="shimmer">*</span>
@@ -120,13 +120,11 @@
         
         await sleep(1000);
         
-        while (true) {
+        for (let counter = 0; counter < words.length; counter++) {
             await node.type(words[counter]);
-            await sleep(2000);
-            await node.delete();
-            counter++;
-            if (counter === words.length) {
-                counter = 0; // Reset to loop the words
+            if (counter < words.length - 1) { // Check if it's not the last word
+                await sleep(2000);
+                await node.delete();
             }
         }
     });
