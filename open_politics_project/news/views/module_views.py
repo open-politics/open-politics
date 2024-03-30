@@ -18,63 +18,63 @@ from django.http import HttpResponse
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
-def tldr_view(request):
-    csv_file_path = os.path.join(settings.BASE_DIR, 'news', 'articles.csv')
+# def tldr_view(request):
+#     csv_file_path = os.path.join(settings.BASE_DIR, 'news', 'articles.csv')
 
-    # Step 1: Read the dataset
-    logging.debug("Step 1: Reading the dataset")
-    file = pd.read_csv(csv_file_path)
+#     # Step 1: Read the dataset
+#     logging.debug("Step 1: Reading the dataset")
+#     file = pd.read_csv(csv_file_path)
 
-    # Step 2: Drop rows with NaN values
-    logging.debug("Step 2: Dropping rows with NaN values")
-    file = file.dropna(subset=['paragraphs', 'summary'])
+#     # Step 2: Drop rows with NaN values
+#     logging.debug("Step 2: Dropping rows with NaN values")
+#     file = file.dropna(subset=['paragraphs', 'summary'])
 
-    # Step 3: Filter relevant summaries
-    logging.debug("Step 3: Filtering relevant summaries")
-    articles = file[(file['relevance'] == 'relevant') & (file['summary'].notna())].head(8)
-    relevant_summaries = articles['summary'].tolist()
+#     # Step 3: Filter relevant summaries
+#     logging.debug("Step 3: Filtering relevant summaries")
+#     articles = file[(file['relevance'] == 'relevant') & (file['summary'].notna())].head(8)
+#     relevant_summaries = articles['summary'].tolist()
 
-    if not relevant_summaries:
-        return HttpResponse("No relevant summaries available for TLDR synthesis.")
+#     if not relevant_summaries:
+#         return HttpResponse("No relevant summaries available for TLDR synthesis.")
 
-    # Step 4: Setup LangChain
-    logging.debug("Step 4: Setting up LangChain")
-    tldr_prompt_template = ChatPromptTemplate.from_template(
-        """You are a political intelligence analyst. Create a TLDR based on the following summaries:\n{summaries}. 
-        Inlude only relevant political information, no anecdotal stories or content or personal opinions. 
-        Use Markdown styling with bullet point lists to present this information"""
-    )
-    output_parser = StrOutputParser()
-    model = ChatOpenAI(model="gpt-4-1106-preview", max_tokens=4000)
-    chain = ({"summaries": RunnablePassthrough()} | tldr_prompt_template | model | output_parser)
+#     # Step 4: Setup LangChain
+#     logging.debug("Step 4: Setting up LangChain")
+#     tldr_prompt_template = ChatPromptTemplate.from_template(
+#         """You are a political intelligence analyst. Create a TLDR based on the following summaries:\n{summaries}. 
+#         Inlude only relevant political information, no anecdotal stories or content or personal opinions. 
+#         Use Markdown styling with bullet point lists to present this information"""
+#     )
+#     output_parser = StrOutputParser()
+#     model = ChatOpenAI(model="gpt-4-1106-preview", max_tokens=4000)
+#     chain = ({"summaries": RunnablePassthrough()} | tldr_prompt_template | model | output_parser)
 
-    # Step 5: Generate TLDR
-    logging.debug("Step 5: Generating TLDR")
-    start_time = time.time()
-    tldr_markdown = chain.invoke("\n".join(relevant_summaries))  # This will still return Markdown
-    end_time = time.time()
+#     # Step 5: Generate TLDR
+#     logging.debug("Step 5: Generating TLDR")
+#     start_time = time.time()
+#     tldr_markdown = chain.invoke("\n".join(relevant_summaries))  # This will still return Markdown
+#     end_time = time.time()
 
-    # Convert Markdown to HTML
-    tldr_html = markdown.markdown(tldr_markdown)
+#     # Convert Markdown to HTML
+#     tldr_html = markdown.markdown(tldr_markdown)
 
-    execution_time = end_time - start_time
+#     execution_time = end_time - start_time
 
-     # For HTMX requests
-    if "HX-Request" in request.headers:
-        html = render_to_string('news/tldr_fragment.html', {
-            'tldr': tldr_html, 
-            'execution_time': execution_time,
-            'articles': articles.to_dict(orient='records')  # Pass the articles data
-        })
-        return HttpResponse(html, content_type='text/html')
-    else:
-        # Also pass the articles data for regular requests
-        context = {
-            'tldr': tldr_html,
-            'execution_time': execution_time,
-            'articles': articles[['summary', 'url']].to_dict(orient='records')  # Pass the articles data
-        }
-        return render(request, 'news_home.html', context)
+#      # For HTMX requests
+#     if "HX-Request" in request.headers:
+#         html = render_to_string('news/tldr_fragment.html', {
+#             'tldr': tldr_html, 
+#             'execution_time': execution_time,
+#             'articles': articles.to_dict(orient='records')  # Pass the articles data
+#         })
+#         return HttpResponse(html, content_type='text/html')
+#     else:
+#         # Also pass the articles data for regular requests
+#         context = {
+#             'tldr': tldr_html,
+#             'execution_time': execution_time,
+#             'articles': articles[['summary', 'url']].to_dict(orient='records')  # Pass the articles data
+#         }
+#         return render(request, 'news_home.html', context)
     
 
 # # mock function

@@ -3,142 +3,35 @@
 {% load static %}
 
 {% block news_home %}
-<style>
-
-    .tldr-wrapper {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
-    }
-
-    h2 {
-        color: #333;
-    }
-
-    body > div.tldr-wrapper > div.tldr-body > div.search-bar {
-        margin-top: 2rem;
-        width: 100%;
-        padding: 10px;
-        font-size: 16px;
-        border: none;
-        border-radius: 5px;
-    }
-
-    body > div.tldr-wrapper > div.tldr-body > button {
-        margin-top: 2rem;
-    }
-    
-    .button {
-        background-color: #007bff;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-    }
-    
-    .button:hover {
-        background-color: #0056b3;
-    }
-
-    .language-options {
-        margin-top: 1rem;
-        display: flex;
-        justify-content: left;
-
-    }
-
-    .boxes {
-        display: none;
-        margin: 5px;
-        padding: 5px;
-        padding-top: 5px;
-        border: 1px solid black;
-        border-radius: 5px;
-    }
-    body > div.tldr-wrapper > div.tldr-body > form > button {
-        margin-top: 2rem;
-    }
-    .tldr-body {
-        margin-top: 2rem;
-    
-    }
-
-    /* Loading spinner styles */
-    .spinner {
-        display: none;
-        position: fixed;
-        margin-top: 6rem;
-        width: 40px;
-        height: 40px;
-        border: 4px solid rgba(0, 0, 0, 0.1);
-        border-left-color: #007bff;
-        border-radius: 50%;
-        animation: spin 1s ease-in-out infinite;
-        margin-top: -7.5rem;
-        margin-left: 20rem;
-    }
-    
-    .spinner::after {
-        content: " ";
-        display: none;
-        width: 16px;
-        height: 16px;
-        margin: 1px;
-        border-radius: 50%;
-        border: 5px solid #007bff;
-        border-color: #007bff transparent #007bff transparent;
-        animation: spin 1.2s linear infinite;
-    }
-    .spinner div {
-        animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-        transform-origin: 21px 21px;
-    }
-
-    @keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-
-</style>    
 {% if user.is_authenticated %}
-<div class='tldr-wrapper'>
-    <div class='tldr-header'>
-        <h1>TLDR Summary Generator</h1>
+<div class='max-w-xl mx-auto p-4 sm:p-8'>
+    <div class='text-center'>
+        <h1 class='text-gray-700 dark:text-gray-200 text-2xl font-bold mb-6'>TLDR Summary Generator</h1>
     </div>
-    <div class='tldr-body'>
+    <div class='w-full'>
         <!-- Begin Form -->
-        <form hx-get="{% url 'fetch_tldr' %}" hx-target="#tldr-container">
-            <div class="search-bar" style='border: 1px solid black; border-radius: 5px;'>
-                <input type="text" name="query" placeholder="Search..." class="search-input">
-            </div>
-            
-            <!-- Move the spinner outside the button -->
-            <button type="submit" class="button">Fetch TLDR</button>
+        <form hx-get="{% url 'fetch_tldr' %}" hx-target="#tldr-container" class="flex flex-col space-y-4">
+            <input type="text" name="query" placeholder="Search..." class="border border-gray-300 p-2 rounded-lg focus:ring focus:ring-blue-300">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Fetch TLDR
+            </button>
         </form>
-        <span class="spinner"></span>
-        <!-- End Form -->
-        <div id="articles-output">
-            <!-- Articles will be rendered here -->
+        <!-- Spinner -->
+        <div class="spinner hidden fixed inset-0 z-50 flex justify-center items-center">
+            <div class="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-blue-500"></div>
         </div>
-        <div id="tldr-container">
-            <!-- HTMX will update this container with the response from the server -->
+        <!-- TLDR Output -->
+        <div id="tldr-output" class="bg-blue-100 text-blue-900 p-6 rounded-lg shadow-lg max-h-96 overflow-y-auto mt-4">
+            {{ tldr|safe }}
         </div>
     </div>
 </div>
 <script src="https://unpkg.com/htmx.org"></script>
 {% else %}
-<div class='tldr-wrapper'>
-    <div class='tldr-header'>
-        <h1>TLDR Summary Generator</h1>
-    </div>
-    <div class='tldr-body'>
-        <h2>Sign in to use the TLDR Summary Generator</h2>
+<div class='max-w-xl mx-auto p-4 sm:p-8 flex flex-col justify-center items-center'>
+    <div class='text-center'>
+        <h1 class='text-gray-700 dark:text-gray-200 text-2xl font-bold mb-6'>TLDR Summary Generator</h1>
+        <h2 class='text-gray-700 dark:text-gray-200'>Sign in to use the TLDR Summary Generator</h2>
     </div>
 </div>
 {% endif %}
@@ -148,8 +41,7 @@
     });
 
     document.body.addEventListener('htmx:beforeRequest', function() {
-        document.querySelector('.spinner').style.display = 'inline-block';
+        document.querySelector('.spinner').style.display = 'flex';
     });
 </script>
-    
 {% endblock %}
