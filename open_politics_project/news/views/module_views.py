@@ -398,7 +398,7 @@ logging.basicConfig(level=logging.DEBUG)
 #         }
 #         return render(request, 'news_home.html', context)
 
-@login_required
+
 def tldr_view(request):
     query = request.GET.get('query', '')
     languages = request.GET.getlist('languages', [])

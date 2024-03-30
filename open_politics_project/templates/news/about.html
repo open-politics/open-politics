@@ -1,25 +1,36 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="left-aligned-container">
-        <h1 class="">Open Source Political Intelligence</h1>
-        <p>This project organizes the aggregation and analysis of political news.</p>
-        
-        <div class="highlight-text">
-            <p>Your skills and enthusiasm can ignite change. Join us as a data expert, activist, or curious individual. Together, we can demystify politics and empower society.</p>
-        </div>
-        
-        <div class="">
-            <h2>Get in Touch and Get Involved</h2>
-            <ul style="list-style-type: none;">
-                <li><strong>Email Us:</strong> <a href="mailto:engage@open-politics.org" class="highlight-link-head">engage@open-politics.org</a></li>
-                <br></br>
-                <p><strong>Jour Fixes</strong></p>
-                <li><strong>For Developers:</strong> Thursdays at 15:30</li>
-                <li><strong>For Everybody Else:</strong> Fridays at 12:30</li>
-                <li><strong>Meet us at</strong> <a href="https://discord.gg/KFRW2nAY" class="highlight-link-head">our Discord Server!</a></li>
-            </ul>
-        </div>
-        
+<div class="left-aligned-container bg-white dark:bg-black p-4">
+    <!-- Main Title -->
+    <h1 class="text-4xl font-bold text-black dark:text-white mb-4">Open Source Political Intelligence</h1>
+    
+    <!-- Introduction Paragraph -->
+    <p class="text-lg text-black dark:text-white w-3/12">
+        This project organizes the aggregation and analysis of political news, providing a platform for data experts, activists, and the curious to unite in demystifying politics and empowering society.
+    </p>
+
+    <!-- Call to Action Box -->
+    <div class="bg-blue-400 p-4 mt-6 rounded-md max-w-md">
+        <p class="text-black dark:text-white">
+            Your skills and enthusiasm can ignite change. 
+            Join us as a data expert, activist, or curious individual. Together, we can demystify politics and empower society.
+        </p>
     </div>
+
+    <!-- Get in Touch Section -->
+    <section class="mt-8">
+        <h2 class="text-3xl font-bold text-black dark:text-white mb-4">Get in Touch and Get Involved</h2>
+        <ul class="list-none space-y-2 text-black dark:text-white">
+            <li><strong>Email Us:</strong> <a href="mailto:engage@open-politics.org" class="text-blue-500 dark:text-blue-300">engage@open-politics.org</a></li>
+            <li><strong>Jour Fixes:</strong>
+                <ul class="list-inside list-disc ml-4">
+                    <li><strong>For Developers:</strong> Thursdays at 15:30</li>
+                    <li><strong>For Everybody Else:</strong> Fridays at 12:30</li>
+                </ul>
+            </li>
+            <li><strong>Meet us at:</strong> <a href="https://discord.gg/KFRW2nAY" class="text-blue-500 dark:text-blue-300">our Discord Server</a></li>
+        </ul>
+    </section>
+</div>
 {% endblock %}

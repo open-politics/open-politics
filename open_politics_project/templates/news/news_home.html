@@ -3,131 +3,24 @@
 {% load static %}
 
 {% block news_home %}
-<style>
 
-    .tldr-wrapper {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
-    }
-
-    h2 {
-        color: #333;
-    }
-
-    body > div.tldr-wrapper > div.tldr-body > div.search-bar {
-        margin-top: 2rem;
-        width: 100%;
-        padding: 10px;
-        font-size: 16px;
-        border: none;
-        border-radius: 5px;
-    }
-
-    body > div.tldr-wrapper > div.tldr-body > button {
-        margin-top: 2rem;
-    }
-    
-    .button {
-        background-color: #007bff;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-    }
-    
-    .button:hover {
-        background-color: #0056b3;
-    }
-
-    .language-options {
-        margin-top: 1rem;
-        display: flex;
-        justify-content: left;
-
-    }
-
-    .boxes {
-        display: none;
-        margin: 5px;
-        padding: 5px;
-        padding-top: 5px;
-        border: 1px solid black;
-        border-radius: 5px;
-    }
-    body > div.tldr-wrapper > div.tldr-body > form > button {
-        margin-top: 2rem;
-    }
-    .tldr-body {
-        margin-top: 2rem;
-    
-    }
-
-    /* Loading spinner styles */
-    .spinner {
-        display: none;
-        position: fixed;
-        margin-top: 6rem;
-        width: 40px;
-        height: 40px;
-        border: 4px solid rgba(0, 0, 0, 0.1);
-        border-left-color: #007bff;
-        border-radius: 50%;
-        animation: spin 1s ease-in-out infinite;
-        margin-top: 7
-    }
-    
-    .spinner::after {
-        content: " ";
-        display: none;
-        width: 16px;
-        height: 16px;
-        margin: 1px;
-        border-radius: 50%;
-        border: 5px solid #007bff;
-        border-color: #007bff transparent #007bff transparent;
-        animation: spin 1.2s linear infinite;
-    }
-    .spinner div {
-        animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-        transform-origin: 21px 21px;
-    }
-
-    @keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-
-</style>    
 {% if user.is_authenticated %}
-<div class='tldr-wrapper'>
-    <div class='tldr-header'>
-        <h1>TLDR Summary Generator</h1>
-    </div>
-    <div class='tldr-body'>
-        <!-- Begin Form -->
-        <form hx-get="{% url 'fetch_tldr' %}" hx-target="#tldr-container">
-            <div class="search-bar" style='border: 1px solid black; border-radius: 5px;'>
-                <input type="text" name="query" placeholder="Search..." class="search-input">
+<div class='tldr-wrapper dark:bg-black flex flex-col justify-center items-center h-screen bg-white' style='margin-top: -5rem'>
+        <div class='tldr-header'>
+            <h1 class="text-white text-4xl" style='margin-top: -5rem'>TLDR Summary Generator</h1>
+        </div>
+        <div class='tldr-body'>
+            <form hx-get="{% url 'fetch_tldr' %}" hx-target="#tldr-container">
+                <div class="search-bar flex items-center justify-center mt-8">
+                    <input type="text" name="query" placeholder="Search..." class="search-input px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <button type="submit" class="button border-red-100 ml-4 text-white dark:text-black">Fetch TLDR</button>
+                </div>
+            </form>
+            <span class="spinner"></span>
+            <div id="articles-output">
             </div>
-            
-            <!-- Move the spinner outside the button -->
-            <button type="submit" class="button">Fetch TLDR</button>
-        </form>
-        <span class="spinner"></span>
-        <!-- End Form -->
-        <div id="articles-output">
-            <!-- Articles will be rendered here -->
-        </div>
-        <div id="tldr-container">
-            <!-- HTMX will update this container with the response from the server -->
-        </div>
+            <div id="tldr-container">
+            </div>
     </div>
 </div>
 <script src="https://unpkg.com/htmx.org"></script>

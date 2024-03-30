@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en" class="{% if not currentTheme %}bg-black{% endif %} dark:bg-gray-800 bg-white">
+<html lang="en">
   <head>
     <title>Open Politics Project</title>
     <meta charset="UTF-8">
@@ -23,7 +23,7 @@
     
  
   </head>
-  <body class="{% if currentTheme == 'dark' %}dark{% endif %}">
+  <body class="bg-white dark:bg-black">
     {% include 'header.html' %}
   
 
