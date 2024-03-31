@@ -17,13 +17,16 @@
             <p class="text-lg mt-1 mb-2">Come back soon for feature releases.</p>
 
             <div class="space-y-2">
-                <a href="https://github.com/JimVincentW/open-politics" class="inline-block bg-black text-white py-2 px-4 rounded-full hover:bg-gray-200 mr-2 dark:bg-white dark:text-black">Project on GitHub</a>
-                <a href="https://zu61ygkfc3v.typeform.com/to/KHZeedk3" class="inline-block bg-black text-white py-2 px-4 rounded-full hover:bg-gray-200 dark:bg-white dark:text-black">Join the waitlist</a>
+                <!-- Adjusted classes for "Project on GitHub" button -->
+                <a href="https://github.com/JimVincentW/open-politics" class="inline-block bg-black text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:hover:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white transition-colors duration-300 ease-in-out mr-2">Project on GitHub</a>
+                <!-- Adjusted classes for "Join the waitlist" button -->
+                <a href="https://zu61ygkfc3v.typeform.com/to/KHZeedk3" class="inline-block bg-black text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:hover:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white transition-colors duration-300 ease-in-out">Join the waitlist</a>
             </div>
             
             {% if user.is_authenticated %}
             <div class="mt-4">
-                <a href="{% url 'news_home' %}" class="inline-block bg-black text-white py-2 px-4 rounded-full hover:bg-gray-200 dark:bg-white dark:text-black">Search News</a>
+                <!-- Corrected classes for "Search News" button -->
+                <a href="{% url 'news_home' %}" class="inline-block bg-black text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:hover:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white transition-colors duration-300 ease-in-out">Search News</a>
             </div>
             {% endif %}
         </div>

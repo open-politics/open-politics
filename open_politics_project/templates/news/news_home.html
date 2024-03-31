@@ -1,3 +1,44 @@
+<style>
+    @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes color-change {
+        0% {
+          border-top-color: #3498db;
+        }
+        25% {
+          border-top-color: #e74c3c;
+        }
+        50% {
+          border-top-color: #f1c40f;
+        }
+        75% {
+          border-top-color: #2ecc71;
+        }
+        100% {
+          border-top-color: #3498db;
+        }
+      }
+      .spinner {
+        position: fixed; /* or absolute, depending on the use case */
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000; /* Ensure it's above other content */
+      }
+      
+      .loader {
+        border: 5px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 5px solid #3498db;
+        width: 50px;
+        height: 50px;
+        animation: spin 2s linear infinite, color-change 4s ease-in-out infinite;
+      }
+
+</style>
 {% extends "base.html" %}
 
 {% load static %}
@@ -5,30 +46,31 @@
 {% block news_home %}
 
 {% if user.is_authenticated %}
-<div class='tldr-wrapper dark:bg-black flex flex-col justify-center items-center h-screen bg-white' style='margin-top: -5rem'>
-        <div class='tldr-header ml-6'>
-            <h1 class="text-black dark:text-white text-4xl" style='margin-top: -5rem'>TLDR Summary Generator</h1>
+<div class='tldr-wrapper dark:bg-black flex flex-col items-center bg-white'>
+    <div class='tldr-header max-w-lg mt-36'>
+        <h1 class="text-black dark:text-white text-4xl mb-8">TLDR Summary Generator</h1>
+    </div>
+    <div class='tldr-body mx-auto w-full max-w-lg'>
+        <form hx-get="{% url 'fetch_tldr' %}" hx-target="#tldr-container" class="flex flex-col items-center">
+            <div class="search-bar mb-4 w-full">
+                <input type="text" name="query" placeholder="Search..." class="search-input w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <button type="submit" class="mt-4 w-full button bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">Fetch TLDR</button>
+            </div>
+        </form>
+        <!-- Spinner -->    
+        <div class="spinner hidden">
+            <div class="loader"></div> <!-- You can add your spinner HTML here -->
         </div>
-        <div class='tldr-body max-w-sm flex items-center justify-center'>
-            <form hx-get="{% url 'fetch_tldr' %}" hx-target="#tldr-container">
-                <div class="search-bar flex items-center justify-center mt-8">
-                    <input type="text" name="query" placeholder="Search..." class="search-input px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    <button type="submit" class="button border-red-100 ml-4 text-black dark:text-white">Fetch TLDR</button>
-                </div>
-            </form>
-            <!-- Spinner -->    
-            <div class="spinner hidden fa-rainbow">
-                <div class="loader"></div> <!-- You can add your spinner HTML here -->
-            </div>
-            <div id="articles-output">
-            </div>
-            <div id="tldr-container">
-            </div>
+        <div id="articles-output" class="flex flex-wrap justify-center gap-4">
+            <!-- Articles will be dynamically inserted here -->
+        </div>
+        <div id="tldr-container">
+            <!-- TL;DR will be dynamically inserted here -->
+        </div>
     </div>
 </div>
-<script src="https://unpkg.com/htmx.org"></script>
 {% else %}
-<div class='tldr-wrapper'>
+<div class='tldr-wrapper flex flex-col justify-center items-center min-h-screen'>
     <div class='tldr-header'>
         <h1>TLDR Summary Generator</h1>
     </div>
@@ -37,6 +79,7 @@
     </div>
 </div>
 {% endif %}
+<script src="https://unpkg.com/htmx.org"></script>
 <script>
     document.body.addEventListener('htmx:afterRequest', function() {
         document.querySelector('.spinner').classList.add('hidden');

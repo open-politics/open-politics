@@ -6,7 +6,7 @@
             <div class="flex space-x-4">
                 <!-- logo -->
                 <div>
-                    <a href="https://open-politics.org" class="flex items-center py-5 px-2 text-gray-700 hover:text-gray-900 dark:text-white">
+                    <a href="https://open-politics.org" class="flex items-center py-5 px-2 text-gray-700 dark:text-white">
                         <span class="font-bold">Open Politics Project</span>
                     </a>
                 </div>
@@ -14,9 +14,9 @@
 
             <!-- secondary nav -->
             <div class="hidden md:flex items-center space-x-1">
-                <a href="{% url 'about' %}" class="py-5 px-3 text-gray-700 dark:text-white hover:text-gray-900">About</a>
-                <a href="#news" class="py-5 px-3 text-gray-700  hover:text-gray-900 dark:text-white">News</a>
-                <a href="mailto:engage@open-politics.org" class="py-5 px-3 text-gray-700 hover:text-gray-900 dark:text-white">Contact</a>
+                <a href="{% url 'about' %}" class="py-5 px-3 text-gray-700 dark:text-white">About</a>
+                <a href="#news" class="py-5 px-3 text-gray-700 dark:text-white">News</a>
+                <a href="mailto:engage@open-politics.org" class="py-5 px-3 text-gray-700 dark:text-white">Contact</a>
                 <!-- GitHub Icon -->
                 <a href="https://github.com/JimVincentW/open-politics" class="py-5 px-3">
                         <img src="{% static 'media/github-mark.svg' %}" alt="GitHub Logo" class="h-6 dark:invert">
@@ -25,16 +25,16 @@
                 {% if user.is_authenticated %}
                 <form id="logout-form" method="POST" action="{% url 'logout' %}" class="py-5 px-3 dark:text-white">
                         {% csrf_token %}
-                        <button type="submit" class="text-gray-700 hover:text-gray-900 dark:text-white">Logout</button>
+                        <button type="submit" class="text-gray-700 dark:text-white">Logout</button>
                 </form>
                 {% else %}
                 <form id="login-form" method="GET" action="{% url 'login' %}" class="py-5 px-3 dark:text-white">
                         {% csrf_token %}
-                        <button type="submit" class="text-gray-700 hover:text-gray-900 dark:text-white">Login</button>
+                        <button type="submit" class="text-gray-700 dark:text-white">Login</button>
                 </form>
                 {% endif %}
                 <!-- Dark Mode Toggle Button -->
-                <button id="toggle-dark-mode" class="py-5 px-3 dark:text-white">
+                <button class="toggle-dark-mode" class="py-5 px-3 dark:text-white">
                         <i class="fas fa-moon"></i> <!-- Change icon based on theme -->
                 </button>
             </div>
@@ -51,41 +51,60 @@
     </div>
 
     <!-- mobile menu -->
-    <div class="mobile-menu hidden md:hidden">
-        <a href="{% url 'about' %}" class="block py-2 px-4 text-sm hover:bg-gray-200">About</a>
-        <a href="#news" class="block py-2 px-4 text-sm hover:bg-gray-200">News</a>
-        <a href="mailto:engage@open-politics.org" class="block py-2 px-4 text-sm hover:bg-gray-200">Contact</a>
-        <a href="https://github.com/JimVincentW/open-politics" class="block py-2 px-4 text-sm hover:bg-gray-200">
-            <img src="{% static 'media/github-mark.svg' %}" alt="GitHub Logo" class="h-6 dark:invert">
-        </a>
-        <!-- Authentication Links for Mobile -->
-        {% if user.is_authenticated %}
-        <form id="logout-form" method="POST" action="{% url 'logout' %}" class="block py-2 px-4 text-sm hover:bg-gray-200">
-                {% csrf_token %}
-                <button type="submit" class="w-full text-left">Logout</button>
-        </form>
-        {% else %}
-        <form id="login-form" method="GET" action="{% url 'login' %}" class="block py-2 px-4 text-sm hover:bg-gray-200">
-                {% csrf_token %}
-                <button type="submit" class="w-full text-left">Login</button>
-        </form>
-        {% endif %}
-        <button id="toggle-dark-mode" class="py-5 px-3 dark:text-white">
-                <i class="fas fa-moon"></i> <!-- Change icon based on theme -->
-        </button>
-    </div>
-</nav>
+        <div class="mobile-menu hidden md:hidden">
+            <a href="{% url 'about' %}" class="block py-2 px-4 text-sm mb-2">About</a>
+            <a href="#news" class="block py-2 px-4 text-sm mb-2">News</a>
+            <a href="mailto:engage@open-politics.org" class="block py-2 px-4 text-sm mb-2">Contact</a>
+            <a href="https://github.com/JimVincentW/open-politics" class="block py-2 px-4 text-sm mb-2">
+                <img src="{% static 'media/github-mark.svg' %}" alt="GitHub Logo" class="h-6 dark:invert">
+            </a>
+            <!-- Authentication Links for Mobile -->
+            {% if user.is_authenticated %}
+            <form id="logout-form" method="POST" action="{% url 'logout' %}" class="block py-2 px-4 text-sm mb-2">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full text-left">Logout</button>
+            </form>
+            {% else %}
+            <form id="login-form" method="GET" action="{% url 'login' %}" class="block py-2 px-4 text-sm mb-2">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full text-left">Login</button>
+            </form>
+            {% endif %}
+            <button class="toggle-dark-mode flex items-center px-4 text-sm" class="py-5 px-3 dark:text-white">
+                    <i class="fas fa-moon text-base pr-2"></i> <!-- Change icon based on theme -->
+            </button>
+        </div>
+    </nav>
 
-<div class="flex justify-center items-center dark:bg-gray-800">
+<div class="flex justify-center items-center dark:bg-gray-800 mt-4">
     <div class="w-10/12 border-b border-black dark:border-pink-600 mx-2"></div>
 </div><script>
-// Toggle mobile menu
-document.addEventListener('DOMContentLoaded', () => {
-    const menuButton = document.querySelector('.mobile-menu-button');
-    const mobileMenu = document.querySelector('.mobile-menu');
-  
-    menuButton.addEventListener('click', () => {
-      mobileMenu.classList.toggle('hidden');
+    document.addEventListener('DOMContentLoaded', () => {
+        const menuButton = document.querySelector('.mobile-menu-button');
+        const mobileMenu = document.querySelector('.mobile-menu');
+    
+        menuButton.addEventListener('click', () => {
+          mobileMenu.classList.toggle('hidden');
+        });
+    
+        // Adjusted to use class selector
+        const darkModeToggle = document.querySelectorAll('.toggle-dark-mode');
+    
+        darkModeToggle.forEach(toggle => {
+          toggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+    
+            if(document.documentElement.classList.contains('dark')) {
+              localStorage.setItem('darkMode', 'enabled');
+            } else {
+              localStorage.setItem('darkMode', 'disabled');
+            }
+          });
+        });
+    
+        if(localStorage.getItem('darkMode') === 'enabled') {
+          document.documentElement.classList.add('dark');
+        }
     });
-  });
+    
 </script>
