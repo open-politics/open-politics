@@ -60,12 +60,12 @@
             </a>
             <!-- Authentication Links for Mobile -->
             {% if user.is_authenticated %}
-            <form id="logout-form" method="POST" action="{% url 'logout' %}" class="block py-2 px-4 text-sm mb-2 flex items-center">
+            <form id="logout-form" method="POST" action="{% url 'logout' %}" class="py-2 px-4 text-sm mb-2 flex items-center">
                     {% csrf_token %}
                     <button type="submit" class="w-full text-left">Logout</button>
             </form>
             {% else %}
-            <form id="login-form" method="GET" action="{% url 'login' %}" class="block py-2 px-4 text-sm mb-2 flex items-center">
+            <form id="login-form" method="GET" action="{% url 'login' %}" class="py-2 px-4 text-sm mb-2 flex items-center">
                     {% csrf_token %}
                     <button type="submit" class="w-full text-left">Login</button>
             </form>

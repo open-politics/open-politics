@@ -9,14 +9,19 @@
     <div class="article-card flex-shrink-0 flex-col relative m-1 min-w-[75vw] sm:min-w-[40vw] lg:min-w-[30vw] xl:min-w-[20vw] max-w-xs min-h-[8vh] border border-gray-700 text-left align-top bg-white dark:bg-gray-800 bg-opacity-50 rounded-lg">
         <div class="title relative z-10 p-1 ">
             <a href="{{ article.url }}" class="block truncate">
-                <h2 class="text-xs text-black dark:text-white font-bold">{{ article.url|cut:"https://www."|slice:":20" }}</h2>
+                <p class="text-xs text-blue-500 font-semibold mt-2 p-1">{{ article.source.name }}</p>
             </a>
         </div>
-        <div class="content relative z-10 p-2 ">
+        <div class="content relative z-10 p-2">
             <h3 class="text-sm text-gray-400 mb-1">{{ article.title }}</h3>
-            <p class="text-xs text-white leading-5">{{ article.summary|slice:":200" }}...</p>
+            <p class="text-xs text-black dark:text-white leading-5">{{ article.content|slice:":200" }}...</p>
         </div> 
-        <img src="https://source.unsplash.com/featured/?{{ article.url|cut:"https://www."|slice:":20" }}" alt="Unsplash Image" class="absolute top-0 left-0 w-full h-full object-cover filter blur-sm brightness-75 z-[-1] rounded-lg">
+        {% if article.image %}
+        <div class="image absolute top-0 left-0 w-full h-full object-cover filter blur-sm brightness-75 z-[-1] rounded-lg" style="background-image: url('{{ article.image }}');"></div>
+        {% endif %}
+        <div class="button-container p-2">
+            <a href="{{ article.url }}" class="text-xs text-blue-500 font-semibold bg-pink-200 dark:bg-gray-800 hover:bg-pink-6008 dark:hover:bg-gray-700 py-1 px-2 rounded-md transition-colors duration-300">Read article</a>
+        </div>
     </div>
     {% endfor %}
 </div>

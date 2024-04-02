@@ -604,3 +604,5 @@ def call_tldr_service(request):
     else:
         return JsonResponse({"error": "Failed to fetch summary."})
 
+def faq(request):
+    return render(request, "news/faq.html")

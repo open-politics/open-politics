@@ -407,17 +407,22 @@ def tldr_view(request):
 
     # Step 1: Search for news articles using NewsAPI
     logging.debug("Step 1: Searching for news articles using NewsAPI")
-    if languages:
-        articles = newsapi.get_everything(q=query, language=languages[0], page_size=10)['articles']
-    else:
-        articles = newsapi.get_everything(q=query, page_size=10)['articles']
+    articles = newsapi.get_everything(q=query, language=languages[0], page_size=10)['articles'] if languages else newsapi.get_everything(q=query, page_size=10)['articles']
 
     if not articles:
         return HttpResponse("No relevant articles found for the given query.")
 
     # Step 2: Extract summaries from the articles
     logging.debug("Step 2: Extracting summaries from the articles")
-    summaries = [article['description'] for article in articles if article['description']]
+    summaries = [article['description'] for article in articles if article['description'] and article['description'] != "[Removed]"]
+    content = [article['content'] for article in articles if article['content'] and article['content'] != "[Removed]"]
+    
+    for article in articles:
+        article['content'] = article.get('content', '')
+        article['image'] = article.get('urlToImage', '')
+    
+    unique_sources = list(set([article['source']['name'] for article in articles]))
+    unique_sources.sort()
 
     # Step 3: Setup LangChain
     logging.debug("Step 3: Setting up LangChain")
@@ -441,12 +446,17 @@ def tldr_view(request):
 
     execution_time = end_time - start_time
 
+    # Filter out articles with "[Removed]" link, content, or summary
+    articles = [article for article in articles if article['description'] != "[Removed]" and article['content'] != "[Removed]" and article['urlToImage'] != "[Removed]"]
+
     # For HTMX requests
     if "HX-Request" in request.headers:
         html = render_to_string('news/tldr_fragment.html', {
             'tldr': tldr_html, 
             'execution_time': execution_time,
-            'articles': articles  # Pass the articles data
+            'articles': articles,
+            'sources': unique_sources,
+            'content': content,
         })
         return HttpResponse(html, content_type='text/html')
     else:
@@ -454,6 +464,8 @@ def tldr_view(request):
         context = {
             'tldr': tldr_html,
             'execution_time': execution_time,
-            'articles': articles  # Pass the articles data
+            'articles': articles,
+            'sources': unique_sources,
+            'content': content,
         }
         return render(request, 'news_home.html', context)
