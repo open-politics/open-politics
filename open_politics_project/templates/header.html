@@ -2,8 +2,8 @@
 <!-- header.html -->
 <nav class="bg-white dark:bg-black text-gray-900 dark:text-white">
     <div class="max-w-0.8 mx-auto px-4">
-        <div class="flex justify-between">
-            <div class="flex space-x-4">
+        <div class="flex items-center justify-between">
+            <div class="flex space-x-4 items-center">
                 <!-- logo -->
                 <div>
                     <a href="https://open-politics.org" class="flex items-center py-5 px-2 text-gray-700 dark:text-white">
@@ -23,18 +23,18 @@
                 </a>
                 <!-- Authentication Links -->
                 {% if user.is_authenticated %}
-                <form id="logout-form" method="POST" action="{% url 'logout' %}" class="py-5 px-3 dark:text-white">
+                <form id="logout-form" method="POST" action="{% url 'logout' %}" class="flex items-center py-5 px-3 dark:text-white">
                         {% csrf_token %}
                         <button type="submit" class="text-gray-700 dark:text-white">Logout</button>
                 </form>
                 {% else %}
-                <form id="login-form" method="GET" action="{% url 'login' %}" class="py-5 px-3 dark:text-white">
+                <form id="login-form" method="GET" action="{% url 'login' %}" class="flex items-center py-5 px-3 dark:text-white">
                         {% csrf_token %}
                         <button type="submit" class="text-gray-700 dark:text-white">Login</button>
                 </form>
                 {% endif %}
                 <!-- Dark Mode Toggle Button -->
-                <button class="toggle-dark-mode" class="py-5 px-3 dark:text-white">
+                <button class="toggle-dark-mode py-5 px-3 dark:text-white">
                         <i class="fas fa-moon"></i> <!-- Change icon based on theme -->
                 </button>
             </div>
@@ -60,12 +60,12 @@
             </a>
             <!-- Authentication Links for Mobile -->
             {% if user.is_authenticated %}
-            <form id="logout-form" method="POST" action="{% url 'logout' %}" class="block py-2 px-4 text-sm mb-2">
+            <form id="logout-form" method="POST" action="{% url 'logout' %}" class="block py-2 px-4 text-sm mb-2 flex items-center">
                     {% csrf_token %}
                     <button type="submit" class="w-full text-left">Logout</button>
             </form>
             {% else %}
-            <form id="login-form" method="GET" action="{% url 'login' %}" class="block py-2 px-4 text-sm mb-2">
+            <form id="login-form" method="GET" action="{% url 'login' %}" class="block py-2 px-4 text-sm mb-2 flex items-center">
                     {% csrf_token %}
                     <button type="submit" class="w-full text-left">Login</button>
             </form>
@@ -74,11 +74,12 @@
                     <i class="fas fa-moon text-base pr-2"></i> <!-- Change icon based on theme -->
             </button>
         </div>
-    </nav>
+</nav>
 
 <div class="flex justify-center items-center dark:bg-gray-800">
     <div class="w-10/12 border-b border-black dark:border-pink-600 mx-2"></div>
-</div><script>
+</div>
+<script>
     document.addEventListener('DOMContentLoaded', () => {
         const menuButton = document.querySelector('.mobile-menu-button');
         const mobileMenu = document.querySelector('.mobile-menu');
