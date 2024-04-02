@@ -53,9 +53,9 @@
     </div>
     <div class='tldr-body mx-auto w-full max-w-lg'>
         <form hx-get="{% url 'fetch_tldr' %}" hx-target="#tldr-container" class="flex flex-col items-center">
-            <div class="search-bar mb-4 w-full">
-                <input type="text" name="query" placeholder="Enter search term (e.g. Ukraine, Israel, Economy, Tech)" class="search-input w-full text-black px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent fokus:text-black">
-                <button type="submit" class="mt-4 w-full button bg-blue-500 dark:bg-pink-600 text-white py-2 rounded-md hover:bg-blue-600">Fetch TLDR</button>
+            <div class="search-bar mb-4 w-11/12">
+                <input type="text" name="query" placeholder="Enter search term (e.g. Ukraine, Israel, Tech, Economy)" class="search-input w-full text-black px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent fokus:text-black">
+                <button type="submit" class="mt-4 w-full button bg-blue-500 dark:bg-pink-600 text-white py-2 rounded-full hover:bg-blue-600">Fetch TLDR</button>
             </div>
         </form>    
         <div class="spinner hidden">
