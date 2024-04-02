@@ -1,6 +1,6 @@
 {% load static %}
 <!-- header.html -->
-<nav class="bg-white dark:bg-black text-gray-900 dark:text-white">
+<nav class="bg-white dark:bg-black text-gray-900 dark:text-white h-20">
     <div class="max-w-0.8 mx-auto px-4">
         <div class="flex items-center justify-between">
             <div class="flex space-x-4 items-center">
@@ -23,9 +23,9 @@
                 </a>
                 <!-- Authentication Links -->
                 {% if user.is_authenticated %}
-                <form id="logout-form" method="POST" action="{% url 'logout' %}" class="flex items-center py-5 px-3 dark:text-white">
-                        {% csrf_token %}
-                        <button type="submit" class="text-gray-700 dark:text-white">Logout</button>
+                <form id="logout-form" method="POST" action="{% url 'logout' %}" class="inline-flex items-center py-7 px-3 dark:text-white">
+                    {% csrf_token %}
+                    <button type="submit" class="text-gray-700 dark:text-white">Logout</button>
                 </form>
                 {% else %}
                 <form id="login-form" method="GET" action="{% url 'login' %}" class="flex items-center py-5 px-3 dark:text-white">

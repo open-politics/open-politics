@@ -25,4 +25,5 @@ urlpatterns = [
     path('login/', custom_login_view, name='login'),
     path('about/', views.about, name='about'),
     path('fetch-tldr/', module_views.tldr_view, name='fetch_tldr'),
+    path('faq/', views.faq, name='faq'),
 ]

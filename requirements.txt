@@ -14,7 +14,6 @@ yfinance
 qdrant-client
 plotly
 bs4
-# sentence_transformers
 django-cors-headers
 channels
 djangorestframework

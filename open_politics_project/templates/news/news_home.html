@@ -22,7 +22,8 @@
         }
       }
       .spinner {
-        position: fixed; /* or absolute, depending on the use case */
+        position: relative; /* or absolute, depending on the use case */
+        justify-self: center;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
@@ -46,8 +47,8 @@
 {% block news_home %}
 
 {% if user.is_authenticated %}
-<div class='tldr-wrapper dark:bg-black flex flex-col items-center min-h-screen ml-4 mr-4'>
-    <div class='tldr-header max-w-lg mt-36'>
+<div class='tldr-wrapper dark:bg-black flex flex-col items-center min-h-screen ml-4 mr-4 mt-4 mb-4 dark:text-white'>
+    <div class='tldr-header max-w-lg mt-4'>
         <h1 class="text-black dark:text-white text-3xl mb-8">TLDR Summary Generator</h1>
     </div>
     <div class='tldr-body mx-auto w-full max-w-lg'>
