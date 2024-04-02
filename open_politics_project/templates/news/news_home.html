@@ -46,15 +46,15 @@
 {% block news_home %}
 
 {% if user.is_authenticated %}
-<div class='tldr-wrapper dark:bg-black flex flex-col items-center bg-white'>
+<div class='tldr-wrapper dark:bg-black flex flex-col items-center min-h-screen ml-4 mr-4'>
     <div class='tldr-header max-w-lg mt-36'>
-        <h1 class="text-black dark:text-white text-4xl mb-8">TLDR Summary Generator</h1>
+        <h1 class="text-black dark:text-white text-3xl mb-8">TLDR Summary Generator</h1>
     </div>
     <div class='tldr-body mx-auto w-full max-w-lg'>
         <form hx-get="{% url 'fetch_tldr' %}" hx-target="#tldr-container" class="flex flex-col items-center">
             <div class="search-bar mb-4 w-full">
                 <input type="text" name="query" placeholder="Search..." class="search-input w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <button type="submit" class="mt-4 w-full button bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">Fetch TLDR</button>
+                <button type="submit" class="mt-4 w-full button bg-blue-500 dark:bg-pink-600 text-white py-2 rounded-md hover:bg-blue-600">Fetch TLDR</button>
             </div>
         </form>    
         <div class="spinner hidden">
@@ -76,7 +76,7 @@
                     <p>The news comes from NewsAPI.org. The TLDR summary are generated using OpenAI's GPT-4 (model GPT-4-1106-preview).  
                         
                     <p class="mb-2 mt-4"> The prompt used to construct this information is: </p>
-                        You are a political intelligence analyst. Create a TLDR based on the following summaries:\n{summaries}. 
+                        You are a political intelligence analyst. Create a TLDR based on the followin8g summaries:\n{summaries}. 
                         Include only relevant political information, no anecdotal stories or content or personal opinions. 
                         Use Markdown styling with bullet point lists to present this information.</p>
                 </div>
@@ -96,7 +96,6 @@
         </div>
     </div>
 </div>
-
     
 {% else %}
 <div class='tldr-wrapper flex flex-col justify-center items-center min-h-screen'>

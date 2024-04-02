@@ -13,22 +13,22 @@
         
         <div class="mt-2 mr-8 text-right">
             <p class="text-pink-600 font-bold mb-1">Rethinking News Analysis with Open Source & AI.</p>
-            <p class="mt-1 mb-1">Navigate news with next-gen tools.</p>
-            <p class="text-lg mt-1 mb-2">Come back soon for feature releases.</p>
+            <p class="text-lg mt-1 mb-2">Navigate news with next-gen tools.</p>
+            <p class="mt-1 mb-2">Come back soon for feature releases.</p>
 
-            <div class="space-y-2">
+            <div class="space-y-1Z max-w-sm mx-auto">
                 <!-- Adjusted classes for "Project on GitHub" button -->
-                <a href="https://github.com/JimVincentW/open-politics" class="inline-block bg-black text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:hover:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white transition-colors duration-300 ease-in-out mr-2">Project on GitHub</a>
+                <a href="https://github.com/JimVincentW/open-politics" class="inline-block bg-black text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:hover:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white transition-colors duration-300 ease-in-out">Project on GitHub</a>
                 <!-- Adjusted classes for "Join the waitlist" button -->
                 <a href="https://zu61ygkfc3v.typeform.com/to/KHZeedk3" class="inline-block bg-black text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:hover:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white transition-colors duration-300 ease-in-out">Join the waitlist</a>
+                
+                {% if user.is_authenticated %}
+                <div class="mt-4">
+                    <!-- Corrected classes for "Search News" button -->
+                    <a href="{% url 'news_home' %}" class="inline-block bg-pink-600 text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:bg-pink-600 dark:text-white dark:hover:bg-pink-600 dark:hover:text-white dark:hover:border-white transition-colors duration-300 ease-in-out">Search News</a>
+                </div>
+                {% endif %}
             </div>
-            
-            {% if user.is_authenticated %}
-            <div class="mt-4">
-                <!-- Corrected classes for "Search News" button -->
-                <a href="{% url 'news_home' %}" class="inline-block bg-pink-600 text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:bg-pink-600 dark:text-white dark:hover:bg-pink-600 dark:hover:text-white dark:hover:border-white transition-colors duration-300 ease-in-out">Search News</a>
-            </div>
-            {% endif %}
         </div>
     </div>
 </div>

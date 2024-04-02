@@ -9,3 +9,5 @@ open_politics_project/test_scripts/
 .DS_Store
 open-politics.org/
 open_politics_project/db.sqlite3/
+tailwind.config.js
+node_modules/

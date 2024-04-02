@@ -13,11 +13,11 @@
             </a>
         </div>
         <div class="content relative z-10 p-2">
-            <h3 class="text-sm text-gray-400 mb-1">{{ article.title }}</h3>
+            <h3 class="text-sm text-white mb-1">{{ article.title }}</h3>
             <p class="text-xs text-black dark:text-white leading-5">{{ article.content|slice:":200" }}...</p>
         </div> 
         {% if article.image %}
-        <div class="image absolute top-0 left-0 w-full h-full object-cover filter blur-sm brightness-75 z-[-1] rounded-lg" style="background-image: url('{{ article.image }}');"></div>
+        <div class="image absolute top-0 left-0 w-full h-full object-cover object-center bg-cover bg-no-repeat bg-center opacity-75 z-[-1] rounded-lg" style="background-image: url('{{ article.image }}');"></div>
         {% endif %}
         <div class="button-container p-2">
             <a href="{{ article.url }}" class="text-xs text-blue-500 font-semibold bg-pink-200 dark:bg-gray-800 hover:bg-pink-6008 dark:hover:bg-gray-700 py-1 px-2 rounded-md transition-colors duration-300">Read article</a>
