@@ -1,73 +1,44 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<style>
-    .centered-content {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-    }
-    .left-aligned-container {
-        max-width: 800px; /* Adjust this value based on your preference */
-        background-color: white;
-        color: black;
-        padding: 20px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        margin-top: 20px;
-    }
-    
-    .cta-box {
-        color: white;
-        padding: 15px;
-        border-radius: 5px;
-        margin-top: 20px;
-        max-width: 400px;
-    }
-    .contact-section ul {
-        padding: 0;
-    }
-    .contact-section ul li {
-        list-style-type: none;
-    }
-    .contact-section a {
-        color: #1e90ff; /* Dodger blue */
-    }
-</style>
-
-<div class="centered-content ">
-    <div class="left-aligned-container dark:bg-black dark:text-white dark:border-pink-600 border border-gray-300 rounded-lg shadow-white dark:shadow-sm">
+<div class="flex justify-center w-full">
+    <div class="bg-white dark:bg-black text-gray-800 dark:text-white max-w-4xl mt-5 mx-3 p-6 border border-transparent dark:border-white shadow-lg rounded-lg">
         <!-- Main Title -->
-        <h1 class="text-4xl font-bold mb-4">Open Source Political Intelligence</h1>
+        <h1 class="text-3xl md:text-4xl font-bold mb-6">Open Source Political Intelligence</h1>
 
         <!-- Introduction Paragraph -->
-        <p class="text-lg w-3/4">
-            This project aimes to help organizes the aggregation and analysis of political news.
-            The vision is a set of tools to provide insights into political events and trends. Helping to understand the political landscape and the forces that shape it. No bias, but clear methods with reproducible and transparent results.
-            Built on top of many sources, with open source code and an idealistic spirit to help people understand the world around them.
-            A toolkit for your friends, researchers and the Christmas Dinner evening discussions alike.
-        </p>
+        <div class="text-base md:text-lg">
+            <p class="mb-4">
+                This project aims to help organize the aggregation and analysis of political news.
+                The vision is a set of tools to provide insights into political events and trends.
+                Helping to understand the political landscape and the forces that shape it. No bias, but clear methods with reproducible and transparent results.
+                Built on top of many sources, with open source code and an idealistic spirit to help people understand the world around them.
+                A toolkit for your friends, researchers and the Christmas dinner evening discussions alike.
+            </p>
+        </div>
 
         <!-- Call to Action Box -->
-        <div class="cta-box dark:text-pink-300">
+        <div class="bg-pink-600 text-white p-4 mt-4 rounded-lg">
             <p>
-                Your skills and enthusiasm can ignite change. Join us as a data expert, activist, sponsor or curious individual. Political intelligence is a team sport. And true insight comes from many perspectives.
+                Your skills and enthusiasm can ignite change. Join us as a data expert, activist, sponsor, or curious individual.
+                Political intelligence is a team sport. And true insight comes from many perspectives.
             </p>
         </div>
 
         <!-- Get in Touch Section -->
-        <section class="contact-section mt-8">
-            <h2 class="text-3xl font-bold mb-4">Get in Touch and Get Involved</h2>
-            <ul>
-                <li><strong>Email Us:</strong> <a href="mailto:engage@open-politics.org">engage@open-politics.org</a></li>
+        <div class="mt-8">
+            <h2 class="text-2xl font-bold mb-4">Get in Touch and Get Involved</h2>
+            <ul class="list-none space-y-2">
+                <li><strong>Email Us:</strong> <a href="mailto:engage@open-politics.org" class="text-blue-500 hover:underline">engage@open-politics.org</a></li>
                 <li><strong>Jour Fixes:</strong>
-                    <ul>
+                    <ul class="list-none ml-4 space-y-1">
                         <li><strong>For Developers:</strong> Thursdays at 15:30</li>
                         <li><strong>For Everybody Else:</strong> Fridays at 12:30</li>
                     </ul>
                 </li>
-                <li><strong>Meet us at:</strong> <a href="https://discord.gg/KFRW2nAY">our Discord Server</a></li>
+                <li><strong>Meet us at:</strong> <a href="https://discord.gg/link" class="text-blue-500 hover:underline">our Discord Server</a></li>
             </ul>
-        </section>
+        </div>
     </div>
 </div>
 {% endblock %}
