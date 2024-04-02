@@ -1,6 +1,7 @@
 {% load static %}
+</style>
 <!-- header.html -->
-<nav class="bg-white dark:bg-black text-gray-900 dark:text-white h-20">
+<nav class="bg-white dark:bg-black text-gray-900 dark:text-white">
     <div class="max-w-0.8 mx-auto px-4">
         <div class="flex items-center justify-between">
             <div class="flex space-x-4 items-center">
@@ -13,7 +14,7 @@
             </div>
 
             <!-- secondary nav -->
-            <div class="hidden md:flex items-center space-x-1">
+            <div class="hidden md:flex items-center space-x-1>
                 <a href="{% url 'about' %}" class="py-5 px-3 text-gray-700 dark:text-white">About</a>
                 <a href="#news" class="py-5 px-3 text-gray-700 dark:text-white">News</a>
                 <a href="mailto:engage@open-politics.org" class="py-5 px-3 text-gray-700 dark:text-white">Contact</a>
@@ -23,14 +24,14 @@
                 </a>
                 <!-- Authentication Links -->
                 {% if user.is_authenticated %}
-                <form id="logout-form" method="POST" action="{% url 'logout' %}" class="inline-flex items-center py-7 px-3 dark:text-white">
+                <form id="logout-form" method="POST" action="{% url 'logout' %}" class="inline-flex items-center py-5 px-3 dark:text-white">
                     {% csrf_token %}
                     <button type="submit" class="text-gray-700 dark:text-white">Logout</button>
                 </form>
                 {% else %}
                 <form id="login-form" method="GET" action="{% url 'login' %}" class="flex items-center py-5 px-3 dark:text-white">
-                        {% csrf_token %}
-                        <button type="submit" class="text-gray-700 dark:text-white">Login</button>
+                    {% csrf_token %}
+                    <button type="submit" class="text-gray-700 dark:text-white">Login</button>
                 </form>
                 {% endif %}
                 <!-- Dark Mode Toggle Button -->
@@ -51,7 +52,7 @@
     </div>
 
     <!-- mobile menu -->
-        <div class="mobile-menu hidden md:hidden">
+        <div class="mobile-menu hidden md:hidden z-10 bg-white dark:bg-black">
             <a href="{% url 'about' %}" class="block py-2 px-4 text-sm mb-2">About</a>
             <a href="#news" class="block py-2 px-4 text-sm mb-2">News</a>
             <a href="mailto:engage@open-politics.org" class="block py-2 px-4 text-sm mb-2">Contact</a>

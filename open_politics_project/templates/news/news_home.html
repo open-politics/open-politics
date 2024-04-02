@@ -22,7 +22,7 @@
         }
       }
       .spinner {
-        position: relative; /* or absolute, depending on the use case */
+        position: absolute; /* or absolute, depending on the use case */
         justify-self: center;
         top: 50%;
         left: 50%;
@@ -54,7 +54,7 @@
     <div class='tldr-body mx-auto w-full max-w-lg'>
         <form hx-get="{% url 'fetch_tldr' %}" hx-target="#tldr-container" class="flex flex-col items-center">
             <div class="search-bar mb-4 w-full">
-                <input type="text" name="query" placeholder="Search..." class="search-input w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <input type="text" name="query" placeholder="Enter search term (e.g. Ukraine, Israel, Economy, Tech)" class="search-input w-full text-black px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent fokus:text-black">
                 <button type="submit" class="mt-4 w-full button bg-blue-500 dark:bg-pink-600 text-white py-2 rounded-md hover:bg-blue-600">Fetch TLDR</button>
             </div>
         </form>    
@@ -69,30 +69,30 @@
 
     <!-- Tooltip Containers Adjusted for Alignment -->
     <div class="flex justify-center items-center space-x-4 mt-5">
-        <div class="relative flex items-center justify-center h-10 w-10 rounded-full bg-slate-500 hover:bg-blue-600 text-white cursor-pointer group">
+        <div class="relative flex items-center justify-center h-10 w-10 rounded-full bg-gray-800 hover:bg-blue-600 text-white cursor-pointer group">
             <i class="fas fa-question text-xl"></i>
             <div class="absolute bottom-full mb-2 hidden flex-col items-center group-hover:flex">
-                <div class="w-80 p-2 text-xs text-white bg-black shadow-lg">
-                    <p class="mb-2">How is this information constructed?</p>
+                <div class="w-80 p-2 text-xs text-white bg-gray-800 rounded-md shadow-lg">
+                    <p class="mb-2"><strong>How is this information constructed?</strong></p>
                     <p>The news comes from NewsAPI.org. The TLDR summary are generated using OpenAI's GPT-4 (model GPT-4-1106-preview).  
                         
-                    <p class="mb-2 mt-4"> The prompt used to construct this information is: </p>
+                    <p class="mb-2 mt-4"><strong>The prompt used to construct this information is:</strong></p>
                         You are a political intelligence analyst. Create a TLDR based on the followin8g summaries:\n{summaries}. 
                         Include only relevant political information, no anecdotal stories or content or personal opinions. 
                         Use Markdown styling with bullet point lists to present this information.</p>
                 </div>
-                <div class="w-3 h-3 -mt-2 rotate-45 bg-black"></div>
+                <div class="w-3 h-3 -mt-2 rotate-45 bg-gray-800 rounded-md"></div>
             </div>
         </div>
         
-        <div class="relative flex items-center justify-center h-10 w-10 rounded-full bg-slate-500 hover:bg-blue-600 text-white cursor-pointer group">
+        <div class="relative flex items-center justify-center h-10 w-10 rounded-full bg-gray-800 hover:bg-blue-600 text-white cursor-pointer group">
             <i class="fas fa-info text-xl"></i>
             <div class="absolute bottom-full mb-2 hidden flex-col items-center group-hover:flex">
-                <div class="w-80 p-2 text-xs text-white bg-black shadow-lg">
-                    <p class="mb-2">How to use this?</p>
+                <div class="w-80 p-2 text-xs text-white bg-gray-800 rounded-md shadow-lg">
+                    <p class="mb-2"><strong>How to use this?</strong></p>
                     <p>Insert a news search term like "Ukraine" or "Biden". The system generates a TLDR summary for your query.</p>
                 </div>
-                <div class="w-3 h-3 -mt-2 rotate-45 bg-black"></div>
+                <div class="w-3 h-3 -mt-2 rotate-45 bg-gray-800 rounded-md"></div>
             </div>
         </div>
     </div>
