@@ -469,3 +469,30 @@ def tldr_view(request):
             'content': content,
         }
         return render(request, 'news_home.html', context)
+    
+
+
+
+from django.http import StreamingHttpResponse
+from langchain.chat_models import ChatOpenAI
+from langchain.schema import HumanMessage, AIMessage
+
+def chatbot(request):
+    if request.method == 'POST':
+        user_input = request.POST['user_input']
+        
+        chat_history = request.session.get('chat_history', [])
+        chat_history.append(HumanMessage(content=user_input))
+        
+        llm = ChatOpenAI(streaming=True)
+        
+        def generate():
+            for response in llm.generate([chat_history]):
+                chat_history.append(AIMessage(content=response.text))
+                yield response.text
+        
+        request.session['chat_history'] = chat_history
+        
+        return StreamingHttpResponse(generate(), content_type='text/html')
+
+    return render(request, 'chatbot.html', {'chat_history': request.session.get('chat_history', [])})
