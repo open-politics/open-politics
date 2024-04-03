@@ -1,0 +1,15 @@
+<div id="chat-container">
+  <div id="message-list" hx-get="{% url 'chat:message-list' room.id %}" hx-trigger="every 1s">
+    {% for message in messages %}
+      <div class="message">
+        <strong>{{ message.user.username }}</strong>: {{ message.content }}
+      </div>
+    {% endfor %}
+  </div>
+
+  <form hx-post="{% url 'chat:send-message' room.id %}">
+    {% csrf_token %}
+    <input type="text" name="message" placeholder="Type your message...">
+    <button type="submit">Send</button>
+  </form>
+</div>

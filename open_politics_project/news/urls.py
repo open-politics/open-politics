@@ -6,6 +6,36 @@ from news.views import *
 
 views = old_views
 module_views = module_views
+# views.py
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from langchain.llms import OpenAI
+from langchain.chains import ConversationChain
+from langchain.memory import ConversationBufferMemory
+
+
+class ChatbotView(APIView):
+    def post(self, request):
+        # Get user input from request
+        user_input = request.data.get('input')
+        
+        # Initialize LLM
+        llm = OpenAI(temperature=0.9) 
+        
+        # Initialize memory
+        memory = ConversationBufferMemory(memory_key="chat_history")
+        
+        # Initialize the ConversationChain
+        conversation = ConversationChain(
+            llm=llm, 
+            memory=memory,
+            verbose=True
+        )
+        
+        # Generate response
+        response = conversation.predict(input=user_input)
+        
+        return Response({"response": response})
 
 urlpatterns = [
     path('news/', views.news_home, name="news_home"),
@@ -26,4 +56,5 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('fetch-tldr/', module_views.tldr_view, name='fetch_tldr'),
     path('faq/', views.faq, name='faq'),
+    path('chatbot/', module_views.chatbot, name='chatbot'),
 ]
