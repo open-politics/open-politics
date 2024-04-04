@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bt_thema',
     'news',
+    'chat',
     'channels',
     'rest_framework',
     'rest_framework.authtoken',

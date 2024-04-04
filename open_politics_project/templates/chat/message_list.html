@@ -1,0 +1,5 @@
+{% for message in messages %}
+    <div class="message">
+        <strong>{{ message.sender }}:</strong> {{ message.content }}
+    </div>
+{% endfor %}

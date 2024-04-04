@@ -1,19 +1,10 @@
 <div id="chat-container">
-    {% include 'chat/chat_message_area.html' %}
-    {% include 'chat/chat_input_form.html' %}
+    <div id="message-list">
+        {% include 'message_list.html' %}
+    </div>
+    <form hx-post="{% url 'send_message' %}" hx-target="#message-list">
+        <input type="text" name="sender" placeholder="Your name">
+        <input type="text" name="content" placeholder="Type your message...">
+        <button type="submit">Send</button>
+    </form>
 </div>
-<script>
-    document.addEventListener('htmx:afterSwap', () =>
-    {
-        let messageArea = document.getElementById('message-area');
-        // Scroll to the bottom of the message area
-        messageArea.scrollTop = messageArea.scrollHeight;
-    });
-</script>
-<script>
-    document.body.addEventListener('htmx:configRequest', function(event) {
-        var token = sessionStorage.getItem('authToken');
-        console.log(token);
-        event.detail.headers['Authorization'] = 'Token ' + token;
-    });
-</script>

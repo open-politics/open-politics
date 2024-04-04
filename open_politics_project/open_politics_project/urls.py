@@ -22,12 +22,14 @@ from django.contrib import admin
 from django.urls import path, re_path, include
 from django.views.static import serve
 from news.views import *
+from chat.views import *
 
 urlpatterns = [
     path('', views.home, name='home'),
     path('admin/', admin.site.urls),
     path("", include("bt_thema.urls")),
     path("", include("news.urls")),
+    path("", include("chat.urls")),
     path("", include("authentification.urls")),
     re_path(r'^\.well-known/acme-challenge/(?P<path>.+)$', serve, {
         'document_root': '/var/www/letsencrypt/',
