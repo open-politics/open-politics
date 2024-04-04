@@ -1,3 +1,4 @@
+{% load custom_filters %}
 <div class="bg-white text-black p-8 dark:bg-black dark:text-white">
     <div class="flex flex-col justify-center items-center h-screen" style="margin-top: -1rem;">
         <div class="text-center mb-12">
@@ -17,7 +18,6 @@
             <p class="mt-1 mb-2">Come back soon for feature releases.</p>
 
             <div class="space-y-2 max-w-sm mx-auto mt-4">
-                <!-- Adjusted classes for "Project on GitHub" button -->
                 <a href="https://github.com/JimVincentW/open-politics" class="inline-block bg-black text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:hover:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white transition-colors duration-300 ease-in-out">Project on GitHub</a>
                 <!-- Adjusted classes for "Join the waitlist" button -->
                 <a href="https://zu61ygkfc3v.typeform.com/to/KHZeedk3" class="inline-block bg-black text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:hover:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white transition-colors duration-300 ease-in-out">Join the waitlist</a>
@@ -25,12 +25,14 @@
                 {% if user.is_authenticated %}
                 <div class="mt-4">
                     <!-- Corrected classes for "Search News" button -->
-                    <div class="mt-4">
-                        <!-- Corrected classes for "Search News" button -->
-                        <a href="{% url 'news_home' %}" class="inline-block bg-pink-600 text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:bg-pink-600 dark:text-white dark:hover:bg-pink-600 dark:hover:text-white dark:hover:border-white transition-colors duration-300 ease-in-out">Search News</a>
-                        <!-- Added link to "/dashboard" -->
-                        <a href="{% url 'dashboard' %}" class="inline-block bg-blue-500 text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:bg-blue-500 dark:text-white dark:hover:bg-blue-500 dark:hover:text-white dark:hover:border-white transition-colors duration-300 ease-in-out">Dashboard</a>
-                    </div>
+                    <a href="{% url 'news_home' %}" class="inline-block bg-pink-600 text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:bg-pink-600 dark:text-white dark:hover:bg-pink-600 dark:hover:text-white dark:hover:border-white transition-colors duration-300 ease-in-out">Search News</a>
+                </div>
+                {% endif %}
+                {% if user|has_group:"Dashboard Users" %}
+                <div class="mt-4">
+                    <!-- Adjusted classes for "Dashboard" button -->
+                    <a href="{% url 'dashboard' %}" class="inline-block bg-blue-500 text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:hover:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white transition-colors duration-300 ease-in-out">Dashboard</a>
+                </div>
                 {% endif %}
             </div>
         </div>
