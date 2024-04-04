@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 import uuid
 
 class NewsSource(models.Model):
@@ -32,10 +34,6 @@ class NewsArticle(models.Model):
     def __str__(self):
         return self.title
 
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
-import uuid
-
 
 class Conversation(models.Model):
     title = models.CharField(max_length=100, unique=True)
@@ -53,3 +51,9 @@ class ChatMessages(models.Model):
     def __str__(self):
         return f"{self.conversation}: {self.id}"
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    query1 = models.CharField(max_length=255, blank=True, null=True)
+    query2 = models.CharField(max_length=255, blank=True, null=True)
+    query3 = models.CharField(max_length=255, blank=True, null=True)
+    query4 = models.CharField(max_length=255, blank=True, null=True)
