@@ -57,3 +57,5 @@ class UserProfile(models.Model):
     query2 = models.CharField(max_length=255, blank=True, null=True)
     query3 = models.CharField(max_length=255, blank=True, null=True)
     query4 = models.CharField(max_length=255, blank=True, null=True)
+
+

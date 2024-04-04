@@ -27,5 +27,5 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('fetch-tldr/', module_views.tldr_view, name='fetch_tldr'),
     path('faq/', views.faq, name='faq'),
-    path('chatbot/', module_views.chatbot, name='chatbot'),
+    path('dashboard/', module_views.dashboard, name='dashboard'),
 ]

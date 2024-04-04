@@ -14,6 +14,9 @@ import markdown
 from django.contrib.auth.decorators import login_required
 from newsapi import NewsApiClient
 from django.http import HttpResponse
+from ..models import UserProfile
+from django.shortcuts import render, redirect
+
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -398,7 +401,6 @@ logging.basicConfig(level=logging.DEBUG)
 #         }
 #         return render(request, 'news_home.html', context)
 
-
 def tldr_view(request):
     query = request.GET.get('query', '')
     languages = request.GET.getlist('languages', [])
@@ -469,30 +471,74 @@ def tldr_view(request):
             'content': content,
         }
         return render(request, 'news_home.html', context)
+
+
+def generate_tldr_with_langchain(article_summaries):
+    """
+    Simulate TLDR generation with LangChain or your summarization tool.
+    Replace this with actual calls to LangChain and processing.
+    """
+    # Simulated TLDR generation logic. Replace with actual implementation.
+    combined_summaries = " ".join(article_summaries)
+    tldr = f"TLDR: {combined_summaries[:150]}..."  # Simplified example
+    return tldr
     
-
-
-
-from django.http import StreamingHttpResponse
-from langchain.chat_models import ChatOpenAI
-from langchain.schema import HumanMessage, AIMessage
-
-def chatbot(request):
+def dashboard(request):
+    user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    
     if request.method == 'POST':
-        user_input = request.POST['user_input']
-        
-        chat_history = request.session.get('chat_history', [])
-        chat_history.append(HumanMessage(content=user_input))
-        
-        llm = ChatOpenAI(streaming=True)
-        
-        def generate():
-            for response in llm.generate([chat_history]):
-                chat_history.append(AIMessage(content=response.text))
-                yield response.text
-        
-        request.session['chat_history'] = chat_history
-        
-        return StreamingHttpResponse(generate(), content_type='text/html')
+        user_profile.query1 = request.POST.get('query1', '')
+        user_profile.query2 = request.POST.get('query2', '')
+        user_profile.query3 = request.POST.get('query3', '')
+        user_profile.query4 = request.POST.get('query4', '')
+        user_profile.save()
+        return redirect('dashboard')
+    
+    context = {
+        'user_profile': user_profile,
+    }
+    return render(request, 'dashboard.html', context)
 
-    return render(request, 'chatbot.html', {'chat_history': request.session.get('chat_history', [])})
+
+
+
+def fetch_tldr(request):
+    query = request.GET.get('query', '')
+
+    if query:
+        newsapi = NewsApiClient(api_key=os.getenv('NEWS_API_KEY'))
+        try:
+            articles = newsapi.get_everything(q=query, page_size=10)['articles']
+            article_summaries = [article['description'] for article in articles if article['description']]
+            
+            # Setup LangChain
+            tldr_prompt_template = ChatPromptTemplate.from_template(
+                """You are a political intelligence analyst. Create a TLDR based on the following summaries:\n{summaries}. 
+                Include only relevant political information, no anecdotal stories or content or personal opinions. 
+                Use Markdown styling with bullet point lists to present this information"""
+            )
+            output_parser = StrOutputParser()
+            model = ChatOpenAI(model="gpt-4-1106-preview", max_tokens=4000)
+            chain = ({"summaries": RunnablePassthrough()} | tldr_prompt_template | model | output_parser)
+
+            # Generate TLDR
+            tldr_markdown = chain.invoke("\n".join(article_summaries))
+            tldr_html = markdown.markdown(tldr_markdown)
+            
+            context = {
+                'tldr': tldr_html,
+                'articles': articles,
+            }
+        except Exception as e:
+            logging.error(f"Error fetching or processing articles for query {query}: {str(e)}")
+            context = {
+                'tldr': "An error occurred while fetching or processing articles.",
+                'articles': [],
+            }
+    else:
+        context = {
+            'tldr': "No query provided.",
+            'articles': [],
+        }
+
+    return render(request, 'tldr_fragment.html', context)
