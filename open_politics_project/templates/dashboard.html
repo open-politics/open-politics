@@ -4,6 +4,7 @@
 {% block content %}
 
 <style> 
+
   @keyframes spin { to { transform: rotate(360deg); } } 
   @keyframes color-change { 
     0% { border-top-color: #3498db; } 
@@ -12,6 +13,7 @@
     75% { border-top-color: #2ecc71; } 
     100% { border-top-color: #3498db; } 
   } 
+
   .spinner { 
     position: absolute; 
     justify-self: center; 
@@ -20,6 +22,7 @@
     transform: translate(-50%, -50%); 
     z-index: 1000; 
   } 
+
   .loader { 
     border: 5px solid #f3f3f3; 
     border-radius: 50%; 
@@ -28,6 +31,7 @@
     height: 50px; 
     animation: spin 2s linear infinite, color-change 4s ease-in-out infinite; 
   }
+
   /* Image display styles */
   .article-image {
     width: 100%;
@@ -35,76 +39,99 @@
     background-size: cover;
     background-position: center;
     border-radius: 8px;
+    
   }
+
+  #chartdiv {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;  /* Ensure it covers the full viewport height */
+    z-index: -1;    /* Set to -1 to stay behind all other content */
+  }
+
+  #dashboard {
+    z-index: 1002; /* Initially in the foreground */
+  }
+
 </style> 
 
-<h1 class="text-3xl font-bold text-gray-900 dark:text-white text-center my-4">Focus Dashboard</h1>
+<div id="chartdiv"></div> 
+
+<h1 class="text-3xl font-bold text-gray-900 dark:text-white text-center my-4 opacity-90">Focus Dashboard</h1>
+
 <div id="dashboard" class="container mx-auto px-4 mt-4">
   {% if user.is_authenticated %}
+  <button id="toggleGlobe" class="toggle-button">Toggle Globe</button>
   <!-- Query Update Form -->
  <!-- Query Update Form -->
-<form method="POST" hx-post="{% url 'dashboard' %}" hx-target="#dashboard" hx-swap="innerHTML" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-  {% csrf_token %}
-  {% for i in "1234" %}
-  {% with 'query'|add:i as query_attr %}
-  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
-    <label for="query{{ i }}" class="block text-sm font-medium text-gray-700 dark:text-gray-100">Searching news for:</label>
-    <input type="text" id="query{{ i }}" name="query{{ i }}" value="{{ user_profile|getattr:query_attr }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 placeholder-gray-400 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white pl-2" placeholder="Enter query...">
-  </div>
-  {% endwith %}
-  {% endfor %}
-  <!-- Centering the button across middle two columns -->
-  <div class="col-start-2 col-span-2 flex justify-center"> <!-- This div spans from column 2 to 3 -->
-    <button type="submit" class="mt-4 px-6 py-3 bg-gradient-to-r from-blue-400 to-purple-500 text-white rounded-full shadow-lg transform transition-all hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-purple-600">
-      Update Focus
-    </button>
-  </div>
-</form>
+  <form method="POST" hx-post="{% url 'dashboard' %}" hx-target="#dashboard" hx-swap="innerHTML" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+    {% csrf_token %}
+    {% for i in "1234" %}
+    {% with 'query'|add:i as query_attr %}
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 opacity-90">
+      <label for="query{{ i }}" class="block text-sm font-medium text-gray-700 dark:text-gray-100">Searching news for:</label>
+      <input type="text" id="query{{ i }}" name="query{{ i }}" value="{{ user_profile|getattr:query_attr }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 placeholder-gray-400 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white pl-2" placeholder="Enter query...">
+    </div>
+    {% endwith %}
+    {% endfor %}
+    <!-- Centering the button across middle two columns -->
+    <div class="col-start-2 col-span-2 flex justify-center mb-2"> <!-- This div spans from column 2 to 3 -->
+      <button type="submit" class="mt-4 px-6 py-3 bg-gradient-to-r from-pink-400 via-pink-blue-500 to-green-500 text-white rounded-full shadow-lg transform transition-all hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-purple-600">
+        Update Focus
+      </button>
+    </div>
+  </form>
 
 
-<!-- TLDR Content Grid -->
-<div class="mt-4">
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    {% for i in "12" %}
+  <!-- TLDR Content Grid -->
+  <div class="mt-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {% for i in "12" %}
+      {% with query_attr='query'|add:i %}
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col opacity-90">
+        <div class="mb-2">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ user_profile|getattr:query_attr }}</h3>
+          <div id="tldr-{{ i }}" hx-get="{% url 'fetch_tldr' %}?query={{ user_profile|getattr:query_attr }}" hx-trigger="load" hx-target="this">
+            <div class="spinner spinner-{{ i }} hidden">
+              <div class="loader"></div>
+            </div>
+            <!-- Content for first two modules -->
+          </div>
+        </div>
+      </div>
+      {% endwith %}
+      {% endfor %}
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+    {% for i in "34" %}
     {% with query_attr='query'|add:i %}
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col opacity-90">
       <div class="mb-2">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ user_profile|getattr:query_attr }}</h3>
-        <div id="tldr-{{ i }}" hx-get="{% url 'fetch_tldr' %}?query={{ user_profile|getattr:query_attr }}" hx-trigger="load" hx-target="this">
+        <div id="issue-areas-{{ i }}" hx-get="{% url 'fetch_tldr' %}?query={{ user_profile|getattr:query_attr }}" hx-trigger="load" hx-target="this">
           <div class="spinner spinner-{{ i }} hidden">
             <div class="loader"></div>
           </div>
-          <!-- Content for first two modules -->
+          <!-- Content for issue areas -->
         </div>
       </div>
     </div>
     {% endwith %}
     {% endfor %}
-  </div>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-  {% for i in "34" %}
-  {% with query_attr='query'|add:i %}
-  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col">
-    <div class="mb-2">
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ user_profile|getattr:query_attr }}</h3>
-      <div id="issue-areas-{{ i }}" hx-get="{% url 'fetch_tldr' %}?query={{ user_profile|getattr:query_attr }}" hx-trigger="load" hx-target="this">
-        <div class="spinner spinner-{{ i }} hidden">
-          <div class="loader"></div>
-        </div>
-        <!-- Content for issue areas -->
-      </div>
     </div>
   </div>
-  {% endwith %}
-  {% endfor %}
-  </div>
-</div>
-  
+    
   {% else %}
   <p class="text-center text-gray-900 dark:text-white">Please log in to view this page.</p>
   {% endif %}
 
 </div>
+<script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
 <script> 
   document.body.addEventListener('htmx:beforeRequest', function(event) { 
     event.target.querySelector('.spinner').classList.remove('hidden'); 
@@ -114,5 +141,118 @@
     event.target.querySelector('.spinner').classList.add('hidden');
   });
 </script> 
-
+<script>
+  am5.ready(function() {
+  
+  // Create root element
+  // https://www.amcharts.com/docs/v5/getting-started/#Root_element
+  var root = am5.Root.new("chartdiv");
+  
+  
+  // Set themes
+  // https://www.amcharts.com/docs/v5/concepts/themes/
+  root.setThemes([
+    am5themes_Animated.new(root)
+  ]);
+  
+  
+  // Create the map chart
+  // https://www.amcharts.com/docs/v5/charts/map-chart/
+  var chart = root.container.children.push(am5map.MapChart.new(root, {
+    panX: "rotateX",
+    panY: "rotateY",
+    projection: am5map.geoOrthographic(),
+    paddingBottom: 20,
+    paddingTop: 20,
+    paddingLeft: 20,
+    paddingRight: 20
+  }));
+  
+  
+  // Create main polygon series for countries
+  // https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/
+  var polygonSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
+    geoJSON: am5geodata_worldLow
+  }));
+  
+  polygonSeries.mapPolygons.template.setAll({
+    tooltipText: "{name}",
+    toggleKey: "active",
+    interactive: true
+  });
+  
+  polygonSeries.mapPolygons.template.states.create("hover", {
+    fill: root.interfaceColors.get("primaryButtonHover")
+  });
+  
+  
+  // Create series for background fill
+  // https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/#Background_polygon
+  var backgroundSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {}));
+  backgroundSeries.mapPolygons.template.setAll({
+    fill: root.interfaceColors.get("alternativeBackground"),
+    fillOpacity: 0.1,
+    strokeOpacity: 0
+  });
+  backgroundSeries.data.push({
+    geometry: am5map.getGeoRectangle(90, 180, -90, -180)
+  });
+  
+  
+  // Create graticule series
+  // https://www.amcharts.com/docs/v5/charts/map-chart/graticule-series/
+  var graticuleSeries = chart.series.push(am5map.GraticuleSeries.new(root, {}));
+  graticuleSeries.mapLines.template.setAll({ strokeOpacity: 0.1, stroke: root.interfaceColors.get("alternativeBackground") })
+  
+  
+  // Rotate animation
+  chart.animate({
+    key: "rotationX",
+    from: 0,
+    to: 360,
+    duration: 60000,
+    loops: Infinity
+  });
+  
+  
+  // Make stuff animate on load
+  chart.appear(1000, 100);
+  
+  }); // end am5.ready()
+  </script>
+  <script>
+    document.getElementById('toggleGlobe').addEventListener('click', function() {
+      var chartdiv = document.getElementById('chartdiv');
+      var dashboard = document.getElementById('dashboard');
+      var globeToFront = chartdiv.style.zIndex === '-1';
+    
+      // Toggle the z-index to bring globe to the front or send it back
+      chartdiv.style.zIndex = globeToFront ? '1001' : '-1';
+      dashboard.style.zIndex = globeToFront ? '1000' : '1002';
+    
+      // If globe is brought to the front, ensure it spins
+      if (globeToFront) {
+        startSpinningGlobe();
+      }
+    });
+    
+    function startSpinningGlobe() {
+      // Check if the globe is currently spinning; if not, start spinning
+      if (!chart.isSpinning) {
+        chart.animate({
+          key: "rotationX",
+          from: chart.get("rotationX"),
+          to: chart.get("rotationX") + 360,
+          duration: 60000,
+          loops: Infinity
+        });
+        chart.isSpinning = true;
+      }
+    }
+    
+    // Resume spinning after a delay when globe goes to the background
+    document.body.addEventListener('htmx:afterRequest', function(event) {
+      setTimeout(startSpinningGlobe, 10000);  // Delay in milliseconds
+    });
+  </script>
 {% endblock %}

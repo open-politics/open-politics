@@ -1,7 +1,11 @@
-<!-- Mobile-optimized TailwindCSS HTML with scrollable TL;DR and horizontal scrolling articles -->
-<div id="emoji-output" class="mt-4 text-3xl text-center">
-    <!-- Display the emoji string generated from the issue areas -->
-    {{ emoji_string.emojis }}
+{% if emoji_string %}
+    <div id="emoji-output" class="mt-4 text-lg text-center">
+        <!-- Display the first 7 emojis from the emoji string generated from the issue areas -->
+        {{ emoji_string }}
+    </div>
+{% else %}
+    <div id="emoji-output" class="mt-4 text-lg text-center" style="height: 1.5rem;"></div>
+{% endif %}
 </div>
 <div id="articles-output" class="flex overflow-x-scroll py-1 space-x-1">
     {% for article in articles %}

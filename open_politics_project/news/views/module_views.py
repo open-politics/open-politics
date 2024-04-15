@@ -18,6 +18,7 @@ from django.http import HttpResponse
 from ..models import UserProfile
 from django.shortcuts import render, redirect
 import marvin
+import regex
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -457,8 +458,20 @@ def tldr_view(request):
 
     # Step 5
     logging.debug("Step 5: Generating emoji string from issue areas")
+    # Assuming marvin.extract returns a collection of objects with an attribute 'emojis' containing emoji strings
     emoji_string = marvin.extract(str(issue_areas), target=EmojiString)
-    
+    emoji_string = "".join([emoji.emojis for emoji in emoji_string])  # concatenate all emojis into one string
+    emoji_string = emoji_string.replace("ole:", "")  # remove unwanted substrings
+
+    # Use a regex pattern to match all valid emoji characters or sequences
+    emoji_pattern = r'\X(?:\p{Emoji_Presentation}|\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Component})*\X'
+    # Find all matches in the text
+    emojis = regex.findall(emoji_pattern, emoji_string, regex.UNICODE)
+    # Normalize and separate each emoji by filtering out non-emoji characters
+    extracted_emojis = [regex.sub(r'[^\p{Emoji}]+', '', e) for e in emojis]
+    emoji_string = "".join(extracted_emojis)  # combine all valid emojis back into a single string
+    logging.debug(f"Generated emoji string: {emoji_string}")
+
     end_time = time.time()
 
     # Convert Markdown to HTML
