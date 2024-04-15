@@ -540,33 +540,33 @@ def fetch_tldr_with_issue_areas(request):
     if query:
         # newsapi = NewsApiClient(api_key=os.getenv('NEWS_API_KEY'))
         try:
-            articles = newsapi.get_everything(q=query, page_size=10)['articles']
-            article_summaries = [article['description'] for article in articles if article['description']]
+            # articles = newsapi.get_everything(q=query, page_size=10)['articles']
+            # article_summaries = [article['description'] for article in articles if article['description']]
             
-            # Setup LangChain
-            tldr_prompt_template = ChatPromptTemplate.from_template(
-                """You are a political intelligence analyst. Create a TLDR based on the following summaries:\n{summaries}. 
-                Include only relevant political information, no anecdotal stories or content or personal opinions. 
-                Use Markdown styling with bullet point lists to present this information"""
-            )
-            output_parser = StrOutputParser()
-            if os.env("IN_DOCKER") == True:
-                model = ChatOpenAI(model="gpt-4-1106-preview", max_tokens=4000)
-            else:
-                model = ChatOpenAI(model="gpt-3.5-turbo", max_tokens=4000)
-            chain = ({"summaries": RunnablePassthrough()} | tldr_prompt_template | model | output_parser)
+            # # Setup LangChain
+            # tldr_prompt_template = ChatPromptTemplate.from_template(
+            #     """You are a political intelligence analyst. Create a TLDR based on the following summaries:\n{summaries}. 
+            #     Include only relevant political information, no anecdotal stories or content or personal opinions. 
+            #     Use Markdown styling with bullet point lists to present this information"""
+            # )
+            # output_parser = StrOutputParser()
+            # if os.env("IN_DOCKER") == True:
+            #     model = ChatOpenAI(model="gpt-4-1106-preview", max_tokens=4000)
+            # else:
+            #     model = ChatOpenAI(model="gpt-3.5-turbo", max_tokens=4000)
+            # chain = ({"summaries": RunnablePassthrough()} | tldr_prompt_template | model | output_parser)
 
-            @marvin.model(instructions='Extract issue areas from the text')
-            class IssueArea(BaseModel):
-                '''Multiple issue areas and their description'''
-                name: str
-                description: str
+            # @marvin.model(instructions='Extract issue areas from the text')
+            # class IssueArea(BaseModel):
+            #     '''Multiple issue areas and their description'''
+            #     name: str
+            #     description: str
             
-            # Generate TLDR
-            tldr_markdown = chain.invoke("\n".join(article_summaries))
-            tldr_html = markdown.markdown(tldr_markdown)
-            issue_areas = marvin.extract(tldr_markdown, target=IssueArea)
-            print(f"Issue areas extracted: {issue_areas}")
+            # # Generate TLDR
+            # tldr_markdown = chain.invoke("\n".join(article_summaries))
+            # tldr_html = markdown.markdown(tldr_markdown)
+            # issue_areas = marvin.extract(tldr_markdown, target=IssueArea)
+            # print(f"Issue areas extracted: {issue_areas}")
              
             context = {
                 'tldr': tldr_html,
