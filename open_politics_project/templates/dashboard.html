@@ -2,70 +2,57 @@
 {% load custom_filters %}
 
 {% block content %}
-<style>
-    @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-      @keyframes color-change {
-        0% {
-          border-top-color: #3498db;
-        }
-        25% {
-          border-top-color: #e74c3c;
-        }
-        50% {
-          border-top-color: #f1c40f;
-        }
-        75% {
-          border-top-color: #2ecc71;
-        }
-        100% {
-          border-top-color: #3498db;
-        }
-      }
-      .spinner {
-        position: absolute; /* or absolute, depending on the use case */
-        justify-self: center;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 1000; /* Ensure it's above other content */
-      }
-      
-      .loader {
-        border: 5px solid #f3f3f3;
-        border-radius: 50%;
-        border-top: 5px solid #3498db;
-        width: 50px;
-        height: 50px;
-        animation: spin 2s linear infinite, color-change 4s ease-in-out infinite;
-      }
 
-</style>
-<div class="container mx-auto px-4">
-    {% if user.is_authenticated %}
-    <!-- Query Update Form -->
-    <form method="POST" action="{% url 'dashboard' %}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        {% csrf_token %}
-        {% for i in "1234" %}
-        {% with 'query'|add:i as query_attr %}
-            <div class="bg-white rounded-lg shadow-lg p-4">
-                <label for="query{{ i }}" class="block text-sm font-medium  text-gray-700">Searching news for:</label>
-                <input type="text" id="query{{ i }}" name="query{{ i }}" value="{{ user_profile|getattr:query_attr }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 placeholder-gray-400" placeholder="Enter query...">
-                <button type="submit" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50">Update Query</button>
-            </div>
-            {% endwith %}
-        {% endfor %}
+<style> 
+    @keyframes spin { to { transform: rotate(360deg); } } 
+    @keyframes color-change { 
+        0% { border-top-color: #3498db; } 
+        25% { border-top-color: #e74c3c; } 
+        50% { border-top-color: #f1c40f; } 
+        75% { border-top-color: #2ecc71; } 
+        100% { border-top-color: #3498db; } 
+    } 
+    .spinner { 
+        position: absolute; 
+        justify-self: center; 
+        top: 50%; 
+        left: 50%; 
+        transform: translate(-50%, -50%); 
+        z-index: 1000; 
+    } 
+    .loader { 
+        border: 5px solid #f3f3f3; 
+        border-radius: 50%; 
+        border-top: 5px solid #3498db; 
+        width: 50px; 
+        height: 50px; 
+        animation: spin 2s linear infinite, color-change 4s ease-in-out infinite; 
+    }
+</style> 
+
+<h1 class="text-3xl font-bold text-gray-900 dark:text-white text-center my-4">Focus Dashboard</h1>
+<div class="container mx-auto px-4 mt-4"> 
+    {% if user.is_authenticated %} 
+    <!-- Query Update Form --> 
+    <form method="POST" hx-post="{% url 'dashboard' %}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"> 
+        {% csrf_token %} 
+        {% for i in "1234" %} 
+        {% with 'query'|add:i as query_attr %} 
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4"> 
+            <label for="query{{ i }}" class="block text-sm font-medium text-gray-700 dark:text-gray-100">Searching news for:</label> 
+            <input type="text" id="query{{ i }}" name="query{{ i }}" value="{{ user_profile|getattr:query_attr }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 placeholder-gray-400 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white pl-2" placeholder="Enter query...">
+            <button type="submit" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 dark:bg-pink-600 dark:hover:bg-blue-600">Update Focus</button> 
+        </div> 
+        {% endwith %} 
+        {% endfor %} 
     </form>
 
     <!-- TLDR Content Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-4">
         {% for i in "1234" %}
         {% with 'query'|add:i as query_attr %}
-        <div class="tldr-box bg-white rounded-lg shadow-lg p-4">
-            <h3 class="text-lg font-semibold text-gray-900">{{ user_profile|getattr:query_attr }}</h3>
+        <div class="tldr-box bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ user_profile|getattr:query_attr }}</h3>
             <div id="tldr-{{ i }}" hx-get="{% url 'fetch_tldr' %}?query={{ user_profile|getattr:query_attr }}" hx-trigger="load" hx-target="this" hx-indicator=".spinner-{{ i }}">
                 <div class="spinner-{{ i }} text-center hidden">
                     <div class="spinner inline-block"></div>
@@ -76,16 +63,18 @@
         {% endfor %}
     </div>
     {% else %}
-    <p class="text-center text-gray-900">Please log in to view this page.</p>
+    <p class="text-center text-gray-900 dark:text-white">Please log in to view this page.</p>
     {% endif %}
-</div>
-<script>
-    document.body.addEventListener('htmx:beforeRequest', function(event) {
-        event.target.querySelector('.spinner').classList.remove('hidden');
+</div> 
+
+<script> 
+    document.body.addEventListener('htmx:beforeRequest', function(event) { 
+        event.target.querySelector('.spinner').classList.remove('hidden'); 
     });
-    
+
     document.body.addEventListener('htmx:afterRequest', function(event) {
         event.target.querySelector('.spinner').classList.add('hidden');
     });
-</script>
+</script> 
+
 {% endblock %}

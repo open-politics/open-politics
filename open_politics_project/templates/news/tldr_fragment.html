@@ -17,7 +17,7 @@
             <p class="text-xs text-black dark:text-white leading-5">{{ article.content|slice:":200" }}...</p>
         </div> 
         {% if article.image %}
-        <div class="image absolute top-0 left-0 w-full h-full object-cover object-center bg-cover bg-no-repeat bg-center opacity-60 dark:opacity-100 z-[-1] rounded-lg" style="background-image: url('{{ article.image }}');"></div>
+        <div class="image absolute top-0 left-0 w-full h-full object-cover object-center bg-cover bg-no-repeat opacity-60 dark:opacity-60 z-[1] rounded-lg" style="background-image: url('{{ article.image }}');"></div>
         {% endif %}
         <div class="button-container p-2">
             <a href="{{ article.url }}" class="text-xs text-blue-500 font-semibold bg-pink-200 dark:bg-gray-700 hover:bg-pink-6008 dark:hover:bg-gray-600 py-1 px-2 rounded-md transition-colors duration-300">Read article</a>
