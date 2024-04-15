@@ -77,10 +77,8 @@
 <div id="chartdiv"></div>
 <button id="toggleGlobe" class="toggle-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Toggle Globe</button>
 <div id="dashboard" class="container mx-auto px-4 mt-4">
-  {% if user.is_authenticated %}
   <!-- Query Update Form -->
   <form method="POST" hx-post="{% url 'dashboard' %}" hx-target="#dashboard" hx-swap="innerHTML" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-    {% csrf_token %}
     {% for i in "1234" %}
     {% with 'query'|add:i as query_attr %}
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 opacity-90 {% if i > '2' %}mobile-hide{% endif %}">
@@ -137,7 +135,6 @@
     
   {% else %}
   <p class="text-center text-gray-900 dark:text-white">Please log in to view this page.</p>
-  {% endif %}
 
 </div>
 <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
