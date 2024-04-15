@@ -47,13 +47,21 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 100vh;  /* Ensure it covers the full viewport height */
-    z-index: -1;    /* Set to -1 to stay behind all other content */
+    height: 100vh; /* Ensure it covers the full viewport height */
+    z-index: -1; /* Initially in the background */
   }
-
+  
   #dashboard {
     z-index: 1002; /* Initially in the foreground */
   }
+
+  #toggleGlobe {
+    z-index: 1003 !important;
+    position: fixed; /* Fixed position */
+    bottom: 20px; /* Positioning from bottom */
+    right: 20px; /* Positioning from right */
+  }
+</style>
 
 </style> 
 
@@ -61,9 +69,10 @@
 
 <h1 class="text-3xl font-bold text-gray-900 dark:text-white text-center my-4 opacity-90">Focus Dashboard</h1>
 
+<div id="chartdiv"></div>
+<button id="toggleGlobe" class="toggle-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Toggle Globe</button>
 <div id="dashboard" class="container mx-auto px-4 mt-4">
   {% if user.is_authenticated %}
-  <button id="toggleGlobe" class="toggle-button">Toggle Globe</button>
   <!-- Query Update Form -->
  <!-- Query Update Form -->
   <form method="POST" hx-post="{% url 'dashboard' %}" hx-target="#dashboard" hx-swap="innerHTML" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -219,40 +228,38 @@
   chart.appear(1000, 100);
   
   }); // end am5.ready()
-  </script>
-  <script>
-    document.getElementById('toggleGlobe').addEventListener('click', function() {
-      var chartdiv = document.getElementById('chartdiv');
-      var dashboard = document.getElementById('dashboard');
-      var globeToFront = chartdiv.style.zIndex === '-1';
-    
-      // Toggle the z-index to bring globe to the front or send it back
-      chartdiv.style.zIndex = globeToFront ? '1001' : '-1';
-      dashboard.style.zIndex = globeToFront ? '1000' : '1002';
-    
-      // If globe is brought to the front, ensure it spins
-      if (globeToFront) {
-        startSpinningGlobe();
-      }
-    });
-    
-    function startSpinningGlobe() {
-      // Check if the globe is currently spinning; if not, start spinning
-      if (!chart.isSpinning) {
-        chart.animate({
-          key: "rotationX",
-          from: chart.get("rotationX"),
-          to: chart.get("rotationX") + 360,
-          duration: 60000,
-          loops: Infinity
-        });
-        chart.isSpinning = true;
-      }
+  document.getElementById('toggleGlobe').addEventListener('click', function() {
+    var chartdiv = document.getElementById('chartdiv');
+    var dashboard = document.getElementById('dashboard');
+    var globeToFront = chartdiv.style.zIndex === '-1' || chartdiv.style.zIndex === '';
+    chartdiv.style.zIndex = globeToFront ? '1001' : '-1';
+    dashboard.style.zIndex = globeToFront ? '1000' : '1002';
+    this.style.zIndex = '1003'; // Button stays on top
+  });
+
+
+    // If globe is brought to the front, ensure it spins
+    if (globeToFront) {
+      startSpinningGlobe();
     }
-    
-    // Resume spinning after a delay when globe goes to the background
-    document.body.addEventListener('htmx:afterRequest', function(event) {
-      setTimeout(startSpinningGlobe, 10000);  // Delay in milliseconds
-    });
-  </script>
+
+    // Optional: console logs to debug the current state
+    console.log('Globe z-index:', chartdiv.style.zIndex);
+    console.log('Dashboard z-index:', dashboard.style.zIndex);
+    console.log('Button z-index:', this.style.zIndex);
+
+function startSpinningGlobe() {
+    // Check if chart is defined and handle spinning
+    if (window.chart && (typeof window.chart.isSpinning === 'undefined' || !window.chart.isSpinning)) {
+      window.chart.animate({
+        key: "rotationX",
+        from: window.chart.get("rotationX"),
+        to: window.chart.get("rotationX") + 360,
+        duration: 60000, // Adjusted for slower spin
+        loops: Infinity
+      });
+      window.chart.isSpinning = true;  // Set spinning state
+    }
+}
+</script>
 {% endblock %}

@@ -407,7 +407,7 @@ def tldr_view(request):
     query = request.GET.get('query', '')
     languages = request.GET.getlist('languages', [])
 
-    newsapi = NewsApiClient(api_key=os.getenv('NEWS_API_KEY'))
+    # newsapi = NewsApiClient(api_key=os.getenv('NEWS_API_KEY'))
 
     # Step 1: Search for news articles using NewsAPI
     logging.debug("Step 1: Searching for news articles using NewsAPI")
