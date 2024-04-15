@@ -61,6 +61,11 @@
     bottom: 20px; /* Positioning from bottom */
     right: 20px; /* Positioning from right */
   }
+  @media (max-width: 768px) { /* Adjust this value based on your mobile breakpoint */
+    .mobile-hide {
+      display: none;
+    }
+  }
 </style>
 
 </style> 
@@ -74,19 +79,17 @@
 <div id="dashboard" class="container mx-auto px-4 mt-4">
   {% if user.is_authenticated %}
   <!-- Query Update Form -->
- <!-- Query Update Form -->
   <form method="POST" hx-post="{% url 'dashboard' %}" hx-target="#dashboard" hx-swap="innerHTML" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
     {% csrf_token %}
     {% for i in "1234" %}
     {% with 'query'|add:i as query_attr %}
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 opacity-90">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 opacity-90 {{ 'mobile-hide' if i|add:'0'|int > 2 }}">
       <label for="query{{ i }}" class="block text-sm font-medium text-gray-700 dark:text-gray-100">Searching news for:</label>
       <input type="text" id="query{{ i }}" name="query{{ i }}" value="{{ user_profile|getattr:query_attr }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 placeholder-gray-400 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white pl-2" placeholder="Enter query...">
     </div>
     {% endwith %}
     {% endfor %}
-    <!-- Centering the button across middle two columns -->
-    <div class="col-start-2 col-span-2 flex justify-center mb-2"> <!-- This div spans from column 2 to 3 -->
+    <div class="col-start-2 col-span-2 flex justify-center mb-2">
       <button type="submit" class="mt-4 px-6 py-3 bg-gradient-to-r from-pink-400 via-pink-blue-500 to-green-500 text-white rounded-full shadow-lg transform transition-all hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-purple-600">
         Update Focus
       </button>
@@ -114,21 +117,21 @@
       {% endfor %}
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-    {% for i in "34" %}
-    {% with query_attr='query'|add:i %}
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col opacity-90">
-      <div class="mb-2">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ user_profile|getattr:query_attr }}</h3>
-        <div id="issue-areas-{{ i }}" hx-get="{% url 'fetch_tldr' %}?query={{ user_profile|getattr:query_attr }}" hx-trigger="load" hx-target="this">
-          <div class="spinner spinner-{{ i }} hidden">
-            <div class="loader"></div>
+      {% for i in "34" %}
+      {% with query_attr='query'|add:i %}
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col opacity-90 mobile-hide">
+        <div class="mb-2">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ user_profile|getattr:query_attr }}</h3>
+          <div id="issue-areas-{{ i }}" hx-get="{% url 'fetch_tldr' %}?query={{ user_profile|getattr:query_attr }}" hx-trigger="load" hx-target="this">
+            <div class="spinner spinner-{{ i }} hidden">
+              <div class="loader"></div>
+            </div>
+            <!-- Content for issue areas -->
           </div>
-          <!-- Content for issue areas -->
         </div>
       </div>
-    </div>
-    {% endwith %}
-    {% endfor %}
+      {% endwith %}
+      {% endfor %}
     </div>
   </div>
     
