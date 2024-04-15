@@ -10,13 +10,14 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
+from pydantic import BaseModel
 import markdown
 from django.contrib.auth.decorators import login_required
 from newsapi import NewsApiClient
 from django.http import HttpResponse
 from ..models import UserProfile
 from django.shortcuts import render, redirect
-
+import marvin
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -437,15 +438,31 @@ def tldr_view(request):
     model = ChatOpenAI(model="gpt-4-1106-preview", max_tokens=4000)
     chain = ({"summaries": RunnablePassthrough()} | tldr_prompt_template | model | output_parser)
 
+    
+    @marvin.model(instructions='Extract issue areas from the text')
+    class IssueArea(BaseModel):
+        '''Multiple issue areas and their description'''
+        name: str
+        description: str
+    
+    @marvin.model(instructions='Generate a 5 emoji string based on the given issue areas')
+    class EmojiString(BaseModel):
+        emojis: str
+
     # Step 4: Generate TLDR
     logging.debug("Step 4: Generating TLDR")
     start_time = time.time()
-    tldr_markdown = chain.invoke("\n".join(summaries))  # This will still return Markdown
+    tldr = chain.invoke("\n".join(summaries))  # This will still return Markdown
+    issue_areas = marvin.extract(tldr, target=IssueArea)
+
+    # Step 5
+    logging.debug("Step 5: Generating emoji string from issue areas")
+    emoji_string = marvin.extract(str(issue_areas), target=EmojiString)
+    
     end_time = time.time()
 
     # Convert Markdown to HTML
-    tldr_html = markdown.markdown(tldr_markdown)
-
+    tldr_html = markdown.markdown(tldr)
     execution_time = end_time - start_time
 
     # Filter out articles with "[Removed]" link, content, or summary
@@ -459,6 +476,8 @@ def tldr_view(request):
             'articles': articles,
             'sources': unique_sources,
             'content': content,
+            'issue_areas': issue_areas,
+            'emoji_string': emoji_string
         })
         return HttpResponse(html, content_type='text/html')
     else:
@@ -469,6 +488,8 @@ def tldr_view(request):
             'articles': articles,
             'sources': unique_sources,
             'content': content,
+            'issue_areas': issue_areas,
+            'emoji_string': emoji_string
         }
         return render(request, 'news_home.html', context)
 
@@ -492,15 +513,15 @@ def dashboard(request):
         user_profile.query3 = request.POST.get('query3', '')
         user_profile.query4 = request.POST.get('query4', '')
         user_profile.save()
-        return redirect('dashboard')
-    
-    context = {
-        'user_profile': user_profile,
-    }
-    return render(request, 'dashboard.html', context)
 
+    context = {'user_profile': user_profile}
 
-def fetch_tldr(request):
+    if "HX-Request" in request.headers:
+        return render(request, 'news/dashboard_content.html', context)
+    else:
+        return render(request, 'dashboard.html', context)
+
+def fetch_tldr_with_issue_areas(request):
     query = request.GET.get('query', '')
 
     if query:
@@ -516,17 +537,31 @@ def fetch_tldr(request):
                 Use Markdown styling with bullet point lists to present this information"""
             )
             output_parser = StrOutputParser()
-            model = ChatOpenAI(model="gpt-4-1106-preview", max_tokens=4000)
+            if os.env("IN_DOCKER") == True:
+                model = ChatOpenAI(model="gpt-4-1106-preview", max_tokens=4000)
+            else:
+                model = ChatOpenAI(model="gpt-3.5-turbo", max_tokens=4000)
             chain = ({"summaries": RunnablePassthrough()} | tldr_prompt_template | model | output_parser)
 
+            @marvin.model(instructions='Extract issue areas from the text')
+            class IssueArea(BaseModel):
+                '''Multiple issue areas and their description'''
+                name: str
+                description: str
+            
             # Generate TLDR
             tldr_markdown = chain.invoke("\n".join(article_summaries))
             tldr_html = markdown.markdown(tldr_markdown)
-            
+            issue_areas = marvin.extract(tldr_markdown, target=IssueArea)
+            print(f"Issue areas extracted: {issue_areas}")
+             
             context = {
                 'tldr': tldr_html,
-                'articles': articles,
+                'articles': articles[['summary', 'url']].to_dict(orient='records'),
+                'issue_areas': issue_areas  # Pass the issue_areas to the template context
             }
+            return render(request, 'tldr_fragment.html', context)
+
         except Exception as e:
             logging.error(f"Error fetching or processing articles for query {query}: {str(e)}")
             context = {

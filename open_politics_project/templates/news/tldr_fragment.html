@@ -1,31 +1,48 @@
 <!-- Mobile-optimized TailwindCSS HTML with scrollable TL;DR and horizontal scrolling articles -->
-<div id="tldr-output" class="overflow-y-scroll max-h-[50vh] font-sans text-xs text-gray-800 dark:text-white bg-aqua-200 p-2 rounded-md shadow-sm border border-pink-600 dark:border-white">
-    <!-- Your TL;DR content goes here, safe-filtered -->
-    {{ tldr|safe }}
+<div id="emoji-output" class="mt-4 text-3xl text-center">
+    <!-- Display the emoji string generated from the issue areas -->
+    {{ emoji_string.emojis }}
 </div>
-
 <div id="articles-output" class="flex overflow-x-scroll py-1 space-x-1">
     {% for article in articles %}
-    <div class="article-card flex-shrink-0 flex-col relative m-1 min-w-[75vw] sm:min-w-[40vw] lg:min-w-[30vw] xl:min-w-[20vw] max-w-xs min-h-[8vh] border border-gray-700 text-left align-top  bg-opacity-50 rounded-lg">
-        <div class="title relative p-1 ">
+    <div class="article-card flex-shrink-0 flex-col relative m-1 min-w-[75vw] sm:min-w-[40vw] lg:min-w-[30vw] xl:min-w-[20vw] max-w-xs min-h-[8vh] border border-gray-700 text-left align-top rounded-lg max-h-48">
+        <div class="title relative p-1 z-10">
             <a href="{{ article.url }}" class="block truncate">
-                <p class="text-xs text-blue-500 font-semibold mt-2 p-1">{{ article.source.name }}</p>
+                <p class="text-xs text-white font-semibold mt-2 p-1 bg-black bg-opacity-20 rounded ring-1 ring-black ring-opacity-90">{{ article.title }}</p>
             </a>
         </div>
-        <div class="content relative p-2">
-            <h3 class="text-sm text-black dark:text-white mb-1">{{ article.title }}</h3>
-            <p class="text-xs text-black dark:text-white leading-5">{{ article.content|slice:":200" }}...</p>
+        <div class="content relative p-2 z-10">
+            <h3 class="text-sm text-blue-500 mb-1 bg-black bg-opacity-20 rounded ring-1 ring-black ring-opacity-50 ml-2">{{ article.source.name }}</h3>
+            <p class="text-xs text-white leading-5 bg-black bg-opacity-20 rounded ring-1 ring-black ring-opacity-50 ml-2">{{ article.content|slice:":200" }}...</p>
         </div> 
         {% if article.image %}
-        <div class="image absolute top-0 left-0 w-full h-full object-cover object-center bg-cover bg-no-repeat opacity-60 dark:opacity-60 z-[1] rounded-lg" style="background-image: url('{{ article.image }}');"></div>
+        <div class="image absolute top-0 left-0 w-full h-full object-cover object-center bg-cover bg-no-repeat opacity-40 dark:opacity-40 z-0 rounded-lg max-h-48" style="background-image: url('{{ article.image }}');"></div>
         {% endif %}
-        <div class="button-container p-2">
-            <a href="{{ article.url }}" class="text-xs text-blue-500 font-semibold bg-pink-200 dark:bg-gray-700 hover:bg-pink-6008 dark:hover:bg-gray-600 py-1 px-2 rounded-md transition-colors duration-300">Read article</a>
-        </div>
+        
     </div>
     {% endfor %}
 </div>
 
+ <div class="issue-areas mt-4 overflow-y-scroll font-sanas border border-pink-600 p-2 rounded-md shadow-sm max-h-48">
+    <h4 class="text-sm mx-2 mt-2 font-semibold text-gray-900 dark:text-white mb-2">Issue Areas:</h4>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+        {% for issue_area in issue_areas %}
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2">
+            <h5 class="text-xs font-semibold text-gray-900 dark:text-white">{{ issue_area.name }}</h5>
+            <p class="mt-1 text-xs text-gray-700 dark:text-gray-300">{{ issue_area.description }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div id="tldr-output" class="overflow-y-scroll font-sans text-xs mt-6 text-gray-800 dark:text-white bg-aqua-200 p-2 rounded-md shadow-sm border border-pink-600 dark:border-white max-h-48">
+    <!-- Your TL;DR content goes here, safe-filtered -->
+    {{ tldr|safe }}
+</div>
+
+<div class="spinner hidden">
+    <div class="loader"></div>
+</div>
 
 <script>
     function toggleContent(button) {
