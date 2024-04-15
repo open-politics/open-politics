@@ -538,7 +538,7 @@ def fetch_tldr_with_issue_areas(request):
     query = request.GET.get('query', '')
 
     if query:
-        newsapi = NewsApiClient(api_key=os.getenv('NEWS_API_KEY'))
+        # newsapi = NewsApiClient(api_key=os.getenv('NEWS_API_KEY'))
         try:
             articles = newsapi.get_everything(q=query, page_size=10)['articles']
             article_summaries = [article['description'] for article in articles if article['description']]
