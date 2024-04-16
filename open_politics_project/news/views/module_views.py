@@ -404,82 +404,82 @@ logging.basicConfig(level=logging.DEBUG)
 #         return render(request, 'news_home.html', context)
 
 def tldr_view(request):
-    # query = request.GET.get('query', '')
-    # languages = request.GET.getlist('languages', [])
+    query = request.GET.get('query', '')
+    languages = request.GET.getlist('languages', [])
 
-    # newsapi = NewsApiClient(api_key=os.getenv('NEWS_API_KEY'))
+    newsapi = NewsApiClient(api_key=os.getenv('NEWS_API_KEY'))
 
-    # # Step 1: Search for news articles using NewsAPI
-    # logging.debug("Step 1: Searching for news articles using NewsAPI")
-    # articles = newsapi.get_everything(q=query, language=languages[0], page_size=10)['articles'] if languages else newsapi.get_everything(q=query, page_size=10)['articles']
+    # Step 1: Search for news articles using NewsAPI
+    logging.debug("Step 1: Searching for news articles using NewsAPI")
+    articles = newsapi.get_everything(q=query, language=languages[0], page_size=10)['articles'] if languages else newsapi.get_everything(q=query, page_size=10)['articles']
 
-    # if not articles:
-    #     return HttpResponse("No relevant articles found for the given query.")
+    if not articles:
+        return HttpResponse("No relevant articles found for the given query.")
 
-    # # Step 2: Extract summaries from the articles
-    # logging.debug("Step 2: Extracting summaries from the articles")
-    # summaries = [article['description'] for article in articles if article['description'] and article['description'] != "[Removed]"]
-    # content = [article['content'] for article in articles if article['content'] and article['content'] != "[Removed]"]
+    # Step 2: Extract summaries from the articles
+    logging.debug("Step 2: Extracting summaries from the articles")
+    summaries = [article['description'] for article in articles if article['description'] and article['description'] != "[Removed]"]
+    content = [article['content'] for article in articles if article['content'] and article['content'] != "[Removed]"]
     
-    # for article in articles:
-    #     article['content'] = article.get('content', '')
-    #     article['image'] = article.get('urlToImage', '')
+    for article in articles:
+        article['content'] = article.get('content', '')
+        article['image'] = article.get('urlToImage', '')
     
-    # unique_sources = list(set([article['source']['name'] for article in articles]))
-    # unique_sources.sort()
+    unique_sources = list(set([article['source']['name'] for article in articles]))
+    unique_sources.sort()
 
-    # # Step 3: Setup LangChain
-    # logging.debug("Step 3: Setting up LangChain")
-    # tldr_prompt_template = ChatPromptTemplate.from_template(
-    #     """You are a political intelligence analyst. Create a TLDR based on the following summaries:\n{summaries}. 
-    #     Include only relevant political information, no anecdotal stories or content or personal opinions. 
-    #     Use Markdown styling with bullet point lists to present this information"""
-    # )
-    # output_parser = StrOutputParser()
-    # model = ChatOpenAI(model="gpt-4-1106-preview", max_tokens=4000)
-    # chain = ({"summaries": RunnablePassthrough()} | tldr_prompt_template | model | output_parser)
+    # Step 3: Setup LangChain
+    logging.debug("Step 3: Setting up LangChain")
+    tldr_prompt_template = ChatPromptTemplate.from_template(
+        """You are a political intelligence analyst. Create a TLDR based on the following summaries:\n{summaries}. 
+        Include only relevant political information, no anecdotal stories or content or personal opinions. 
+        Use Markdown styling with bullet point lists to present this information"""
+    )
+    output_parser = StrOutputParser()
+    model = ChatOpenAI(model="gpt-4-1106-preview", max_tokens=4000)
+    chain = ({"summaries": RunnablePassthrough()} | tldr_prompt_template | model | output_parser)
 
     
-    # @marvin.model(instructions='Extract issue areas from the text')
-    # class IssueArea(BaseModel):
-    #     '''Multiple issue areas and their description'''
-    #     name: str
-    #     description: str
+    @marvin.model(instructions='Extract issue areas from the text')
+    class IssueArea(BaseModel):
+        '''Multiple issue areas and their description'''
+        name: str
+        description: str
     
-    # @marvin.model(instructions='Generate a 5 emoji string based on the given issue areas')
-    # class EmojiString(BaseModel):
-    #     emojis: str
+    @marvin.model(instructions='Generate a 5 emoji string based on the given issue areas')
+    class EmojiString(BaseModel):
+        emojis: str
 
-    # # Step 4: Generate TLDR
-    # logging.debug("Step 4: Generating TLDR")
-    # start_time = time.time()
-    # tldr = chain.invoke("\n".join(summaries))  # This will still return Markdown
-    # issue_areas = marvin.extract(tldr, target=IssueArea)
+    # Step 4: Generate TLDR
+    logging.debug("Step 4: Generating TLDR")
+    start_time = time.time()
+    tldr = chain.invoke("\n".join(summaries))  # This will still return Markdown
+    issue_areas = marvin.extract(tldr, target=IssueArea)
 
-    # # Step 5
-    # logging.debug("Step 5: Generating emoji string from issue areas")
-    # # Assuming marvin.extract returns a collection of objects with an attribute 'emojis' containing emoji strings
-    # emoji_string = marvin.extract(str(issue_areas), target=EmojiString)
-    # emoji_string = "".join([emoji.emojis for emoji in emoji_string])  # concatenate all emojis into one string
-    # emoji_string = emoji_string.replace("ole:", "")  # remove unwanted substrings
+    # Step 5
+    logging.debug("Step 5: Generating emoji string from issue areas")
+    # Assuming marvin.extract returns a collection of objects with an attribute 'emojis' containing emoji strings
+    emoji_string = marvin.extract(str(issue_areas), target=EmojiString)
+    emoji_string = "".join([emoji.emojis for emoji in emoji_string])  # concatenate all emojis into one string
+    emoji_string = emoji_string.replace("ole:", "")  # remove unwanted substrings
 
-    # # Use a regex pattern to match all valid emoji characters or sequences
-    # emoji_pattern = r'\X(?:\p{Emoji_Presentation}|\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Component})*\X'
-    # # Find all matches in the text
-    # emojis = regex.findall(emoji_pattern, emoji_string, regex.UNICODE)
-    # # Normalize and separate each emoji by filtering out non-emoji characters
-    # extracted_emojis = [regex.sub(r'[^\p{Emoji}]+', '', e) for e in emojis]
-    # emoji_string = "".join(extracted_emojis)  # combine all valid emojis back into a single string
-    # logging.debug(f"Generated emoji string: {emoji_string}")
+    # Use a regex pattern to match all valid emoji characters or sequences
+    emoji_pattern = r'\X(?:\p{Emoji_Presentation}|\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Component})*\X'
+    # Find all matches in the text
+    emojis = regex.findall(emoji_pattern, emoji_string, regex.UNICODE)
+    # Normalize and separate each emoji by filtering out non-emoji characters
+    extracted_emojis = [regex.sub(r'[^\p{Emoji}]+', '', e) for e in emojis]
+    emoji_string = "".join(extracted_emojis)  # combine all valid emojis back into a single string
+    logging.debug(f"Generated emoji string: {emoji_string}")
 
-    # end_time = time.time()
+    end_time = time.time()
 
-    # # Convert Markdown to HTML
-    # tldr_html = markdown.markdown(tldr)
-    # execution_time = end_time - start_time
+    # Convert Markdown to HTML
+    tldr_html = markdown.markdown(tldr)
+    execution_time = end_time - start_time
 
-    # # Filter out articles with "[Removed]" link, content, or summary
-    # articles = [article for article in articles if article['description'] != "[Removed]" and article['content'] != "[Removed]" and article['urlToImage'] != "[Removed]"]
+    # Filter out articles with "[Removed]" link, content, or summary
+    articles = [article for article in articles if article['description'] != "[Removed]" and article['content'] != "[Removed]" and article['urlToImage'] != "[Removed]"]
 
     # For HTMX requests
     if "HX-Request" in request.headers:
