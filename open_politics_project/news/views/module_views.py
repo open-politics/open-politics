@@ -517,22 +517,25 @@ def generate_tldr_with_langchain(article_summaries):
     tldr = f"TLDR: {combined_summaries[:150]}..."  # Simplified example
     return tldr
     
+from django.views.decorators.http import require_http_methods
+@require_http_methods(["GET", "POST"])
 def dashboard(request):
-    user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
-    
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
     if request.method == 'POST':
+        # Update user profile based on form input
         user_profile.query1 = request.POST.get('query1', '')
         user_profile.query2 = request.POST.get('query2', '')
         user_profile.query3 = request.POST.get('query3', '')
         user_profile.query4 = request.POST.get('query4', '')
         user_profile.save()
-
-    context = {'user_profile': user_profile}
-
-    if "HX-Request" in request.headers:
-        return render(request, 'news/dashboard_content.html', context)
+        # After update, redirect or handle the HTMX request
+        if request.htmx:
+            return render(request, 'partials/dashboard_content.html', {'user_profile': user_profile})
+        else:
+            return redirect('some-view-name')  # Redirect to a new URL if needed
     else:
-        return render(request, 'dashboard.html', context)
+        # For GET request just display the page with the form
+        return render(request, 'dashboard.html', {'user_profile': user_profile})
 
 def fetch_tldr_with_issue_areas(request):
     query = request.GET.get('query', '')

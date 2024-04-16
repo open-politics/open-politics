@@ -79,6 +79,7 @@
 <div id="dashboard" class="container mx-auto px-4 mt-4">
   <!-- Query Update Form -->
   <form method="POST" hx-post="{% url 'dashboard' %}" hx-target="#dashboard" hx-swap="innerHTML" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+    {% csrf_token %}
     {% for i in "1234" %}
     {% with 'query'|add:i as query_attr %}
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 opacity-90 {% if i > '2' %}mobile-hide{% endif %}">
@@ -215,7 +216,7 @@
     key: "rotationX",
     from: 0,
     to: 360,
-    duration: 60000,
+    duration: 120000,
     loops: Infinity
   });
   
@@ -251,7 +252,7 @@ function startSpinningGlobe() {
         key: "rotationX",
         from: window.chart.get("rotationX"),
         to: window.chart.get("rotationX") + 360,
-        duration: 60000, // Adjusted for slower spin
+        duration: 120000, // Adjusted for slower spin
         loops: Infinity
       });
       window.chart.isSpinning = true;  // Set spinning state

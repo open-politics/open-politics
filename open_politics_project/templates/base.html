@@ -5,6 +5,7 @@
     <title>Open Politics Project</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <!-- Styleshee-->
     {% comment %} <link rel="stylesheet" href="{% static 'styles_main.css' %}">
     <link rel="stylesheet" href="{% static 'styles_ssare.css' %}"> {% endcomment %}
@@ -36,6 +37,7 @@
     {% endblock %}
 
     <script>
+
       document.addEventListener('DOMContentLoaded', function() {
         const toggleButton = document.getElementById('toggle-dark-mode');
         const htmlElement = document.documentElement;
@@ -57,6 +59,14 @@
           toggleButton.innerHTML = '<i class="fas fa-moon"></i>';
         }
       });
+
+      document.body.addEventListener('htmx:afterSwap', function(event) {
+        var newCsrfToken = event.detail.xhr.getResponseHeader("X-CSRFToken");
+        if(newCsrfToken) {
+            document.querySelector('meta[name="csrf-token"]').setAttribute('content', newCsrfToken);
+        }
+      });
+    
     </script>
   </body>
 </html>
