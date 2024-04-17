@@ -80,7 +80,7 @@
   <!-- Query Update Form -->
   <form method="POST" hx-post="{% url 'dashboard' %}" hx-target="#dashboard" hx-swap="innerHTML" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
     {% csrf_token %}
-    {% for i in "1234" %}
+    {% for i in "12" %}
     {% with 'query'|add:i as query_attr %}
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 opacity-90 {% if i > '2' %}mobile-hide{% endif %}">
       <label for="query{{ i }}" class="block text-sm font-medium text-gray-700 dark:text-gray-100">Searching news for:</label>
@@ -115,7 +115,7 @@
       {% endwith %}
       {% endfor %}
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+    {% comment %} <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
       {% for i in "34" %}
       {% with query_attr='query'|add:i %}
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col opacity-90 mobile-hide">
@@ -131,7 +131,7 @@
       </div>
       {% endwith %}
       {% endfor %}
-    </div>
+    </div> {% endcomment %}
   </div>
  </div>
 <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
