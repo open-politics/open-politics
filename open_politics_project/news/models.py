@@ -58,4 +58,14 @@ class UserProfile(models.Model):
     query3 = models.CharField(max_length=255, blank=True, null=True)
     query4 = models.CharField(max_length=255, blank=True, null=True)
 
+class SearchHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    query = models.TextField()
+    result = models.JSONField()  # Stores articles as a JSON object
+    llm_result = models.TextField(blank=True, null=True)  # Store the LLM results, such as summaries or TLDRs
+    created_at = models.DateTimeField(auto_now_add=True)
+    language = models.CharField(max_length=10, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.query} ({self.created_at.strftime('%Y-%m-%d %H:%M')})"
 

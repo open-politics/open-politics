@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+{% load custom_filters %}
+
+{% block content %}
+
+<style> 
+
+ 
+  /* Image display styles */
+  .article-image {
+    width: 100%;
+    height: 100px; /* Set a fixed height, or adjust as needed */
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;
+    
+  }
+
+  #chartdiv {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh; /* Ensure it covers the full viewport height */
+    z-index: -1; /* Initially in the background */
+  }
+  
+  #dashboard {
+    z-index: 1002; /* Initially in the foreground */
+  }
+
+  #toggleGlobe {
+    z-index: 1003 !important;
+    position: fixed; /* Fixed position */
+    bottom: 20px; /* Positioning from bottom */
+    right: 20px; /* Positioning from right */
+  }
+  @media (max-width: 768px) { /* Adjust this value based on your mobile breakpoint */
+    .mobile-hide {
+      display: none;
+    }
+  }
+  .am5tooltip { max-width: 300px; /* Set the maximum width for the tooltip / font-size: 14px; / Adjust the font size / padding: 10px; / Add padding to the tooltip / background-color: rgba(0, 0, 0, 0.8); / Set the background color with transparency / color: #fff; / Set the text color / border-radius: 4px; / Add border radius to the tooltip / box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); / Add a subtle box shadow */ }
+
+  .am5-tooltip-title { font-weight: bold; /* Make the title bold / margin-bottom: 5px; / Add some spacing below the title */ }
+
+  .am5-tooltip-content { margin-top: 5px; /* Add some spacing above the content */ }
+  .article { max-width: 300px;}
+
+</style>
+
+<div id="chartdiv"></div>
+<button id="toggleGlobe" class="toggle-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Toggle Globe</button>
+<div id="dashboard" class="container mx-auto px-4 mt-4">
+  <!-- Planning New Dashboard Grid -->
+  <div class="mt-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-white/10 dark:bg-gray-900/10 rounded-lg shadow-lg p-4 flex flex-col backdrop-blur-xl border border-gray-100/10 dark:border-gray-700/10">
+          <h2 class="text-4xl font-extrabold dark:text-white"> Catch up with what is happening</h2>
+          <div class="mb-2 text-black dark:text-white leading-relaxed">
+            Formulate any question you have about politics. 
+            <br>
+            As of now, it works best when research a topic area + a country.
+            <br>
+            Like "Economy in Uganda"
+            <br>
+            Or "International Relations of the USA"
+            </div>
+            <!-- Search Module -->
+            
+          <form class="max-w-lg mx-2">
+            <div class="flex">
+                <label for="search-dropdown" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Your Email</label>
+                <button id="dropdown-button" data-dropdown-toggle="dropdown" class="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600" type="button">All categories <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+          </svg></button>
+                <div id="dropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+                    <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdown-button">
+                    <li>
+                        <button type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Mockups</button>
+                    </li>
+                    <li>
+                        <button type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Templates</button>
+                    </li>
+                    <li>
+                        <button type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Design</button>
+                    </li>
+                    <li>
+                        <button type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Logos</button>
+                    </li>
+                    </ul>
+                </div>
+                <div class="relative w-full">
+                    <input type="search" id="search-dropdown" class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500" placeholder="Search Mockups, Logos, Design Templates..." required />
+                    <button type="submit" class="absolute top-0 end-0 p-2.5 text-sm font-medium h-full text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                        </svg>
+                        <span class="sr-only">Search</span>
+                    </button>
+                </div>
+            </div>
+          </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+
+<script>
+  am5.ready(function() {
+    var root = am5.Root.new("chartdiv");
+
+    root.setThemes([
+      am5themes_Animated.new(root)
+    ]);
+
+    var chart = root.container.children.push(am5map.MapChart.new(root, {
+      panX: "rotateX",
+      panY: "rotateY",
+      projection: am5map.geoOrthographic()
+    }));
+
+    // Variable to keep track of last rotation
+    var lastRotationX = 0;
+    var isSpinning = false;
+
+    function startSpinning() {
+      if (!isSpinning) {
+        chart.animate({
+          key: "rotationX",
+          from: lastRotationX,
+          to: lastRotationX + 360,
+          duration: 120000,
+          loops: Infinity,
+          easing: am5.ease.linear
+        }).events.on("stopped", function() {
+          lastRotationX = chart.get("rotationX", 0) % 360;
+          isSpinning = false;
+        });
+        isSpinning = true;
+      }
+    }
+
+    function smoothStart() {
+      var currentRotation = chart.get("rotationX", 0);
+      chart.animate({
+        key: "rotationX",
+        from: currentRotation,
+        to: currentRotation + 10,  // small increment to start the spin
+        duration: 2000,  // Duration over which the spin speed increases
+        easing: am5.ease.out(am5.ease.cubic)  // Smooth easing function
+      }).events.on("ended", startSpinning);
+    }
+
+    var inactivityTimeout;
+    function resetInactivityTimeout() {
+      clearTimeout(inactivityTimeout);
+      if (isSpinning) {
+        chart.animations.each(function(animation) {
+          animation.stop();
+        });
+        isSpinning = false;
+      }
+      inactivityTimeout = setTimeout(smoothStart, 10000);
+    }
+
+    document.addEventListener('mousemove', resetInactivityTimeout);
+    document.addEventListener('keypress', resetInactivityTimeout);
+    resetInactivityTimeout(); // Initialize the timeout logic at start
+
+    var polygonSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
+      geoJSON: am5geodata_worldLow,
+      exclude: ["AQ"]
+    }));
+
+    var geojsonData = {{ geojson_data|safe }};
+
+    polygonSeries.mapPolygons.template.setAll({
+      tooltipHTML: "{name}",
+      allowHTML: true,
+      toggleKey: "active",
+      interactive: true
+    });
+
+    polygonSeries.mapPolygons.template.adapters.add("tooltipHTML", function(html, target) {
+      var countryName = target.dataItem.dataContext.name;
+      var articles = geojsonData.features
+          .filter(feature => feature.properties.location === countryName)
+          .map(feature => {
+              return feature.properties.articles.map(article => `
+                  <div class="article">
+                      <h3 class="article-title">${article.headline}</h3>
+                  </div>
+              `).join('');
+          });
+
+      if (articles.length > 0) {
+          var tooltipContent = `
+          <div class="am5-tooltip">
+              <div class="am5-tooltip-title">${countryName}</div>
+              <div class="am5-tooltip-content">${articles.join('')}</div>
+          </div>
+          `;
+          return tooltipContent;
+      }
+  
+    return html;
+    });
+
+    var pointSeries = chart.series.push(am5map.MapPointSeries.new(root, {}));
+    pointSeries.data.setAll(geojsonData.features);
+
+    pointSeries.bullets.push(function() {
+      var circle = am5.Circle.new(root, {
+        radius: 4,
+        fill: am5.color(0xff0000),
+        strokeWidth: 0
+      });
+
+      return am5.Bullet.new(root, {
+        sprite: circle
+      });
+    });
+  });
+</script>
+{% endblock %}

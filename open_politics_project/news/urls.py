@@ -3,6 +3,7 @@ from django.contrib.auth.views import LogoutView, LoginView
 from news.views.old_views import SignUpView, custom_login_view, ArticleListView
 from django.contrib import admin
 from news.views import *
+from django.urls import re_path
 
 views = old_views
 module_views = module_views
@@ -28,4 +29,10 @@ urlpatterns = [
     path('fetch-tldr/', module_views.tldr_view, name='fetch_tldr'),
     path('faq/', views.faq, name='faq'),
     path('dashboard/', module_views.dashboard, name='dashboard'),
+    path('globe/', module_views.globe, name='globe'),
+    path('user_guide/', module_views.user_guide, name='user_guide'),
+    # Functional Urls
+    re_path(r'^multi-query/$', module_views.multi_query, name='multi-query'),
+    re_path(r'^execute/$', module_views.execute, name='execute'),
+
 ]
