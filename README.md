@@ -97,7 +97,10 @@ Including but not limited to tasks like:
 
 # Architecture
 ## Frontend
-#### A comprehensive UX/UI concept is needed.
+#### The Challenge
+A fundamental challenge this project has to tackle is how to make information and insights accessible.
+The vision and current UI are meant to try delivering such information from a new angle.
+
 ### Vision
 ![Open Politics Vision](assets/images/open_globe_1.png)
 
