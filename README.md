@@ -127,8 +127,8 @@ This interface enable you to formulate two questions in natural language and ret
 
 ### Database(s)
 - Intermediate article data storage (SQLite)
-- Vector storage (Qdrant)
-- Agent-Search dataset (for smaller "ground truth" data points)
+- Vector storage (Qdrant) in SSARE data engine
+)
 
 ### Agent Systems
 - The LLM domain AI is now heavily evolving on agent-based systems.
@@ -139,12 +139,6 @@ This interface enable you to formulate two questions in natural language and ret
   - Sets of instructions are used to generate the output.
   - Sets of instructions and sets of data are retrievable via Vector Storage Querying (Qdrant).
 
-#### Agent-Search/SciPhi Project
-- The SciPhi work has done some incredible things. 
-  - First, they created a production-ready, open-source vector storage dataset and system with over one billion embeddings. 
-  - They also trained Sensei-7b, a model that can recursively research and answer questions.
-  - They also provide a comprehensive search engine for the dataset and the web.
-
 #### LangChain
 - Langchain is a very well-integrated and powerful framework for LLM interaction and chaining.
 - Many state-of-the-art prompt engineering techniques are implemented in Langchain.
@@ -153,7 +147,7 @@ This interface enable you to formulate two questions in natural language and ret
 #### Marvin
 - Marvin is a lightweight and powerful framework for LLM-centered classification and validation systems, like Pydantic for LLMs.
 
-## Referenced Patterns/Papers (will be extended in a notion doc)
+## Referenced Patterns/Papers (will be extended in a blog article)
 - [Reflexion](https://arxiv.org/abs/2303.11366)
 - [Tree of Thought](https://arxiv.org/abs/2305.10601)
 - [Chain of Thought](https://arxiv.org/abs/2201.11903)
