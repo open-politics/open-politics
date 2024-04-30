@@ -38,6 +38,9 @@ services:
       - "4000"
     depends_on:
       - postgres
+    volumes:
+       - ./staticfiles_root:/app/staticfiles_root
+
 
   postgres:
     image: postgres:latest
