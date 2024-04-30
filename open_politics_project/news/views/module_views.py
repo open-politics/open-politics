@@ -161,7 +161,7 @@ def dashboard(request):
 
 def globe(request):
     # Read data from the GeoJSON file
-    with open('/Users/jimvincentwagner/pol/open-politics/open_politics_project/news/static/geo_data/articles.geojson') as file:
+    with open('open_politics_project/news/static/geo_data/articles.geojson') as file:
         geojson_data = json.load(file)
 
     return render(request, 'news/globe.html', {'geojson_data': json.dumps(geojson_data)})
