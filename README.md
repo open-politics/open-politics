@@ -99,7 +99,17 @@ Including but not limited to tasks like:
 ## Frontend
 #### A comprehensive UX/UI concept is needed.
 ### Vision
-![Open Politics Vision](assets/images/open-politics-website-vision.png)
+![Open Politics Vision](assets/images/open_globe_1.png)
+
+The "Open Globe" Interface is set out to display articles and events interactively on a globe.
+It should enable to brose global news exploratively.
+Heatmap events, timeseries/ timeline scrolling and filer for issue areas are also on the roadmap.
+
+### Current UI
+![Open Politics Vision](assets/images/dashboard.png)
+
+This interface enable you to formulate two questions in natural language and retrieve relevant articles, extracted issue areas and a contextualisation of the issue areas.
+
 - The frontend rendering and server communication is largely built on HTMX features and tries to stay within the realm of HTML, CSS, and Hyperstate Media, calling assets asynchronously.
 
 ## Backend
