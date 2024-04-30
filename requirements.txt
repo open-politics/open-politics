@@ -26,3 +26,4 @@ django-environ
 psycopg2-binary
 marvin
 regex
+prefect
