@@ -30,6 +30,7 @@ The mission is to create an open-source data science and AI toolkit to analyse, 
 - [License](#license)
 
 As a quick pitch element to get you interested; this is where we are going:
+
 ![Open Politics Vision](assets/images/open_globe_1.png)
 
 
