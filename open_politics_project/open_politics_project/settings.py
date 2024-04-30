@@ -134,7 +134,7 @@ DATABASES = {
         'NAME': os.getenv('POSTGRES_DB'),
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': 'postgres' if os.getenv('IN_DOCKER') == 'true' else 'localhost',
+        'HOST': 'localhost' if os.getenv('IN_DOCKER') == 'true' else 'localhost',
         'PORT': '5432',
     }
 }
