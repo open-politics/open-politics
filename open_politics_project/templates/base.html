@@ -21,7 +21,7 @@
     
  
   </head>
-  <body class="bg-white dark:bg-black bg-transparent">
+  <body class="bg-white dark:bg-black">
     {% include 'header.html' %}
   
 
@@ -40,23 +40,28 @@
         const toggleButton = document.getElementById('toggle-dark-mode');
         const htmlElement = document.documentElement;
         
+        // Function to set the theme
+        function setTheme(theme) {
+          if (theme === 'dark') {
+            htmlElement.classList.add('dark');
+            toggleButton.innerHTML = '<i class="fas fa-sun"></i>';
+          } else {
+            htmlElement.classList.remove('dark');
+            toggleButton.innerHTML = '<i class="fas fa-moon"></i>';
+          }
+          localStorage.setItem('theme', theme);
+        }
+        
         // Event listener for dark mode toggle
         toggleButton.addEventListener('click', function() {
           const isDark = htmlElement.classList.toggle('dark');
-          localStorage.setItem('theme', isDark ? 'dark' : 'light');
-          // Change the icon according to the state
-          toggleButton.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+          setTheme(isDark ? 'dark' : 'light');
         });
-
-        // Initialize dark mode from localStorage
-        const currentTheme = localStorage.getItem('theme');
-        if (currentTheme === 'dark') {
-          htmlElement.classList.add('dark');
-          toggleButton.innerHTML = '<i class="fas fa-sun"></i>';
-        } else {
-          toggleButton.innerHTML = '<i class="fas fa-moon"></i>';
-        }
+      
+        // Set dark mode as default
+        setTheme('dark');
       });
+      
 
       document.body.addEventListener('htmx:afterSwap', function(event) {
         var newCsrfToken = event.detail.xhr.getResponseHeader("X-CSRFToken");

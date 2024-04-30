@@ -35,7 +35,7 @@
   /* Image display styles */
   .article-image {
     width: 100%;
-    height: 100px; /* Set a fixed height, or adjust as needed */
+    height: 80px; /* Set a fixed height, or adjust as needed */
     background-size: cover;
     background-position: center;
     border-radius: 8px;
@@ -91,6 +91,8 @@
     <div class="col-start-2 col-span-4 flex justify-center mb-2">
       <button type="submit" class="mt-4 px-6 py-3 bg-gradient-to-r from-pink-400 via-pink-blue-500 to-green-500 text-white rounded-full shadow-lg transform transition-all hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-purple-600">
         Update Focus
+<button id="reloadResults" type="button" class="mt-4 ml-4 px-6 py-3 bg-blue-500 text-white rounded-full shadow-lg transform transition-all hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-600">
+        Reload Results
       </button>
     </div>
   </form>
@@ -101,7 +103,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       {% for i in "12" %}
       {% with query_attr='query'|add:i %}
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col opacity-90">
+      <div class="bg-white dark:bg-gray-900 backdrop-blur-xl rounded-lg shadow-lg p-4 flex flex-col opacity-90">
         <div class="mb-2">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ user_profile|getattr:query_attr }}</h3>
           <div id="tldr-{{ i }}" hx-get="{% url 'fetch_tldr' %}?query={{ user_profile|getattr:query_attr }}" hx-trigger="load" hx-target="this">
@@ -114,7 +116,7 @@
       </div>
       {% endwith %}
       {% endfor %}
-    </div>
+</div>
     
     {% comment %} <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
       {% for i in "34" %}
@@ -133,8 +135,10 @@
       {% endwith %}
       {% endfor %}
     </div> {% endcomment %}
+    </div>
   </div>
- </div>
+</div>
+
 <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
 <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
 <script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
@@ -147,6 +151,20 @@
   document.body.addEventListener('htmx:afterRequest', function(event) {
     event.target.querySelector('.spinner').classList.add('hidden');
   });
+
+  function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+      const context = this;
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(context, args), wait);
+    };
+  }
+  const form = document.querySelector('form');
+  form.addEventListener('submit', debounce(function() {
+    // Submit the form
+    this.submit();
+  }, 300));
 </script> 
 <script>
   am5.ready(function() {
@@ -259,5 +277,11 @@ function startSpinningGlobe() {
       window.chart.isSpinning = true;  // Set spinning state
     }
 }
+</script>
+
+<script>
+  document.getElementById('reloadResults').addEventListener('click', function() {
+    location.reload();
+  });
 </script>
 {% endblock %}

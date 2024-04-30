@@ -112,9 +112,7 @@ def tldr_view(request):
 
     if not articles:
         return JsonResponse({'error': 'No relevant articles found for the given query.'}, status=404)
-    
     else:
-
         # For HTMX requests
         if "HX-Request" in request.headers:
             html = render_to_string('news/tldr_fragment.html', {
@@ -126,13 +124,9 @@ def tldr_view(request):
                 'issue_areas': issue_areas,
                 'emoji_string': emoji_string
             })
-            response = HttpResponse(html, content_type='text/html')
-            # save to file
-        # with open("tldr.html", "r") as file:
-        #     html = file.read()
-        # return HttpResponse(html, content_type='text/html')
+            return HttpResponse(html, content_type='text/html')
         else:
-        # Also pass the articles data for regular requests
+            # Also pass the articles data for regular requests
             context = {
                 'tldr': tldr_html,
                 'execution_time': execution_time,
@@ -143,8 +137,6 @@ def tldr_view(request):
                 'emoji_string': emoji_string
             }
             return render(request, 'news_home.html', context)
-        return HttpResponse("An unexpected error occurred.", status=500)
-
 
    
 
