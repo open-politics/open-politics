@@ -33,7 +33,9 @@ services:
     networks:
       - web
     expose:
-      - "4000"
+      - "4000:4000"
+    depends_on:
+      - postgres
 
   postgres:
     image: postgres:latest
