@@ -29,8 +29,8 @@ SECRET_KEY = 'django-insecure-0_lkdf^d#luxx#uxf9$!v)4i^ilu7*wyszfgk7x4s6+^r3ilk4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-if os.getenv('IN_DOCKER') == 'true':
-    DEBUG = False
+# if os.getenv('IN_DOCKER') == 'true':
+#     DEBUG = False
 
 ALLOWED_HOSTS = ['open-politics.org', 'www.open-politics.org', 'web', 'localhost', '127.0.0.1', '*', 'https://open-politics.org']
 
