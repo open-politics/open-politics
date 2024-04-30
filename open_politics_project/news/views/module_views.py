@@ -32,7 +32,7 @@ def tldr_view(request):
     languages = request.GET.getlist('languages', [])
     user = request.user
 
-    existing_search = SearchHistory.objects.filter(user=user, query=query).first()
+    # existing_search = SearchHistory.objects.filter(user=user, query=query).first()
 
 
 
@@ -110,34 +110,41 @@ def tldr_view(request):
     # Filter out articles with "[Removed]" link, content, or summary
     articles = [article for article in articles if article['description'] != "[Removed]" and article['content'] != "[Removed]" and article['urlToImage'] != "[Removed]"]
 
-    # For HTMX requests
-    if "HX-Request" in request.headers:
-        html = render_to_string('news/tldr_fragment.html', {
-            'tldr': tldr_html, 
-            'execution_time': execution_time,
-            'articles': articles,
-            'sources': unique_sources,
-            'content': content,
-            'issue_areas': issue_areas,
-            'emoji_string': emoji_string
-        })
-        response = HttpResponse(html, content_type='text/html')
-        # save to file
-    # with open("tldr.html", "r") as file:
-    #     html = file.read()
-    # return HttpResponse(html, content_type='text/html')
+    if not articles:
+        return JsonResponse({'error': 'No relevant articles found for the given query.'}, status=404)
+    
     else:
+
+        # For HTMX requests
+        if "HX-Request" in request.headers:
+            html = render_to_string('news/tldr_fragment.html', {
+                'tldr': tldr_html, 
+                'execution_time': execution_time,
+                'articles': articles,
+                'sources': unique_sources,
+                'content': content,
+                'issue_areas': issue_areas,
+                'emoji_string': emoji_string
+            })
+            response = HttpResponse(html, content_type='text/html')
+            # save to file
+        # with open("tldr.html", "r") as file:
+        #     html = file.read()
+        # return HttpResponse(html, content_type='text/html')
+        else:
         # Also pass the articles data for regular requests
-        context = {
-            'tldr': tldr_html,
-            'execution_time': execution_time,
-            'articles': articles,
-            'sources': unique_sources,
-            'content': content,
-            'issue_areas': issue_areas,
-            'emoji_string': emoji_string
-        }
-        return render(request, 'news_home.html', context)
+            context = {
+                'tldr': tldr_html,
+                'execution_time': execution_time,
+                'articles': articles,
+                'sources': unique_sources,
+                'content': content,
+                'issue_areas': issue_areas,
+                'emoji_string': emoji_string
+            }
+            return render(request, 'news_home.html', context)
+        return HttpResponse("An unexpected error occurred.", status=500)
+
 
    
 
@@ -176,18 +183,10 @@ from pydantic import Field, BaseModel
 from openai import OpenAI
 from django.http import JsonResponse
 from marvin import ai_fn
-from langfuse import Langfuse
-
-LANGFUSE_SECRET_KEY = "sk-lf-f5faa4e5-ab7f-4e86-8397-5561b3619949"
-LANGFUSE_PUBLIC_KEY = "pk-lf-e9b0b25b-2334-4646-b45a-005f6fda4539"
-LANGFUSE_HOST = "https://cloud.langfuse.com"
-
-from langfuse.decorators import observe
-
 
 class SubQuery(BaseModel):
     query: str = Field(..., description="Query to search for relevant content")
-    category: Literal["situation", "country", "actor", "conflict", "tech"] = Field(
+    category: Literal["situation", "country", "actor", "conflict"] = Field(
         ..., description="Type of analysis or issue area"
     )
 
@@ -197,11 +196,11 @@ class SubQuery(BaseModel):
 def multi_query(request):
     query = request.GET.get('query', '')
 
-    @observe()
+
     def segment(data: str) -> Iterable[SubQuery]:
         # Apply the patch to the OpenAI client
         # enables response_model keyword
-        client = instructor.patch(OpenAI())
+        client = instructor.from_openai(OpenAI())
 
         return client.chat.completions.create(
             model="gpt-4-turbo",

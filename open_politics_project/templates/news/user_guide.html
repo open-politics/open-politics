@@ -7,481 +7,188 @@ URL: https://flowbite.com/docs/components/typography/
 {% load static %}
 
 {% block content%}
-<main class="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900 antialiased">
+<main class="pt-8 pb-16 lg:pt-16 lg:pb-24 antialiased">
     <div class="flex justify-between px-4 mx-auto max-w-screen-xl ">
         <article class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
             <header class="mb-4 lg:mb-6 not-format">
                 <address class="flex items-center mb-6 not-italic">
                     <div class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white">
-                        <img class="mr-4 w-16 h-16 object-cover rounded-full" src="{% static 'media/jim_3.jpeg' %}" alt="Jese Leos">
+                        <img class="mr-4 w-16 h-16 object-cover rounded-full" src="{% static 'media/jim_6.png' %}" alt="Founder Jim Vincent Wagner">
                         <div>
-                            <a href="#" rel="author" class="text-xl font-bold text-gray-900 dark:text-white">Jim Vincent Wagner</a>
-                            <p class="text-base text-gray-500 dark:text-gray-400">Founder of the Open Politics Project</p>
-                            <p class="text-base text-gray-500 dark:text-gray-400"><time pubdate datetime="2022-02-08" title="May 1st, 2024">. 8, 2022</time></p>
+                            <a href="https://www.linkedin.com/in/jim-vincent-wagner-051818257" rel="author" class="text-xl font-bold text-gray-900 dark:text-white">Jim Vincent Wagner</a>
+                            <p class="text-base text-gray-500 dark:text-gray-400">Founder</p>
+                            <p class="text-base text-gray-500 dark:text-gray-400"><time pubdate datetime="2022-02-08" title="May 1st, 2024">May 1st, 2022</time></p>
                         </div>
                     </div>
                 </address>
-                <h1 class="mb-4 text-3xl font-extrabold leading-tight text-gray-900 lg:mb-6 lg:text-4xl dark:text-white">Best practices for successful prototypes</h1>
+                <h1 class="mb-4 text-3xl font-extrabold leading-tight text-gray-900 lg:mb-6 lg:text-4xl dark:text-white">Best practices for using Open Politics</h1>
             </header>
-            <p class="lead">Flowbite is an open-source library of UI components built with the utility-first
-                classes from Tailwind CSS. It also includes interactive elements such as dropdowns, modals,
-                datepickers.</p>
-            <p>Before going digital, you might benefit from scribbling down some ideas in a sketchbook. This way,
-                you can think things through before committing to an actual design project.</p>
-            <p>But then I found a <a href="https://flowbite.com">component library based on Tailwind CSS called
-                    Flowbite</a>. It comes with the most commonly used UI components, such as buttons, navigation
-                bars, cards, form elements, and more which are conveniently built with the utility classes from
-                Tailwind CSS.</p>
-            <figure><img src="https://flowbite.s3.amazonaws.com/typography-plugin/typography-image-1.png" alt="">
-                <figcaption>Digital art by Anonymous</figcaption>
+            <p class="lead">Open Politics is an open-source project that aims to make what is happening in politics more accessible. This guide is meant to indtroduce you 
+                to using the web app interface and show you what you can do with it.
+            </p>
+            
+            {% comment %} <p>This user guide is a deeper step into the workings of the project.<br>
+               Here you can find a <a class="text-white" src='/quickstart'><strong>quickstart</a></strong> </p>
+
+            <p>This section is a consumer guide. If you are a developer or interested in the technology, please look <a href="https://open-politics.org/tech">here
+                </a>. <br> If you are any other interested entity please don't hesitate to contact us under <strong> connect@open-politics.org</strong>.</p> {% endcomment %}
+
+            <figure><img src="{% static 'media/political_intelligence.png' %}" alt="">
+                <figcaption>DALL·E 3; <i> "Imagine a world where everybody has access to political intelligence.</i></figcaption>
             </figure>
-            <h2>Getting started with Flowbite</h2>
-            <p>First of all you need to understand how Flowbite works. This library is not another framework.
-                Rather, it is a set of components based on Tailwind CSS that you can just copy-paste from the
-                documentation.</p>
-            <p>It also includes a JavaScript file that enables interactive components, such as modals, dropdowns,
-                and datepickers which you can optionally include into your project via CDN or NPM.</p>
-            <p>You can check out the <a href="https://flowbite.com/docs/getting-started/quickstart/">quickstart
-                    guide</a> to explore the elements by including the CDN files into your project. But if you want
-                to build a project with Flowbite I recommend you to follow the build tools steps so that you can
-                purge and minify the generated CSS.</p>
-            <p>You'll also receive a lot of useful application UI, marketing UI, and e-commerce pages that can help
-                you get started with your projects even faster. You can check out this <a
-                    href="https://flowbite.com/docs/components/tables/">comparison table</a> to better understand
-                the differences between the open-source and pro version of Flowbite.</p>
-            <h2>When does design come in handy?</h2>
-            <p>While it might seem like extra work at a first glance, here are some key moments in which prototyping
+
+            <h2>Getting started with OPP</h2>
+
+            <p>
+                First of all you need to understand why this project exists.
+            </p>
+
+            <p>
+                Staying up to date with the world of politics is time consuming and difficult. There are countless sources reporting 
+                and even more events, issues, conflicts and elections to report about.
+            </p>
+
+            <p>
+                Time is limitied, and dopamine is the currency of the 21st century. I personally know a lot of people that 
+                feel out-of-touch with what is happening. 
+                
+                This tool is for looking something up before a discussion, to browse for worldwide news and to compare issues from around the world.
+            </p>
+
+            <p>Let's start by adressing some conceptual baselines and critial information:</p>
+            <ol>
+                <li>
+                    <strong>The importance of news</strong><br> News agencies, independent journalists and NGOs around the world are constantly documenting what is happening around the world.
+                    This project does not take any perspective on what is good or bad but reflects what peoplre are talking about. Because thats what politics essentially is.
+                    
+                </li>
+                <li>
+                    <strong>Open Source</strong><br> The code, the methods and all the prompts for AI usage are documented and visible to everyone. 
+                    This means that anyone can use the project, contribute to it or even build upon it.
+                </li>
+                <li>
+                    <strong>Clear methods and reproducible answers</strong><br>
+                    This project also researches the way LLMs and natural language interfacing can be responsibly done.
+                    In practive this means creating benchmarks and evaluating the reliability of AI to solve certain tasks like creating summaries, extracting sentiment and labeling information (e.g. rating between anecdotal and hot topic stories)
+
+            </ol>
+
+            <figure><img src="{% static 'media/open_globe_4.png' %}" alt="">
+                <figcaption>OPEN GLOBE <br> The tool for explorative information dissemination. Scroll around the world and see whats happening</figcaption>
+            </figure>
+
+            <h2>When do I use it??</h2>
+
+            <p>While it might seem like extra work using <strong>another</strong> tool at a first glance, here are some key moments in which Open Politics
                 will come in handy:</p>
             <ol>
-                <li><strong>Usability testing</strong>. Does your user know how to exit out of screens? Can they
-                    follow your intended user journey and buy something from the site you’ve designed? By running a
-                    usability test, you’ll be able to see how users will interact with your design once it’s live;
+                <li><strong>Searching for News</strong>. Research the news for a country, a topic or issue you are interested in. One core component of the interface is the search fragment.
+                    It displays the news for your question and the extracted insights.
                 </li>
-                <li><strong>Involving stakeholders</strong>. Need to check if your GDPR consent boxes are displaying
-                    properly? Pass your prototype to your data protection team and they can test it for real;</li>
-                <li><strong>Impressing a client</strong>. Prototypes can help explain or even sell your idea by
-                    providing your client with a hands-on experience;</li>
-                <li><strong>Communicating your vision</strong>. By using an interactive medium to preview and test
-                    design elements, designers and developers can understand each other — and the project — better.
-                </li>
+                <li><strong>Creating your personal focus dashboard</strong>. Create a pane with up to four of you search tearms to show at once.
+                    It is essentially just multiple search fragments next to each other. This brings in a method of political science: comparative evaluation. You may use this to compare the economies of Malaysia and Germany or to compare between two different areas in the same country.</li>
+                <li><strong>Explorative Information</strong>. Use the Open Globe Interface and scroll through the world and see what is happening. We will give our best to make the information accessible to you and be representative of what is happening;</li>
             </ol>
-            <h3>Laying the groundwork for best design</h3>
-            <p>Before going digital, you might benefit from scribbling down some ideas in a sketchbook. This way,
-                you can think things through before committing to an actual design project.</p>
-            <p>Let's start by including the CSS file inside the <code>head</code> tag of your HTML.</p>
-            <h3>Understanding typography</h3>
-            <h4>Type properties</h4>
-            <p>A typeface is a collection of letters. While each letter is unique, certain shapes are shared across
-                letters. A typeface represents shared patterns across a collection of letters.</p>
-            <h4>Baseline</h4>
-            <p>A typeface is a collection of letters. While each letter is unique, certain shapes are shared across
-                letters. A typeface represents shared patterns across a collection of letters.</p>
-            <h4>Measurement from the baseline</h4>
-            <p>A typeface is a collection of letters. While each letter is unique, certain shapes are shared across
-                letters. A typeface represents shared patterns across a collection of letters.</p>
-            <h3>Type classification</h3>
-            <h4>Serif</h4>
-            <p>A serif is a small shape or projection that appears at the beginning or end of a stroke on a letter.
-                Typefaces with serifs are called serif typefaces. Serif fonts are classified as one of the
-                following:</p>
-            <h4>Old-Style serifs</h4>
-            <ul>
-                <li>Low contrast between thick and thin strokes</li>
-                <li>Diagonal stress in the strokes</li>
-                <li>Slanted serifs on lower-case ascenders</li>
-            </ul><img src="https://flowbite.s3.amazonaws.com/typography-plugin/typography-image-2.png" alt="">
+            <p>Think of asking somebody that is specialised in news and categorising them. It won't give you answer to why the world is not in peace. It will rather show what peoples positions in certain issue areas are. The analysis is created around issue areas (topic), actors (and other entities) and the statements that show their position. The final component is a contextualisation that you compares information from sources like wikipedia to provide historical and social contextualisation for issue areas.</p>
+           
+            <h3>Let's do this step by step</h3>
+            <p>This article will outline the core components of open politics search module and the open globe interface.<br>
+
+            <h4>1. Formulate your questions</h4>
+                <img src={% static 'media/open_finder.png' %}></img>
+                <p>What works best is asking a question about a topic of politics and a country (or region)</p>
+                
+
+            <h4>2. We are extending your Search</h4>
+            <p>A language model extends your questions and presses it in a certain frame.
+                Take for example the question:  <code>What is happening in southeast asia?</code>.</p>
+                <p>This will extend to multiple queries like this:
+                <pre class="max-h-[100]"><code class="language-html max-h-[100]">
+                    {     
+                        "queries": [
+                            {
+                                "query": "Current political events in Southeast Asia",
+                                "category": "situation"
+                            },
+                            {
+                                "query": "Economic trends in Southeast Asia",
+                                "category": "situation"
+                            },
+                            {
+                                "query": "Major political leaders in Southeast Asia",
+                                "category": "actor"
+                            },
+                            {
+                                "query": "Trade agreements in Southeast Asia",
+                                "category": "conflict"
+                            },
+                            {
+                                "query": "Foreign investment in Southeast Asia",
+                                "category": "country"
+                            }
+                        ]
+                    }
+      </code></pre>
+        <p>You can find the code that produces these search queries <a src='https://github.com/JimVincentW/open-politics/blob/upgrade_with_guide/open_politics_project/news/views/module_views.py'>here </a>.</p>
+            
+            <h4>3. Searching relevant articles</h4>
+            <p>The next step is to search for articles that are relevant to your question.</p>
             <ol>
-                <li>Low contrast between thick and thin strokes</li>
-                <li>Diagonal stress in the strokes</li>
-                <li>Slanted serifs on lower-case ascenders</li>
+                <li>            
+                    <p><strong>Semantic Search</strong><br>
+                        The custom SSARE (Semantic Search Article Recommendation Engine) data engine scrapes and delivers news from around the world around the clock. It delivers articles by searching for text with similar semantic meaning (a newer, smater kind of search).</p>
+                </li>
+                <img src={% static 'media/sem_search.png' %}>
+                <li>
+                    <p><strong>Entity Recognition</strong><br>
+                    The processing concentrates mostly on Entities (like locations, institutions and institutions) and the issue areas that are found inside of news articles.</p>
+                </li>
+                <img src={% static 'media/ner.png' %}><img>
             </ol>
-            <h3>Laying the best for successful prototyping</h3>
-            <p>A serif is a small shape or projection that appears at the beginning:</p>
-            <blockquote>
-                <p>Flowbite is just awesome. It contains tons of predesigned components and pages starting from
-                    login screen to complex dashboard. Perfect choice for your next SaaS application.</p>
-            </blockquote>
-            <h4>Code example</h4>
-            <p>A serif is a small shape or projection that appears at the beginning or end of a stroke on a letter.
-                Typefaces with serifs are called serif typefaces. Serif fonts are classified as one of the
-                following:</p>
-            <pre><code class="language-html">&lt;dl class="grid grid-cols-2 gap-8 max-w-screen-md text-gray-900 sm:grid-cols-3 dark:text-white"&gt;
-  &lt;div class="flex flex-col justify-center items-center"&gt;
-    &lt;dt class="mb-2 text-3xl font-extrabold"&gt;73M+&lt;/dt&gt;
-    &lt;dd class="text-lg font-normal text-gray-500 dark:text-gray-400"&gt;developers&lt;/dd&gt;
-  &lt;/div&gt;
-  &lt;div class="flex flex-col justify-center items-center"&gt;
-    &lt;dt class="mb-2 text-3xl font-extrabold"&gt;1B+&lt;/dt&gt;
-    &lt;dd class="text-lg font-normal text-gray-500 dark:text-gray-400"&gt;contributors&lt;/dd&gt;
-  &lt;/div&gt;
-  &lt;div class="flex flex-col justify-center items-center"&gt;
-    &lt;dt class="mb-2 text-3xl font-extrabold"&gt;4M+&lt;/dt&gt;
-    &lt;dd class="text-lg font-normal text-gray-500 dark:text-gray-400"&gt;organizations&lt;/dd&gt;
-  &lt;/div&gt;
-  &lt;/dl&gt;
-  </code></pre>
-            <h4>Table example</h4>
-            <p>A serif is a small shape or projection that appears at the beginning or end of a stroke on a letter.
-            </p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Country</th>
-                        <th>Date &amp; Time</th>
-                        <th>Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>United States</td>
-                        <td>April 21, 2021</td>
-                        <td><strong>$2,300</strong></td>
-                    </tr>
-                    <tr>
-                        <td>Canada</td>
-                        <td>May 31, 2021</td>
-                        <td><strong>$300</strong></td>
-                    </tr>
-                    <tr>
-                        <td>United Kingdom</td>
-                        <td>June 3, 2021</td>
-                        <td><strong>$2,500</strong></td>
-                    </tr>
-                    <tr>
-                        <td>Australia</td>
-                        <td>June 23, 2021</td>
-                        <td><strong>$3,543</strong></td>
-                    </tr>
-                    <tr>
-                        <td>Germany</td>
-                        <td>July 6, 2021</td>
-                        <td><strong>$99</strong></td>
-                    </tr>
-                    <tr>
-                        <td>France</td>
-                        <td>August 23, 2021</td>
-                        <td><strong>$2,540</strong></td>
-                    </tr>
-                </tbody>
-            </table>
-            <h3>Best practices for setting up your prototype</h3>
-            <p><strong>Low fidelity or high fidelity?</strong> Fidelity refers to how close a prototype will be to
-                the real deal. If you’re simply preparing a quick visual aid for a presentation, a low-fidelity
-                prototype — like a wireframe with placeholder images and some basic text — would be more than
-                enough. But if you’re going for more intricate usability testing, a high-fidelity prototype — with
-                on-brand colors, fonts and imagery — could help get more pointed results.</p>
-            <p><strong>Consider your user</strong>. To create an intuitive user flow, try to think as your user
-                would when interacting with your product. While you can fine-tune this during beta testing,
-                considering your user’s needs and habits early on will save you time by setting you on the right
-                path.</p>
-            <p><strong>Start from the inside out</strong>. A nice way to both organize your tasks and create more
-                user-friendly prototypes is by building your prototypes ‘inside out’. Start by focusing on what will
-                be important to your user, like a Buy now button or an image gallery, and list each element by order
-                of priority. This way, you’ll be able to create a prototype that puts your users’ needs at the heart
-                of your design.</p>
-            <p>And there you have it! Everything you need to design and share prototypes — right in Flowbite Figma.
-            </p>
-            <section class="not-format">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-lg lg:text-2xl font-bold text-gray-900 dark:text-white">Discussion (20)</h2>
+            <h3>4. Extracting Issue Areas</h3>
+            {% comment %} <img src={% static 'media/tldr_fragment_top.png' %} {% endcomment %}
+            <p><strong>Issue Area Extraction</strong> is done with AI. In practive this means retrieved articles (/their summaries) are fed into one prompt 
+                where the AI model is asked to extract relevant topics and return them in a structured format.</p>
+            <img src={% static 'media/issue_areas.png' %}><img>
+            <p>You can find the code that does this <a src='https://github.com/JimVincentW/SSARE/open_politics_project/news/views/module_views.py'>here</a></p>
+           <h3>5. Compare </h3>
+           <p>See the results of search fragments on the focus dashboard and stay up to date with what is important to you.</p>
+           <img src="{% static "media/dashboard.png" %}"></img>
+           <section class="bg-white dark:bg-black">
+            <div class="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
+              <div class="mr-auto place-self-center lg:col-span-7">
+                <h1 class="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">Expand your horizon</h1>
+                <h4>Global News. Important Issue Areas. You: up to date. <br> <br>On desktop and mobile.</h4>
+                <p class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
+                  Create your personal focus dashboard or use the globe to find news interactively.
+                </p>
+                <a href="/globe" class="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900">
+                  Use the Globe
+                  <svg class="w-5 h-5 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                </a>
+                <a href="/dashboard" class="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                  Focus Dashboard
+                </a> 
+              </div>
+              <div class="lg:mt-0 lg:col-span-5 lg:flex">
+                <div class="mockup-phone">
+                  <div class="camera"></div>
+                  <div class="display">
+                    <div class="artboard artboard-demo phone-1 p-0">
+                      <div class="w-full h-full overflow-hidden object-cover top-4">
+                        <img class="object-cover w-full h-full" src="{% static 'media/globe_search_mobile_4.png' %}" alt="mockup">
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <form class="mb-6">
-                    <div class="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-                        <label for="comment" class="sr-only">Your comment</label>
-                        <textarea id="comment" rows="6"
-                            class="px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 dark:text-white dark:placeholder-gray-400 dark:bg-gray-800"
-                            placeholder="Write a comment..." required></textarea>
-                    </div>
-                    <button type="submit"
-                        class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
-                        Post comment
-                    </button>
-                </form>
-                <article class="p-6 mb-6 text-base bg-white rounded-lg dark:bg-gray-900">
-                    <footer class="flex justify-between items-center mb-2">
-                        <div class="flex items-center">
-                            <p class="inline-flex items-center mr-3 font-semibold text-sm text-gray-900 dark:text-white"><img
-                                    class="mr-2 w-6 h-6 rounded-full"
-                                    src="https://flowbite.com/docs/images/people/profile-picture-2.jpg"
-                                    alt="Michael Gough">Michael Gough</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400"><time pubdate datetime="2022-02-08"
-                                    title="February 8th, 2022">Feb. 8, 2022</time></p>
-                        </div>
-                        <button id="dropdownComment1Button" data-dropdown-toggle="dropdownComment1"
-                            class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:text-gray-400 dark:bg-gray-900 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-                            type="button">
-                              <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 3">
-                                  <path d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/>
-                              </svg>
-                            <span class="sr-only">Comment settings</span>
-                        </button>
-                        <!-- Dropdown menu -->
-                        <div id="dropdownComment1"
-                            class="hidden z-10 w-36 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
-                            <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
-                                aria-labelledby="dropdownMenuIconHorizontalButton">
-                                <li>
-                                    <a href="#"
-                                        class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
-                                </li>
-                                <li>
-                                    <a href="#"
-                                        class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Remove</a>
-                                </li>
-                                <li>
-                                    <a href="#"
-                                        class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Report</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </footer>
-                    <p>Very straight-to-point article. Really worth time reading. Thank you! But tools are just the
-                        instruments for the UX designers. The knowledge of the design tools are as important as the
-                        creation of the design strategy.</p>
-                    <div class="flex items-center mt-4 space-x-4">
-                        <button type="button"
-                            class="flex items-center font-medium text-sm text-gray-500 hover:underline dark:text-gray-400">
-                              <svg class="mr-1.5 w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                              <path d="M18 0H2a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h2v4a1 1 0 0 0 1.707.707L10.414 13H18a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5 4h2a1 1 0 1 1 0 2h-2a1 1 0 1 1 0-2ZM5 4h5a1 1 0 1 1 0 2H5a1 1 0 0 1 0-2Zm2 5H5a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Zm9 0h-6a1 1 0 0 1 0-2h6a1 1 0 1 1 0 2Z"/>
-                              </svg>
-                            Reply
-                        </button>
-                    </div>
-                </article>
-                <article class="p-6 mb-6 ml-6 lg:ml-12 text-base bg-white rounded-lg dark:bg-gray-900">
-                    <footer class="flex justify-between items-center mb-2">
-                        <div class="flex items-center">
-                            <p class="inline-flex items-center mr-3 font-semibold text-sm text-gray-900 dark:text-white"><img
-                                    class="mr-2 w-6 h-6 rounded-full"
-                                    src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-                                    alt="Jese Leos">Jese Leos</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400"><time pubdate datetime="2022-02-12"
-                                    title="February 12th, 2022">Feb. 12, 2022</time></p>
-                        </div>
-                        <button id="dropdownComment2Button" data-dropdown-toggle="dropdownComment2"
-                            class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:text-gray-400 dark:bg-gray-900 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-                            type="button">
-                              <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 3">
-                                  <path d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/>
-                              </svg>
-                            <span class="sr-only">Comment settings</span>
-                        </button>
-                        <!-- Dropdown menu -->
-                        <div id="dropdownComment2"
-                            class="hidden z-10 w-36 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
-                            <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
-                                aria-labelledby="dropdownMenuIconHorizontalButton">
-                                <li>
-                                    <a href="#"
-                                        class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
-                                </li>
-                                <li>
-                                    <a href="#"
-                                        class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Remove</a>
-                                </li>
-                                <li>
-                                    <a href="#"
-                                        class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Report</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </footer>
-                    <p>Much appreciated! Glad you liked it ☺️</p>
-                    <div class="flex items-center mt-4 space-x-4">
-                        <button type="button"
-                            class="flex items-center font-medium text-sm text-gray-500 hover:underline dark:text-gray-400">
-                              <svg class="mr-1.5 w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                  <path d="M18 0H2a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h2v4a1 1 0 0 0 1.707.707L10.414 13H18a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5 4h2a1 1 0 1 1 0 2h-2a1 1 0 1 1 0-2ZM5 4h5a1 1 0 1 1 0 2H5a1 1 0 0 1 0-2Zm2 5H5a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Zm9 0h-6a1 1 0 0 1 0-2h6a1 1 0 1 1 0 2Z"/>
-                              </svg>
-                            Reply
-                        </button>
-                    </div>
-                </article>
-                <article class="p-6 mb-6 text-base bg-white border-t border-gray-200 dark:border-gray-700 dark:bg-gray-900">
-                    <footer class="flex justify-between items-center mb-2">
-                        <div class="flex items-center">
-                            <p class="inline-flex items-center mr-3 font-semibold text-sm text-gray-900 dark:text-white"><img
-                                    class="mr-2 w-6 h-6 rounded-full"
-                                    src="https://flowbite.com/docs/images/people/profile-picture-3.jpg"
-                                    alt="Bonnie Green">Bonnie Green</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400"><time pubdate datetime="2022-03-12"
-                                    title="March 12th, 2022">Mar. 12, 2022</time></p>
-                        </div>
-                        <button id="dropdownComment3Button" data-dropdown-toggle="dropdownComment3"
-                            class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:text-gray-400 dark:bg-gray-900 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-                            type="button">
-                              <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 3">
-                                  <path d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/>
-                              </svg>
-                            <span class="sr-only">Comment settings</span>
-                        </button>
-                        <!-- Dropdown menu -->
-                        <div id="dropdownComment3"
-                            class="hidden z-10 w-36 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
-                            <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
-                                aria-labelledby="dropdownMenuIconHorizontalButton">
-                                <li>
-                                    <a href="#"
-                                        class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
-                                </li>
-                                <li>
-                                    <a href="#"
-                                        class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Remove</a>
-                                </li>
-                                <li>
-                                    <a href="#"
-                                        class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Report</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </footer>
-                    <p>The article covers the essentials, challenges, myths and stages the UX designer should consider while creating the design strategy.</p>
-                    <div class="flex items-center mt-4 space-x-4">
-                        <button type="button"
-                            class="flex items-center font-medium text-sm text-gray-500 hover:underline dark:text-gray-400">
-                            <svg class="mr-1.5 w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                              <path d="M18 0H2a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h2v4a1 1 0 0 0 1.707.707L10.414 13H18a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5 4h2a1 1 0 1 1 0 2h-2a1 1 0 1 1 0-2ZM5 4h5a1 1 0 1 1 0 2H5a1 1 0 0 1 0-2Zm2 5H5a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Zm9 0h-6a1 1 0 0 1 0-2h6a1 1 0 1 1 0 2Z"/>
-                            </svg>
-                            Reply
-                        </button>
-                    </div>
-                </article>
-                <article class="p-6 text-base bg-white border-t border-gray-200 dark:border-gray-700 dark:bg-gray-900">
-                    <footer class="flex justify-between items-center mb-2">
-                        <div class="flex items-center">
-                            <p class="inline-flex items-center mr-3 font-semibold text-sm text-gray-900 dark:text-white"><img
-                                    class="mr-2 w-6 h-6 rounded-full"
-                                    src="https://flowbite.com/docs/images/people/profile-picture-4.jpg"
-                                    alt="Helene Engels">Helene Engels</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400"><time pubdate datetime="2022-06-23"
-                                    title="June 23rd, 2022">Jun. 23, 2022</time></p>
-                        </div>
-                        <button id="dropdownComment4Button" data-dropdown-toggle="dropdownComment4"
-                            class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:text-gray-400 dark:bg-gray-900 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-                            type="button">
-                              <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 3">
-                                  <path d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/>
-                              </svg>
-                        </button>
-                        <!-- Dropdown menu -->
-                        <div id="dropdownComment4"
-                            class="hidden z-10 w-36 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
-                            <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
-                                aria-labelledby="dropdownMenuIconHorizontalButton">
-                                <li>
-                                    <a href="#"
-                                        class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
-                                </li>
-                                <li>
-                                    <a href="#"
-                                        class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Remove</a>
-                                </li>
-                                <li>
-                                    <a href="#"
-                                        class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Report</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </footer>
-                    <p>Thanks for sharing this. I do came from the Backend development and explored some of the tools to design my Side Projects.</p>
-                    <div class="flex items-center mt-4 space-x-4">
-                        <button type="button"
-                            class="flex items-center font-medium text-sm text-gray-500 hover:underline dark:text-gray-400">
-                            <svg class="mr-1.5 w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                              <path d="M18 0H2a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h2v4a1 1 0 0 0 1.707.707L10.414 13H18a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5 4h2a1 1 0 1 1 0 2h-2a1 1 0 1 1 0-2ZM5 4h5a1 1 0 1 1 0 2H5a1 1 0 0 1 0-2Zm2 5H5a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Zm9 0h-6a1 1 0 0 1 0-2h6a1 1 0 1 1 0 2Z"/>
-                            </svg>
-                            Reply
-                        </button>
-                    </div>
-                </article>
-            </section>
+              </div>
+            </div>
+          </section>
         </article>
+        
     </div>
   </main>
-  
-  <aside aria-label="Related articles" class="py-8 lg:py-24 bg-gray-50 dark:bg-gray-800">
-    <div class="px-4 mx-auto max-w-screen-xl">
-        <h2 class="mb-8 text-2xl font-bold text-gray-900 dark:text-white">Related articles</h2>
-        <div class="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
-            <article class="max-w-xs">
-                <a href="#">
-                    <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/article/blog-1.png" class="mb-5 rounded-lg" alt="Image 1">
-                </a>
-                <h2 class="mb-2 text-xl font-bold leading-tight text-gray-900 dark:text-white">
-                    <a href="#">Our first office</a>
-                </h2>
-                <p class="mb-4 text-gray-500 dark:text-gray-400">Over the past year, Volosoft has undergone many changes! After months of preparation.</p>
-                <a href="#" class="inline-flex items-center font-medium underline underline-offset-4 text-primary-600 dark:text-primary-500 hover:no-underline">
-                    Read in 2 minutes
-                </a>
-            </article>
-            <article class="max-w-xs">
-                <a href="#">
-                    <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/article/blog-2.png" class="mb-5 rounded-lg" alt="Image 2">
-                </a>
-                <h2 class="mb-2 text-xl font-bold leading-tight text-gray-900 dark:text-white">
-                    <a href="#">Enterprise design tips</a>
-                </h2>
-                <p class="mb-4  text-gray-500 dark:text-gray-400">Over the past year, Volosoft has undergone many changes! After months of preparation.</p>
-                <a href="#" class="inline-flex items-center font-medium underline underline-offset-4 text-primary-600 dark:text-primary-500 hover:no-underline">
-                    Read in 12 minutes
-                </a>
-            </article>
-            <article class="max-w-xs">
-                <a href="#">
-                    <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/article/blog-3.png" class="mb-5 rounded-lg" alt="Image 3">
-                </a>
-                <h2 class="mb-2 text-xl font-bold leading-tight text-gray-900 dark:text-white">
-                    <a href="#">We partnered with Google</a>
-                </h2>
-                <p class="mb-4  text-gray-500 dark:text-gray-400">Over the past year, Volosoft has undergone many changes! After months of preparation.</p>
-                <a href="#" class="inline-flex items-center font-medium underline underline-offset-4 text-primary-600 dark:text-primary-500 hover:no-underline">
-                    Read in 8 minutes
-                </a>
-            </article>
-            <article class="max-w-xs">
-                <a href="#">
-                    <img src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/article/blog-4.png" class="mb-5 rounded-lg" alt="Image 4">
-                </a>
-                <h2 class="mb-2 text-xl font-bold leading-tight text-gray-900 dark:text-white">
-                    <a href="#">Our first project with React</a>
-                </h2>
-                <p class="mb-4  text-gray-500 dark:text-gray-400">Over the past year, Volosoft has undergone many changes! After months of preparation.</p>
-                <a href="#" class="inline-flex items-center font-medium underline underline-offset-4 text-primary-600 dark:text-primary-500 hover:no-underline">
-                    Read in 4 minutes
-                </a>
-            </article>
-        </div>
-    </div>
-  </aside>
-  
-  <section class="bg-white dark:bg-gray-900">
-    <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
-        <div class="mx-auto max-w-screen-md sm:text-center">
-            <h2 class="mb-4 text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl dark:text-white">Sign up for our newsletter</h2>
-            <p class="mx-auto mb-8 max-w-2xl  text-gray-500 md:mb-12 sm:text-xl dark:text-gray-400">Stay up to date with the roadmap progress, announcements and exclusive discounts feel free to sign up with your email.</p>
-            <form action="#">
-                <div class="items-center mx-auto mb-3 space-y-4 max-w-screen-sm sm:flex sm:space-y-0">
-                    <div class="relative w-full">
-                        <label for="email" class="hidden mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Email address</label>
-                        <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
-                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 16">
-                              <path d="m10.036 8.278 9.258-7.79A1.979 1.979 0 0 0 18 0H2A1.987 1.987 0 0 0 .641.541l9.395 7.737Z"/>
-                              <path d="M11.241 9.817c-.36.275-.801.425-1.255.427-.428 0-.845-.138-1.187-.395L0 2.6V14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2.5l-8.759 7.317Z"/>
-                           </svg>
-                        </div>
-                        <input class="block p-3 pl-9 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 sm:rounded-none sm:rounded-l-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Enter your email" type="email" id="email" required="">
-                    </div>
-                    <div>
-                        <button type="submit" class="py-3 px-5 w-full text-sm font-medium text-center text-white rounded-lg border cursor-pointer bg-primary-700 border-primary-600 sm:rounded-none sm:rounded-r-lg hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Subscribe</button>
-                    </div>
-                </div>
-                <div class="mx-auto max-w-screen-sm text-sm text-left text-gray-500 newsletter-form-footer dark:text-gray-300">We care about the protection of your data. <a href="#" class="font-medium text-primary-600 dark:text-primary-500 hover:underline">Read our Privacy Policy</a>.</div>
-            </form>
-        </div>
-    </div>
-  </section>
-  
+
   <footer class="bg-gray-50 dark:bg-gray-800 antialiased">
     <div class="p-4 py-6 mx-auto max-w-screen-xl md:p-8 lg:p-10">
         <div class="grid grid-cols-2 gap-8 md:grid-cols-3 lg:grid-cols-5">
@@ -622,4 +329,5 @@ URL: https://flowbite.com/docs/components/typography/
         </div>
     </div>
   </footer>
+  
 {% endblock %}

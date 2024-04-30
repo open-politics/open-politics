@@ -14,11 +14,11 @@
         <div class="image w-1/3 h-full object-cover object-center bg-cover bg-no-repeat opacity-40 dark:opacity-40 rounded-l-lg" style="background-image: url('{{ article.image }}');"></div>
         {% endif %}
         <div class="content w-2/3 p-2">
-            <h3 class="text-sm text-blue-500 mb-1 bg-black bg-opacity-20 rounded ring-1 ring-black ring-opacity-50">{{ article.source.name }}</h3>
+            <h3 class="text-sm text-blue-500 mb-1 bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl bg-opacity-20 rounded ring-1 ring-black ring-opacity-50">{{ article.source.name }}</h3>
             <a href="{{ article.url }}" class="block truncate">
-                <p class="text-xs text-white font-semibold mt-2 p-1 bg-black bg-opacity-20 rounded ring-1 ring-black ring-opacity-90">{{ article.title }}</p>
+                <p class="text-xs text-white font-semibold mt-2 p-1 bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl bg-opacity-20 rounded ring-1 ring-black ring-opacity-90">{{ article.title }}</p>
             </a>
-            <p class="text-xs text-white leading-5 bg-black bg-opacity-20 rounded ring-1 ring-black ring-opacity-50">{{ article.content|slice:":200" }}...</p>
+            <p class="text-xs text-white leading-5 bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl bg-opacity-20 rounded ring-1 ring-black ring-opacity-50">{{ article.content|slice:":200" }}...</p>
         </div> 
     </div>
     {% endfor %}

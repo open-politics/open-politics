@@ -11,11 +11,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@designbycode/tailwindcss-text-stroke": "^1.2.1",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.3"
+    "tailwindcss": "^3.4.3",
+    "tailwindcss-text-stroke": "^0.0.5"
   },
   "devDependencies": {
+    "daisyui": "^4.10.2",
     "flowbite-typography": "^1.0.3"
   }
 }
