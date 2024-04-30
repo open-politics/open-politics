@@ -22,6 +22,7 @@ services:
       sh -c "sleep 10 &&
             python open_politics_project/manage.py makemigrations &&
             python open_politics_project/manage.py migrate && 
+            python open_politics_project/manage.py collectstatic --noinput &&
             python open_politics_project/manage.py runserver 0.0.0.0:4000"
     environment:
       - POSTGRES_USER
