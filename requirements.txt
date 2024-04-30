@@ -27,3 +27,4 @@ psycopg2-binary
 marvin
 regex
 prefect
+instructor
