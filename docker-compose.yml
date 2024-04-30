@@ -30,7 +30,7 @@ services:
       - HUGGINGFACE_TOKEN
       - NEWS_API_KEY
       - OPENAI_API_KEY
-      - RUNNING_IN_DOCKER=true
+      - RUNNING_IN_DOCKER
     networks:
       - web
     expose:
