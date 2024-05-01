@@ -51,9 +51,9 @@
     </div>
 
     <!-- mobile menu -->
-        <div class="mobile-menu hidden md:hidden z-10 bg-white dark:bg-black">
+        <div class="mobile-menu hidden md:hidden z-10 bg-white dark:bg-gray-900">
             <a href="{% url 'about' %}" class="block py-2 px-4 text-sm mb-2">About</a>
-            <a href="#news" class="block py-2 px-4 text-sm mb-2">News</a>
+            <a href="{% url 'news_blog' %}" class="block py-2 px-4 text-sm mb-2">News</a>
             <a href="mailto:engage@open-politics.org" class="block py-2 px-4 text-sm mb-2">Contact</a>
             <a href="https://github.com/JimVincentW/open-politics" class="block py-2 px-4 text-sm mb-2">
                 <img src="{% static 'media/github-mark.svg' %}" alt="GitHub Logo" class="h-6 dark:invert">
