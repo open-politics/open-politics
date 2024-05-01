@@ -1,3 +1,17 @@
+<style>
+    /* Hide scrollbars for Chrome, Safari, and Opera */
+    .overflow-x-scroll::-webkit-scrollbar,
+    .overflow-y-scroll::-webkit-scrollbar {
+    display: none;
+    }
+
+    /* Hide scrollbars for IE and Edge */
+    .overflow-x-scroll,
+    .overflow-y-scroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    }
+</style>
 {% if emoji_string %}
     <div id="emoji-output" class="mt-4 text-lg text-center">
         <!-- Display the first 7 emojis from the emoji string generated from the issue areas -->
