@@ -1,13 +1,13 @@
 {% load static %}
 </style>
 <!-- header.html -->
-<nav class="bg-white dark:bg-black text-gray-900 dark:text-white">
+<nav class="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
     <div class="max-w-0.8 mx-auto px-4">
         <div class="flex items-center justify-between">
             <div class="flex space-x-4 items-center">
                 <!-- logo -->
                 <div>
-                    <a href="https://open-politics.org" class="flex items-center py-5 px-2 text-gray-700 dark:text-white">
+                    <a href="{% url 'home' %}" class="flex items-center py-5 px-2 text-gray-700 dark:text-white">
                         <span class="font-bold">Open Politics Project</span>
                     </a>
                 </div>
@@ -16,7 +16,7 @@
             <!-- secondary nav -->
             <div class="hidden md:flex items-center space-x-1">
                 <a href="{% url 'about' %}" class="py-5 px-3 text-gray-700 dark:text-white">About</a>
-                <a href="#news" class="py-5 px-3 text-gray-700 dark:text-white">News</a>
+                <a href="{% url 'news_blog' %}" class="py-5 px-3 text-gray-700 dark:text-white">News</a>
                 <a href="mailto:engage@open-politics.org" class="py-5 px-3 text-gray-700 dark:text-white">Contact</a>
                 <!-- GitHub Icon -->
                 <a href="https://github.com/JimVincentW/open-politics" class="py-5 px-3">

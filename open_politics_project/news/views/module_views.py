@@ -258,3 +258,7 @@ def execute(request):
 def user_guide(request):
     return render(request, 'news/user_guide.html')
 
+
+def news_blog(request):
+    return render(request, 'news/news_blog.html')
+
