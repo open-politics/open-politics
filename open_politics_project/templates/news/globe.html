@@ -22,7 +22,7 @@
     left: 0;
     width: 100%;
     height: 100vh; /* Ensure it covers the full viewport height */
-    z-index: -1; /* Initially in the background */
+    z-index: 0; /* Initially in the background */
   }
   
   #dashboard {
@@ -49,7 +49,9 @@
   .dropdown-blend {
     background: linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.55));
   }
-
+  .z-1004 {
+  z-index: 1004;
+}
 </style>
 
 <div id="chartdiv"></div>
@@ -73,7 +75,6 @@
             
           <form class="max-w-lg mx-2">
             <div class="flex">
-                <label for="search-dropdown" class="relative mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Your Email</label>
                 <button id="dropdown-button" data-dropdown-toggle="dropdown" class="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 border border-gray-300 rounded-s-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600 relative" type="button">
                     All categories
                     <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
@@ -108,8 +109,9 @@
         </div>
     </div>
 </div>
-<h1 class="text-4xl mt-36 font-extrabold dark:text-green-700"> Little sneak peak here. 😉 <br> This tools is currently not fully functional.</h1>
-
+<h1 class="text-4xl font-extrabold dark:text-gray-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center z-[2000]">
+  Little sneak peak here. 😉<br>This tool is currently not fully functional.
+</h1>
 <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
 <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
 <script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
@@ -130,122 +132,136 @@
             }
           });
         });
+        
     </script>
-<script>
-  am5.ready(function() {
-    var root = am5.Root.new("chartdiv");
+    <script>
+      am5.ready(function() {
+        var root = am5.Root.new("chartdiv");
 
-    root.setThemes([
-      am5themes_Animated.new(root)
-    ]);
+        var toggleButton = document.getElementById("toggleGlobe");
+        var chartDiv = document.getElementById("chartdiv");
+        var dashboardDiv = document.getElementById("dashboard");
 
-    var chart = root.container.children.push(am5map.MapChart.new(root, {
-      panX: "rotateX",
-      panY: "rotateY",
-      projection: am5map.geoOrthographic()
-    }));
+        // Get reference to the toggle button
+        var toggleButton = document.getElementById("toggleGlobe");
 
-    // Variable to keep track of last rotation
-    var lastRotationX = 0;
-    var isSpinning = false;
-
-    function startSpinning() {
-      if (!isSpinning) {
-        chart.animate({
-          key: "rotationX",
-          from: lastRotationX,
-          to: lastRotationX + 360,
-          duration: 120000,
-          loops: Infinity,
-          easing: am5.ease.linear
-        }).events.on("stopped", function() {
-          lastRotationX = chart.get("rotationX", 0) % 360;
-          isSpinning = false;
+        // Add click event listener to the toggle button
+        toggleButton.addEventListener("click", function() {
+          if (chartDiv.style.zIndex === "1003") {
+            // Move the globe to the background (z-index: -1)
+            chartDiv.style.zIndex = "-1";
+            dashboardDiv.style.zIndex = "1002";
+          } else {
+            // Move the globe to the foreground (z-index: 1003)
+            chartDiv.style.zIndex = "1003";
+            dashboardDiv.style.zIndex = "-1";
+          }
         });
-        isSpinning = true;
-      }
-    }
+    
+        root.setThemes([
+          am5themes_Animated.new(root)
+        ]);
+    
+        var chart = root.container.children.push(am5map.MapChart.new(root, {
+          panX: "rotateX",
+          panY: "rotateY",
+          projection: am5map.geoOrthographic(),
+          paddingBottom: 20,
+          paddingTop: 20,
+          paddingLeft: 20,
+          paddingRight: 20
+        }));
+        chart.deltaLongitude = -10; 
 
-    function smoothStart() {
-      var currentRotation = chart.get("rotationX", 0);
-      chart.animate({
-        key: "rotationX",
-        from: currentRotation,
-        to: currentRotation + 10,  // small increment to start the spin
-        duration: 2000,  // Duration over which the spin speed increases
-        easing: am5.ease.out(am5.ease.cubic)  // Smooth easing function
-      }).events.on("ended", startSpinning);
-    }
-
-    var inactivityTimeout;
-    function resetInactivityTimeout() {
-      clearTimeout(inactivityTimeout);
-      if (isSpinning) {
-        chart.animations.each(function(animation) {
-          animation.stop();
+    
+        var polygonSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
+          geoJSON: am5geodata_worldLow
+        }));
+    
+        var geojsonData = {{ geojson_data|safe }};
+    
+        polygonSeries.mapPolygons.template.setAll({
+          tooltipText: "{name}",
+          toggleKey: "active",
+          interactive: true
         });
-        isSpinning = false;
-      }
-      inactivityTimeout = setTimeout(smoothStart, 10000);
-    }
-
-    document.addEventListener('mousemove', resetInactivityTimeout);
-    document.addEventListener('keypress', resetInactivityTimeout);
-    resetInactivityTimeout(); // Initialize the timeout logic at start
-
-    var polygonSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
-      geoJSON: am5geodata_worldLow,
-      exclude: ["AQ"]
-    }));
-
-    var geojsonData = {{ geojson_data|safe }};
-
-    polygonSeries.mapPolygons.template.setAll({
-      tooltipHTML: "{name}",
-      allowHTML: true,
-      toggleKey: "active",
-      interactive: true
-    });
-
-    polygonSeries.mapPolygons.template.adapters.add("tooltipHTML", function(html, target) {
-      var countryName = target.dataItem.dataContext.name;
-      var articles = geojsonData.features
-          .filter(feature => feature.properties.location === countryName)
-          .map(feature => {
+    
+        polygonSeries.mapPolygons.template.states.create("hover", {
+          fill: am5.color(0x677935)
+        });
+    
+        polygonSeries.mapPolygons.template.states.create("active", {
+          fill: am5.color(0x677935)
+        });
+    
+        var previousPolygon;
+    
+        polygonSeries.mapPolygons.template.on("active", function(active, target) {
+          if (previousPolygon && previousPolygon != target) {
+            previousPolygon.set("active", false);
+          }
+          if (target.get("active")) {
+            var centroid = target.geoCentroid();
+            if (centroid) {
+              chart.animate({ key: "rotationX", to: -centroid.longitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
+              chart.animate({ key: "rotationY", to: -centroid.latitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
+            }
+            var countryName = target.dataItem.dataContext.name;
+            
+            // Update the search input value with the country name
+            document.getElementById("search-dropdown").value = countryName;
+          }
+          // Get the name of the clicked country
+          previousPolygon = target;
+        });
+    
+        polygonSeries.mapPolygons.template.adapters.add("tooltipHTML", function(html, target) {
+          var countryName = target.dataItem.dataContext.name;
+          var articles = geojsonData.features
+            .filter(feature => feature.properties.location === countryName)
+            .map(feature => {
               return feature.properties.articles.map(article => `
-                  <div class="article">
-                      <h3 class="article-title">${article.headline}</h3>
-                  </div>
+                <div class="article">
+                  <h3 class="article-title">${article.headline}</h3>
+                </div>
               `).join('');
+            });
+        
+          if (articles.length > 0) {
+            var tooltipContent = `
+              <div class="am5-tooltip">
+                <div class="am5-tooltip-title">${countryName}</div>
+                <div class="am5-tooltip-content">${articles.join('')}</div>
+              </div>
+            `;
+            return tooltipContent;
+          }
+        
+          return html;
+        });
+    
+        var graticuleSeries = chart.series.unshift(
+          am5map.GraticuleSeries.new(root, {
+            step: 10
+          })
+        );
+    
+        graticuleSeries.mapLines.template.set("strokeOpacity", 0.1);
+    
+        var pointSeries = chart.series.push(am5map.MapPointSeries.new(root, {}));
+        pointSeries.data.setAll(geojsonData.features);
+    
+        pointSeries.bullets.push(function() {
+          var circle = am5.Circle.new(root, {
+            radius: 4,
+            fill: am5.color(0xff0000),
+            strokeWidth: 0
           });
-
-      if (articles.length > 0) {
-          var tooltipContent = `
-          <div class="am5-tooltip">
-              <div class="am5-tooltip-title">${countryName}</div>
-              <div class="am5-tooltip-content">${articles.join('')}</div>
-          </div>
-          `;
-          return tooltipContent;
-      }
-  
-    return html;
-    });
-
-    var pointSeries = chart.series.push(am5map.MapPointSeries.new(root, {}));
-    pointSeries.data.setAll(geojsonData.features);
-
-    pointSeries.bullets.push(function() {
-      var circle = am5.Circle.new(root, {
-        radius: 4,
-        fill: am5.color(0xff0000),
-        strokeWidth: 0
+    
+          return am5.Bullet.new(root, {
+            sprite: circle
+          });
+        });
       });
-
-      return am5.Bullet.new(root, {
-        sprite: circle
-      });
-    });
-  });
-</script>
-{% endblock %}
+    </script>
+    {% endblock %}

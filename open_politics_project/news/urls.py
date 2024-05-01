@@ -32,6 +32,8 @@ urlpatterns = [
     path('globe/', module_views.globe, name='globe'),
     path('user_guide/', module_views.user_guide, name='user_guide'),
     path('news_blog/', module_views.news_blog, name='news_blog'),
+    path('globe_test/', module_views.globe_test, name='globe_test'),
+
     # Functional Urls
     re_path(r'^multi-query/$', module_views.multi_query, name='multi-query'),
     re_path(r'^execute/$', module_views.execute, name='execute'),

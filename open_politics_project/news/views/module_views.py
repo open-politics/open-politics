@@ -262,3 +262,7 @@ def user_guide(request):
 def news_blog(request):
     return render(request, 'news/news_blog.html')
 
+def globe_test(request):
+    return render(request, 'news/globe_test.html')
+
+
