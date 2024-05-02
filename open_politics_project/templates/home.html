@@ -4,15 +4,15 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-{% if user.is_authenticated %}
-<div class="bg-slate-200 dark:bg-gradient-to-r dark:from-zinc-800 dark:to-sky-700 text-black dark:text-white p-4 mb-4 mx-auto w-4/5 rounded-lg shadow-md">
+
+<div class="bg-gray-200 dark:bg-gradient-to-r dark:from-zinc-800 dark:to-indigo-700 text-black dark:text-white p-4 mb-4 mx-auto w-4/5 rounded-lg shadow-md">
   <p class="text-center">
-    Welcome, fellow tester! 🎉<br>
-    Ready to dive into Open Politics?<br>
-    Check out our <a href='/user_guide' class="underline font-semibold">User Guide</a> to get started!
+    Welcome to Open Politics! 🗳️<br>
+    Explore what is happening around the world with our easy-to-use tools.<br>
+    <a href="/user_guide" class="underline font-semibold">Click here for our User Guide</a> to learn more.
   </p>
 </div>
-{% endif %}
+
 {% include 'news/hi.html' %}
 {% comment %} {% include 'news/ssare.html' %} {% endcomment %}
 
