@@ -54,8 +54,10 @@
 }
 </style>
 
-<div id="chartdiv"></div>
+<div id="chartdiv" class="backdrop-filter backdrop-blur-0"></div>
+
 <button id="toggleGlobe" class="toggle-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Toggle Globe</button>
+
 <div id="dashboard" class="container mx-auto px-4 mt-4">
   <!-- Planning New Dashboard Grid -->
   <div class="mt-4">
@@ -108,6 +110,22 @@
               <h3 class="font-bold pt-2 my-2 mx-1 text-pink-600 dark:text-pink-600"> Please note that this module here is a sneak peak and currently not fully functional. Will be available asap! </3>
           </form>
         </div>
+
+
+
+
+        <div class="bg-white/10 dark:bg-gray-900/10 h-24 dark:text-white text-right rounded-lg shadow-lg p-4 flex flex-col backdrop-blur-xl border border-gray-100/10 dark:border-gray-700/10">
+          <h2 class="text-4xl font-extrabold"> Need help?</h2>
+          <p> yeah me too </p>
+          
+
+            <!-- Search Module -->
+          
+          
+        </div>
+        <div class="bg-white/10 dark:bg-gray-900/10 h-24 text-green-300">
+          {{geojson_data|safe}}
+        </div>
     </div>
 </div>
 {% comment %}   {% endcomment %}
@@ -150,10 +168,14 @@
             // Move the globe to the background (z-index: -1)
             chartDiv.style.zIndex = "-1";
             dashboardDiv.style.zIndex = "1002";
+            chartDiv.classList.remove("backdrop-blur"); // Remove the blur effect
+            chartDiv.classList.add("backdrop-blur-0");
           } else {
             // Move the globe to the foreground (z-index: 1003)
             chartDiv.style.zIndex = "1003";
             dashboardDiv.style.zIndex = "-1";
+            chartDiv.classList.remove("backdrop-blur-0");
+            chartDiv.classList.add("backdrop-blur-sm");
           }
         });
     
@@ -210,7 +232,6 @@
             // Update the search input value with the country name
             document.getElementById("search-dropdown").value = countryName;
           }
-          // Get the name of the clicked country
           previousPolygon = target;
         });
     
