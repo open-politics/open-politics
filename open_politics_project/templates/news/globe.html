@@ -18,10 +18,10 @@
 
   #chartdiv {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 17vh;
+    left: 0px;
     width: 100%;
-    height: 100vh; /* Ensure it covers the full viewport height */
+    height: 85vh; /* Ensure it covers the full viewport height */
     z-index: -1; /* Initially in the background */
   }
   
@@ -61,17 +61,11 @@
   <!-- Planning New Dashboard Grid -->
   <div class="mt-4">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="bg-white/10 dark:bg-gray-900/10 rounded-lg shadow-lg p-4 flex flex-col backdrop-blur-xl border border-gray-100/10 dark:border-gray-700/10">
-          <h2 class="text-4xl font-extrabold dark:text-white"> News from around the world</h2>
+        <div class="bg-white/10 dark:bg-gray-900/10 rounded-lg shadow-lg p-4 flex flex-col backdrop-blur-xl border border-gray-100/10 border-2 border-blue-600">
+          <h2 class="text-4xl ml-1 font-extrabold dark:text-white"> News from around the world</h2>
           <div class="mb-2 mt-2 text-black dark:text-white leading-relaxed">
-            Ask what you want to know about Politics.
-            <br><br>
-            Or use the globe to browse global news.
-            <br>
-            If you have specific questions use the dropdown menu to select a focus.
             </div>
-
-
+            
             <!-- Search Module -->
             
           <form class="max-w-lg mx-2">
@@ -106,15 +100,10 @@
                     </button>
                 </div>
             </div>
-            <h3 class="font-bold pt-2 my-2 mx-1 text-pink-600 dark:text-green-300"> Please note that this module here is a sneak peak and currently not fully functional. Will be available asap! </3>
           </form>
+          
         </div>
-
-        <!-- <div class="bg-white/10 dark:bg-gray-900/10 h-24 text-green-300">
-          {{geojson_data|safe}}
-        </div> -->
-        <!-- article rendering -->
-        <div id="ArticlesList" class="bg-white/10 dark:bg-gray-900/10 text-green-300 backdrop-blur-xl">
+        <div id="ArticlesList" class="bg-white/10 dark:bg-gray-900/10 text-green-300 backdrop-blur-xl border-2 border-blue-600">
           {% for article in articles %}
             <div class="article {% if not forloop.last %}border-b border-gray-300{% endif %}">
               <h3 class="article-title">{{ article.title }}</h3>
@@ -122,8 +111,13 @@
             </div>
           {% endfor %}
         </div>
-    </div>
+      </div>
+    <!-- <div class="grid grid-cols-2 gap-4 max-w-1/4">
+      <div class="mt-4 h-24 text-green-300 ">
+        {{geojson_data|safe}}
+      </div> -->
 </div>
+
 {% comment %}   {% endcomment %}
 <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
 <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
