@@ -210,10 +210,20 @@
             var articlesHtml = geojsonData.features.filter(function(feature) {
                 return feature.properties.location === countryName;
             }).map(function(feature) {
-                return feature.properties.articles.map(function(article) {
-                  return '<div class="article"><h3 class="article-title">' + article.headline + '</h3><a href="' + article.url + '" target="_blank">Read more</a></div><div class="h-[1px] bg-black w-full"></div>';
+              return feature.properties.articles.map(function(article) {
+                return `
+                <div class="bg-pink-600 h-[2px] w-full"></div>
+                <div class="article m-2 p-2">
+                  <h3 class="article-title">${article.headline}</h3>
+                  <div class="mt-2 mb-2"> <!-- Adjust padding here and added margin-bottom -->
+                    <a href="${article.url}" class="ring ring-black-50 ring-offset-2 rounded-md p-1" target="_blank">Read more</a>
+                    </div>
+                  </div>
+                <div class="h-[1px] bg-black w-full"></div>
+                `;
 
-                }).join('');
+
+              }).join('');
             }).join('');
 
             if (articlesHtml) {
