@@ -122,8 +122,17 @@
           
           
         </div>
-        <div class="bg-white/10 dark:bg-gray-900/10 h-24 text-green-300">
+        <!-- <div class="bg-white/10 dark:bg-gray-900/10 h-24 text-green-300">
           {{geojson_data|safe}}
+        </div> -->
+        <!-- article rendering -->
+        <div id="ArticlesList" class="bg-white/10 dark:bg-gray-900/10 text-green-300 backdrop-blur-xl">
+          {% for article in articles %}
+            <div class="article {% if not forloop.last %}border-b border-gray-300{% endif %}">
+              <h3 class="article-title">{{ article.title }}</h3>
+              <p>{{ article.content }}</p>
+            </div>
+          {% endfor %}
         </div>
     </div>
 </div>
@@ -195,6 +204,28 @@
         }));
     
         var geojsonData = {{ geojson_data|safe }};
+
+        polygonSeries.mapPolygons.template.on("active", function(active, target) {
+            var countryName = target.dataItem.dataContext.name;
+            var articlesHtml = geojsonData.features.filter(function(feature) {
+                return feature.properties.location === countryName;
+            }).map(function(feature) {
+                return feature.properties.articles.map(function(article) {
+                  return '<div class="article"><h3 class="article-title">' + article.headline + '</h3><a href="' + article.url + '" target="_blank">Read more</a></div><div class="h-[1px] bg-black w-full"></div>';
+
+                }).join('');
+            }).join('');
+
+            if (articlesHtml) {
+                document.getElementById("ArticlesList").innerHTML = '<div>' + articlesHtml + '</div>';
+            }
+        });
+
+        var graticuleSeries = chart.series.unshift(
+            am5map.GraticuleSeries.new(root, {
+                step: 10
+            })
+        );
     
         polygonSeries.mapPolygons.template.setAll({
           tooltipText: "{name}",
