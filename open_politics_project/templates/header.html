@@ -100,9 +100,9 @@
           });
         });
     
-        if(localStorage.getItem('darkMode') === 'enabled') {
+        // Set dark mode as default
+            if(localStorage.getItem('darkMode') === null || localStorage.getItem('darkMode') === 'enabled') {
           document.documentElement.classList.add('dark');
         }
     });
-    
-</script>
+    </script>

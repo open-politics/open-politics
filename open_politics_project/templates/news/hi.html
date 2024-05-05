@@ -27,6 +27,10 @@
                     <!-- Corrected classes for "Search News" button -->
                     <a href="{% url 'news_home' %}" class="inline-block bg-pink-600 text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:bg-pink-600 dark:text-white dark:hover:bg-black dark:hover:text-white dark:hover:border-white transition-colors duration-300 ease-in-out">Search News</a>
                 </div>
+                <div class="mt-4">
+                    <!-- Corrected classes for "Search News" button -->
+                    <a href="{% url 'globe' %}" class="inline-block bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:bg-pink-600 dark:text-white dark:hover:bg-black dark:hover:text-white dark:hover:border-white transition-colors duration-300 ease-in-out">Open Globe</a>
+                </div>
                 {% endif %}
                 {% if user|has_group:"Dashboard Users" %}
                 <div class="mt-4">
