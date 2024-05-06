@@ -47,7 +47,8 @@
   .am5-tooltip-content { margin-top: 5px; /* Add some spacing above the content */ }
   .article { max-width: 300px;}
   .dropdown-blend {
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.55));
+    background: linear-gradient(to bottom, rgb(26, 47, 154), rgba(32, 242, 127, 0.55));
+    backdrop-filter: blur(10px);
   }
   .z-1004 {
   z-index: 1004;
@@ -57,26 +58,25 @@
 <div id="chartdiv" class="relative globe-blur"></div>
 
 <button id="toggleGlobe" class="toggle-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Toggle Globe</button>
-<div id="dashboard" class="container mx-auto px-4 mt-4">
-  <!-- Planning New Dashboard Grid -->
+<div id="dashboard" class="container mx-auto px-4 mt-4 min-h-[300px]">
   <div class="mt-4">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="bg-white/10 dark:bg-gray-900/10 rounded-lg shadow-lg p-4 flex flex-col backdrop-blur-xl border border-gray-100/10 border-2 border-blue-600">
-          <h2 class="text-4xl ml-1 font-extrabold dark:text-white"> News from around the world</h2>
-          <div class="mb-2 mt-2 text-black dark:text-white leading-relaxed">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 min-h-[300px]">
+      <div class="bg-white/10 dark:bg-gray-900/10 rounded-xl shadow-lg p-4 flex flex-col backdrop-blur-xl border border-gray-100/10 border-2 border-blue-600">
+        <h2 class="text-4xl ml-1 font-extrabold dark:text-white">News from around the world</h2>
+        <div class="mb-2 mt-2 text-black dark:text-white leading-relaxed">
             </div>
             
             <!-- Search Module -->
             
-          <form class="max-w-lg mx-2">
-            <div class="flex">
+            <form class="max-w-lg mx-2">
+              <div class="flex">
                 <button id="dropdown-button" data-dropdown-toggle="dropdown" class="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 border border-gray-300 rounded-s-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600 relative" type="button">
                     All categories
                     <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
                     </svg>
                 </button>
-                <div id="dropdown" class="z-10 hidden divide-y divide-gray-100 rounded-lg shadow w-44 text-black dark:text-black bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl absolute left-0 mt-12 dropdown-blend">
+                <div id="dropdown" class="z-10 hidden divide-y divide-gray-100 rounded-xl shadow w-44 text-black dark:text-black bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl absolute left-0 mt-12 dropdown-blend">
                   <ul class="py-2 text-sm " aria-labelledby="dropdown-button">
                     <li>
                         <button type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Conflict</button>
@@ -103,7 +103,7 @@
           </form>
           
         </div>
-        <div id="ArticlesList" class="bg-white/10 dark:bg-gray-900/10 text-green-300 backdrop-blur-xl border-2 border-blue-600">
+        <div id="ArticlesList" class="bg-white/10 dark:bg-gray-900/10 text-green-300 rounded-xl backdrop-blur-xl border-2 border-blue-600">
           {% for article in articles %}
             <div class="article {% if not forloop.last %}border-b border-gray-300{% endif %}">
               <h3 class="article-title">{{ article.title }}</h3>
@@ -112,12 +112,11 @@
           {% endfor %}
         </div>
       </div>
-    <!-- <div class="grid grid-cols-2 gap-4 max-w-1/4">
-      <div class="mt-4 h-24 text-green-300 ">
+      <div class="grid grid-cols-2 gap-4 max-w-[50px] overflow-hidden">
+      <div class="mt-4 h-24 text-green-300 overflow-ellipsis overflow-hidden">
         {{geojson_data|safe}}
-      </div> -->
-</div>
-
+      </div>
+    </div>
 {% comment %}   {% endcomment %}
 <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
 <script src="https://cdn.amcharts.com/lib/5/map.js"></script>

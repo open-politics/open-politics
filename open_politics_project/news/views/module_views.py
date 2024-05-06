@@ -242,16 +242,31 @@ def create_preset(
     """
 
 
+
 @Flow
-def execute(request):
+def execute_flow(request):
     query = request.GET.get('query', '')
     sub_queries_response = multi_query(request)
     sub_queries_dict = json.loads(sub_queries_response.content.decode('utf-8'))['queries']
     sub_queries = [SubQuery(**sq) for sq in sub_queries_dict]
 
-    preset = create_preset(query, sub_queries)
+    # Define a flow that includes your tasks
+    with Flow("Execute Preset") as flow:
+        preset = create_preset(query, sub_queries)
+
+    # Run the flow and get the result
+    flow_state = flow.run()
+    preset = flow_state.result[preset].result
 
     return JsonResponse(preset.dict(), safe=False)
+
+def execute(request):
+    # Run the flow and get the result
+    flow_state = execute_flow(request=request)
+    preset = flow_state.result[preset].result
+
+    return JsonResponse(preset.dict(), safe=False)
+
 
 
 
