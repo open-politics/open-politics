@@ -170,20 +170,24 @@ def globe(request):
 
 from prefect import task, Flow
 import instructor
-from typing import Literal, Iterable
+from typing import Literal, Iterable, Optional, List
 from pydantic import Field, BaseModel
 from openai import OpenAI
 from django.http import JsonResponse
 from marvin import ai_fn
 
 class SubQuery(BaseModel):
-    query: str = Field(..., description="Query to search for relevant content")
+    query: str = Field(..., description="Query to search for relevant content. Namespaces that are suitable for vector searching when trying to find relevant articles")
     category: Literal["situation", "country", "actor", "conflict"] = Field(
         ..., description="Type of analysis or issue area"
     )
+    domain_level: Literal["international", "domestic", "region"] = Field(..., description="Analysis Scale")
+    region: Optional[str] = Field(..., description="Like EU or East Asia")
+    red_thread: str = Field (..., description="The intent of the original query, just passing it along")
+
+    
 
 #Top issues
-
 @task
 def multi_query(request):
     query = request.GET.get('query', '')
@@ -200,9 +204,11 @@ def multi_query(request):
             messages=[
                 {
                     "role": "user",
-                    "content": f"""Consider the data below: '\n{data}' 
+                    "content": f"""
+                    Consider the query below: '\n{data}'
                     and segment it into multiple search queries. 
-                    At least 5 from all different perspectives. Concentrate on political, economical questions.""",
+                    At least 2. Create search queries that are good for vector searches. Concentrate on political, economical questions. Keep in mind the original questions
+                    """,
                 },
             ],
             max_tokens=1000,
@@ -242,30 +248,17 @@ def create_preset(
     """
 
 
-
 @Flow
-def execute_flow(request):
+def execute(request):
     query = request.GET.get('query', '')
     sub_queries_response = multi_query(request)
     sub_queries_dict = json.loads(sub_queries_response.content.decode('utf-8'))['queries']
     sub_queries = [SubQuery(**sq) for sq in sub_queries_dict]
 
-    # Define a flow that includes your tasks
-    with Flow("Execute Preset") as flow:
-        preset = create_preset(query, sub_queries)
-
-    # Run the flow and get the result
-    flow_state = flow.run()
-    preset = flow_state.result[preset].result
+    preset = create_preset(query, sub_queries)
 
     return JsonResponse(preset.dict(), safe=False)
 
-def execute(request):
-    # Run the flow and get the result
-    flow_state = execute_flow(request=request)
-    preset = flow_state.result[preset].result
-
-    return JsonResponse(preset.dict(), safe=False)
 
 
 
