@@ -33,9 +33,6 @@ def tldr_view(request):
     user = request.user
 
     # existing_search = SearchHistory.objects.filter(user=user, query=query).first()
-
-
-
     newsapi = NewsApiClient(api_key=os.getenv('NEWS_API_KEY'))
 
     # Step 1: Search for news articles using NewsAPI
@@ -150,13 +147,13 @@ def dashboard(request):
         user_profile.query3 = request.POST.get('query3', '')
         user_profile.query4 = request.POST.get('query4', '')
         user_profile.save()
-        # After update, redirect or handle the HTMX request
+
         if request.headers.get('HX-Request', '') == 'true':
             return render(request, 'news/dashboard_content.html', {'user_profile': user_profile})
         else:
-            return redirect('some-view-name')  # Redirect to a new URL if needed
+            return redirect('some-view-name')
     else:
-        # For GET request just display the page with the form
+
         return render(request, 'dashboard.html', {'user_profile': user_profile})
 
 def globe(request):
