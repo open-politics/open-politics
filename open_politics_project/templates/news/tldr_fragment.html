@@ -2,62 +2,68 @@
     /* Hide scrollbars for Chrome, Safari, and Opera */
     .overflow-x-scroll::-webkit-scrollbar,
     .overflow-y-scroll::-webkit-scrollbar {
-    display: none;
+        display: none;
     }
 
     /* Hide scrollbars for IE and Edge */
     .overflow-x-scroll,
     .overflow-y-scroll {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
     }
 </style>
-{% if emoji_string %}
-    <div id="emoji-output" class="mt-4 text-lg text-center">
-        <!-- Display the first 7 emojis from the emoji string generated from the issue areas -->
-        {{ emoji_string|slice:":7" }}
-    </div>
-{% else %}
-    <div id="emoji-output" class="mt-4 text-lg text-center" style="height: 1.5rem;"></div>
-{% endif %}
-</div>
-<div id="articles-output" class="flex overflow-x-scroll space-x-1">
-    {% for article in articles %}
-    <div class="article-card flex-shrink-0 relative m-1 min-w-[75vw] sm:min-w-[40vw] lg:min-w-[30vw] xl:min-w-[20vw] max-w-xs min-h-[9vh] border border-gray-700 text-left align-top rounded-lg max-h-48 bg-white dark:bg-gray-800 shadow-lg overflow-hidden">
-        {% if article.image %}
-        <div class="image w-full h-24 object-cover object-center bg-cover bg-no-repeat opacity-40 dark:opacity-60" style="background-image: url('{{ article.image }}');"></div>
-        {% endif %}
-        <div class="content p-2">
-            <h3 class="text-sm text-blue-500 mb-0 bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl bg-opacity-20 rounded">{{ article.source.name }}</h3>
-            <a href="{{ article.url }}" class="block">
-                <p class="text-xs text-black dark:text-white font-semibold p-1 bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl bg-opacity-20 rounded truncate">{{ article.title }}...</p>
-            </a>
-            <p class="text-xs text-black dark:text-white leading-5 bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl bg-opacity-20 rounded line-clamp-3">{{ article.content|slice:":200" }}...</p>
-        </div> 
-    </div>
-    {% endfor %}
-</div>
-</div>
+<div class="p-2 bg-white dark:bg-gray-900 shadow-md rounded-lg">
+    {% if emoji_string %}
+        <div id="emoji-output" class="mt-4 text-lg text-left text-green-500">
+            <!-- Display the first 7 emojis from the emoji string generated from the issue areas -->
+            Emoji Quicksight: {{ emoji_string|slice:":7" }}
+        </div>
+    {% else %}
+        <div id="emoji-output" class="mt-4 text-lg text-center text-green-500" style="height: 1.5rem;"></div>
+    {% endif %}
 
- <div class="issue-areas mt-4 overflow-y-scroll font-sanas border border-pink-600 p-2 rounded-md shadow-sm max-h-48">
-    <h4 class="text-sm mx-2 mt-2 font-semibold text-gray-900 dark:text-white mb-2">Issue Areas:</h4>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-        {% for issue_area in issue_areas %}
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2">
-            <h5 class="text-xs font-semibold text-gray-900 dark:text-white">{{ issue_area.name }}</h5>
-            <p class="mt-1 text-xs text-gray-700 dark:text-gray-300">{{ issue_area.description }}</p>
+    <div id="articles-output" class="flex overflow-x-scroll space-x-1 mt-4">
+        {% for image_url in image_urls %}
+        <div class="article-card flex-shrink-0 relative m-1 min-w-[75vw] sm:min-w-[40vw] lg:min-w-[30vw] xl:min-w-[20vw] max-w-xs min-h-[9vh] border border-gray-700 dark:border-gray-500 text-left align-top rounded-lg max-h-48 bg-white dark:bg-gray-800 shadow-lg overflow-hidden">
+            <div class="image w-full h-24 object-cover object-center bg-cover bg-no-repeat opacity-40 dark:opacity-60" style="background-image: url('{{ image_url }}');"></div>
+        </div>
+        {% endfor %}
+        {% for article in articles %}
+        <div class="article-card flex-shrink-0 relative m-1 min-w-[75vw] sm:min-w-[40vw] lg:min-w-[30vw] xl:min-w-[20vw] max-w-xs min-h-[9vh] border border-gray-700 dark:border-gray-500 text-left align-top rounded-lg max-h-48 bg-white dark:bg-gray-800 shadow-lg overflow-hidden">
+            {% if article.image %}
+            <div class="image w-full h-24 object-cover object-center bg-cover bg-no-repeat opacity-40 dark:opacity-60" style="background-image: url('{{ article.image }}');"></div>
+            {% endif %}
+            <div class="content p-2">
+                <h3 class="text-sm text-blue-500 dark:text-blue-400 mb-0 bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl bg-opacity-20 rounded">{{ article.source.name }}</h3>
+                <a href="{{ article.url }}" class="block">
+                    <p class="text-xs text-black dark:text-white font-semibold p-1 bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl bg-opacity-20 rounded truncate">{{ article.title }}...</p>
+                </a>
+                <p class="text-xs text-black dark:text-white leading-5 bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl bg-opacity-20 rounded line-clamp-3">{{ article.content|slice:":200" }}...</p>
+            </div>
         </div>
         {% endfor %}
     </div>
-</div>
 
-<div id="tldr-output" class="overflow-y-scroll font-sans text-xs mt-6 text-gray-800 dark:text-white bg-aqua-200 p-2 rounded-md shadow-sm border border-pink-600 dark:border-white max-h-48">
-    <!-- Your TL;DR content goes here, safe-filtered -->
-    {{ tldr|safe }}
-</div>
+    <div class="issue-areas mt-4 overflow-y-scroll font-sans border border-pink-600 dark:border-pink-400 p-2 rounded-md shadow-sm max-h-48">
+        <h4 class="text-sm mx-2 mt-2 font-semibold text-gray-900 dark:text-fluorescent-green mb-2">Issue Areas:</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {% for issue_area in issue_areas %}
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2">
+                <h5 class="text-xs font-semibold text-gray-900 dark:text-fluorescent-green">{{ issue_area.name }}</h5>
+                <p class="mt-1 text-xs text-gray-700 dark:text-gray-300">{{ issue_area.description }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 
-<div class="spinner hidden">
-    <div class="loader"></div>
+    <div id="tldr-output" class="overflow-y-scroll font-sans text-xs mt-6 text-green-500 dark:text-green-400 bg-aqua-200 dark:bg-aqua-900 p-2 rounded-md shadow-sm border border-pink-600 dark:border-pink-400 max-h-48">
+        <!-- Your TL;DR content goes here, safe-filtered -->
+        {{ contextualized_issue_areas|safe }}
+    </div>
+
+    <div class="spinner hidden">
+        <div class="loader"></div>
+    </div>
 </div>
 
 <script>
@@ -66,7 +72,7 @@
         card.classList.toggle("expanded");
         if (card.classList.contains("expanded")) {
             button.textContent = "Minimize";
-        } else {    
+        } else {
             button.textContent = "Read more";
         }
     }

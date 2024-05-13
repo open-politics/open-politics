@@ -110,8 +110,9 @@ MIDDLEWARE = [
 CSRF_TRUSTED_ORIGINS = [
     'https://www.open-politics.org',
     'http://www.open-politics.org',  # If you also serve traffic over HTTP
+    'https://d781-2a01-4f8-212-2e89-00-2.ngrok-free.app'
 ]
-
+CSRF_COOKIE_SECURE = False
 CSRF_COOKIE_DOMAIN = '.open-politics.org'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # or 'cache' for cache-backed sessions
@@ -135,7 +136,7 @@ DATABASES = {
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
         'HOST': 'postgres' if os.getenv('IN_DOCKER') == 'true' else 'localhost',
-        'PORT': '5432',
+        'PORT': '5440',
     }
 }
 

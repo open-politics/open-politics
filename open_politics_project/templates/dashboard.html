@@ -91,12 +91,12 @@
     <div class="col-start-2 col-span-4 flex justify-center mb-2">
       <button type="submit" class="mt-4 px-6 py-3 bg-gradient-to-r from-pink-400 via-pink-blue-500 to-green-500 text-white rounded-full shadow-lg transform transition-all hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-purple-600">
         Update Focus
-<button id="reloadResults" type="button" class="mt-4 ml-4 px-6 py-3 bg-blue-500 text-white rounded-full shadow-lg transform transition-all hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-600">
+      </button>
+      <button id="reloadResults" type="button" class="mt-4 ml-4 px-6 py-3 bg-blue-500 text-white rounded-full shadow-lg transform transition-all hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-600">
         Reload Results
       </button>
     </div>
   </form>
-
 
   <!-- TLDR Content Grid -->
   <div class="mt-4">
@@ -105,36 +105,17 @@
       {% with query_attr='query'|add:i %}
       <div class="bg-white dark:bg-gray-900 backdrop-blur-xl rounded-lg shadow-lg p-4 flex flex-col opacity-90">
         <div class="mb-2">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ user_profile|getattr:query_attr }}</h3>
+          <!-- <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ user_profile|getattr:query_attr }}</h3> -->
           <div id="tldr-{{ i }}" hx-get="{% url 'fetch_tldr' %}?query={{ user_profile|getattr:query_attr }}" hx-trigger="load" hx-target="this">
             <div class="spinner spinner-{{ i }} hidden">
               <div class="loader"></div>
             </div>
-            <!-- Content for first two modules -->
+            <!-- Content for TLDR will be loaded here -->
           </div>
         </div>
       </div>
       {% endwith %}
       {% endfor %}
-</div>
-    
-    {% comment %} <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-      {% for i in "34" %}
-      {% with query_attr='query'|add:i %}
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col opacity-90 mobile-hide">
-        <div class="mb-2">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ user_profile|getattr:query_attr }}</h3>
-          <div id="issue-areas-{{ i }}" hx-get="{% url 'fetch_tldr' %}?query={{ user_profile|getattr:query_attr }}" hx-trigger="load" hx-target="this">
-            <div class="spinner spinner-{{ i }} hidden">
-              <div class="loader"></div>
-            </div>
-            <!-- Content for issue areas -->
-          </div>
-        </div>
-      </div>
-      {% endwith %}
-      {% endfor %}
-    </div> {% endcomment %}
     </div>
   </div>
 </div>

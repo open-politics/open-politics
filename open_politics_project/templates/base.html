@@ -64,12 +64,18 @@
       
 
       document.body.addEventListener('htmx:afterSwap', function(event) {
-        var newCsrfToken = event.detail.xhr.getResponseHeader("X-CSRFToken");
-        if(newCsrfToken) {
-            document.querySelector('meta[name="csrf-token"]').setAttribute('content', newCsrfToken);
-        }
-      });
+    var newCsrfToken = event.detail.xhr.getResponseHeader("X-CSRFToken");
+    if (newCsrfToken) {
+        document.querySelector('meta[name="csrf-token"]').setAttribute('content', newCsrfToken);
+    }
+    });
     
     </script>
+    <script>
+      document.body.addEventListener('htmx:configRequest', function(event) {
+          var csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+          event.detail.headers['X-CSRFToken'] = csrfToken;
+      });
+      </script>
   </body>
 </html>

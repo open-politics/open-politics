@@ -53,8 +53,8 @@ class ChatMessages(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    query1 = models.CharField(max_length=255, blank=True, null=True)
-    query2 = models.CharField(max_length=255, blank=True, null=True)
+    query1 = models.CharField(max_length=255, blank=True, null=True, default="Whats happening in Indonesian politics and who are the main actors")
+    query2 = models.CharField(max_length=255, blank=True, null=True, default="How is the economic outlook for Indonesia?")
     query3 = models.CharField(max_length=255, blank=True, null=True)
     query4 = models.CharField(max_length=255, blank=True, null=True)
 

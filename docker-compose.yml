@@ -1,15 +1,5 @@
 
 services:
-  redis:
-    image: redis:latest
-    command: redis-server /usr/local/etc/redis/redis.conf
-    volumes:
-      - ./core/configs/redis.conf:/usr/local/etc/redis/redis.conf
-    ports:
-      - "6379:6379"
-    networks:
-      - web
-
   web:
     build: 
       context: .
@@ -52,9 +42,9 @@ services:
     networks:
       - web
     ports:
-      - "5431:5431"
+      - "5440:5432"
     expose:
-      - "5431"
+      - "5440"
 
 networks:
   web:

@@ -29,3 +29,5 @@ regex
 prefect
 instructor
 environ
+anthropic
+tavily-python
