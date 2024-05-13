@@ -2,7 +2,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from rest_framework.authtoken.models import Token
 
-class MyWebSocketConsumer(AsyncWebsocketConsumer):
+class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         # Extract the token from the WebSocket query string or headers
         token_key = self.scope.get("query_string").decode("utf-8")

@@ -39,6 +39,7 @@ ALLOWED_HOSTS = ['open-politics.org', 'www.open-politics.org', 'web', 'localhost
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'authentification',
     'corsheaders',
     'django.contrib.admin', 
@@ -50,9 +51,11 @@ INSTALLED_APPS = [
     'bt_thema',
     'news',
     'chat',
-    'channels',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_eventstream',
+    
+
 
 ]
 
@@ -87,7 +90,7 @@ CHANNEL_LAYERS = {
      'default': {
          'BACKEND': 'channels_redis.core.RedisChannelLayer',
          'CONFIG': {
-             "hosts": [('127.0.0.1', 6379)],
+             "hosts": [('127.0.0.1', 6378)],
          },
      },
 }
@@ -104,8 +107,16 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'news.middleware.HtmxCsrfExemptMiddleware'
+
+
 ]
+
+SSE_ENABLED = True
+SSE_REDIS_CONNECTION = {
+    'host': 'localhost',
+    'HOST': 'redis' if os.getenv('IN_DOCKER') == 'true' else 'localhost',
+    'db': 0
+}
 
 CSRF_TRUSTED_ORIGINS = [
     'https://www.open-politics.org',
@@ -125,7 +136,7 @@ ROOT_URLCONF = 'open_politics_project.urls'
 
 WSGI_APPLICATION = 'open_politics_project.wsgi.application'
 ASGI_APPLICATION = 'open_politics_project.asgi.application'
-
+EVENTSTREAM_STORAGE_CLASS = "django_eventstream.storage.DjangoModelStorage"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 

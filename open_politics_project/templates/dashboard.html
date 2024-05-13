@@ -106,11 +106,12 @@
       <div class="bg-white dark:bg-gray-900 backdrop-blur-xl rounded-lg shadow-lg p-4 flex flex-col opacity-90">
         <div class="mb-2">
           <!-- <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ user_profile|getattr:query_attr }}</h3> -->
-          <div id="tldr-{{ i }}" hx-get="{% url 'fetch_tldr' %}?query={{ user_profile|getattr:query_attr }}" hx-trigger="load" hx-target="this">
+          <div id="tldr-{{ i }}" hx-ext="sse" sse-connect="{% url 'tldr_sse' %}?query={{ user_profile|getattr:query_attr }}" sse-swap="tldr,issue_areas,contextualized_issue_areas,emoji_string">
             <div class="spinner spinner-{{ i }} hidden">
               <div class="loader"></div>
             </div>
             <!-- Content for TLDR will be loaded here -->
+            {% include 'news/tldr_fragment.html' %}
           </div>
         </div>
       </div>
@@ -259,10 +260,76 @@ function startSpinningGlobe() {
     }
 }
 </script>
-
 <script>
-  document.getElementById('reloadResults').addEventListener('click', function() {
-    location.reload();
+document.addEventListener('DOMContentLoaded', function() {
+  const eventSources = document.querySelectorAll('[sse-connect]');
+
+  eventSources.forEach(function(eventSourceElement) {
+    const eventSource = new EventSource(eventSourceElement.getAttribute('sse-connect'));
+
+    eventSource.addEventListener('articles', function(event) {
+      const articles = JSON.parse(event.data);
+      const articlesOutput = eventSourceElement.querySelector('#articles-output');
+      // Update articles output with received data
+      articlesOutput.innerHTML = articles.map(article => `
+        <div class="article-card">
+          <h3>${article.source.name}</h3>
+          <a href="${article.url}">
+            <p>${article.title}</p>
+          </a>
+          <p>${article.content.slice(0, 200)}...</p>
+        </div>
+      `).join('');
+    });
+
+    eventSource.addEventListener('tldr', function(event) {
+      const tldr = JSON.parse(event.data).tldr;
+      const tldrOutput = eventSourceElement.querySelector('#tldr-output');
+      tldrOutput.innerHTML = tldr;
+    });
+
+    eventSource.addEventListener('issue_areas', function(event) {
+      const issueAreas = JSON.parse(event.data);
+      const issueAreasOutput = eventSourceElement.querySelector('.issue-areas .grid');
+      issueAreasOutput.innerHTML = issueAreas.map(issueArea => `
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2">
+          <h5 class="text-xs font-semibold text-gray-900 dark:text-fluorescent-green">${issueArea.name}</h5>
+          <p class="mt-1 text-xs text-gray-700 dark:text-gray-300">${issueArea.description}</p>
+        </div>
+      `).join('');
+    });
+
+    eventSource.addEventListener('contextualized_issue_areas', function(event) {
+      const contextualizedIssueAreas = JSON.parse(event.data).context;
+      const contextualizedOutput = eventSourceElement.querySelector('#tldr-output');
+      contextualizedOutput.innerHTML = contextualizedIssueAreas;
+    });
+
+    eventSource.addEventListener('emoji_string', function(event) {
+      const emojiString = JSON.parse(event.data).emojis;
+      const emojiOutput = eventSourceElement.querySelector('#emoji-output');
+      emojiOutput.textContent = `Emoji Quicksight: ${emojiString.slice(0, 7)}`;
+    });
+
+    eventSource.addEventListener('error', function(event) {
+      if (eventSource.readyState === EventSource.CLOSED) {
+        console.error("SSE connection closed");
+      }
+    });
+
+    eventSource.addEventListener('open', function(event) {
+      console.log("SSE connection opened");
+    });
+
+    eventSource.addEventListener('message', function(event) {
+      console.log("Received message:", event.data);
+    });
   });
+});
+</script>
+<script>
+document.getElementById('reloadResults').addEventListener('click', function() {
+  location.reload();
+});
 </script>
 {% endblock %}

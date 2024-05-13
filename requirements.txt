@@ -31,3 +31,5 @@ instructor
 environ
 anthropic
 tavily-python
+django-sse
+daphne

@@ -98,8 +98,8 @@ def multi_query(request):
         }],
         max_tokens=1000,
     )
-    sub_queries_dict = [sub_query.model_dump() for sub_query in sub_queries]
-    return JsonResponse({'queries': sub_queries_dict}, safe=False)
+    sub_queries.model_dump = [sub_query.model_dump() for sub_query in sub_queries]
+    return JsonResponse({'queries': sub_queries.model_dump}, safe=False)
 
 class Preset(BaseModel):
     query: str
@@ -116,10 +116,10 @@ def create_preset(query: str, sub_queries: List[SubQuery], language: str = "en",
 def execute(request):
     query = request.GET.get('query', '')
     sub_queries_response = multi_query(request)
-    sub_queries_dict = json.loads(sub_queries_response.content.decode('utf-8'))['queries']
-    sub_queries = [SubQuery(**sq) for sq in sub_queries_dict]
+    sub_queries.model_dump = json.loads(sub_queries_response.content.decode('utf-8'))['queries']
+    sub_queries = [SubQuery(**sq) for sq in sub_queries.model_dump]
     preset = create_preset(query, sub_queries)
-    return JsonResponse(preset.dict(), safe=False)
+    return JsonResponse(preset.model_dump(), safe=False)
 
 def extract_emojis(text: str) -> str:
     emoji_pattern = r'\X(?:\p{Emoji_Presentation}|\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Component})*\X'
@@ -127,97 +127,97 @@ def extract_emojis(text: str) -> str:
     extracted_emojis = [regex.sub(r'[^\p{Emoji}]+', '', e) for e in emojis]
     return "".join(extracted_emojis[:7])
 
-def tldr_view(request):
-    query = request.GET.get('query', '')
-    languages = request.GET.getlist('languages', [])
-    user = request.user
+# def tldr_view(request):
+#     query = request.GET.get('query', '')
+#     languages = request.GET.getlist('languages', [])
+#     user = request.user
 
-    logging.debug("Step 1: Searching for news articles using Tavily API")
-    articles = search_articles(query, languages)
-    if not articles:
-        return HttpResponse("No relevant articles found for the given query.")
+#     logging.debug("Step 1: Searching for news articles using Tavily API")
+#     articles = search_articles(query, languages)
+#     if not articles:
+#         return HttpResponse("No relevant articles found for the given query.")
 
-    logging.debug("Step 2: Extracting summaries from the articles")
-    summaries = [article['content'] for article in articles if 'content' in article and article['content']]
-    content = [article['content'] for article in articles if 'content' in article and article['content']]
-    unique_sources = sorted(set([article['source']['name'] for article in articles if 'source' in article and 'name' in article['source']]))
-    image_urls = articles[0].get('images', [])  # Adjust based on actual structure if needed
+#     logging.debug("Step 2: Extracting summaries from the articles")
+#     summaries = [article['content'] for article in articles if 'content' in article and article['content']]
+#     content = [article['content'] for article in articles if 'content' in article and article['content']]
+#     unique_sources = sorted(set([article['source']['name'] for article in articles if 'source' in article and 'name' in article['source']]))
+#     image_urls = articles[0].get('images', [])  # Adjust based on actual structure if needed
 
 
 
-    logging.debug("Step 3: Setting up LangChain")
-    tldr_prompt_template = ChatPromptTemplate.from_template(
-        """You are a political intelligence analyst. Create a TLDR based on the following summaries:\n{summaries}.
-        Include only relevant political information, no anecdotal stories or personal opinions.
-        Use Markdown styling with bullet point lists to present this information."""
-    )
-    output_parser = StrOutputParser()
-    model = ChatOpenAI(model="gpt-4-1106-preview", max_tokens=4000)
-    chain = ({"summaries": RunnablePassthrough()} | tldr_prompt_template | model | output_parser)
+#     logging.debug("Step 3: Setting up LangChain")
+#     tldr_prompt_template = ChatPromptTemplate.from_template(
+#         """You are a political intelligence analyst. Create a TLDR based on the following summaries:\n{summaries}.
+#         Include only relevant political information, no anecdotal stories or personal opinions.
+#         Use Markdown styling with bullet point lists to present this information."""
+#     )
+#     output_parser = StrOutputParser()
+#     model = ChatOpenAI(model="gpt-4-1106-preview", max_tokens=4000)
+#     chain = ({"summaries": RunnablePassthrough()} | tldr_prompt_template | model | output_parser)
 
-    @marvin.model(instructions='Extract issue areas from the text')
-    class IssueArea(BaseModel):
-        name: str
-        description: str
+#     @marvin.model(instructions='Extract issue areas from the text')
+#     class IssueArea(BaseModel):
+#         name: str
+#         description: str
 
-    @marvin.model(instructions='Generate a 5 emoji string based on the given issue areas')
-    class EmojiString(BaseModel):
-        emojis: str
+#     @marvin.model(instructions='Generate a 5 emoji string based on the given issue areas')
+#     class EmojiString(BaseModel):
+#         emojis: str
 
-    logging.debug("Step 4: Generating TLDR")
-    start_time = time.time()
-    tldr = chain.invoke("\n".join(summaries))
-    issue_areas = marvin.extract(tldr, target=IssueArea)
+#     logging.debug("Step 4: Generating TLDR")
+#     start_time = time.time()
+#     tldr = chain.invoke("\n".join(summaries))
+#     issue_areas = marvin.extract(tldr, target=IssueArea)
 
-    logging.debug("Step 5: Contextualizing issue areas from a sociopolitical-economic perspective")
-    contextualization_prompt_template = ChatPromptTemplate.from_template(
-        """You are an expert in sociopolitical and economic analysis. Contextualize the following issue areas from a sociopolitical and economic perspective:\n{issue_areas}.
-        Provide detailed insights and relevant connections to current global trends and implications. Give a straightfoward and clean answer. Format the result a bit. Return just the result and nothing else"""
-    )
-    contextualization_chain = ({"issue_areas": RunnablePassthrough()} | contextualization_prompt_template | model | output_parser)
-    contextualized_issue_areas = contextualization_chain.invoke(json.dumps([issue_area.dict() for issue_area in issue_areas]))
+#     logging.debug("Step 5: Contextualizing issue areas from a sociopolitical-economic perspective")
+#     contextualization_prompt_template = ChatPromptTemplate.from_template(
+#         """You are an expert in sociopolitical and economic analysis. Contextualize the following issue areas from a sociopolitical and economic perspective:\n{issue_areas}.
+#         Provide detailed insights and relevant connections to current global trends and implications. Give a straightfoward and clean answer. Format the result a bit. Return just the result and nothing else"""
+#     )
+#     contextualization_chain = ({"issue_areas": RunnablePassthrough()} | contextualization_prompt_template | model | output_parser)
+#     contextualized_issue_areas = contextualization_chain.invoke(json.dumps([issue_area.model_dump() for issue_area in issue_areas]))
 
-    logging.debug("Step 6: Generating emoji string from issue areas")
-    emoji_string = marvin.extract(str(issue_areas), target=EmojiString)
-    emoji_string = "".join([emoji.emojis for emoji in emoji_string])
-    emoji_string = emoji_string.replace("ole:", "")
-    emoji_string = extract_emojis(emoji_string)
-    logging.debug(f"Generated emoji string: {emoji_string}")
+#     logging.debug("Step 6: Generating emoji string from issue areas")
+#     emoji_string = marvin.extract(str(issue_areas), target=EmojiString)
+#     emoji_string = "".join([emoji.emojis for emoji in emoji_string])
+#     emoji_string = emoji_string.replace("ole:", "")
+#     emoji_string = extract_emojis(emoji_string)
+#     logging.debug(f"Generated emoji string: {emoji_string}")
 
-    end_time = time.time()
-    tldr_html = markdown.markdown(tldr)
-    context_html = markdown.markdown(contextualized_issue_areas)
-    execution_time = end_time - start_time
+#     end_time = time.time()
+#     tldr_html = markdown.markdown(tldr)
+#     context_html = markdown.markdown(contextualized_issue_areas)
+#     execution_time = end_time - start_time
 
-    if not articles:
-        return JsonResponse({'error': 'No relevant articles found for the given query.'}, status=404)
-    else:
-        if "HX-Request" in request.headers:
-            html = render_to_string('news/tldr_fragment.html', {
-                'tldr': tldr_html,
-                'execution_time': execution_time,
-                'articles': articles,
-                'image_urls': image_urls,
-                'sources': unique_sources,
-                'content': content,
-                'issue_areas': issue_areas,
-                'contextualized_issue_areas': context_html,
-                'emoji_string': emoji_string
-            })
-            return HttpResponse(html, content_type='text/html')
-        else:
-            context = {
-                'tldr': tldr_html,
-                'execution_time': execution_time,
-                'articles': articles,
-                'image_urls'
-                'sources': unique_sources,
-                'content': content,
-                'issue_areas': issue_areas,
-                'contextualized_issue_areas': context_html,
-                'emoji_string': emoji_string
-            }
-            return render(request, 'news_home.html', context)
+#     if not articles:
+#         return JsonResponse({'error': 'No relevant articles found for the given query.'}, status=404)
+#     else:
+#         if "HX-Request" in request.headers:
+#             html = render_to_string('news/tldr_fragment.html', {
+#                 'tldr': tldr_html,
+#                 'execution_time': execution_time,
+#                 'articles': articles,
+#                 'image_urls': image_urls,
+#                 'sources': unique_sources,
+#                 'content': content,
+#                 'issue_areas': issue_areas,
+#                 'contextualized_issue_areas': context_html,
+#                 'emoji_string': emoji_string
+#             })
+#             return HttpResponse(html, content_type='text/html')
+#         else:
+#             context = {
+#                 'tldr': tldr_html,
+#                 'execution_time': execution_time,
+#                 'articles': articles,
+#                 'image_urls'
+#                 'sources': unique_sources,
+#                 'content': content,
+#                 'issue_areas': issue_areas,
+#                 'contextualized_issue_areas': context_html,
+#                 'emoji_string': emoji_string
+#             }
+#             return render(request, 'news_home.html', context)
 
 
 
@@ -257,3 +257,101 @@ def globe_test(request):
     return render(request, 'news/globe_test.html')
 
 
+
+
+from django_eventstream import send_event
+from django.http import StreamingHttpResponse
+import asyncio
+import random
+
+def tldr_view(request):
+    query = request.GET.get('query', '')
+    languages = request.GET.getlist('languages', [])
+    user = request.user
+
+    return render(request, 'news_home.html', {'query': query})
+
+
+async def sse_stream(request):
+    """
+    test
+    """
+    async def event_stream():
+        emojis = ["🚀", "🐎", "🌅", "🦾", "🍇"]
+        i = 0
+        while True:
+            yield f'data: {random.choice(emojis)} {i}\n\n'
+            i += 1
+            await asyncio.sleep(1)
+
+    return StreamingHttpResponse(event_stream(), content_type='text/event-stream')
+
+async def tldr_sse(request):
+    query = request.GET.get('query', '')
+    languages = request.GET.getlist('languages', [])
+    user = request.user
+
+
+    async def event_stream():
+        # Step 1: Searching for news articles using Tavily API
+        articles = search_articles(query, languages)
+        if not articles:
+            yield 'event: error\ndata: No relevant articles found for the given query.\n\n'
+            return
+
+        yield f'event: articles\ndata: {json.dumps(articles)}\n\n'
+        await asyncio.sleep(1)
+
+        # Step 2: Extracting summaries from the articles
+        summaries = [article['content'] for article in articles if 'content' in article and article['content']]
+        content = [article['content'] for article in articles if 'content' in article and article['content']]
+        unique_sources = sorted(set([article['source']['name'] for article in articles if 'source' in article and 'name' in article['source']]))
+        image_urls = articles[0].get('images', [])  # Adjust based on actual structure if needed
+
+        # Step 3: Setting up LangChain
+        tldr_prompt_template = ChatPromptTemplate.from_template(
+            """You are a political intelligence analyst. Create a TLDR based on the following summaries:\n{summaries}.
+            Include only relevant political information, no anecdotal stories or personal opinions.
+            Use Markdown styling with bullet point lists to present this information."""
+        )
+        output_parser = StrOutputParser()
+        model = ChatOpenAI(model="gpt-4-1106-preview", max_tokens=4000)
+        chain = ({"summaries": RunnablePassthrough()} | tldr_prompt_template | model | output_parser)
+
+        @marvin.model(instructions='Extract issue areas from the text')
+        class IssueArea(BaseModel):
+            name: str
+            description: str
+
+        @marvin.model(instructions='Generate a 5 emoji string based on the given issue areas')
+        class EmojiString(BaseModel):
+            emojis: str
+
+        # Step 4: Generating TLDR
+        tldr = chain.invoke("\n".join(summaries))
+        yield f'event: tldr\ndata: {json.dumps({"tldr": tldr})}\n\n'
+        await asyncio.sleep(1)
+
+        issue_areas = marvin.extract(tldr, target=IssueArea)
+        yield f'event: issue_areas\ndata: {json.dumps([issue_area.model_dump() for issue_area in issue_areas])}\n\n'
+        await asyncio.sleep(1)
+
+        # Step 5: Contextualizing issue areas from a sociopolitical-economic perspective
+        contextualization_prompt_template = ChatPromptTemplate.from_template(
+            """You are an expert in sociopolitical and economic analysis. Contextualize the following issue areas from a sociopolitical and economic perspective:\n{issue_areas}.
+            Provide detailed insights and relevant connections to current global trends and implications. Give a straightforward and clean answer. Format the result a bit. Return just the result and nothing else"""
+        )
+        contextualization_chain = ({"issue_areas": RunnablePassthrough()} | contextualization_prompt_template | model | output_parser)
+        contextualized_issue_areas = contextualization_chain.invoke(json.dumps([issue_area.model_dump() for issue_area in issue_areas]))
+
+        yield f'event: contextualized_issue_areas\ndata: {json.dumps({"context": contextualized_issue_areas})}\n\n'
+        await asyncio.sleep(1)
+
+        # Step 6: Generating emoji string from issue areas
+        emoji_string = marvin.extract(str(issue_areas), target=EmojiString)
+        emoji_string = "".join([emoji.emojis for emoji in emoji_string])
+        emoji_string = emoji_string.replace("ole:", "")
+        emoji_string = extract_emojis(emoji_string)
+        yield f'event: emoji_string\ndata: {json.dumps({"emojis": emoji_string})}\n\n'
+
+    return StreamingHttpResponse(event_stream(), content_type='text/event-stream')

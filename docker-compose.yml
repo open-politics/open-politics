@@ -1,4 +1,3 @@
-
 services:
   web:
     build: 
@@ -30,7 +29,6 @@ services:
     volumes:
        - ./staticfiles_root:/app/staticfiles_root
 
-
   postgres:
     image: postgres:latest
     volumes:
@@ -46,9 +44,21 @@ services:
     expose:
       - "5440"
 
+  redis:
+    image: redis:latest
+    ports:
+      - "6378:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - web
+    expose:
+      - "6379"
+
 networks:
   web:
     external: true
 
 volumes:
   postgres_data:
+  redis_data:

@@ -4,6 +4,10 @@ from news.views.old_views import SignUpView, custom_login_view, ArticleListView
 from django.contrib import admin
 from news.views import *
 from django.urls import re_path
+#import URLRouter
+
+from django.urls import path, re_path
+import django_eventstream
 
 views = old_views
 module_views = module_views
@@ -26,7 +30,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('login/', custom_login_view, name='login'),
     path('about/', views.about, name='about'),
-    path('fetch-tldr/', module_views.tldr_view, name='fetch_tldr'),
+    # path('fetch-tldr/', module_views.tldr_view, name='fetch_tldr'),
     path('faq/', views.faq, name='faq'),
     path('dashboard/', module_views.dashboard, name='dashboard'),
     path('globe/', module_views.globe, name='globe'),
@@ -34,8 +38,14 @@ urlpatterns = [
     path('news_blog/', module_views.news_blog, name='news_blog'),
     path('globe_test/', module_views.globe_test, name='globe_test'),
 
+    path('tldr_sse/', module_views.tldr_sse, name='tldr_sse'),
+
+
     # Functional Urls
     re_path(r'^multi-query/$', module_views.multi_query, name='multi-query'),
     re_path(r'^execute/$', module_views.execute, name='execute'),
+    
+
+
 
 ]
