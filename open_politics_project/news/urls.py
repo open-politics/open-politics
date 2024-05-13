@@ -39,6 +39,7 @@ urlpatterns = [
     path('globe_test/', module_views.globe_test, name='globe_test'),
 
     path('tldr_sse/', module_views.tldr_sse, name='tldr_sse'),
+    path('trigger/', module_views.trigger_handler, name='trigger'),
 
 
     # Functional Urls

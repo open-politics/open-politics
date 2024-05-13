@@ -271,28 +271,18 @@ def tldr_view(request):
 
     return render(request, 'news_home.html', {'query': query})
 
-
-async def sse_stream(request):
-    """
-    test
-    """
-    async def event_stream():
-        emojis = ["🚀", "🐎", "🌅", "🦾", "🍇"]
-        i = 0
-        while True:
-            yield f'data: {random.choice(emojis)} {i}\n\n'
-            i += 1
-            await asyncio.sleep(1)
-
-    return StreamingHttpResponse(event_stream(), content_type='text/event-stream')
-
 async def tldr_sse(request):
     query = request.GET.get('query', '')
     languages = request.GET.getlist('languages', [])
     user = request.user
 
+    trigger_event = asyncio.Event()
 
     async def event_stream():
+        nonlocal trigger_event
+
+        await trigger_event()
+        
         # Step 1: Searching for news articles using Tavily API
         articles = search_articles(query, languages)
         if not articles:
@@ -353,5 +343,15 @@ async def tldr_sse(request):
         emoji_string = emoji_string.replace("ole:", "")
         emoji_string = extract_emojis(emoji_string)
         yield f'event: emoji_string\ndata: {json.dumps({"emojis": emoji_string})}\n\n'
+    
+    async def trigger_handler(request):
+        trigger_event.set()
+        return HttpResponse('Triggered!')
 
     return StreamingHttpResponse(event_stream(), content_type='text/event-stream')
+
+
+def trigger_handler(request):
+    trigger_event.set()
+    return HttpResponse('Triggered!')
+
