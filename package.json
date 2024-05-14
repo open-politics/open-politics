@@ -12,6 +12,9 @@
   "license": "ISC",
   "dependencies": {
     "@designbycode/tailwindcss-text-stroke": "^1.2.1",
+    "next": "^14.2.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "tailwindcss-text-stroke": "^0.0.5"
   },
   "devDependencies": {

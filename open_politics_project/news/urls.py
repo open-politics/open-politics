@@ -1,3 +1,5 @@
+# urls.py
+
 from django.urls import path, include
 from django.contrib.auth.views import LogoutView, LoginView
 from news.views.old_views import SignUpView, custom_login_view, ArticleListView
@@ -6,14 +8,13 @@ from news.views import *
 from django.urls import re_path
 from django.conf.urls.static import static
 from django.conf import settings
-#import URLRouter
+# import URLRouter
 
 from django.urls import path, re_path
 import django_eventstream
 
 views = old_views
 module_views = module_views
-
 
 urlpatterns = [
     path('news/', views.news_home, name="news_home"),
@@ -32,24 +33,20 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('login/', custom_login_view, name='login'),
     path('about/', views.about, name='about'),
-    # path('fetch-tldr/', module_views.tldr_view, name='fetch_tldr'),
+    # path('fetch-tldr/', module_views.tldr_view, name='fetch_tldr'),  # Ensure this is commented out
     path('faq/', views.faq, name='faq'),
     path('dashboard/', module_views.dashboard, name='dashboard'),
     path('globe/', module_views.globe, name='globe'),
     path('user_guide/', module_views.user_guide, name='user_guide'),
     path('news_blog/', module_views.news_blog, name='news_blog'),
     path('globe_test/', module_views.globe_test, name='globe_test'),
-    path('react_index/', module_views.react_index, name='react_index'),
 
-    path('tldr_sse/', module_views.tldr_sse, name='tldr_sse'),
-    path('trigger/', module_views.trigger_handler, name='trigger'),
-
+    # next/react test
+    path('react/', module_views.react_index, name='react_index'),
+    path('geojson/', module_views.geojson_view, name='geojson_view'),
+    path('country_from_query/', module_views.country_from_query, name='country_from_query'),
 
     # Functional Urls
     re_path(r'^multi-query/$', module_views.multi_query, name='multi-query'),
     re_path(r'^execute/$', module_views.execute, name='execute'),
-    
-
-
-
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

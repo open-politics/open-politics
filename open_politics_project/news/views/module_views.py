@@ -254,6 +254,38 @@ def tldr_view(request):
     return render(request, 'news_home.html', {'query': query})
 
 
+from django.http import JsonResponse
+
 def react_index(request):
     return render(request, 'news/react_index.html')
+
+def geojson_view(request):
+    data = {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [102.0, 0.5]
+                },
+                "properties": {
+                    "prop0": "value0"
+                }
+            }
+        ]
+    }
+    return JsonResponse(data)
+
+
+@marvin.model(instructions='Amchart Country Code. The country most relevant to the query')
+class CountryFromQuery(BaseModel):
+    country: str
+
+
+# API for react amchart, 
+def country_from_query(request):
+    query = request.GET.get('query', '')
+    country_code = CountryFromQuery.invoke(query)
+    return JsonResponse({"country": country_code})
 

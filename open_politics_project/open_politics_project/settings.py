@@ -109,17 +109,11 @@ MIDDLEWARE = [
 
 ]
 
-SSE_ENABLED = True
-SSE_REDIS_CONNECTION = {
-    'host': 'localhost',
-    'HOST': 'redis' if os.getenv('IN_DOCKER') == 'true' else 'localhost',
-    'db': 0
-}
+
 
 CSRF_TRUSTED_ORIGINS = [
     'https://www.open-politics.org',
     'http://www.open-politics.org',  # If you also serve traffic over HTTP
-    'https://5f75-2a01-4f8-212-2e89-00-2.ngrok-free.app',
 
 ]
 CSRF_COOKIE_SECURE = False
@@ -221,10 +215,12 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'bt_thema', 'static'),
     os.path.join(BASE_DIR, 'news', 'static'),
     os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'frontend', 'next-generation-interface', '.next'),
 
 
 ]
 
+print(os.path.join(BASE_DIR, 'frontend', 'next-generation-interface', '.next'))
 WEBPACK_LOADER = {
     'DEFAULT': {
         'BUNDLE_DIR_NAME': 'frontend/.next/static/',

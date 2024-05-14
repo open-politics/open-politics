@@ -31,7 +31,6 @@ urlpatterns = [
     path("", include("news.urls")),
     path("", include("chat.urls")),
     path("", include("authentification.urls")),
-    path('events/', include('django_eventstream.urls')),
 
     re_path(r'^\.well-known/acme-challenge/(?P<path>.+)$', serve, {
         'document_root': '/var/www/letsencrypt/',

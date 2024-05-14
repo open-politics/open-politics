@@ -36,9 +36,11 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
     <!-- Include your Next.js component script -->
-    <script src="{% static 'next/static/chunks/main.js' %}"></script>
-    <script src="{% static 'next/static/chunks/pages/_app.js' %}"></script>
-    <script src="{% static 'next/static/chunks/pages/index.js' %}"></script>
+     <div id="__next"></div>
+    <script src="{% static 'chunks/main.js' %}" defer></script>
+    <script src="{% static 'chunks/webpack.js' %}" defer></script>
+    <script src="{% static 'chunks/pages/_app.js' %}" defer></script>
+    <script src="{% static 'chunks/pages/index.js' %}" defer></script>
 
 
     <script>

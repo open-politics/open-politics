@@ -40,10 +40,7 @@
         </div>
     </div>
 </div>
-<div id="tldr-{{ i }}" hx-ext="sse" sse-connect="{% url 'tldr_sse' %}?query={{ query }}" sse-swap="tldr,issue_areas,contextualized_issue_areas,emoji_string">
-    <!-- Content for TLDR will be loaded here -->
-    {% include 'news/tldr_fragment.html' %}
-</div>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
