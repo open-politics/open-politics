@@ -1,0 +1,261 @@
+# /root/open-politics/next-generation-interface/package.json
+{
+  "name": "next-generation-interface",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbo",
+    "build": "next build",
+    "start": "next start",
+    "export": "next export",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@amcharts/amcharts5": "^5.9.8",
+    "@amcharts/amcharts5-geodata": "^5.1.2",
+    "axios": "^1.6.8",
+    "next": "14.2.3",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "@types/node": "20.12.11",
+    "@types/react": "18.3.2",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.3",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1"
+  }
+}
+
+
+# /root/open-politics/next-generation-interface/app/layout.tsx
+import React from 'react';
+import '../styles/globals.css';
+
+const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <html lang="en">
+      <head>
+        <title>My Globe App</title>
+      </head>
+      <body>
+        {children}
+      </body>
+    </html>
+  );
+};
+
+export default RootLayout;
+
+
+# /root/open-politics/next-generation-interface/app/page.tsx
+import React from 'react';
+import Search from '../components/Search';
+
+const Home: React.FC = () => {
+  return (
+    <div>
+      <header>
+        <h1>News Dashboard</h1>
+      </header>
+      <main>
+        <Search />
+      </main>
+    </div>
+  );
+};
+
+export default Home;
+
+
+# /root/open-politics/next-generation-interface/components/Search.tsx
+// components/Search.tsx
+"use client";
+
+import { useState } from 'react';
+import axios from 'axios';
+const Search = () => {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await axios.get('/api/search', { params: { query } });
+      setResults(response.data);
+    } catch (err) {
+      setError('Error fetching search results');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="search-component">
+      <form onSubmit={handleSearch}>
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Enter search query"
+        />
+        <button type="submit">Search</button>
+      </form>
+
+      {loading && <p>Loading...</p>}
+      {error && <p>{error}</p>}
+      <div className="results">
+        {results.map((result, index) => (
+          <div key={index} className="result-item">
+            <h3>{result.title}</h3>
+            <p>{result.content}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Search;
+
+
+# /root/open-politics/next-generation-interface/components/Globe.tsx
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import * as am5 from "@amcharts/amcharts5";
+import * as am5map from "@amcharts/amcharts5/map";
+import am5geodata_worldLow from "@amcharts/amcharts5-geodata/worldLow";
+import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
+
+// Import interfaces from the types directory
+import { GeoJSONData, MapPolygonTarget } from './types/geojson';
+
+const Home = () => {
+  const [geojsonData, setGeojsonData] = useState<GeoJSONData | null>(null);
+
+  useEffect(() => {
+    axios.get('/api/globe/')
+      .then(response => {
+        setGeojsonData(response.data);
+        renderGlobe(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching the geojson data', error);
+      });
+  }, []);
+
+  const renderGlobe = (data: GeoJSONData) => {
+    let root = am5.Root.new("chartdiv");
+
+    root.setThemes([
+      am5themes_Animated.new(root)
+    ]);
+
+    let chart = root.container.children.push(am5map.MapChart.new(root, {
+      panX: "rotateX",
+      panY: "rotateY",
+      projection: am5map.geoOrthographic(),
+      paddingBottom: 20,
+      paddingTop: 20,
+      paddingLeft: 20,
+      paddingRight: 20
+    }));
+
+
+    let polygonSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
+      geoJSON: am5geodata_worldLow
+    }));
+
+    polygonSeries.mapPolygons.template.on("active", function(active, target) {
+      let countryName = (target as unknown as MapPolygonTarget).dataItem.dataContext.name;
+      let articlesHtml = data.features.filter(feature => feature.properties.location === countryName)
+        .map(feature => feature.properties.articles.map(article => `
+          <div class="article m-2 p-2">
+            <h3 class="article-title">${article.headline}</h3>
+            <a href="${article.url}" target="_blank">Read more</a>
+          </div>
+        `).join('')).join('');
+
+      if (articlesHtml) {
+        document.getElementById("ArticlesList").innerHTML = articlesHtml;
+      }
+    });
+
+    let graticuleSeries = chart.series.unshift(
+      am5map.GraticuleSeries.new(root, {
+        step: 10
+      })
+    );
+
+    polygonSeries.mapPolygons.template.setAll({
+      tooltipText: "{name}",
+      toggleKey: "active",
+      interactive: true
+    });
+
+    polygonSeries.mapPolygons.template.states.create("hover", {
+      fill: am5.color(0x677935)
+    });
+
+    polygonSeries.mapPolygons.template.states.create("active", {
+      fill: am5.color(0x677935)
+    });
+
+    let previousPolygon: am5map.MapPolygon | null = null;
+
+    polygonSeries.mapPolygons.template.on("active", function(active, target) {
+      if (previousPolygon && previousPolygon !== target) {
+        previousPolygon.set("active", false);
+      }
+      if (target.get("active")) {
+        let centroid = target.geoCentroid();
+        if (centroid) {
+          chart.animate({ key: "rotationX", to: -centroid.longitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
+          chart.animate({ key: "rotationY", to: -centroid.latitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
+        }
+        let countryName = (target as unknown as MapPolygonTarget).dataItem.dataContext.name;
+        const searchDropdown = document.getElementById("search-dropdown") as HTMLInputElement;
+        searchDropdown.value = countryName;
+      }
+      previousPolygon = target;
+    });
+
+    let pointSeries = chart.series.push(am5map.MapPointSeries.new(root, {}));
+    pointSeries.data.setAll(data.features);
+
+    pointSeries.bullets.push(function() {
+      let circle = am5.Circle.new(root, {
+        radius: 4,
+        fill: am5.color(0xff0000),
+        strokeWidth: 0
+      });
+
+      return am5.Bullet.new(root, {
+        sprite: circle
+      });
+    });
+  };
+
+  return (
+    <div>
+      <div id="chartdiv" style={{ width: "100%", height: "85vh", position: "relative" }}></div>
+      <button id="toggleGlobe" style={{ position: "fixed", bottom: "20px", right: "20px", zIndex: 1003 }}>
+        Toggle Globe
+      </button>
+      <div id="dashboard" style={{ position: "relative", zIndex: 1002 }}>
+        <h2>News from around the world</h2>
+        <div id="ArticlesList"></div>
+      </div>
+    </div>
+  );
+};
+
+export default Home;
+
+
