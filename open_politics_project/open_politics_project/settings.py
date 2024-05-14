@@ -78,6 +78,15 @@ LOGGING = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+CORS_ALLOWED_ORIGINS = [
+    "https://open-politics.org",
+    "https://www.open-politics.org",
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -97,6 +106,7 @@ LOGOUT_REDIRECT_URL = '/'
 LOGIN_URL = '/accounts/login/'
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -104,7 +114,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 
 
 ]
@@ -114,8 +123,10 @@ MIDDLEWARE = [
 CSRF_TRUSTED_ORIGINS = [
     'https://www.open-politics.org',
     'http://www.open-politics.org',  # If you also serve traffic over HTTP
+    'http://localhost:3001',
 
 ]
+
 CSRF_COOKIE_SECURE = False
 CSRF_COOKIE_DOMAIN = '.open-politics.org'
 

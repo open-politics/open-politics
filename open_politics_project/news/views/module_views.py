@@ -278,14 +278,11 @@ def geojson_view(request):
     return JsonResponse(data)
 
 
-@marvin.model(instructions='Amchart Country Code. The country most relevant to the query')
-class CountryFromQuery(BaseModel):
-    country: str
 
-
-# API for react amchart, 
 def country_from_query(request):
     query = request.GET.get('query', '')
-    country_code = CountryFromQuery.invoke(query)
-    return JsonResponse({"country": country_code})
-
+    print(query)
+    country_name = marvin.cast(query, target=str, instructions="Return the country name most relevant to the query.")
+    country_code = marvin.cast(query, target=str, instructions="Return the ISO2 code most relevant to the query.")
+    print(country_name, country_code)
+    return JsonResponse({"country_name": country_name, "country_code": country_code})
