@@ -45,77 +45,9 @@
 {% load static %}
 
 {% block news_home %}
+<div id="root"></div> <!-- This is where the React app will be mounted -->
+<script src="{% static 'output/_next/static/chunks/main.js' %}"></script>
+<script src="{% static 'output/_next/static/chunks/pages/_app.js' %}"></script>
+<script src="{% static 'output/_next/static/chunks/pages/index.js' %}"></script>
 
-{% if user.is_authenticated %}
-<div class='tldr-wrapper dark:bg-black flex flex-col items-center min-h-screen ml-4 mr-4 mt-4 mb-4 dark:text-white'>
-    <div class='tldr-header max-w-lg mt-4'>
-        <h1 class="text-black dark:text-white text-3xl mb-8">TLDR Summary Generator</h1>
-    </div>
-    <div class='tldr-body mx-auto w-full max-w-lg'>
-        <form hx-get="{% url 'fetch_tldr' %}" hx-target="#tldr-container" class="flex flex-col items-center">
-            <div class="search-bar mb-4 w-11/12">
-                <input type="text" name="query" placeholder="Enter search term (e.g. Ukraine, Israel, Tech, Economy)" class="search-input w-full text-black px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent fokus:text-black">
-                <button type="submit" class="mt-4 w-full button bg-blue-500 dark:bg-pink-600 text-white py-2 rounded-full hover:bg-blue-600">Fetch TLDR</button>
-            </div>
-        </form>    
-        <div class="spinner hidden">
-            <div class="loader"></div> 
-        </div>
-        <div id="articles-output" class="flex flex-wrap justify-center gap-4">
-        </div>
-        <div id="tldr-container">
-        </div>
-    </div>
-
-    <!-- Tooltip Containers Adjusted for Alignment -->
-    <div class="flex justify-center items-center space-x-4 mt-5">
-        <div class="relative flex items-center justify-center h-10 w-10 rounded-full bg-gray-800 hover:bg-blue-600 text-white cursor-pointer group">
-            <i class="fas fa-question text-xl"></i>
-            <div class="absolute bottom-full mb-2 hidden flex-col items-center group-hover:flex">
-                <div class="w-80 p-2 text-xs text-white bg-gray-800 rounded-md shadow-lg">
-                    <p class="mb-2"><strong>How is this information constructed?</strong></p>
-                    <p>The news comes from NewsAPI.org. The TLDR summary are generated using OpenAI's GPT-4 (model GPT-4-1106-preview).  
-                        
-                    <p class="mb-2 mt-4"><strong>The prompt used to construct this information is:</strong></p>
-                        You are a political intelligence analyst. Create a TLDR based on the followin8g summaries:\n{summaries}. 
-                        Include only relevant political information, no anecdotal stories or content or personal opinions. 
-                        Use Markdown styling with bullet point lists to present this information.</p>
-                </div>
-                <div class="w-3 h-3 -mt-2 rotate-45 bg-gray-800 rounded-md"></div>
-            </div>
-        </div>
-        
-        <div class="relative flex items-center justify-center h-10 w-10 rounded-full bg-gray-800 hover:bg-blue-600 text-white cursor-pointer group">
-            <i class="fas fa-info text-xl"></i>
-            <div class="absolute bottom-full mb-2 hidden flex-col items-center group-hover:flex">
-                <div class="w-80 p-2 text-xs text-white bg-gray-800 rounded-md shadow-lg">
-                    <p class="mb-2"><strong>How to use this?</strong></p>
-                    <p>Insert a news search term like "Ukraine" or "Biden". The system generates a TLDR summary for your query.</p>
-                </div>
-                <div class="w-3 h-3 -mt-2 rotate-45 bg-gray-800 rounded-md"></div>
-            </div>
-        </div>
-    </div>
-</div>
-    
-{% else %}
-<div class='tldr-wrapper flex flex-col justify-center items-center min-h-screen'>
-    <div class='tldr-header'>
-        <h1>TLDR Summary Generator</h1>
-    </div>
-    <div class='tldr-body'>
-        <h2>Sign in to use the TLDR Summary Generator</h2>
-    </div>
-</div>
-{% endif %}
-<script src="https://unpkg.com/htmx.org"></script>
-<script>
-    document.body.addEventListener('htmx:afterRequest', function() {
-        document.querySelector('.spinner').classList.add('hidden');
-    });
-
-    document.body.addEventListener('htmx:beforeRequest', function() {
-        document.querySelector('.spinner').classList.remove('hidden');
-    });
-</script>
 {% endblock %}

@@ -29,7 +29,7 @@
                 </div>
                 <div class="mt-4">
                     <!-- Corrected classes for "Search News" button -->
-                    <a href="{% url 'globe' %}" class="inline-block bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:bg-pink-600 dark:text-white dark:hover:bg-black dark:hover:text-white dark:hover:border-white transition-colors duration-300 ease-in-out">Open Globe</a>
+                    <a href="{% url 'globe' %}" class="inline-block bg-black text-white dark:bg-gray-900/10 backdrop-blur-xl dark:text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:bg-pink-600 dark:text-white dark:hover:bg-black dark:hover:text-white dark:hover:border-white transition-colors duration-300 ease-in-out">Open Globe</a>
                 </div>
                 <div class="mt-4">
                     <!-- Adjusted classes for "Dashboard" button -->
@@ -53,20 +53,18 @@
           const eventSource = new EventSource(eventSourceElement.getAttribute('sse-connect'));
   
           eventSource.addEventListener('articles', function(event) {
-              const articles = JSON.parse(event.data);
-              const articlesOutput = eventSourceElement.querySelector('#articles-output');
-              // Update articles output with received data
-              articlesOutput.innerHTML = articles.map(article => `
-                  <div class="article-card">
-                      <h3>${article.source.name}</h3>
-                      <a href="${article.url}">
-                          <p>${article.title}</p>
-                      </a>
-                      <p>${article.content.slice(0, 200)}...</p>
-                  </div>
-              `).join('');
-          });
-  
+            const articles = JSON.parse(event.data);
+            const articlesOutput = eventSourceElement.querySelector('#articles-output');
+            articlesOutput.innerHTML = articles.map(article => `
+                <div class="article-card">
+                    <h3>${article.source.name}</h3>
+                    <a href="${article.url}">
+                        <p>${article.title}</p>
+                    </a>
+                    <p>${article.content.slice(0, 200)}...</p>
+                </div>
+            `).join('');
+        });
           eventSource.addEventListener('tldr', function(event) {
               const tldr = JSON.parse(event.data).tldr;
               const tldrOutput = eventSourceElement.querySelector('#tldr-output');

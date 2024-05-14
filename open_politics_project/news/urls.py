@@ -4,6 +4,8 @@ from news.views.old_views import SignUpView, custom_login_view, ArticleListView
 from django.contrib import admin
 from news.views import *
 from django.urls import re_path
+from django.conf.urls.static import static
+from django.conf import settings
 #import URLRouter
 
 from django.urls import path, re_path
@@ -37,6 +39,7 @@ urlpatterns = [
     path('user_guide/', module_views.user_guide, name='user_guide'),
     path('news_blog/', module_views.news_blog, name='news_blog'),
     path('globe_test/', module_views.globe_test, name='globe_test'),
+    path('react_index/', module_views.react_index, name='react_index'),
 
     path('tldr_sse/', module_views.tldr_sse, name='tldr_sse'),
     path('trigger/', module_views.trigger_handler, name='trigger'),
@@ -49,4 +52,4 @@ urlpatterns = [
 
 
 
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

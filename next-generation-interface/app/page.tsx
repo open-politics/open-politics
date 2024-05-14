@@ -1,28 +1,17 @@
 import React from 'react';
-import Globe from '../components/Globe';
+import Search from '../components/Search';
 
-interface Props {
-  geojsonData: any;
-}
-
-const HomePage: React.FC<Props> = ({ geojsonData }) => {
+const Home: React.FC = () => {
   return (
     <div>
-      <h1>Globe</h1>
-      <Globe geojsonData={geojsonData} />
+      <header>
+        <h1>News Dashboard</h1>
+      </header>
+      <main>
+        <Search />
+      </main>
     </div>
   );
 };
 
-export async function getServerSideProps() {
-  const res = await fetch('http://localhost:8000/api/globe-data/country');
-  const geojsonData = await res.json();
-
-  return {
-    props: {
-      geojsonData
-    }
-  };
-}
-
-export default HomePage;
+export default Home;

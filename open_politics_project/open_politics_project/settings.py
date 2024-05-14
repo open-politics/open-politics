@@ -54,9 +54,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'django_eventstream',
-    
-
-
+    'webpack_loader',
 ]
 
 LOGGING = {
@@ -121,7 +119,8 @@ SSE_REDIS_CONNECTION = {
 CSRF_TRUSTED_ORIGINS = [
     'https://www.open-politics.org',
     'http://www.open-politics.org',  # If you also serve traffic over HTTP
-    'https://d781-2a01-4f8-212-2e89-00-2.ngrok-free.app'
+    'https://5f75-2a01-4f8-212-2e89-00-2.ngrok-free.app',
+
 ]
 CSRF_COOKIE_SECURE = False
 CSRF_COOKIE_DOMAIN = '.open-politics.org'
@@ -216,11 +215,22 @@ TEMPLATES = [
     },
 ]
 
+PROJECT_DIR = Path(__file__).resolve().parent.parent
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'bt_thema', 'static'),
     os.path.join(BASE_DIR, 'news', 'static'),
+    os.path.join(BASE_DIR, 'static'),
+
+
 ]
 
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'frontend/.next/static/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'frontend/.next/stats.json'),
+    }
+}
 # URL configuration for open_politics_project project.
 
 # The `urlpatterns` list routes URLs to views. For more information please see:

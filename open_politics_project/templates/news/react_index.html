@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<div id="root"></div> <!-- This is where the React app will be mounted -->
+<div id="nextjs-app"></div>
+
+<div id="globe-container"></div>
+<script src="{% static 'next/static/chunks/main.js' %}"></script>
+<script src="{% static 'next/static/chunks/pages/_app.js' %}"></script>
+<script src="{% static 'next/static/chunks/pages/index.js' %}"></script>
+
+{% endblock %}
