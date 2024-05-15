@@ -45,6 +45,10 @@ urlpatterns = [
     path('react/', module_views.react_index, name='react_index'),
     path('geojson/', module_views.geojson_view, name='geojson_view'),
     path('country_from_query/', module_views.country_from_query, name='country_from_query'),
+    path('api/leaders/', module_views.get_leaders, name='get_leaders'),
+
+    path('api/leaders/', module_views.get_leaders, name='get_leaders'),
+    path('api/leaders/<str:state>/', module_views.get_leader_info, name='get_leader_info'),
 
     # Functional Urls
     re_path(r'^multi-query/$', module_views.multi_query, name='multi-query'),
