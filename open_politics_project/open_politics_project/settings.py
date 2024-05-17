@@ -32,7 +32,7 @@ DEBUG = True
 # if os.getenv('IN_DOCKER') == 'true':
 #     DEBUG = False
 
-ALLOWED_HOSTS = ['open-politics.org', 'www.open-politics.org', 'web', 'localhost', '127.0.0.1', '*', 'https://open-politics.org']
+ALLOWED_HOSTS = ['open-politics.org', 'www.open-politics.org', 'web', 'localhost', '127.0.0.1', '*', 'https://open-politics.org', '*']
 
 
 
