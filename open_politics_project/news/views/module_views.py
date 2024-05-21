@@ -260,32 +260,26 @@ def react_index(request):
     return render(request, 'news/react_index.html')
 
 def geojson_view(request):
-    data = {
-        "type": "FeatureCollection",
-        "features": [
-            {
-                "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [102.0, 0.5]
-                },
-                "properties": {
-                    "prop0": "value0"
-                }
-            }
-        ]
-    }
+    geojson_file_path = 'open_politics_project/news/static/geo_data/articles.geojson'
+    with open(geojson_file_path, 'r') as file:
+        data = json.load(file)
     return JsonResponse(data)
 
 
-
+@csrf_exempt
 def country_from_query(request):
     query = request.GET.get('query', '')
     print(query)
     country_name = marvin.cast(query, target=str, instructions="Return the country name most relevant to the query.")
-    country_code = marvin.cast(query, target=str, instructions="Return the ISO2 code most relevant to the query.")
-    print(country_name, country_code)
-    return JsonResponse({"country_name": country_name, "country_code": country_code})
+    
+    # Correct the URL and switch to HTTP if HTTPS is not configured
+    response = requests.get(f"http://localhost:3690/call_pelias_api?location={country_name}", verify=False)
+    
+    if response.status_code == 200:
+        coordinates = response.json()
+        return JsonResponse({"country_name": country_name, "latitude": coordinates[0], "longitude": coordinates[1]})
+    
+    return JsonResponse({"error": "Unable to fetch geocoding data"}, status=500)
 
 
 from bs4 import BeautifulSoup
@@ -293,7 +287,7 @@ from bs4 import BeautifulSoup
 @csrf_exempt
 def get_leaders(request):
     url = "https://en.wikipedia.org/wiki/List_of_current_heads_of_state_and_government"
-    response = requests.get(url)
+    response = requests.get(url, verify=False)
     html_content = response.text
 
     soup = BeautifulSoup(html_content, 'html.parser')
@@ -348,9 +342,22 @@ def get_leaders(request):
 
 @csrf_exempt
 def get_leader_info(request, state):
-    with open('open_politics_project/news/static/geo_data/leaders.json', 'r') as f:
-        leaders = json.load(f)
+    logging.info(f"Received request for state: {state}")
+    try:
+        with open('open_politics_project/news/static/geo_data/leaders.json', 'r') as f:
+            leaders = json.load(f)
+            logging.info("Successfully loaded leaders data from JSON file.")
+    except FileNotFoundError:
+        logging.error("Leaders JSON file not found.")
+        return JsonResponse({'error': 'Leaders data file not found'}, status=500)
+    except json.JSONDecodeError:
+        logging.error("Error decoding JSON data.")
+        return JsonResponse({'error': 'Error decoding leaders data'}, status=500)
+
     for leader in leaders:
         if leader['State'] == state:
+            logging.info(f"Found leader information for state: {state}")
             return JsonResponse(leader)
+    
+    logging.warning(f"State not found: {state}")
     return JsonResponse({'error': 'State not found'}, status=404)
