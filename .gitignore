@@ -13,6 +13,4 @@ tailwind.config.js
 node_modules/
 base/
 next-generation-interface/
-open_politics_project/staticfiles_root/static/
-open_politics_project/staticfiles_root/media/
-open_politics_project/staticfiles_root/cache/
+open_politics_project/staticfiles_root/
