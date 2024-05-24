@@ -15,6 +15,7 @@ import django_eventstream
 
 views = old_views
 module_views = module_views
+api_views = api_views
 
 urlpatterns = [
     path('news/', views.news_home, name="news_home"),
@@ -47,8 +48,11 @@ urlpatterns = [
     path('country_from_query/', module_views.country_from_query, name='country_from_query'),
     path('api/leaders/', module_views.get_leaders, name='get_leaders'),
 
-    path('api/leaders/', module_views.get_leaders, name='get_leaders'),
-    path('api/leaders/<str:state>/', module_views.get_leader_info, name='get_leader_info'),
+    path('api/leaders/', api_views.get_leaders, name='get_leaders'),
+    path('api/countries/<str:state>/leaders/', api_views.get_leader_info, name='get_leader_info'),
+    path('api/countries/<str:state>/legislation/', api_views.get_legislation_data, name='get_legislation_data'),
+    path('api/countries/<str:state>/econ_data/', api_views.get_econ_data, name='get_econ_data'),
+
 
     # Functional Urls
     re_path(r'^multi-query/$', module_views.multi_query, name='multi-query'),

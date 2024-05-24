@@ -22,11 +22,11 @@ html[data-theme="light"],
 
     --breadcrumbs-fg: #c4dce8;
     --breadcrumbs-link-fg: var(--body-bg);
-    --breadcrumbs-bg: #264b5d;
+    --breadcrumbs-bg: var(--primary);
 
     --link-fg: #417893;
     --link-hover-color: #036;
-    --link-selected-fg: var(--secondary);
+    --link-selected-fg: #5b80b2;
 
     --hairline-color: #e8e8e8;
     --border-color: #ccc;
@@ -42,10 +42,10 @@ html[data-theme="light"],
     --selected-row: #ffc;
 
     --button-fg: #fff;
-    --button-bg: var(--secondary);
-    --button-hover-bg: #205067;
-    --default-button-bg: #205067;
-    --default-button-hover-bg: var(--secondary);
+    --button-bg: var(--primary);
+    --button-hover-bg: #609ab6;
+    --default-button-bg: var(--secondary);
+    --default-button-hover-bg: #205067;
     --close-button-bg: #747474;
     --close-button-hover-bg: #333;
     --delete-button-bg: #ba2121;
@@ -56,6 +56,8 @@ html[data-theme="light"],
     --object-tools-hover-bg: var(--close-button-hover-bg);
 
     --font-family-primary:
+        -apple-system,
+        BlinkMacSystemFont,
         "Segoe UI",
         system-ui,
         Roboto,
@@ -584,7 +586,7 @@ input[type=button][disabled].default {
     font-weight: 400;
     font-size: 0.8125rem;
     text-align: left;
-    background: var(--header-bg);
+    background: var(--primary);
     color: var(--header-link-color);
 }
 
@@ -720,11 +722,6 @@ div.breadcrumbs a:focus, div.breadcrumbs a:hover {
     background: url(../img/icon-viewlink.svg) 0 1px no-repeat;
 }
 
-.hidelink {
-    padding-left: 16px;
-    background: url(../img/icon-hidelink.svg) 0 1px no-repeat;
-}
-
 .addlink {
     padding-left: 16px;
     background: url(../img/icon-addlink.svg) 0 1px no-repeat;
@@ -834,6 +831,10 @@ a.deletelink:focus, a.deletelink:hover {
     height: 100%;
 }
 
+#container > div {
+    flex-shrink: 0;
+}
+
 #container > .main {
     display: flex;
     flex: 1 0 auto;
@@ -918,6 +919,7 @@ a.deletelink:focus, a.deletelink:hover {
     padding: 10px 40px;
     background: var(--header-bg);
     color: var(--header-color);
+    overflow: hidden;
 }
 
 #header a:link, #header a:visited, #logout-form button {
@@ -932,7 +934,7 @@ a.deletelink:focus, a.deletelink:hover {
     display: flex;
 }
 
-#site-name {
+#branding h1 {
     padding: 0;
     margin: 0;
     margin-inline-end: 20px;
@@ -941,7 +943,7 @@ a.deletelink:focus, a.deletelink:hover {
     color: var(--header-branding-color);
 }
 
-#site-name a:link, #site-name a:visited {
+#branding h1 a:link, #branding h1 a:visited {
     color: var(--accent);
 }
 
@@ -1088,9 +1090,6 @@ a.deletelink:focus, a.deletelink:hover {
 /* PAGINATOR */
 
 .paginator {
-    display: flex;
-    align-items: center;
-    gap: 4px;
     font-size: 0.8125rem;
     padding-top: 10px;
     padding-bottom: 10px;
@@ -1134,23 +1133,6 @@ a.deletelink:focus, a.deletelink:hover {
     background: var(--link-hover-color);
 }
 
-.paginator input {
-    margin-left: auto;
-}
-
 .base-svgs {
     display: none;
-}
-
-.visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    overflow: hidden;
-    clip: rect(0,0,0,0);
-    white-space: nowrap;
-    border: 0;
-    color: var(--body-fg);
-    background-color: var(--body-bg);
 }
