@@ -34,3 +34,4 @@ tavily-python
 django-sse
 daphne
 sdmx1
+uvicorn

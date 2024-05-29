@@ -13,9 +13,9 @@ server {
         try_files $uri =404;
     }
 
-    listen 443 ssl; # Now listen on port 443 with SSL
-    ssl_certificate /etc/letsencrypt/live/open-politics.org/fullchain.pem; # Certbot's path to fullchain.pem for open-politics.org
-    ssl_certificate_key /etc/letsencrypt/live/open-politics.org/privkey.pem; # Certbot's path to privkey.pem for open-politics.org
+    listen 443 ssl; 
+    ssl_certificate /etc/letsencrypt/live/open-politics.org/fullchain.pem; 
+    ssl_certificate_key /etc/letsencrypt/live/open-politics.org/privkey.pem; 
     include /etc/letsencrypt/options-ssl-nginx.conf; # Certbot's recommended SSL config
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # Certbot's recommended dhparam path
 
