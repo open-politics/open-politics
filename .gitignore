@@ -1,11 +1,10 @@
 # All
-
 venv/
 __pycache__
 .env
 .local_restart_script.sh
 .dip-openapi.yaml
-open_politics_project/test_scripts/
+test_scripts/
 .DS_Store
 open-politics.org/
 open_politics_project/db.sqlite3/
