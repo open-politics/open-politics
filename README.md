@@ -44,10 +44,7 @@ As a quick pitch element to get you interested; this is where we are going:
 SSARE is Open Politics' data aggregation system and vector storage endpoint. It aims to create up-to-date and relevant datasets for the LLMs to work with. A microservice infrastructure continuously scrapes news sites and stores them in a vector storage and a relational database (Postgres). Sources can be added with Python scripts which yield a dataframe with: URL | Headline | Paragraphs | Source. Just clone the service, add your scripts and bring your own data endpoint into production.
 
 ### The Webapp:
-This Django Webapp should basically run scripts and hack together HTMX template renderings. The idea is a collection of analysis scripts.
-The requirements for each script and their underlying methods can be very different in their nature. 
-Also, the community should be able to contribute their own scripts and tools. Javascript is too much overhead for this project. HTMX is a great way to render the output of these scripts in a clean and fast way, and everybody can just contribute their methods with full HTML designs.
-We will shortly release a contribution tutorial how you can pack your script and connect it to the platform.
+05.06.2024: The Django backend is now replaced by a FastAPI backend (a fork of Tiangolo's highly functional Fullstack Template). The frontend is now a Next.js app using shadcn as a UI library, amcharts for the globe and axios data fatches to the backend. 
 
 ## Want to engage? Look into our Developer Jour Fixe!
 - Interested in the project? Want to contribute? Share a thought?
@@ -121,69 +118,33 @@ This interface enable you to formulate two questions in natural language and ret
 - The frontend rendering and server communication is largely built on HTMX features and tries to stay within the realm of HTML, CSS, and Hyperstate Media, calling assets asynchronously.
 
 ## Backend
-### Django
-- Django is used as a backend framework to serve the frontend and to communicate with the LLMs.
-- Views render data. If you need to rawdog, build a Python script that outputs and parses into a dataframe, JSON, or directly into Django views - we will find a way to integrate it.
+### FastAPI
+- We are transitioning away from Django and using a FastAPI backend now. The structure and configuration is largely based on Tiangolo's Fullstack Template ([https://github.com/tiangolo/full-stack-fastapi-template](https://github.com/tiangolo/full-stack-fastapi-template))
+ 
 
-### Database(s)
-- Intermediate article data storage (SQLite)
-- Vector storage (Qdrant) in SSARE data engine
-)
-
-### Agent Systems
-- The LLM domain AI is now heavily evolving on agent-based systems.
-  - LLM Agent teams and chains are used to deliver rich and relevant information.
-  - Elaborate processes are done with tree-of-thought, chain-of-thought, and reflection (see papers).
-  - Some tools require automatic code generation (e.g., for the graph or timeline view).
-  - Agent systems need their own modular tools (like search functions, data connectors, data pipelines, data storage, etc.).
-  - Sets of instructions are used to generate the output.
-  - Sets of instructions and sets of data are retrievable via Vector Storage Querying (Qdrant).
-
-#### LangChain
-- Langchain is a very well-integrated and powerful framework for LLM interaction and chaining.
-- Many state-of-the-art prompt engineering techniques are implemented in Langchain.
-- Data connectors and data pipelines are widely available.
-
-#### Marvin
-- Marvin is a lightweight and powerful framework for LLM-centered classification and validation systems, like Pydantic for LLMs.
-
-## Referenced Patterns/Papers (will be extended in a blog article)
-- [Reflexion](https://arxiv.org/abs/2303.11366)
-- [Tree of Thought](https://arxiv.org/abs/2305.10601)
-- [Chain of Thought](https://arxiv.org/abs/2201.11903)
-
-## Usage (coming soon):
+## Usage (better build script upcoming)
 - Clone the repo
 ```
 git clone https://github.com/JimVincentW/open-politics.git
 ```
-- Install dependencies with
+- Run start script
 ```
-pip install -r requirements.txt
+./start.sh
 ```
-- Run the Django server
-```
-python manage.py makemigrations
-python manage.py migrate
-python manage.py runserver
-```
-- Connect to the frontend (open 127.0.0.1:8000 in your browser)
-- Run the LLM agent (query the API)
 
 ## Necessary API Keys/Environment Variables:
 - DIP API (rgsaY4U.oZRQKUHdJhF9qguHMkwCGIoLaqEcaHjYLF)
-- NewsAPI API
 - OpenAI API
 - Huggingface Token
-- Agent-Search API
+- Tavily API Key
 
 ## Contributing
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make, especially in the form of questions or proposals, are greatly appreciated.
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make, are greatly appreciated.
 - If you have a question or idea, please feel free to add it as an issue in the GitHub repository.
-- If you're looking to contribute directly to the code base, please approach via email so we can set up a team or arrange a discussion.
+- If you're looking to contribute directly to the code base, please approach via email so we can set up a discussion.
 
 ## Contact
-
+jimvw@open-politics.org
 
 ## License
 - [MIT](https://choosealicense.com/licenses/mit/)
