@@ -1,8 +1,5 @@
 #!/bin/bash
-git pull
 
-python manage.py makemigrations
-python manage.py migrate
-python manage.py collectstatic --noinput
-
-python manage.py runserver
+docker-compose up -d
+cd frontend/next-generation-interface
+npm run dev -- --host
