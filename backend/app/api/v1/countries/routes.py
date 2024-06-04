@@ -8,6 +8,8 @@ import requests
 import marvin
 from pathlib import Path
 from .country_services import legislation, economy
+import tavily
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
@@ -77,6 +79,8 @@ async def update_leaders():
     update_leaders()
     return {"message": "Leaders data updated successfully."}
 
-@router.get("get_articles", response_model=None)
+@router.get("/get_articles", response_model=None)
 async def get_tavily_data():
     result = tavily.get_tavily_data()
+    
+

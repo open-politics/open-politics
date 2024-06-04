@@ -1,32 +1,31 @@
-import logging
-from typing import Union
-from fastapi.staticfiles import StaticFiles
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
-import json
-import requests
-import marvin
-from api.v1.countries.routes import router as country_router
-from api.v1.search.routes import router as search_router
+from fastapi import FastAPI
+from fastapi.routing import APIRoute
+from starlette.middleware.cors import CORSMiddleware
+
+from app.api.main import api_router
+from app.core.config import settings
 
 
-app = FastAPI(redirect_slashes=True)
-app.mount("/static", StaticFiles(directory="static"), name="static")
-app.include_router(country_router, prefix="/api/v1/countries", tags=["Country"])
-app.include_router(search_router, prefix='/api/v1/search', tags=["Search"])
+def custom_generate_unique_id(route: APIRoute) -> str:
+    return f"{route.tags[0]}-{route.name}"
 
-origins = [
-    "*"
-]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+app = FastAPI(
+    title=settings.PROJECT_NAME,
+    openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    generate_unique_id_function=custom_generate_unique_id,
 )
-async def read_root():
-    return {"Hello": "Whatsup"}
-    
+
+# Set all CORS enabled origins
+if settings.BACKEND_CORS_ORIGINS:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[
+            str(origin).strip("/") for origin in settings.BACKEND_CORS_ORIGINS
+        ],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+app.include_router(api_router, prefix=settings.API_V1_STR)

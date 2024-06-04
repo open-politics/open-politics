@@ -5,6 +5,8 @@ import json
 import requests
 from tavily import TavilyClient
 from pathlib import Path
+from gpt_researcher import GPTResearcher
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
@@ -23,3 +25,12 @@ async def get_tavily_data(query: str):
         context = []
 
     return context
+
+@router.get("/report/{query}")
+async def get_report(query: str) -> dict:
+    report_type = "research_report"
+    researcher = GPTResearcher(query, report_type)
+    research_result = await researcher.conduct_research()
+    report = await researcher.write_report()
+    return {"report": report}
+

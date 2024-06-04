@@ -1,5 +1,5 @@
 import requests
-from django.http import JsonResponse
+from fastapi.responses import JSONResponse
 import xml.etree.ElementTree as ET
 import sdmx
 

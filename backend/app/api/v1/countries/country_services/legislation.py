@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 api_key = "rgsaY4U.oZRQKUHdJhF9qguHMkwCGIoLaqEcaHjYLF"
 
 def get_legislation_data(state: str):
-    api_key = "rgsaY4U.oZRQKUHdJhF9qguHMkwCGIoLaqEcaHjYLF"
+    api_key = "I9FKdCn.hbfefNWCY336dL6x62vfwNKpoN2RZ1gp21"
     endpoints = {
         "Germany": "https://search.dip.bundestag.de/api/v1/vorgang",
     }
