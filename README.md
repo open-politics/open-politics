@@ -4,9 +4,9 @@
 ![Open Politics Political Intelligence Vision](assets/images/political_intelligence.png)
 
 ### Onboarding:
-Open Politics' vision is to democratise political intelligence. 
+Open Politics' vision is to democratize political intelligence. 
 
-The mission is to create an open-source data science and AI toolkit to analyse, summarise, and visualise political information.
+The mission is to create an open-source data science and AI toolkit to analyze, summarize, and visualize political information.
 
 ## Table of Contents
 - [Why Open Politics Exists](#why-open-politics-exists)
@@ -35,7 +35,7 @@ As a quick pitch element to get you interested; this is where we are going:
 
 
 # Why Open Politics Exists
-- All things regarding politics, be they news, conflicts or legislative procedures, are hard to keep track of. Its hard to find the time to read through all the documents and news articles necessary to gain a broad and well-informed understanding of political situations. Technology offers great possibilities to make such processes more accessible. Recently, the advent of Large Language Models has extended the capabilities of textual analysis and understanding. Especially the ability to formulate tasks in natural language opens up new possibilities for analysing text data. Potentially revolutionising the way qualitative and quantitative research can be combined.
+- All things regarding politics, be they news, conflicts or legislative procedures, are hard to keep track of. It's hard to find the time to read through all the documents and news articles necessary to gain a broad and well-informed understanding of political situations. Technology offers great possibilities to make such processes more accessible. Recently, the advent of Large Language Models has extended the capabilities of textual analysis and understanding. Especially the ability to formulate tasks in natural language opens up new possibilities for analyzing text data. Potentially revolutionizing the way qualitative and quantitative research can be combined.
 - This project aims to combine the best of natural language LLM interfacing and classical Data Science methods to build tools that provide a comprehensive overview of political topics, including summaries of news articles, information about political actors, and the relationships between them.
 - The goal of this project is to make politics more accessible and understandable for everyone.
 
@@ -44,7 +44,7 @@ As a quick pitch element to get you interested; this is where we are going:
 SSARE is Open Politics' data aggregation system and vector storage endpoint. It aims to create up-to-date and relevant datasets for the LLMs to work with. A microservice infrastructure continuously scrapes news sites and stores them in a vector storage and a relational database (Postgres). Sources can be added with Python scripts which yield a dataframe with: URL | Headline | Paragraphs | Source. Just clone the service, add your scripts and bring your own data endpoint into production.
 
 ### The Webapp:
-05.06.2024: The Django backend is now replaced by a FastAPI backend (a fork of Tiangolo's highly functional Fullstack Template). The frontend is now a Next.js app using shadcn as a UI library, amcharts for the globe and axios data fatches to the backend. 
+05.06.2024: The Django backend is now replaced by a FastAPI backend (a fork of Tiangolo's highly functional Fullstack Template). The frontend is now a Next.js app using shadcn as a UI library, amcharts for the globe, and axios data fetches to the backend. 
 
 ## Want to engage? Look into our Developer Jour Fixe!
 - Interested in the project? Want to contribute? Share a thought?
@@ -77,7 +77,7 @@ Including but not limited to tasks like:
 
 ## AI Models
 - Open-Source is our friend.
-- Developing consistent and reliable AI methods is hard with API based models. We thus aim to use open-source models and frameworks, e.g. Ollama and Huggingface for model inference and Langchain for prompt engineering.
+- Developing consistent and reliable AI methods is hard with API based models. We thus aim to use open-source models and frameworks, e.g., Ollama and Huggingface for model inference and Langchain for prompt engineering.
 - More concrete information on the actual setup is laid out in the [Architecture](#architecture) section.
 
 
@@ -95,7 +95,7 @@ Including but not limited to tasks like:
 - Interdependence of summaries
 
 ## Quality Assurance
-- Automatic Evaluation of Results Pipelines needed (conciseness, accuracy, bias weighting etc.)
+- Automatic Evaluation of Results Pipelines needed (conciseness, accuracy, bias weighting, etc.)
 
 # Architecture
 ## Frontend
@@ -107,47 +107,23 @@ The vision and current UI are meant to try delivering such information from a ne
 ![Open Politics Vision](assets/images/open_globe_1.png)
 
 The "Open Globe" Interface is set out to display articles and events interactively on a globe.
-It should enable to brose global news exploratively.
-Heatmap events, timeseries/ timeline scrolling and filer for issue areas are also on the roadmap.
+It should enable to browse global news exploratively.
+Heatmap events, timeseries/ timeline scrolling, and filter for issue areas are also on the roadmap.
 
 ### Current UI
 ![Open Politics Vision](assets/images/dashboard.png)
 
-This interface enable you to formulate two questions in natural language and retrieve relevant articles. The globe serves as interaction component for country related information.
+This interface enables you to formulate two questions in natural language and retrieve relevant articles. The globe serves as an interaction component for country-related information.
 
 The frontend is currently capable of rendering GDP, Wikipedia Description, Heads of State for each country on click & Legislative Data for Germany. 
 
-Some showcase article are encoded to locations on the map. This is to show the future of event & article mapping this project aims to achieve.
+Some showcase articles are encoded to locations on the map. This is to show the future of event & article mapping this project aims to achieve.
 
 ## Backend
 ### FastAPI
 - We are transitioning away from Django and using a FastAPI backend now. The structure and configuration is largely based on Tiangolo's Fullstack Template ([https://github.com/tiangolo/full-stack-fastapi-template](https://github.com/tiangolo/full-stack-fastapi-template))
  
-- As placeholders, before the SSARE data engine is fully integrated a geojson file is served articles to the globe.
+- As placeholders, before the SSARE data engine is fully integrated, a geojson file is served articles to the globe.
 
 ## Usage (better build script upcoming)
 - Clone the repo
-```
-git clone https://github.com/JimVincentW/open-politics.git
-```
-- Run start script
-```
-./start.sh
-```
-
-## Necessary API Keys/Environment Variables:
-- DIP API (rgsaY4U.oZRQKUHdJhF9qguHMkwCGIoLaqEcaHjYLF)
-- OpenAI API
-- Huggingface Token
-- Tavily API Key
-
-## Contributing
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make, are greatly appreciated.
-- If you have a question or idea, please feel free to add it as an issue in the GitHub repository.
-- If you're looking to contribute directly to the code base, please approach via email so we can set up a discussion.
-
-## Contact
-jimvw@open-politics.org
-
-## License
-- [MIT](https://choosealicense.com/licenses/mit/)
