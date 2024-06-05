@@ -121,11 +121,12 @@ Some showcase articles are encoded to locations on the map. This is to show the 
 
 ## Usage (better build script upcoming)
 - Clone the repo
-```
+```bash
 git clone https://github.com/JimVincentW/open-politics.git
 ```
 - Fill out the .env.example file and change the name to .env
 - Run start script
+```bash
 ./start.sh
 ```
 
