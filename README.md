@@ -113,14 +113,17 @@ Heatmap events, timeseries/ timeline scrolling and filer for issue areas are als
 ### Current UI
 ![Open Politics Vision](assets/images/dashboard.png)
 
-This interface enable you to formulate two questions in natural language and retrieve relevant articles, extracted issue areas and a contextualisation of the issue areas.
+This interface enable you to formulate two questions in natural language and retrieve relevant articles. The globe serves as interaction component for country related information.
 
-- The frontend rendering and server communication is largely built on HTMX features and tries to stay within the realm of HTML, CSS, and Hyperstate Media, calling assets asynchronously.
+The frontend is currently capable of rendering GDP, Wikipedia Description, Heads of State for each country on click & Legislative Data for Germany. 
+
+Some showcase article are encoded to locations on the map. This is to show the future of event & article mapping this project aims to achieve.
 
 ## Backend
 ### FastAPI
 - We are transitioning away from Django and using a FastAPI backend now. The structure and configuration is largely based on Tiangolo's Fullstack Template ([https://github.com/tiangolo/full-stack-fastapi-template](https://github.com/tiangolo/full-stack-fastapi-template))
  
+- As placeholders, before the SSARE data engine is fully integrated a geojson file is served articles to the globe.
 
 ## Usage (better build script upcoming)
 - Clone the repo
