@@ -1,6 +1,0 @@
-uvicorn
-fastapi
-pandas
-tqdm
-langchain_openai
-langchain_core

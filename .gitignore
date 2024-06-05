@@ -1,16 +1,16 @@
 # All
-
 venv/
 __pycache__
 .env
 .local_restart_script.sh
 .dip-openapi.yaml
-open_politics_project/test_scripts/
+test_scripts/
 .DS_Store
 open-politics.org/
 open_politics_project/db.sqlite3/
 tailwind.config.js
 node_modules/
 base/
-next-generation-interface/
 open_politics_project/staticfiles_root/
+open_politics_project/frontend/next-generation-interface/.env.local
+.vscode

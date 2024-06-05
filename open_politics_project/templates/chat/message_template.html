@@ -1,9 +1,0 @@
-{% for message in messages %}
-    <div class="message">
-        <span class="author">{{ message.user }}</span>: 
-        <span class="text">{{ message.content }}</span>
-        <span class="timestamp">{{ message.timestamp }}</span>
-    </div>
-{% empty %}
-    <p>No messages yet.</p>
-{% endfor %}
