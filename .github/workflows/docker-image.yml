@@ -1,4 +1,4 @@
-name: Build, Push and Deploy Docker image
+name: Build, Push and Deploy Docker images
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-push:
+  build-and-push-backend:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -18,11 +18,26 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Build and Push Docker Image
+      - name: Build and Push Docker Image for Backend
         uses: docker/build-push-action@v4
         with:
-          context: .
-          file: ./Dockerfile
+          context: ./backend
+          file: ./backend/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bt-thema:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
+
+  build-and-push-frontend:
+    needs: build-and-push-backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Build and Push Docker Image for Frontend
+        uses: docker/build-push-action@v4
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
 

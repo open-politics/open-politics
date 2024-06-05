@@ -6,11 +6,9 @@ __pycache__
 .dip-openapi.yaml
 test_scripts/
 .DS_Store
-open-politics.org/
-open_politics_project/db.sqlite3/
-tailwind.config.js
 node_modules/
-base/
-open_politics_project/staticfiles_root/
-open_politics_project/frontend/next-generation-interface/.env.local
 .vscode
+frontend/.env
+frontend/.env.local
+frontend/.next/
+frontend/node_modules/
