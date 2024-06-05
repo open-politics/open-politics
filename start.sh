@@ -3,7 +3,9 @@ cd backend
 docker compose down
 docker compose up --build -d
 
-cd ../frontend/next-generation-interface
+cd ..
+cd frontend
+
 
 # Ensure NVM is loaded
 [ -s "$HOME/.nvm/nvm.sh" ] && \. "$HOME/.nvm/nvm.sh"

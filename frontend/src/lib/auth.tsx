@@ -1,69 +1,97 @@
-"use client";
+import { useState, useEffect, useContext, createContext } from 'react';
+import axios from 'axios';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import useAuth from '@/hooks/useAuth';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
+const API_URL = 'http://dev.open-politics.org/api/v1';
+const AuthContext = createContext(null);
 
-const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { login, error, resetError } = useAuth();
-  const router = useRouter();
+// Provider in your app component that wraps your app
+export function AuthProvider({ children }) {
+  const auth = useProvideAuth();
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
+}
 
-  useEffect(() => {
-    resetError();
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      router.push('/'); // Redirect if already logged in
-    }
-  }, [resetError, router]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    login(email, password);
-  };
-
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Card className="w-full max-w-md p-8 space-y-4">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm">Email</label>
-              <Input
-                className=""
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm">Password</label>
-              <Input
-                className=""
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            {error && <p className="text-red-500">{error}</p>}
-            <Button type="submit" className="w-full">Login</Button>
-          </form>
-        </CardContent>
-        <CardFooter>
-          <p className="text-center text-sm">Don't have an account? Sign up</p>
-        </CardFooter>
-      </Card>
-    </div>
-  );
+// Hook for child components to get the auth object and re-render when it changes
+export const useAuth = () => {
+  return useContext(AuthContext);
 };
 
-export default LoginPage;
+// Provider hook that creates the auth object and handles state
+function useProvideAuth() {
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const initToken = localStorage.getItem('token');
+    if (initToken) {
+      setToken(initToken);
+      getCurrentUser(initToken).then(userData => setUser(userData)).catch(err => setError(err));
+    }
+    setLoading(false);
+  }, []);
+
+  const login = async (email, password) => {
+    try {
+      setLoading(true);
+      const response = await axios.post(`${API_URL}/login/access-token`, { email, password });
+      localStorage.setItem('token', response.data.access_token);
+      setToken(response.data.access_token);
+      setUser(await getCurrentUser(response.data.access_token));
+      setLoading(false);
+      return response.data;
+    } catch (error) {
+      setError(error);
+      setLoading(false);
+      throw error;
+    }
+  };
+
+  const signup = async (email, password, fullName) => {
+    try {
+      setLoading(true);
+      const response = await axios.post(`${API_URL}/users/open`, { email, password, full_name: fullName });
+      setLoading(false);
+      return response.data;
+    } catch (error) {
+      setError(error);
+      setLoading(false);
+      throw error;
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    setToken(null);
+    setUser(null);
+  };
+
+  const updateUser = async (userDetails) => {
+    try {
+      setLoading(true);
+      const response = await axios.patch(`${API_URL}/users/me`, userDetails, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUser(response.data);
+      setLoading(false);
+      return response.data;
+    } catch (error) {
+      setError(error);
+      setLoading(false);
+      throw error;
+    }
+  };
+
+  // Add other authentication-related functions here
+
+  return {
+    user,
+    token,
+    loading,
+    error,
+    login,
+    signup,
+    logout,
+    updateUser
+  };
+}

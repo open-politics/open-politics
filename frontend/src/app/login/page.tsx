@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { login } from '@/lib/auth';
+import { LoginService } from 'src/client/services';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 
-const LoginPage: React.FC = () => {
+export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -24,7 +24,11 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     setErrorMessage('');
     try {
-      await login(email, password);
+      const formData = new FormData();
+      formData.append('username', email);
+      formData.append('password', password);
+      const response = await LoginService.loginAccessToken({ formData });
+      localStorage.setItem('token', response.access_token);
       router.push('/');
     } catch (error: any) {
       if (error.response && error.response.status === 422) {
