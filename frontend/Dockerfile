@@ -3,21 +3,36 @@ FROM node:20 as build-stage
 
 WORKDIR /app
 
-COPY package*.json /app/
+# Copy package.json and package-lock.json (or yarn.lock)
+COPY package.json package-lock.json* ./
 
+# Install dependencies
 RUN npm install
 
-COPY ./ /app/
+# Copy the rest of your app's source code
+COPY . .
 
-ARG VITE_API_URL=${VITE_API_URL}
-
+# Build your Next.js application
 RUN npm run build
 
+# Stage 1, based on Nginx, to serve the compiled app in production
+FROM nginx:alpine
 
-# Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
-FROM nginx:1
+# Set working directory to nginx asset directory
+WORKDIR /usr/share/nginx/html
 
-COPY --from=build-stage /app/dist/ /usr/share/nginx/html
+# Remove default nginx static assets
+RUN rm -rf ./*
 
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
-COPY ./nginx-backend-not-found.conf /etc/nginx/extra-conf.d/backend-not-found.conf
+# Copy static assets from builder stage
+COPY --from=build-stage /app/.next/static ./.next/static
+
+# Copy Next.js specific files
+COPY --from=build-stage /app/public /public
+COPY --from=build-stage /app/next.config.js .
+
+# Copy custom nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Containers run nginx with global directives and daemon off
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
