@@ -44,7 +44,7 @@ class Settings(BaseSettings):
 
     BACKEND_CORS_ORIGINS: Annotated[
         list[AnyUrl] | str, BeforeValidator(parse_cors)
-    ] = ["*"]
+    ] = ["http://dev.open-politics.org:3000", "http://136.243.80.175:3000"]
 
     PROJECT_NAME: str
     SENTRY_DSN: HttpUrl | None = None

@@ -48,7 +48,7 @@ formData,
 	 * Test Token
 	 * Test access token
 	 * @returns UserPublic Successful Response
-	 * @throws ApiError
+	 * @throws ApiError	1
 	 */
 	public static testToken(): CancelablePromise<UserPublic> {
 				return __request(OpenAPI, {

@@ -1,57 +1,76 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { login as loginService, getCurrentUser, logout as logoutService } from '@/lib/auth';
+// app/login/page.tsx
 
-const isLoggedIn = () => {
-  return localStorage.getItem('access_token') !== null;
-};
+"use client";
 
-const useAuth = () => {
-  const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
+import React from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { Card, CardContent, CardHeader, CardFooter, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import useAuth from 'src/hooks/useAuth';
+
+const LoginPage: React.FC = () => {
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    defaultValues: {
+      email: '',
+      password: ''
+    }
+  });
+  const { loginMutation, error, resetError } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    if (isLoggedIn()) {
-      getCurrentUser()
-        .then(setUser)
-        .catch(() => {
-          setError('Failed to fetch user');
-          logout();
-        })
-        .finally(() => setIsLoading(false));
-    } else {
-      setIsLoading(false);
+  React.useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      router.push('/'); // Redirect if already logged in
     }
-  }, []);
+  }, [router]);
 
-  const login = async (email: string, password: string) => {
-    try {
-      const data = await loginService(email, password);
-      setUser(data.user);
-      setError(null);
-      router.push('/');
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Login failed');
-    }
+  const onSubmit = async (data: { email: string; password: string }) => {
+    resetError();
+    loginMutation.mutate({
+      username: data.email,
+      password: data.password,
+    });
   };
 
-  const logout = () => {
-    logoutService();
-    setUser(null);
-    router.push('/login');
-  };
-
-  return {
-    user,
-    isLoading,
-    error,
-    login,
-    logout,
-    resetError: () => setError(null),
-  };
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <Card className="w-full max-w-md p-8 space-y-4">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div>
+              <label className="block text-sm">Email</label>
+              <Input
+                type="email"
+                {...register('email', { required: 'Email is required' })}
+                className={errors.email ? 'error' : ''}
+              />
+              {errors.email && <p className="text-red-500">{errors.email.message}</p>}
+            </div>
+            <div>
+              <label className="block text-sm">Password</label>
+              <Input
+                type="password"
+                {...register('password', { required: 'Password is required' })}
+                className={errors.password ? 'error' : ''}
+              />
+              {errors.password && <p className="text-red-500">{errors.password.message}</p>}
+            </div>
+            {error && <p className="text-red-500">{error}</p>}
+            <Button type="submit" className="w-full">Login</Button>
+          </form>
+        </CardContent>
+        <CardFooter>
+          <p className="text-center text-sm">Don't have an account? Sign up</p>
+        </CardFooter>
+      </Card>
+    </div>
+  );
 };
 
-export { isLoggedIn };
-export default useAuth;
+export default LoginPage;

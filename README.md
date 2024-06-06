@@ -75,7 +75,6 @@ Including but not limited to tasks like:
 - Developing consistent and reliable AI methods is hard with API based models. We thus aim to use open-source models and frameworks, e.g. Ollama and Huggingface for model inference and Langchain for prompt engineering.
 - More concrete information on the actual setup is laid out in the [Architecture](#architecture) section.
 
-
 ## Data Challenges
 - Addressing training data bias
 - Effective prompt engineering
@@ -121,28 +120,3 @@ Some showcase articles are encoded to locations on the map. This is to show the 
 
 ## Usage (better build script upcoming)
 - Clone the repo
-```bash
-git clone https://github.com/JimVincentW/open-politics.git
-```
-- Fill out the .env.example file and change the name to .env
-- Run start script
-```bash
-./start.sh
-```
-
-## Necessary API Keys/Environment Variables:
-- DIP API (rgsaY4U.oZRQKUHdJhF9qguHMkwCGIoLaqEcaHjYLF)
-- OpenAI API
-- Huggingface Token
-- Tavily API Key
-
-## Contributing
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make, are greatly appreciated.
-- If you have a question or idea, please feel free to add it as an issue in the GitHub repository.
-- If you're looking to contribute directly to the code base, please approach via email so we can set up a discussion.
-
-## Contact
-jimvw@open-politics.org
-
-## License
-- [MIT](https://choosealicense.com/licenses/mit/)

@@ -1,33 +1,34 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { LoginService } from 'src/client/services';
+import { useForm } from 'react-hook-form';
+import { Card, CardContent, CardHeader, CardFooter, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 
 export const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    defaultValues: {
+      email: '',
+      password: ''
+    }
+  });
+  const [errorMessage, setErrorMessage] = React.useState('');
   const router = useRouter();
 
-  useEffect(() => {
+  React.useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       router.push('/'); // Redirect if already logged in
     }
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: { email: string; password: string }) => {
     setErrorMessage('');
     try {
-      const formData = new FormData();
-      formData.append('username', email);
-      formData.append('password', password);
-      const response = await LoginService.loginAccessToken({ formData });
+      const response = await LoginService.loginAccessToken(data);
       localStorage.setItem('token', response.access_token);
       router.push('/');
     } catch (error: any) {
@@ -47,26 +48,24 @@ export const LoginPage: React.FC = () => {
           <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <label className="block text-sm">Email</label>
               <Input
-                className=""
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
+                {...register('email', { required: 'Email is required' })}
+                className={errors.email ? 'error' : ''}
               />
+              {errors.email && <p className="text-red-500">{errors.email.message}</p>}
             </div>
             <div>
               <label className="block text-sm">Password</label>
               <Input
-                className=""
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+                {...register('password', { required: 'Password is required' })}
+                className={errors.password ? 'error' : ''}
               />
+              {errors.password && <p className="text-red-500">{errors.password.message}</p>}
             </div>
             {errorMessage && <p className="text-red-500">{errorMessage}</p>}
             <Button type="submit" className="w-full">Login</Button>
