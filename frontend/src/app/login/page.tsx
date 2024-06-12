@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 export const LoginPage: React.FC = () => {
   const { register, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
-      email: '',
+      username: '',
       password: ''
     }
   });
@@ -23,17 +23,22 @@ export const LoginPage: React.FC = () => {
     if (token) {
       router.push('/'); // Redirect if already logged in
     }
-  }, []);
+  }, [router]);
 
-  const onSubmit = async (data: { email: string; password: string }) => {
+  const onSubmit = async (data: { username: string; password: string }) => {
     setErrorMessage('');
     try {
-      const response = await LoginService.loginAccessToken(data);
+      const response = await LoginService.loginAccessToken({ 
+        formData: {
+          ...data,
+          grant_type: 'password',
+        }
+      });
       localStorage.setItem('token', response.access_token);
       router.push('/');
     } catch (error: any) {
       if (error.response && error.response.status === 422) {
-        setErrorMessage('Invalid email or password. Please try again.');
+        setErrorMessage('Invalid username or password. Please try again.');
       } else {
         setErrorMessage('An error occurred. Please try again.');
       }
@@ -50,13 +55,13 @@ export const LoginPage: React.FC = () => {
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <label className="block text-sm">Email</label>
+              <label className="block text-sm">Username</label>
               <Input
-                type="email"
-                {...register('email', { required: 'Email is required' })}
-                className={errors.email ? 'error' : ''}
+                type="text"
+                {...register('username', { required: 'Username is required' })}
+                className={errors.username ? 'error' : ''}
               />
-              {errors.email && <p className="text-red-500">{errors.email.message}</p>}
+              {errors.username && <p className="text-red-500">{errors.username.message}</p>}
             </div>
             <div>
               <label className="block text-sm">Password</label>

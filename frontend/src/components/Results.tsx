@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import ArticleCard from './ArticleCard';
 import {
@@ -6,14 +6,21 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
+import ReactMarkdown from 'react-markdown';
+import remarkBreaks from 'remark-breaks';
 
-const Results: React.FC<{ results: any }> = ({ results }) => {
-  const [showArticles, setShowArticles] = useState(true);
+// Add a new prop for the summary
+const Results: React.FC<{ results: any, summary?: string }> = ({ results, summary }) => {
+  const [showArticles, setShowArticles] = React.useState(true);
+  const [showSummary, setShowSummary] = React.useState(true);
 
   if (!results) {
     return null;
   }
+  const preprocessMarkdown = (markdown: string) => {
+    return markdown.replace(/\n/g, '  \n'); // Add two spaces at the end of each line
+  };
 
   const toggleArticles = () => {
     setShowArticles(!showArticles);
@@ -21,10 +28,11 @@ const Results: React.FC<{ results: any }> = ({ results }) => {
 
   return (
     <div className="relative mt-80 w-2/4 md:w-2/3 ml-24 h-1/3 bg-opacity-20 backdrop backdrop-blur-lg rounded-lg p-4 overflow-hidden">
-      <h2 className="text-xl mb-2">Articles</h2>
-      <Button className='my-2 mb-3' variant="outline" onClick={toggleArticles}>
+      <h2 className="text-xl mb-2">Articles & Summary</h2>
+      <Button className='my-2 mb-3' variant="outline" onClick={() => setShowArticles(!showArticles)}>
         {showArticles ? 'Hide' : 'Show'}
       </Button>
+      {summary && <div className="p-4 m-2 ml-0 pl-2 h-48 h-auto max-h-96 overflow-auto"><ReactMarkdown remarkPlugins={[remarkBreaks]}>{preprocessMarkdown(summary)}</ReactMarkdown></div>}
       {showArticles && (
         <div className="inner-content h-full overflow-auto">
           {results.images && results.images.length > 0 && (
@@ -50,7 +58,7 @@ const Results: React.FC<{ results: any }> = ({ results }) => {
                 key={index}
                 title={result.title}
                 description={result.content.length > 400 ? `${result.content.substring(0, 400)}...` : result.content}
-                image={result.image} // Ensure this property is set in the API response
+                image={result.image}
                 url={result.url}
               />
             ))}
@@ -67,9 +75,11 @@ const Results: React.FC<{ results: any }> = ({ results }) => {
           scrollbar-width: none;  /* Firefox */
         }
         .first-article {
-          /* Add your custom styles for the first article here */
           width: 100%;
           height: auto;
+        }
+        .summary-content {
+          margin-bottom: 20px;
         }
       `}</style>
     </div>

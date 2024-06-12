@@ -68,7 +68,7 @@ export const $ItemCreate = {
 	},
 } as const;
 
-export const $ItemPublic = {
+export const $ItemOut = {
 	properties: {
 		title: {
 	type: 'string',
@@ -114,12 +114,12 @@ export const $ItemUpdate = {
 	},
 } as const;
 
-export const $ItemsPublic = {
+export const $ItemsOut = {
 	properties: {
 		data: {
 	type: 'array',
 	contains: {
-		type: 'ItemPublic',
+		type: 'ItemOut',
 	},
 	isRequired: true,
 },
@@ -207,7 +207,28 @@ export const $UserCreate = {
 	},
 } as const;
 
-export const $UserPublic = {
+export const $UserCreateOpen = {
+	properties: {
+		email: {
+	type: 'string',
+	isRequired: true,
+},
+		password: {
+	type: 'string',
+	isRequired: true,
+},
+		full_name: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+	},
+} as const;
+
+export const $UserOut = {
 	properties: {
 		email: {
 	type: 'string',
@@ -232,27 +253,6 @@ export const $UserPublic = {
 		id: {
 	type: 'number',
 	isRequired: true,
-},
-	},
-} as const;
-
-export const $UserRegister = {
-	properties: {
-		email: {
-	type: 'string',
-	isRequired: true,
-},
-		password: {
-	type: 'string',
-	isRequired: true,
-},
-		full_name: {
-	type: 'any-of',
-	contains: [{
-	type: 'string',
-}, {
-	type: 'null',
-}],
 },
 	},
 } as const;
@@ -315,12 +315,12 @@ export const $UserUpdateMe = {
 	},
 } as const;
 
-export const $UsersPublic = {
+export const $UsersOut = {
 	properties: {
 		data: {
 	type: 'array',
 	contains: {
-		type: 'UserPublic',
+		type: 'UserOut',
 	},
 	isRequired: true,
 },

@@ -1,4 +1,4 @@
-'use client';
+'use client'
 import React, { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import axios from 'axios';
@@ -11,12 +11,19 @@ import WikipediaView from '@/components/WikipediaView';
 import LeaderInfo from '../components/LeaderInfo';
 import Results from '../components/Results';
 import { IssueAreas } from '../components/IssueAreas';
+import { OpenAPI } from 'src/client';
 
 const Globe = dynamic(() => import('../components/Globe'), { ssr: false });
+
+OpenAPI.BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'
+OpenAPI.TOKEN = async () => {
+  return localStorage.getItem("access_token") || ""
+}
 
 const HomePage: React.FC = () => {
   const geojsonUrl = 'http://dev.open-politics.org/api/v1/countries/geojson/';
   const [results, setResults] = useState(null);
+  const [summary, setSummary] = useState<string>('');
   const [articleContent, setArticleContent] = useState<string>('');
   const [country, setCountry] = useState<string | null>(null);
   const [leaderInfo, setLeaderInfo] = useState<any | null>(null);
@@ -70,6 +77,10 @@ const HomePage: React.FC = () => {
     });
   };
 
+  const handleSummary = (summary: string) => {
+    setSummary(summary);
+  }
+
   const toggleMode = () => {
     setIsBrowseMode(!isBrowseMode);
   };
@@ -87,7 +98,6 @@ const HomePage: React.FC = () => {
     return 0;
   };
 
-
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       <div className="container relative mx-auto px-4 mt-0 min-h-screen max-w-full overflow-x-hidden">
@@ -100,7 +110,7 @@ const HomePage: React.FC = () => {
           animate={isBrowseMode ? (
             getWindowWidth() < 768 ? 
               { height: '200px', top: '15%', left: '50%', transform: 'translate(-50%, -50%)' } :
-              { height: '800px', top: '45%', left: '50%', transform: 'translate(-50%, -50%)' }
+              { height: '800px', top: '45%', left: '40%', transform: 'translate(-50%, -50%)' }
           ) : (
             getWindowWidth() < 768 ? 
               { height: '50px', top: '7rem', left: '10rem', transform: 'translate(0, -20%)' } :
@@ -132,7 +142,7 @@ const HomePage: React.FC = () => {
           )}
           transition={{ duration: 0.5 }}
         >
-          <Search setResults={handleSearch} setCountry={setCountry} globeRef={globeRef} />
+          <Search setResults={handleSearch} setCountry={setCountry} globeRef={globeRef} setSummary={handleSummary} />
         </motion.div>
 
         <motion.div
@@ -147,7 +157,7 @@ const HomePage: React.FC = () => {
           )}
           transition={{ duration: 0.5 }}
         >
-          <Results results={results} />
+          <Results results={results} summary={summary} />
         </motion.div>
 
         <motion.div

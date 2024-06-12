@@ -112,7 +112,7 @@ const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCou
 
       circle.states.create("hover", {
         fill: am5.color(0x0000ff),
-        fillOpacity: 0.5,
+        fillOpacity: 1,
         tooltipText: "{title}\n{articles[0].headline}",
       });
 
@@ -127,17 +127,17 @@ const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCou
       interactive: true,
       // fill: am5.color(0x0e1a36), // Dark Blue
       fill: am5.color(0xfcfcfc), // White
-      fillOpacity: 0.7,
+      fillOpacity: 1,
       stroke: am5.color(0x0e1a36), 
       strokeWidth: 0.25,
     });
 
     polygonSeries.mapPolygons.template.states.create("hover", {
-      fill: am5.color(0x0000ff),
+      fill: am5.color(0x6e6e6e),
     });
 
     polygonSeries.mapPolygons.template.states.create("active", {
-      fill: am5.color(0x0000ff),
+      fill: am5.color(0x6e6e6e),
     });
 
     let previousPolygon: am5map.MapPolygon | null = null;

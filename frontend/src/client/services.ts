@@ -2,21 +2,21 @@ import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
 
-import type { Body_login_login_access_token,Message,NewPassword,Token,UserPublic,UpdatePassword,UserCreate,UserRegister,UsersPublic,UserUpdate,UserUpdateMe,ItemCreate,ItemPublic,ItemsPublic,ItemUpdate } from './models';
+import type { Body_login_login_access_token,Message,NewPassword,Token,UserOut,UpdatePassword,UserCreate,UserCreateOpen,UsersOut,UserUpdate,UserUpdateMe,ItemCreate,ItemOut,ItemsOut,ItemUpdate } from './models';
 
-export type TDataLoginAccessToken = {
+export type TDataLoginLoginAccessToken = {
                 formData: Body_login_login_access_token
                 
             }
-export type TDataRecoverPassword = {
+export type TDataLoginRecoverPassword = {
                 email: string
                 
             }
-export type TDataResetPassword = {
+export type TDataLoginResetPassword = {
                 requestBody: NewPassword
                 
             }
-export type TDataRecoverPasswordHtmlContent = {
+export type TDataLoginRecoverPasswordHtmlContent = {
                 email: string
                 
             }
@@ -29,7 +29,7 @@ export class LoginService {
 	 * @returns Token Successful Response
 	 * @throws ApiError
 	 */
-	public static loginAccessToken(data: TDataLoginAccessToken): CancelablePromise<Token> {
+	public static loginLoginAccessToken(data: TDataLoginLoginAccessToken): CancelablePromise<Token> {
 		const {
 formData,
 } = data;
@@ -47,10 +47,10 @@ formData,
 	/**
 	 * Test Token
 	 * Test access token
-	 * @returns UserPublic Successful Response
-	 * @throws ApiError	1
+	 * @returns UserOut Successful Response
+	 * @throws ApiError
 	 */
-	public static testToken(): CancelablePromise<UserPublic> {
+	public static loginTestToken(): CancelablePromise<UserOut> {
 				return __request(OpenAPI, {
 			method: 'POST',
 			url: '/api/v1/login/test-token',
@@ -63,7 +63,7 @@ formData,
 	 * @returns Message Successful Response
 	 * @throws ApiError
 	 */
-	public static recoverPassword(data: TDataRecoverPassword): CancelablePromise<Message> {
+	public static loginRecoverPassword(data: TDataLoginRecoverPassword): CancelablePromise<Message> {
 		const {
 email,
 } = data;
@@ -85,7 +85,7 @@ email,
 	 * @returns Message Successful Response
 	 * @throws ApiError
 	 */
-	public static resetPassword(data: TDataResetPassword): CancelablePromise<Message> {
+	public static loginResetPassword(data: TDataLoginResetPassword): CancelablePromise<Message> {
 		const {
 requestBody,
 } = data;
@@ -106,7 +106,7 @@ requestBody,
 	 * @returns string Successful Response
 	 * @throws ApiError
 	 */
-	public static recoverPasswordHtmlContent(data: TDataRecoverPasswordHtmlContent): CancelablePromise<string> {
+	public static loginRecoverPasswordHtmlContent(data: TDataLoginRecoverPasswordHtmlContent): CancelablePromise<string> {
 		const {
 email,
 } = data;
@@ -124,37 +124,37 @@ email,
 
 }
 
-export type TDataReadUsers = {
+export type TDataUsersReadUsers = {
                 limit?: number
 skip?: number
                 
             }
-export type TDataCreateUser = {
+export type TDataUsersCreateUser = {
                 requestBody: UserCreate
                 
             }
-export type TDataUpdateUserMe = {
+export type TDataUsersUpdateUserMe = {
                 requestBody: UserUpdateMe
                 
             }
-export type TDataUpdatePasswordMe = {
+export type TDataUsersUpdatePasswordMe = {
                 requestBody: UpdatePassword
                 
             }
-export type TDataRegisterUser = {
-                requestBody: UserRegister
+export type TDataUsersCreateUserOpen = {
+                requestBody: UserCreateOpen
                 
             }
-export type TDataReadUserById = {
+export type TDataUsersReadUserById = {
                 userId: number
                 
             }
-export type TDataUpdateUser = {
+export type TDataUsersUpdateUser = {
                 requestBody: UserUpdate
 userId: number
                 
             }
-export type TDataDeleteUser = {
+export type TDataUsersDeleteUser = {
                 userId: number
                 
             }
@@ -164,10 +164,10 @@ export class UsersService {
 	/**
 	 * Read Users
 	 * Retrieve users.
-	 * @returns UsersPublic Successful Response
+	 * @returns UsersOut Successful Response
 	 * @throws ApiError
 	 */
-	public static readUsers(data: TDataReadUsers = {}): CancelablePromise<UsersPublic> {
+	public static usersReadUsers(data: TDataUsersReadUsers = {}): CancelablePromise<UsersOut> {
 		const {
 limit = 100,
 skip = 0,
@@ -187,10 +187,10 @@ skip = 0,
 	/**
 	 * Create User
 	 * Create new user.
-	 * @returns UserPublic Successful Response
+	 * @returns UserOut Successful Response
 	 * @throws ApiError
 	 */
-	public static createUser(data: TDataCreateUser): CancelablePromise<UserPublic> {
+	public static usersCreateUser(data: TDataUsersCreateUser): CancelablePromise<UserOut> {
 		const {
 requestBody,
 } = data;
@@ -208,10 +208,10 @@ requestBody,
 	/**
 	 * Read User Me
 	 * Get current user.
-	 * @returns UserPublic Successful Response
+	 * @returns UserOut Successful Response
 	 * @throws ApiError
 	 */
-	public static readUserMe(): CancelablePromise<UserPublic> {
+	public static usersReadUserMe(): CancelablePromise<UserOut> {
 				return __request(OpenAPI, {
 			method: 'GET',
 			url: '/api/v1/users/me',
@@ -221,10 +221,10 @@ requestBody,
 	/**
 	 * Update User Me
 	 * Update own user.
-	 * @returns UserPublic Successful Response
+	 * @returns UserOut Successful Response
 	 * @throws ApiError
 	 */
-	public static updateUserMe(data: TDataUpdateUserMe): CancelablePromise<UserPublic> {
+	public static usersUpdateUserMe(data: TDataUsersUpdateUserMe): CancelablePromise<UserOut> {
 		const {
 requestBody,
 } = data;
@@ -245,7 +245,7 @@ requestBody,
 	 * @returns Message Successful Response
 	 * @throws ApiError
 	 */
-	public static updatePasswordMe(data: TDataUpdatePasswordMe): CancelablePromise<Message> {
+	public static usersUpdatePasswordMe(data: TDataUsersUpdatePasswordMe): CancelablePromise<Message> {
 		const {
 requestBody,
 } = data;
@@ -261,18 +261,18 @@ requestBody,
 	}
 
 	/**
-	 * Register User
+	 * Create User Open
 	 * Create new user without the need to be logged in.
-	 * @returns UserPublic Successful Response
+	 * @returns UserOut Successful Response
 	 * @throws ApiError
 	 */
-	public static registerUser(data: TDataRegisterUser): CancelablePromise<UserPublic> {
+	public static usersCreateUserOpen(data: TDataUsersCreateUserOpen): CancelablePromise<UserOut> {
 		const {
 requestBody,
 } = data;
 		return __request(OpenAPI, {
 			method: 'POST',
-			url: '/api/v1/users/signup',
+			url: '/api/v1/users/open',
 			body: requestBody,
 			mediaType: 'application/json',
 			errors: {
@@ -284,10 +284,10 @@ requestBody,
 	/**
 	 * Read User By Id
 	 * Get a specific user by id.
-	 * @returns UserPublic Successful Response
+	 * @returns UserOut Successful Response
 	 * @throws ApiError
 	 */
-	public static readUserById(data: TDataReadUserById): CancelablePromise<UserPublic> {
+	public static usersReadUserById(data: TDataUsersReadUserById): CancelablePromise<UserOut> {
 		const {
 userId,
 } = data;
@@ -306,10 +306,10 @@ userId,
 	/**
 	 * Update User
 	 * Update a user.
-	 * @returns UserPublic Successful Response
+	 * @returns UserOut Successful Response
 	 * @throws ApiError
 	 */
-	public static updateUser(data: TDataUpdateUser): CancelablePromise<UserPublic> {
+	public static usersUpdateUser(data: TDataUsersUpdateUser): CancelablePromise<UserOut> {
 		const {
 requestBody,
 userId,
@@ -334,7 +334,7 @@ userId,
 	 * @returns Message Successful Response
 	 * @throws ApiError
 	 */
-	public static deleteUser(data: TDataDeleteUser): CancelablePromise<Message> {
+	public static usersDeleteUser(data: TDataUsersDeleteUser): CancelablePromise<Message> {
 		const {
 userId,
 } = data;
@@ -352,7 +352,7 @@ userId,
 
 }
 
-export type TDataTestEmail = {
+export type TDataUtilsTestEmail = {
                 emailTo: string
                 
             }
@@ -365,7 +365,7 @@ export class UtilsService {
 	 * @returns Message Successful Response
 	 * @throws ApiError
 	 */
-	public static testEmail(data: TDataTestEmail): CancelablePromise<Message> {
+	public static utilsTestEmail(data: TDataUtilsTestEmail): CancelablePromise<Message> {
 		const {
 emailTo,
 } = data;
@@ -383,25 +383,25 @@ emailTo,
 
 }
 
-export type TDataReadItems = {
+export type TDataItemsReadItems = {
                 limit?: number
 skip?: number
                 
             }
-export type TDataCreateItem = {
+export type TDataItemsCreateItem = {
                 requestBody: ItemCreate
                 
             }
-export type TDataReadItem = {
+export type TDataItemsReadItem = {
                 id: number
                 
             }
-export type TDataUpdateItem = {
+export type TDataItemsUpdateItem = {
                 id: number
 requestBody: ItemUpdate
                 
             }
-export type TDataDeleteItem = {
+export type TDataItemsDeleteItem = {
                 id: number
                 
             }
@@ -411,10 +411,10 @@ export class ItemsService {
 	/**
 	 * Read Items
 	 * Retrieve items.
-	 * @returns ItemsPublic Successful Response
+	 * @returns ItemsOut Successful Response
 	 * @throws ApiError
 	 */
-	public static readItems(data: TDataReadItems = {}): CancelablePromise<ItemsPublic> {
+	public static itemsReadItems(data: TDataItemsReadItems = {}): CancelablePromise<ItemsOut> {
 		const {
 limit = 100,
 skip = 0,
@@ -434,10 +434,10 @@ skip = 0,
 	/**
 	 * Create Item
 	 * Create new item.
-	 * @returns ItemPublic Successful Response
+	 * @returns ItemOut Successful Response
 	 * @throws ApiError
 	 */
-	public static createItem(data: TDataCreateItem): CancelablePromise<ItemPublic> {
+	public static itemsCreateItem(data: TDataItemsCreateItem): CancelablePromise<ItemOut> {
 		const {
 requestBody,
 } = data;
@@ -455,10 +455,10 @@ requestBody,
 	/**
 	 * Read Item
 	 * Get item by ID.
-	 * @returns ItemPublic Successful Response
+	 * @returns ItemOut Successful Response
 	 * @throws ApiError
 	 */
-	public static readItem(data: TDataReadItem): CancelablePromise<ItemPublic> {
+	public static itemsReadItem(data: TDataItemsReadItem): CancelablePromise<ItemOut> {
 		const {
 id,
 } = data;
@@ -477,10 +477,10 @@ id,
 	/**
 	 * Update Item
 	 * Update an item.
-	 * @returns ItemPublic Successful Response
+	 * @returns ItemOut Successful Response
 	 * @throws ApiError
 	 */
-	public static updateItem(data: TDataUpdateItem): CancelablePromise<ItemPublic> {
+	public static itemsUpdateItem(data: TDataItemsUpdateItem): CancelablePromise<ItemOut> {
 		const {
 id,
 requestBody,
@@ -505,7 +505,7 @@ requestBody,
 	 * @returns Message Successful Response
 	 * @throws ApiError
 	 */
-	public static deleteItem(data: TDataDeleteItem): CancelablePromise<Message> {
+	public static itemsDeleteItem(data: TDataItemsDeleteItem): CancelablePromise<Message> {
 		const {
 id,
 } = data;
@@ -514,6 +514,202 @@ id,
 			url: '/api/v1/items/{id}',
 			path: {
 				id
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+}
+
+export type TDataCountriesCountryFromQuery = {
+                query: string
+                
+            }
+export type TDataCountriesGetLeaderInfo = {
+                state: string
+                
+            }
+export type TDataCountriesGetLegislationData = {
+                state: string
+                
+            }
+export type TDataCountriesGetEconData = {
+                state: string
+                
+            }
+
+export class CountriesService {
+
+	/**
+	 * Country From Query
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static countriesCountryFromQuery(data: TDataCountriesCountryFromQuery): CancelablePromise<unknown> {
+		const {
+query,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/countries/country_from_query/',
+			query: {
+				query
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Geojson View
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static countriesGeojsonView(): CancelablePromise<unknown> {
+				return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/countries/geojson/',
+		});
+	}
+
+	/**
+	 * Get Leader Info
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static countriesGetLeaderInfo(data: TDataCountriesGetLeaderInfo): CancelablePromise<unknown> {
+		const {
+state,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/countries/leaders/{state}',
+			path: {
+				state
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Get Legislation Data
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static countriesGetLegislationData(data: TDataCountriesGetLegislationData): CancelablePromise<unknown> {
+		const {
+state,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/countries/legislation/{state}',
+			path: {
+				state
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Get Econ Data
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static countriesGetEconData(data: TDataCountriesGetEconData): CancelablePromise<unknown> {
+		const {
+state,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/countries/econ_data/{state}',
+			path: {
+				state
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Update Leaders
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static countriesUpdateLeaders(): CancelablePromise<unknown> {
+				return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/countries/update_leaders/',
+		});
+	}
+
+	/**
+	 * Get Tavily Data
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static countriesGetTavilyData(): CancelablePromise<unknown> {
+				return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/countries/get_articles',
+		});
+	}
+
+}
+
+export type TDataSearchGetTavilyData = {
+                query: string
+                
+            }
+export type TDataSearchGetReport = {
+                query: string
+                
+            }
+
+export class SearchService {
+
+	/**
+	 * Get Tavily Data
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static searchGetTavilyData(data: TDataSearchGetTavilyData): CancelablePromise<unknown> {
+		const {
+query,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/search/get_articles',
+			query: {
+				query
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Get Report
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static searchGetReport(data: TDataSearchGetReport): CancelablePromise<Record<string, unknown>> {
+		const {
+query,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/search/report/{query}',
+			path: {
+				query
 			},
 			errors: {
 				422: `Validation Error`,

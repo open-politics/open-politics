@@ -11,7 +11,8 @@ import { generateText } from 'ai';
 import ReactMarkdown from 'react-markdown';
 import { Progress } from '@/components/ui/progress';
 import { createStreamableUI } from 'ai/rsc';
-
+import { createStreamableValue } from 'ai/rsc';
+import { streamText } from 'ai';
 
 export interface ServerMessage {
   role: 'user' | 'assistant';
@@ -23,6 +24,31 @@ export interface ClientMessage {
   role: 'user' | 'assistant';
   display: ReactNode;
 }
+
+export async function generateSummaryFromArticles(articles: string[]) {
+  const stream = createStreamableValue('');
+
+  const combinedDescriptions = articles.map(article => article.content).join('\n\n');
+
+  (async () => {
+    const { textStream } = await streamText({
+      model: openai('gpt-4o'),
+      prompt: `You are an political intelligence analyst. 
+      Provide a distillation of the information of the articles, 
+      ${combinedDescriptions}\n\n.`
+      ,
+    });
+
+    for await (const delta of textStream) {
+      stream.update(delta);
+    }
+
+    stream.done();
+  })();
+
+  return { output: stream.value };
+}
+
 
 export async function continueConversation(input: string): Promise<ClientMessage> {
   'use server';

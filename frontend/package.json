@@ -6,7 +6,8 @@
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generate-client": "openapi-ts --input ./openapi.json --output ./src/client --client axios --exportSchemas true"
   },
   "dependencies": {
     "@ai-sdk/openai": "^0.0.17",
@@ -16,6 +17,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "@fortawesome/react-fontawesome": "^0.2.1",
+    "@hey-api/openapi-ts": "^0.34.1",
     "@hookform/resolvers": "^3.4.2",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-aspect-ratio": "^1.0.3",
@@ -43,6 +45,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
+    "commander": "^12.1.0",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.1.1",
     "framer-motion": "^11.2.4",
@@ -64,6 +67,7 @@
     "react-syntax-highlighter": "^15.5.0",
     "react-textarea-autosize": "^8.5.3",
     "recharts": "^2.12.7",
+    "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.0",
     "remark-math": "^6.0.0",
     "shadcn-typography": "^1.0.7",

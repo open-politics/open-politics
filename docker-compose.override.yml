@@ -63,6 +63,13 @@ services:
     # command: sleep infinity  # Infinite loop to keep container alive doing nothing
     command: /start-reload.sh
 
+  frontend:
+      restart: "no"
+      build:
+        context: ./frontend
+        args:
+          - NEXT_PUBLIC_API_BASE_URL=http://${DOMAIN?Variable not set}
+          - NODE_ENV=development
 
 networks:
   traefik-public:
