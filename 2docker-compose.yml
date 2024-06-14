@@ -1,3 +1,4 @@
+version: "3.3"
 services:
   db:
     image: postgres:12
@@ -11,6 +12,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
       - POSTGRES_USER=${POSTGRES_USER?Variable not set}
       - POSTGRES_DB=${POSTGRES_DB?Variable not set}
+
 
   adminer:
     image: adminer
@@ -63,14 +65,11 @@ services:
       - POSTGRES_USER=${POSTGRES_USER?Variable not set}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
       - SENTRY_DSN=${SENTRY_DSN}
-      - TAVILY_API_KEY=${TAVILY_API_KEY}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
 
     build:
       context: ./backend
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
-    platform: linux/amd64 # Patch for M1 Mac
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik-public
@@ -86,12 +85,6 @@ services:
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.tls=true
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.tls.certresolver=le
 
-      # Define Traefik Middleware to handle domain with and without "www" to redirect to only one
-      - traefik.http.middlewares.${STACK_NAME?Variable not set}-www-redirect.redirectregex.regex=^http(s)?://www.(${DOMAIN?Variable not set})/(.*)
-      # Redirect a domain with www to non-www
-      - traefik.http.middlewares.${STACK_NAME?Variable not set}-www-redirect.redirectregex.replacement=http$${1}://${DOMAIN?Variable not set}/$${3}
-
-      # Enable www redirection for HTTP and HTTPS
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.middlewares=${STACK_NAME?Variable not set}-www-redirect
 
@@ -121,8 +114,16 @@ services:
   #     - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.tls=true
   #     - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.tls.certresolver=le
 
-  #     # Enable www redirection for HTTP and HTTPS
+  #     # Handle domain with and without "www" to redirect to only one
+  #     # To disable www redirection remove the next line
+  #     - traefik.http.middlewares.${STACK_NAME?Variable not set}-www-redirect.redirectregex.regex=^http(s)?://www.(${DOMAIN?Variable not set})/(.*)
+  #     # Redirect a domain with www to non-www
+  #     # To disable it remove the next line
+  #     - traefik.http.middlewares.${STACK_NAME?Variable not set}-www-redirect.redirectregex.replacement=http$${1}://${DOMAIN?Variable not set}/$${3}
+  #     # Middleware to redirect www, to disable it remove the next line
   #     - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.middlewares=${STACK_NAME?Variable not set}-www-redirect
+  #     # Middleware to redirect www, and redirect HTTP to HTTPS
+  #     # to disable www redirection remove the section: ${STACK_NAME?Variable not set}-www-redirect,
   #     - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect
 volumes:
   app-db-data:

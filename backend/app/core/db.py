@@ -7,25 +7,25 @@ from app.models import User, UserCreate
 engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
 
 def init_db(session: Session) -> None:
-    # # Drop all tables if they exist and then recreate them
-    # SQLModel.metadata.drop_all(engine)
-    # SQLModel.metadata.create_all(engine)
+    # Drop all tables if they exist and then recreate them
+    SQLModel.metadata.drop_all(engine)
+    SQLModel.metadata.create_all(engine)
 
-    # # Check if the superuser exists
-    # superuser = session.exec(
-    #     select(User).where(User.email == settings.FIRST_SUPERUSER)
-    # ).first()
+    # Check if the superuser exists
+    superuser = session.exec(
+        select(User).where(User.email == settings.FIRST_SUPERUSER)
+    ).first()
 
-    # # If the superuser doesn't exist, create one
-    # if not superuser:
-    #     superuser_data = UserCreate(
-    #         email=settings.FIRST_SUPERUSER,
-    #         password=settings.FIRST_SUPERUSER_PASSWORD,
-    #         is_superuser=True,
-    #     )
-    #     crud.create_user(session=session, user_create=superuser_data)
+    # If the superuser doesn't exist, create one
+    if not superuser:
+        superuser_data = UserCreate(
+            email=settings.FIRST_SUPERUSER,
+            password=settings.FIRST_SUPERUSER_PASSWORD,
+            is_superuser=True,
+        )
+        crud.create_user(session=session, user_create=superuser_data)
 
-    #     print("Superuser created.")
+        print("Superuser created.")
     user = session.exec(
         select(User).where(User.email == settings.FIRST_SUPERUSER)
     ).first()

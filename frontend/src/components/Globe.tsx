@@ -328,3 +328,4 @@ const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCou
 
 export default Globe;
 
+

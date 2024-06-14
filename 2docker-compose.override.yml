@@ -1,3 +1,4 @@
+version: "3.3"
 services:
 
   proxy:
@@ -36,12 +37,9 @@ services:
       # Dummy https-redirect middleware that doesn't really redirect, only to
       # allow running it locally
       - traefik.http.middlewares.https-redirect.contenttype.autodetect=false
-    networks:
-      - traefik-public
-      - default
 
   db:
-    restart: "no"
+    restart: "always"
     ports:
       - "5432:5432"
 
@@ -64,12 +62,12 @@ services:
     command: /start-reload.sh
 
   # frontend:
-  #     restart: "no"
-  #     build:
-  #       context: ./frontend
-  #       args:
-  #         - NEXT_PUBLIC_API_BASE_URL=http://${DOMAIN?Variable not set}
-  #         - NODE_ENV=development
+  #   restart: "no"
+  #   build:
+  #     context: ./frontend
+  #     args:
+  #       - VITE_API_URL=http://${DOMAIN?Variable not set}
+  #       - NODE_ENV=development
 
 networks:
   traefik-public:
