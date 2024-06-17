@@ -27,12 +27,16 @@ const Results: React.FC<{ results: any, summary?: string }> = ({ results, summar
   };
 
   return (
-    <div className="relative mt-80 w-2/4 md:w-2/3 ml-24 h-1/3 bg-opacity-20 backdrop backdrop-blur-lg rounded-lg p-4 overflow-hidden">
+    <div className="bg-opacity-20 backdrop backdrop-blur-lg md:w-2/3 w-full rounded-lg p-4 overflow-hidden">
       <h2 className="text-xl mb-2">Articles & Summary</h2>
       <Button className='my-2 mb-3' variant="outline" onClick={() => setShowArticles(!showArticles)}>
         {showArticles ? 'Hide' : 'Show'}
       </Button>
-      {summary && <div className="p-4 m-2 ml-0 pl-2 h-48 h-auto max-h-96 overflow-auto"><ReactMarkdown remarkPlugins={[remarkBreaks]}>{preprocessMarkdown(summary)}</ReactMarkdown></div>}
+      {showArticles && (
+        <div>
+          {summary && <div className="p-4 m-2 ml-0 pl-2 h-48 h-auto max-h-96 overflow-auto"><ReactMarkdown remarkPlugins={[remarkBreaks]}>{preprocessMarkdown(summary)}</ReactMarkdown></div>}
+        </div>
+      )}
       {showArticles && (
         <div className="inner-content h-full overflow-auto">
           {results.images && results.images.length > 0 && (

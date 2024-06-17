@@ -12,6 +12,7 @@ import LeaderInfo from '../components/LeaderInfo';
 import Results from '../components/Results';
 import { IssueAreas } from '../components/IssueAreas';
 import { OpenAPI } from 'src/client';
+import CountryDetailPanel from '../components/CountryDetailPanel';
 
 const Globe = dynamic(() => import('../components/Globe'), { ssr: false });
 
@@ -32,6 +33,8 @@ const HomePage: React.FC = () => {
   const globeRef = useRef<any>(null);
   const [legislativeData, setLegislativeData] = useState([]);
   const [economicData, setEconomicData] = useState([]);
+  const [isVisible, setIsVisible] = useState(false); // Added state for visibility
+  const [windowWidth, setWindowWidth] = useState<number>(0); // Added state for window width
 
   const { toast } = useToast();
 
@@ -62,6 +65,17 @@ const HomePage: React.FC = () => {
     }, 1000);
 
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const handleCountryClick = async (countryName: string) => {
@@ -97,28 +111,43 @@ const HomePage: React.FC = () => {
     }
     return 0;
   };
-
+  const toggleVisibility = () => {
+    setIsVisible(!isVisible);
+  };
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      <div className="container relative mx-auto px-4 mt-0 min-h-screen max-w-full overflow-x-hidden">
+      <div className="container relative mx-auto px-4 mt-0 min-h-screen max-w-full max-h-full overflow-x-hidden">
         <div className="background"></div> {/* Background div */}
-        <h1 className="my-2 pt-8 text-3xl text-left ml-8">{currentTime}</h1>
+        <h1 suppressHydrationWarning className="my-0 pt-2 text-3xl text-left ml-8">{currentTime}</h1>
+
+        {/* Globe */}
         <motion.div
           id="globe-container"
-          className="absolute w-full"
-          initial={{ height: '700px', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
-          animate={isBrowseMode ? (
-            getWindowWidth() < 768 ? 
-              { height: '200px', top: '15%', left: '50%', transform: 'translate(-50%, -50%)' } :
-              { height: '800px', top: '45%', left: '40%', transform: 'translate(-50%, -50%)' }
-          ) : (
-            getWindowWidth() < 768 ? 
-              { height: '50px', top: '7rem', left: '10rem', transform: 'translate(0, -20%)' } :
-              { height: '50px', top: '2rem', left: '25rem', transform: 'translate(0, -20%)' }
-          )}
+          className="relative"
+          initial={{ top: '10%', left: '50%', transform: 'translateX(-50%)' }}
+          animate={getWindowWidth() > 768 ? {
+            // desktop view
+            opacity: 1,
+            top: isBrowseMode ? '50%' : '40%',
+            left: isBrowseMode ? '50%' : '40%',
+            transform: 'translate(-50%, -50%)',
+            position: 'absolute',
+            height: isBrowseMode ? '1000px' : '200px',
+            width: isBrowseMode ? '100%' : '100%'
+          } : {
+            // mobile view
+            opacity: 1,
+            top: isBrowseMode ? '55%' : '40%',
+            left: isBrowseMode ? '50%' : '40%',
+            transform: 'translate(-50%, -50%)',
+            position: 'absolute',
+            height: isBrowseMode ? '1000px' : '200px',
+            width: isBrowseMode ? '100%' : '100%'
+          }}
           transition={{ duration: 0.5 }}
         >
-          <Globe ref={globeRef}
+          <Globe
+            ref={globeRef}
             geojsonUrl={geojsonUrl}
             setArticleContent={setArticleContent}
             onCountryClick={handleCountryClick}
@@ -128,98 +157,100 @@ const HomePage: React.FC = () => {
             setEconomicData={setEconomicData}
           />
         </motion.div>
+        
+        {/* Search */}
         <motion.div
           className="absolute w-full"
           initial={{ top: 'calc(50% + 250px)', left: '50%', transform: 'translate(-50%, 0)' }}
-          animate={isBrowseMode ? (
-            getWindowWidth() < 768 ? 
-              { width: '100%', top: '450px', left: '50%', transform: 'translate(-50%, 0)' } :
-              { width: '100%', top: 'calc(50% + 50px)', left: '55%', transform: 'translate(-50%, 0)' }
-          ) : (
-            getWindowWidth() < 768 ? 
-              { width: '100%', top: '200px', left: '50%', transform: 'translate(-50%, 0)' } :
-              { width: '2/3', top: '200px', left: '6rem', transform: 'translate(0, 0)' }
-          )}
+          animate={getWindowWidth() > 768 ? {
+            // desktop view
+            top: isBrowseMode ? 'calc(100% - 200px)' : '50%',
+            left: isBrowseMode ? 'calc(50% + 1/6 * 100%)' : 'calc(50% + 1/6 * 100%)',
+            transform: 'translate(-50%, -50%)', // Centers both horizontally and vertically
+            height: isBrowseMode ? '700px' : '50px', // Adjust height based on mode
+            width: isBrowseMode ? '100%' : '100%' // Adjust width based on mode
+          } : {
+            // mobile view
+            top: isBrowseMode ? 'calc(100%)' : '50%',
+            left: isBrowseMode ? '50%' : '50%',
+            transform: 'translate(-50%, -50%)', // Centers both horizontally and vertically
+            height: isBrowseMode ? '700px' : '50px', // Adjust height based on mode
+            width: isBrowseMode ? '100%' : '100%' // Adjust width based on mode
+          }}
           transition={{ duration: 0.5 }}
         >
           <Search setResults={handleSearch} setCountry={setCountry} globeRef={globeRef} setSummary={handleSummary} />
         </motion.div>
 
+        {/* Results */}
         <motion.div
           className="absolute w-full"
-          initial={{ top: 'calc(50% + 300px)', left: '50%', transform: 'translate(-50%, 0)' }}
-          animate={isBrowseMode ? (
-            getWindowWidth() < 768 ? { width: 'full', top: 'calc(50% + 100px)', left: '50%', transform: 'translate(-50%, 0)', zIndex: "100" } :
-              { width: '100%', top: 'calc(50% + 100px)', left: '50%', transform: 'translate(-50%, 0)' }
-          ) : (
-            getWindowWidth() < 768 ? { width: '80%', top: '150px', left: '50%', transform: 'translate(-50%, 0)' } :
-              { width: '80%', top: '150px', left: '', transform: 'translate(0, 0)' }
-          )}
+          initial={{ display: 'none' }}
+          animate={getWindowWidth() > 768 ? {
+            // desktop view
+            top: isBrowseMode ? 'calc(50% + 300px)' : 'calc(50% + 200px)',
+            left: isBrowseMode ? 'calc(50% + 1/6 * 100%)' : 'calc(50% + 1/6 * 100%)',
+            transform: isBrowseMode ? 'translate(-50%, 0)' : 'translate(-50%, 0)',
+            height: isBrowseMode ? '0px' : '100%',
+            width: isBrowseMode ? '100%' : '100%',
+            display: isBrowseMode ? 'none' : 'block',
+          } : {
+            // mobile view
+            position: 'absolute',
+            top: isBrowseMode ? '0px' : 'calc(100% - 200px)',
+            left: isBrowseMode ? '50%' : '50%',
+            transform: isBrowseMode ? 'translate(-50%, 0)' : 'translate(-50%, 0)',
+            height: isBrowseMode ? '0px' : '100%',
+            width: isBrowseMode ? '100%' : '100%',
+            display: isBrowseMode ? 'none' : 'block',
+          }}
           transition={{ duration: 0.5 }}
         >
           <Results results={results} summary={summary} />
         </motion.div>
 
-        <motion.div
-          className="absolute w-full"
-          initial={{ top: 'calc(10% + 350px)', left: '50%', transform: 'translate(-50%, 0)' }}
-          animate={isBrowseMode ? (
-            getWindowWidth() < 768 ? 
-              { height: "20%", width: '100%', top: 'calc(20% + 150px)', left: '50%', transform: 'translate(-50%, 0)', zIndex: "-1" } :
-              { width: '100%', top: 'calc(20% + 25px)', left: '110%', transform: 'translate(-50%, 0)' }
-          ) : (
-            getWindowWidth() < 768 ? 
-              { width: '80%', top: '200px', left: '50%', transform: 'translate(-50%, 0)' } :
-              { width: '80%', top: '200px', left: '50%', transform: 'translate(0, 0)' }
-          )}
+         {/* Country detail panel */}
+         <motion.div
+          className="relative"
+          initial={{ display: 'none' }}
+          animate={getWindowWidth() > 768 ? {
+            // desktop view
+            bottom: isVisible ? '0' : 'auto',
+            top: isVisible ? 'auto' : 'calc(100vh - 200px)',
+            left: '50%',
+            transform: 'translate(-50%, 0)',
+            height: '100%',
+            width: '100%',
+            display: 'block',
+          } : {
+            // mobile view
+            bottom: isVisible ? '0' : 'auto',
+            top: isVisible ? 'auto' : 'calc(0vh)',
+            left: '50%',
+            transform: 'translate(-50%, 0)',
+            height: '100%',
+            width: '100%',
+            display: 'block',
+          }}
           transition={{ duration: 0.5 }}
         >
-          <WikipediaView content={articleContent} style={{ filter: 'none' }} />
-        </motion.div>
-
-        <motion.div
-          className="absolute w-full"
-          initial={{ top: 'calc(30% + 400px)', left: '50%', transform: 'translate(-50%, 0)' }}
-          animate={isBrowseMode ? (
-            getWindowWidth() < 768 ? 
-              { width: '100%', top: 'calc(30% + 800px)', left: '50%', transform: 'translate(-50%, 0)' } :
-              { width: '100%', top: 'calc(24% + 200px)', left: '50%', transform: 'translate(-50%, 0)' }
-          ) : (
-            getWindowWidth() < 768 ? 
-              { width: '80%', top: '650px', left: '50%', transform: 'translate(-50%, 0)' } :
-              { width: '80%', top: '500px', left: '20%', transform: 'translate(0, 0)' }
-          )}
-          transition={{ duration: 0.5 }}
-        >
-          <IssueAreas legislativeData={legislativeData} economicData={economicData} />
-        </motion.div>
-
-        {leaderInfo && (
-          <motion.div
-            className="absolute w-full"
-            initial={{ top: 'calc(50% + 450px)', left: '50%', transform: 'translate(-50%, 0)' }}
-            animate={isBrowseMode ? (
-              getWindowWidth() < 768 ? 
-                { width: '100%', top: 'calc(20% + 200px)', left: '50%', transform: 'translate(-50%, 0)' } :
-                { width: '100%', top: 'calc(20% + 20px)', left: 'calc(50% + 32rem)', transform: 'translate(-50%, 0)' }
-            ) : (
-              getWindowWidth() < 768 ? 
-                { width: '80%', top: '300px', left: '50%', transform: 'translate(-50%, 0)' } :
-                { width: '80%', top: '180px', left: 'calc(30% + 130px)', transform: 'translate(0, 0)' }
-            )}
-            transition={{ duration: 0.5 }}
-          >
-            <LeaderInfo
-              state={leaderInfo.State}
-              headOfState={leaderInfo['Head of State']}
-              headOfStateImage={leaderInfo['Head of State Image']}
-              headOfGovernment={leaderInfo['Head of Government']}
-              headOfGovernmentImage={leaderInfo['Head of Government Image']}
-            />
-          </motion.div>
+          <CountryDetailPanel
+            articleContent={articleContent}
+            legislativeData={legislativeData}
+            economicData={economicData}
+            leaderInfo={leaderInfo}
+            isVisible={isVisible}
+            toggleVisibility={toggleVisibility}
+          />
+        {windowWidth < 768 && (
+          <Button onClick={toggleVisibility} className="relative left-1/2 transform -translate-x-1/2 px-4 py-2 z-50">
+            {isVisible ? 'Hide Details' : 'Show Details'}
+          </Button>
         )}
-        
-        <Button onClick={toggleMode} className="fixed bottom-4 right-4 px-4 py-2 z-50">
+        </motion.div>
+
+        {/* Toggle button */}
+        <Button onClick={toggleMode} className="absolute bottom-24 right-0 transform -translate-x-1/2 px-4 py-2 z-50">
           {isBrowseMode ? 'Show Detail View' : 'Show Browse View'}
         </Button>
       </div>

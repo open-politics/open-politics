@@ -75,17 +75,17 @@ const Header = () => {
       </div>
 
       {menuOpen && (
-        <div className="mobile-menu md:hidden z-10 bg-white dark:bg-gray-900">
-          <Link href="/about" className="block py-2 px-4 text-sm mb-2">About</Link>
-          <Link href="/news_blog" className="block py-2 px-4 text-sm mb-2">News</Link>
-          <a href="mailto:engage@open-politics.org" className="block py-2 px-4 text-sm mb-2">Contact</a>
-          <a href="https://github.com/JimVincentW/open-politics" className="block py-2 px-4 text-sm mb-2 flex items-center">
-            <FaGithub className="h-6 w-auto dark:invert" />
+        <div className="mobile-menu md:hidden z-10 flex flex-column items-center justify-center">
+          <Link href="/about" className="block py-2 px-2 text-sm mb-2">About</Link>
+          <Link href="/news_blog" className="block py-2 px-2 text-sm mb-2">News</Link>
+          <a href="mailto:engage@open-politics.org" className="block py-2 px-2 text-sm mb-2">Contact</a>
+          <a href="https://github.com/JimVincentW/open-politics" className="block py-2 px-2 text-sm mb-2 flex items-center">
+            <FaGithub className="h-6 w-6" />
           </a>
-          <form id="login-form" method="GET" action="/login" className="py-2 px-4 text-sm mb-2 flex items-center">
+          <form id="login-form" method="GET" action="/login" className="py-2 px-2 text-sm mb-2 flex items-center">
             <button type="submit" className="w-full text-left">Login</button>
           </form>
-          <div className="flex items-center py-5 px-3 dark:text-white">
+          <div className="flex items-center py-4 mb-2 px-3 dark:text-white">
               <Switch checked={darkMode} onCheckedChange={toggleDarkMode} />
               {darkMode ? <Sun className="ml-2" /> : <Moon className="ml-2" />}
             </div>

@@ -228,8 +228,8 @@ export function IssueAreas({ legislativeData, economicData }) {
   );
 
   return (
-    <div className="fixed right-24 top-1/3 mt-2">
-      <Tabs defaultValue="news" className="w-[300px] md:w-[450px]">
+    <div className="relative md:w-2/3 w-full">
+      <Tabs defaultValue="news" className="w-full px-2">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="news">News
                  <span className="flex h-3 w-3 ml-1 rounded-full bg-sky-500" />

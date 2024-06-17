@@ -6,6 +6,14 @@ import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import axios from 'axios';
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge"
+import { Compass } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
+import { Play } from 'lucide-react';
+import { Pause } from 'lucide-react';
+import { Cog } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface GlobeProps {
   geojsonUrl: string;
@@ -14,7 +22,7 @@ interface GlobeProps {
   isBrowseMode: boolean;
   toggleMode: () => void;
   setLegislativeData: (data: any) => void;
-  setEconomicData: (data: any) => void; // Add setEconomicData prop
+  setEconomicData: (data: any) => void;
 }
 
 const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCountryClick, isBrowseMode, toggleMode, setLegislativeData, setEconomicData }, ref) => {
@@ -29,7 +37,7 @@ const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCou
 
   const initialRotationX = 0;
   const initialRotationY = 0;
-  const initialZoomLevel = 0.1;
+  const initialZoomLevel = 1;
 
   useEffect(() => {
     setIsClient(true);
@@ -104,8 +112,8 @@ const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCou
       circle.events.on("click", function(ev) {
         const dataItem = ev.target.dataItem;
         const articles = dataItem.dataContext.articles;
-        const articleContent = articles.map((article: any) => `<a href="${article.url}" target="_blank">${article.headline}</a>`).join('<br/>');
-        const content = `<div><strong>${dataItem.dataContext.title}</strong><br/>${articleContent}</div>`;
+        const articleContent = articles.map((article: any) => `<a href="${article.url}" target="_blank">${article.headline}</a>`).join('<hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">');
+        const content = `<div>Articles for location: <strong>${dataItem.dataContext.title}</strong><br/>${articleContent}</div>`;
         setArticleContent(content);
         onCountryClick(dataItem.dataContext.title);
       });
@@ -125,7 +133,6 @@ const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCou
       tooltipText: "{name}",
       toggleKey: "active",
       interactive: true,
-      // fill: am5.color(0x0e1a36), // Dark Blue
       fill: am5.color(0xfcfcfc), // White
       fillOpacity: 1,
       stroke: am5.color(0x0e1a36), 
@@ -216,7 +223,7 @@ const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCou
     const content = await fetchWikipediaContent(countryName);
     setArticleContent(content);
     onCountryClick(countryName);
-  
+
     // Fetch legislative data for the selected country
     const legislativeDataUrl = `http://dev.open-politics.org/api/v1/countries/legislation/${countryName}`;
     try {
@@ -226,7 +233,7 @@ const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCou
     } catch (error) {
       console.error('Error fetching legislative data:', error);
     }
-  
+
     // Fetch economic data for the selected country
     const economicDataUrl = `http://dev.open-politics.org/api/v1/countries/econ_data/${countryName}`;
     try {
@@ -258,9 +265,9 @@ const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCou
         rotationAnimationRef.current.stop();
       }
 
-      chartInstanceRef.current.animate({ key: "rotationX", to: -initialRotationX, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
-      chartInstanceRef.current.animate({ key: "rotationY", to: -initialRotationY, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
-      chartInstanceRef.current.zoomToGeoPoint({ latitude: initialRotationY, longitude: initialRotationX }, initialZoomLevel);
+      chartInstanceRef.current.animate({ key: "rotationX", to: 0, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
+      chartInstanceRef.current.animate({ key: "rotationY", to: 0, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
+      chartInstanceRef.current.zoomToGeoPoint({ latitude: 0, longitude: 0 }, initialZoomLevel);
 
       setTimeout(() => {
         if (isRotating) {
@@ -292,40 +299,51 @@ const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCou
     }
   };
 
+  const getWindowWidth = () => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth;
+    }
+    return 0;
+  };
+
   if (!isClient) return null;
   return (
-    <div className="relative">
-      <div id="chartdiv" className="" style={{ width: "100%", height: "400px", marginTop: "4rem", position: "relative" }}>
-        <div id="mover" className="absolute bottom-0 left-0 w-14 h-12 bg-white dark:bg-background text-zinc-100" style={{ zIndex: 1 }}></div>
+    <div className="relative flex flex-col items-center">
+      <div id="chartdiv" className="w-full h-96 sm:h-128 mt-16 relative">
+        <div id="mover" className="absolute bottom-0 left-0 w-14 h-12 bg-white dark:bg-background text-zinc-100 z-10"></div>
       </div>
       {isBrowseMode && (
-        <div className="absolute top-0 left-0 flex gap-2 pt-4 ml-8">
-          <Button className='mt-2' variant="outline" onClick={handlePlayPause}>
-            {isRotating ? 'Pause' : 'Play'}
-          </Button>
-          <Button className='mt-2' variant="outline" onClick={handleHome}>
-            Home/Restart
-          </Button>
-          <Button className='mt-2' variant="outline" onClick={handleResume}>
-            Reset
-          </Button>
-          <div className="flex items-center">
-            <span className="text-white bg-transparent ml-2">+ -</span>
-            <Slider
-              value={[zoomLevel]}
-              onValueChange={handleZoomChange}
-              min={0.4}
-              max={3}
-              step={0.35}
-              className="w-32"
-            />
-          </div>
-        </div>
+        <Popover>
+          <PopoverTrigger as={Button} className='mt-2' variant="outline">
+            {getWindowWidth() <= 768 ? <Cog /> : <Cog />}
+          </PopoverTrigger>
+          <PopoverContent className="flex flex-col items-center">
+            <Button className='mt-2 w-full' variant="outline" onClick={handlePlayPause}>
+              {isRotating ? <Pause className={`${getWindowWidth() <= 768 ? "w-4 h-4" : "w-6 h-6"}`} /> : <Play className={`${getWindowWidth() <= 768 ? "w-4 h-4" : "w-6 h-6"}`} />}
+            </Button>
+            <Button className='mt-2 w-full' variant="outline" onClick={handleHome}>
+              <RotateCcw className={`${getWindowWidth() <= 768 ? "w-4 h-4" : "w-6 h-6"}`} />
+            </Button>
+            <Button className='mt-2 w-full' variant="outline" onClick={handleResume}>
+              <Compass className={`${getWindowWidth() <= 768 ? "w-4 h-4" : "w-6 h-6"}`} />
+            </Button>
+            <div className="flex items-center mt-2 w-full justify-center">
+              <span className="text-white bg-transparent ml-2">+ -</span>
+              <Slider
+                value={[zoomLevel]}
+                onValueChange={handleZoomChange}
+                min={0.4}
+                max={3}
+                step={0.35}
+                className="w-full"
+              />
+            </div>
+          </PopoverContent>
+        </Popover>
       )}
     </div>
   );
 });
 
 export default Globe;
-
 

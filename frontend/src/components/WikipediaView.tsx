@@ -13,18 +13,9 @@ interface WikipediaViewProps {
   } | null;
 }
 
-const WikipediaView: React.FC<WikipediaViewProps> = ({ content, leaderInfo }) => {
+const WikipediaView: React.FC<WikipediaViewProps> = ({ content }) => {
   return (
-    <div id="articleWindow" className={cn("leader-info fixed w-[450px] h-[200px] bg-black bg-opacity-30 backdrop backdrop-blur-xl rounded-lg p-4 shadow-sm overflow-hidden")}>
-      {leaderInfo && (
-        <LeaderInfo 
-          state={leaderInfo.state}
-          headOfState={leaderInfo.headOfState}
-          headOfStateImage={leaderInfo.headOfStateImage}
-          headOfGovernment={leaderInfo.headOfGovernment}
-          headOfGovernmentImage={leaderInfo.headOfGovernmentImage}
-        />
-      )}
+    <div id="articleWindow" className={cn("bg-opacity-30 md:w-2/3 w-full backdrop backdrop-blur-xl rounded-lg p-4 shadow-sm overflow-hidden")}>
       <div className={cn("inner-content h-full overflow-auto")}>
         <div dangerouslySetInnerHTML={{ __html: content }} />
       </div>

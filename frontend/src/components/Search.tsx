@@ -13,7 +13,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import axios from 'axios';
 import { generateSummaryFromArticles } from '@/app/actions';
 import { readStreamableValue } from 'ai/rsc';
-
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface SearchProps {
   setResults: (results: any) => void;
@@ -25,6 +33,8 @@ interface SearchProps {
 const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, globeRef }) => {
   const [inputValue, setInputValue] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
 
   const handleSearch = async (query: string) => {
     try {
@@ -112,7 +122,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
   };
 
   return (
-    <div className="relative mt-8 ml-8 w-[300px] md:w-[550px] border bg-background rounded-lg p-2">
+    <div className="relative mt-2 w-full md:w-2/3 px-4">
       <h2 className="text-xl font-bold mb-2">Search News and all things Politics</h2>
       <Command className="mx-auto">
         <CommandInput
@@ -120,22 +130,41 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
           value={inputValue}
           onValueChange={setInputValue}
           placeholder="e.g. Economy of Oman"
+          style={{ fontSize: '16px' }}
         />
-        <CommandList>
-          <CommandGroup heading="Suggestions">
-            <CommandItem onSelect={() => handleSuggestionSelect('The economic situation of South Africa')}>
-              The economic situation of South Africa
-            </CommandItem>
-            <CommandItem onSelect={() => handleSuggestionSelect('How has Iran positioned itself towards Ukraine?')}>
-              How has Iran positioned itself towards Ukraine?
-            </CommandItem>
-            <CommandItem onSelect={() => handleSuggestionSelect('News from Singapore')}>
-              News from Singapore
-            </CommandItem>
-            <CommandItem onSelect={() => handleSuggestionSelect('Political climate in Brazil')}>
-              Political climate in Brazil
-            </CommandItem>
-          </CommandGroup>
+        <div className="absolute right-2 top-2 md:hidden">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button onClick={() => setDropdownOpen(!dropdownOpen)}>
+                {dropdownOpen ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuLabel>Analysis Type</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={() => console.log('Conflict Analysis')}>Conflict Analysis</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => console.log('News Analysis')}>News Analysis</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => console.log('Economic Analysis')}>Economic Analysis</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <CommandList className="hidden md:block">
+          <div className="hidden md:block">
+            <CommandGroup heading="Suggestions">
+              <CommandItem onSelect={() => handleSuggestionSelect('The economic situation of South Africa')}>
+                The economic situation of South Africa
+              </CommandItem>
+              <CommandItem onSelect={() => handleSuggestionSelect('How has Iran positioned itself towards Ukraine?')}>
+                How has Iran positioned itself towards Ukraine?
+              </CommandItem>
+              <CommandItem onSelect={() => handleSuggestionSelect('News from Singapore')}>
+                News from Singapore
+              </CommandItem>
+              <CommandItem onSelect={() => handleSuggestionSelect('Political climate in Brazil')}>
+                Political climate in Brazil
+              </CommandItem>
+            </CommandGroup>
+          </div>
           <CommandSeparator />
           <CommandGroup heading="Method Focus">
             <RadioGroup defaultValue="option-one">
@@ -161,25 +190,28 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
           value={inputValue}
           onValueChange={setInputValue}
           placeholder="e.g. Economy of Oman"
+          style={{ fontSize: '16px' }} // Ensure the font size is 16px or larger
         />
         <CommandList>
-          <CommandGroup heading="Suggestions">
-            <CommandItem onSelect={() => handleSuggestionSelect('The economic situation of South Africa')}>
-              The economic situation of South Africa
-            </CommandItem>
-            <CommandItem onSelect={() => handleSuggestionSelect('How has Iran positioned itself towards Ukraine?')}>
-              How has Iran positioned itself towards Ukraine?
-            </CommandItem>
-            <CommandItem onSelect={() => handleSuggestionSelect('News from Singapore')}>
-              News from Singapore
-            </CommandItem>
-            <CommandItem onSelect={() => handleSuggestionSelect('Political climate in Brazil')}>
-              Political climate in Brazil
-            </CommandItem>
-          </CommandGroup>
+          <div className="hidden md:block">
+            <CommandGroup heading="Suggestions">
+              <CommandItem onSelect={() => handleSuggestionSelect('The economic situation of South Africa')}>
+                The economic situation of South Africa
+              </CommandItem>
+              <CommandItem onSelect={() => handleSuggestionSelect('How has Iran positioned itself towards Ukraine?')}>
+                How has Iran positioned itself towards Ukraine?
+              </CommandItem>
+              <CommandItem onSelect={() => handleSuggestionSelect('News from Singapore')}>
+                News from Singapore
+              </CommandItem>
+              <CommandItem onSelect={() => handleSuggestionSelect('Political climate in Brazil')}>
+                Political climate in Brazil
+              </CommandItem>
+            </CommandGroup>
+          </div>
           <CommandSeparator />
           <CommandGroup heading="Recent Searches">
-            {/* You can add recent search items here if needed */}
+            {/* Future place for recent search items */}
           </CommandGroup>
         </CommandList>
       </CommandDialog>
