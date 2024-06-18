@@ -152,15 +152,6 @@ export function IssueAreas({ legislativeData, economicData }) {
     []
   );
 
-  const mediaAnalysisData = useMemo(
-    () => [
-      { name: "Security", issue: "Increased military presence in border areas.", relevance: "High" },
-      { name: "Environmental Protection", issue: "New policies to reduce carbon emissions.", relevance: "Medium" },
-      { name: "Economic Stability", issue: "Efforts to stabilize the national currency.", relevance: "High" },
-    ],
-    []
-  );
-
   const newsColumns = useMemo(
     () => [
       {
@@ -209,34 +200,15 @@ export function IssueAreas({ legislativeData, economicData }) {
     []
   );
 
-  const mediaAnalysisColumns = useMemo(
-    () => [
-      {
-        accessorKey: "name",
-        header: "Name",
-      },
-      {
-        accessorKey: "issue",
-        header: "Issue",
-      },
-      {
-        accessorKey: "relevance",
-        header: "Relevance",
-      },
-    ],
-    []
-  );
-
   return (
-    <div className="relative md:w-2/3 w-full">
+    <div className="relative md:w-2/3 w-full py-2">
       <Tabs defaultValue="news" className="w-full px-2">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="news">News
                  <span className="flex h-3 w-3 ml-1 rounded-full bg-sky-500" />
           </TabsTrigger>
           <TabsTrigger value="economic-data">Econ. Data</TabsTrigger>
           <TabsTrigger value="legislation">Legislation</TabsTrigger>
-          <TabsTrigger value="media-analysis">Media Analysis</TabsTrigger>
         </TabsList>
         <TabsContent value="news">
           <Card>
@@ -283,47 +255,14 @@ export function IssueAreas({ legislativeData, economicData }) {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Tabs defaultValue="law" className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="law">Law</TabsTrigger>
-                  <TabsTrigger value="environmental">Environmental</TabsTrigger>
-                  <TabsTrigger value="hot-issues">Hot Issues</TabsTrigger>
-                </TabsList>
-                <TabsContent value="law">
-                  <div className="max-h-64 overflow-y-auto">
+ 
+                  <div className="max-h-80 overflow-y-auto">
                     <DataTable columns={legislationColumns} data={legislativeData} />
                   </div>
-                </TabsContent>
-                <TabsContent value="environmental">
-                  <div className="max-h-64 overflow-y-auto">
-                    <DataTable columns={environmentalLegislationColumns} data={environmentalLegislationData} />
-                  </div>
-                </TabsContent>
-                <TabsContent value="hot-issues">
-                  <div className="max-h-64 overflow-y-auto">
-                    <DataTable columns={hotIssuesColumns} data={hotIssuesData} />
-                  </div>
-                </TabsContent>
-              </Tabs>
+                
             </CardContent>
             <CardFooter>
               <Button>Learn more</Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-        <TabsContent value="media-analysis">
-          <Card>
-            <CardHeader>
-              <CardTitle>Media Analysis</CardTitle>
-              <CardDescription>
-                Current important dynamics in the country.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <DataTable columns={mediaAnalysisColumns} data={mediaAnalysisData} />
-            </CardContent>
-            <CardFooter>
-              <Button>Explore more</Button>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -331,3 +270,4 @@ export function IssueAreas({ legislativeData, economicData }) {
     </div>
   );
 }
+

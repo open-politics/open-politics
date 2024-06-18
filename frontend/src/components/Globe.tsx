@@ -6,8 +6,6 @@ import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import axios from 'axios';
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge"
 import { Compass } from 'lucide-react';
 import { RotateCcw } from 'lucide-react';
 import { Play } from 'lucide-react';
@@ -313,33 +311,32 @@ const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCou
         <div id="mover" className="absolute bottom-0 left-0 w-14 h-12 bg-white dark:bg-background text-zinc-100 z-10"></div>
       </div>
       {isBrowseMode && (
-        <Popover>
-          <PopoverTrigger as={Button} className='mt-2' variant="outline">
-            {getWindowWidth() <= 768 ? <Cog /> : <Cog />}
-          </PopoverTrigger>
-          <PopoverContent className="flex flex-col items-center">
-            <Button className='mt-2 w-full' variant="outline" onClick={handlePlayPause}>
-              {isRotating ? <Pause className={`${getWindowWidth() <= 768 ? "w-4 h-4" : "w-6 h-6"}`} /> : <Play className={`${getWindowWidth() <= 768 ? "w-4 h-4" : "w-6 h-6"}`} />}
-            </Button>
-            <Button className='mt-2 w-full' variant="outline" onClick={handleHome}>
-              <RotateCcw className={`${getWindowWidth() <= 768 ? "w-4 h-4" : "w-6 h-6"}`} />
-            </Button>
-            <Button className='mt-2 w-full' variant="outline" onClick={handleResume}>
-              <Compass className={`${getWindowWidth() <= 768 ? "w-4 h-4" : "w-6 h-6"}`} />
-            </Button>
-            <div className="flex items-center mt-2 w-full justify-center">
-              <span className="text-white bg-transparent ml-2">+ -</span>
-              <Slider
-                value={[zoomLevel]}
-                onValueChange={handleZoomChange}
-                min={0.4}
-                max={3}
-                step={0.35}
-                className="w-full"
-              />
-            </div>
-          </PopoverContent>
-        </Popover>
+        <div className="absolute bottom-8 left-1/2 z-10">
+          <Popover>
+            <PopoverTrigger as={Button} className='mt-2' variant="outline">
+              {getWindowWidth() <= 768 ? <Cog /> : <Cog />}
+            </PopoverTrigger>
+            <PopoverContent className="flex flex-col items-center">
+              <Button className='mt-2 w-full' variant="outline" onClick={handleHome}>
+                <RotateCcw className={`${getWindowWidth() <= 768 ? "w-4 h-4" : "w-6 h-6"}`} />
+              </Button>
+              <Button className='mt-2 w-full' variant="outline" onClick={handleResume}>
+                <Compass className={`${getWindowWidth() <= 768 ? "w-4 h-4" : "w-6 h-6"}`} />
+              </Button>
+              <div className="flex items-center mt-2 w-full justify-center">
+                <span className="text-white bg-transparent ml-2">+ -</span>
+                <Slider
+                  value={[zoomLevel]}
+                  onValueChange={handleZoomChange}
+                  min={0.4}
+                  max={3}
+                  step={0.35}
+                  className="w-full"
+                />
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
       )}
     </div>
   );

@@ -17,8 +17,8 @@ const CustomTooltip = ({ active, payload, label }) => {
     const gdpGrowthRate = payload.find(p => p.dataKey === 'gdpGrowthRate').value;
 
     return (    
-      <div className="custom-tooltip p-2 bg-transparent bg-opacity-50  shadow-xl rounded-xl backdrop-blur-lg">
-        <p className="intro text-sm text-white">{`GDP: ${gdp} billion $`}</p>
+      <div className="custom-tooltip p-2 bg-transparent bg-opacity-90  shadow-xl rounded-xl backdrop-blur-lg">
+        <p className="intro text-sm text-black dark:text-white">{`GDP: ${gdp} billion $`}</p>
         <p className="desc text-sm text-green-500">{`GDP Growth Rate: ${gdpGrowthRate}%`}</p>
       </div>
     );
@@ -32,7 +32,7 @@ export default class EconomicDataChart extends PureComponent {
     const { data } = this.props;
 
     return (
-      <div className="highlight-bar-charts" style={{ userSelect: 'none', width: '100%' }}>
+      <div className="highlight-bar-charts" style={{ userSelect: 'none', width: '100%', maxWidth: '100%' }}>
         <ResponsiveContainer width="100%" height={240}>
           <LineChart
             width={800}

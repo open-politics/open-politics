@@ -13,6 +13,10 @@ import Results from '../components/Results';
 import { IssueAreas } from '../components/IssueAreas';
 import { OpenAPI } from 'src/client';
 import CountryDetailPanel from '../components/CountryDetailPanel';
+import { MoveLeftIcon } from 'lucide-react';
+import { Map } from 'lucide-react';
+import { FileSearch2 } from 'lucide-react';
+import { CircleX } from 'lucide-react';
 
 const Globe = dynamic(() => import('../components/Globe'), { ssr: false });
 
@@ -80,6 +84,7 @@ const HomePage: React.FC = () => {
 
   const handleCountryClick = async (countryName: string) => {
     setCountry(countryName);
+    setIsVisible(true);
   };
 
   const handleSearch = (results: any) => {
@@ -128,21 +133,22 @@ const HomePage: React.FC = () => {
           animate={getWindowWidth() > 768 ? {
             // desktop view
             opacity: 1,
-            top: isBrowseMode ? '50%' : '40%',
-            left: isBrowseMode ? '50%' : '40%',
+            top: isBrowseMode ? '50%' : '20%',
+            left: isBrowseMode ? '50%' : '50%',
             transform: 'translate(-50%, -50%)',
             position: 'absolute',
-            height: isBrowseMode ? '1000px' : '200px',
-            width: isBrowseMode ? '100%' : '100%'
+            height: isBrowseMode ? '100%' : '50%',
+            width: isBrowseMode ? '100%' : '10%', // Adjust width for detail mode
+            zIndex: isBrowseMode ? 0 : 0,
           } : {
             // mobile view
             opacity: 1,
-            top: isBrowseMode ? '55%' : '40%',
-            left: isBrowseMode ? '50%' : '40%',
+            top: isBrowseMode ? '50%' : '10%',
+            left: isBrowseMode ? '50%' : '50%',
             transform: 'translate(-50%, -50%)',
             position: 'absolute',
-            height: isBrowseMode ? '1000px' : '200px',
-            width: isBrowseMode ? '100%' : '100%'
+            height: isBrowseMode ? '100%' : '50%',
+            width: isBrowseMode ? '100%' : '30%'
           }}
           transition={{ duration: 0.5 }}
         >
@@ -164,14 +170,14 @@ const HomePage: React.FC = () => {
           initial={{ top: 'calc(50% + 250px)', left: '50%', transform: 'translate(-50%, 0)' }}
           animate={getWindowWidth() > 768 ? {
             // desktop view
-            top: isBrowseMode ? 'calc(100% - 200px)' : '50%',
+            top: isBrowseMode ? 'calc(100% - 200px)' : '30%',
             left: isBrowseMode ? 'calc(50% + 1/6 * 100%)' : 'calc(50% + 1/6 * 100%)',
             transform: 'translate(-50%, -50%)', // Centers both horizontally and vertically
             height: isBrowseMode ? '700px' : '50px', // Adjust height based on mode
             width: isBrowseMode ? '100%' : '100%' // Adjust width based on mode
           } : {
             // mobile view
-            top: isBrowseMode ? 'calc(100%)' : '50%',
+            top: isBrowseMode ? 'calc(110%)' : 'calc(35%)',
             left: isBrowseMode ? '50%' : '50%',
             transform: 'translate(-50%, -50%)', // Centers both horizontally and vertically
             height: isBrowseMode ? '700px' : '50px', // Adjust height based on mode
@@ -188,7 +194,7 @@ const HomePage: React.FC = () => {
           initial={{ display: 'none' }}
           animate={getWindowWidth() > 768 ? {
             // desktop view
-            top: isBrowseMode ? 'calc(50% + 300px)' : 'calc(50% + 200px)',
+            top: isBrowseMode ? 'calc(50% + 300px)' : 'calc(50%)',
             left: isBrowseMode ? 'calc(50% + 1/6 * 100%)' : 'calc(50% + 1/6 * 100%)',
             transform: isBrowseMode ? 'translate(-50%, 0)' : 'translate(-50%, 0)',
             height: isBrowseMode ? '0px' : '100%',
@@ -197,7 +203,7 @@ const HomePage: React.FC = () => {
           } : {
             // mobile view
             position: 'absolute',
-            top: isBrowseMode ? '0px' : 'calc(100% - 200px)',
+            top: isBrowseMode ? '0px' : 'calc(45%)',
             left: isBrowseMode ? '50%' : '50%',
             transform: isBrowseMode ? 'translate(-50%, 0)' : 'translate(-50%, 0)',
             height: isBrowseMode ? '0px' : '100%',
@@ -209,50 +215,72 @@ const HomePage: React.FC = () => {
           <Results results={results} summary={summary} />
         </motion.div>
 
-         {/* Country detail panel */}
-         <motion.div
+        {/* Country detail panel */}
+        <motion.div
+        className={`relative  bg-white dark:bg-black bg-opacity-0 dark:bg-opacity-50 backdrop backdrop-blur-md dark:backdrop-blur-2xl
+          ${isVisible ? 'z-50' : 'z-10'}
+          ${isVisible ? 'rounded-lg' : 'opacity-10'}
+          `}
+        initial={{ bottom: '0', display: 'block' }}
+        animate={getWindowWidth() > 768 ? {
+          // desktop view
+          bottom: isVisible ? '0' : 'auto',
+          top: isVisible ? 'auto' : 'calc(100vh - 200px)',
+          left: '50%',
+          transform: 'translate(-50%, 0)',
+          height: '100%',
+          width: '100%',
+          display: isVisible ? 'block' : 'none', // Control display here
+        } : {
+          // mobile view
+          display: isVisible ? 'block' : 'none',
+          bottom: isVisible ? '0' : 'auto',
+          top: isVisible ? 'auto' : 'calc(0vh)',
+          left: '50%',
+          transform: 'translate(-50%, 0)',
+          height: '100%',
+          width: '100%',
+        }}
+        transition={{ duration: 0.5 }}
+      >
+        {/* <Button onClick={toggleVisibility} className="w-16 border-none">
+          {isVisible ? <CircleX /> : 'Show Country Infos'}
+        </Button> */}
+        <CountryDetailPanel
+          articleContent={articleContent}
+          legislativeData={legislativeData}
+          economicData={economicData}
+          leaderInfo={leaderInfo}
+          isVisible={isVisible}
+          toggleVisibility={toggleVisibility}
+        />
+      </motion.div>
+
+        {/* Toggle button */}
+        <motion.div
           className="relative"
-          initial={{ display: 'none' }}
+          initial={{ }}
           animate={getWindowWidth() > 768 ? {
             // desktop view
-            bottom: isVisible ? '0' : 'auto',
-            top: isVisible ? 'auto' : 'calc(100vh - 200px)',
-            left: '50%',
-            transform: 'translate(-50%, 0)',
-            height: '100%',
-            width: '100%',
-            display: 'block',
+            opacity: isBrowseMode ? 1 : 0.5,
+            top: isBrowseMode ? '50%' : '20%',
+            left: isBrowseMode ? '50%' : '50%',
+            transform: 'translate(-50%, -50%)',
+            position: 'absolute',
           } : {
             // mobile view
-            bottom: isVisible ? '0' : 'auto',
-            top: isVisible ? 'auto' : 'calc(0vh)',
-            left: '50%',
-            transform: 'translate(-50%, 0)',
-            height: '100%',
-            width: '100%',
-            display: 'block',
+            opacity: isBrowseMode ? 1 : 0.5,
+            top: isBrowseMode ? '60%' : '20%',
+            left: isBrowseMode ? '50%' : '50%',
+            transform: 'translate(-50%, -50%)',
+            position: 'absolute',
           }}
           transition={{ duration: 0.5 }}
         >
-          <CountryDetailPanel
-            articleContent={articleContent}
-            legislativeData={legislativeData}
-            economicData={economicData}
-            leaderInfo={leaderInfo}
-            isVisible={isVisible}
-            toggleVisibility={toggleVisibility}
-          />
-        {windowWidth < 768 && (
-          <Button onClick={toggleVisibility} className="relative left-1/2 transform -translate-x-1/2 px-4 py-2 z-50">
-            {isVisible ? 'Hide Details' : 'Show Details'}
+        <Button onClick={toggleMode} className="z-50 dark:invert bg-sky-300 dark:bg-sky-700">
+            {isBrowseMode ? <FileSearch2 className="dark:invert" /> : <Map className="dark:invert" />}
           </Button>
-        )}
         </motion.div>
-
-        {/* Toggle button */}
-        <Button onClick={toggleMode} className="absolute bottom-24 right-0 transform -translate-x-1/2 px-4 py-2 z-50">
-          {isBrowseMode ? 'Show Detail View' : 'Show Browse View'}
-        </Button>
       </div>
     </ThemeProvider>
   );

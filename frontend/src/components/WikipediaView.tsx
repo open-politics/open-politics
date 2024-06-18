@@ -15,7 +15,7 @@ interface WikipediaViewProps {
 
 const WikipediaView: React.FC<WikipediaViewProps> = ({ content }) => {
   return (
-    <div id="articleWindow" className={cn("bg-opacity-30 md:w-2/3 w-full backdrop backdrop-blur-xl rounded-lg p-4 shadow-sm overflow-hidden")}>
+    <div id="articleWindow" className={cn("md:w-2/3 w-full h-40 md:h-96 rounded-lg p-4 shadow-sm overflow-hidden")}>
       <div className={cn("inner-content h-full overflow-auto")}>
         <div dangerouslySetInnerHTML={{ __html: content }} />
       </div>
