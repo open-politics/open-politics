@@ -311,7 +311,7 @@ const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCou
         <div id="mover" className="absolute bottom-0 left-0 w-14 h-12 bg-white dark:bg-background text-zinc-100 z-10"></div>
       </div>
       {isBrowseMode && (
-        <div className="absolute bottom-8 left-1/2 z-10">
+        <div className="absolute bottom-8 left-3/4 z-10">
           <Popover>
             <PopoverTrigger as={Button} className='mt-2' variant="outline">
               {getWindowWidth() <= 768 ? <Cog /> : <Cog />}

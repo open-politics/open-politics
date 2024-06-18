@@ -123,7 +123,7 @@ const HomePage: React.FC = () => {
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       <div className="container relative mx-auto px-4 mt-0 min-h-screen max-w-full max-h-full overflow-x-hidden">
         <div className="background"></div> {/* Background div */}
-        <h1 suppressHydrationWarning className="my-0 pt-2 text-3xl text-left ml-8">{currentTime}</h1>
+        <h1 suppressHydrationWarning className="my-0 pt-2 text-3xl text-left ml-8 z-52">{currentTime}</h1>
 
         {/* Globe */}
         <motion.div
@@ -217,7 +217,7 @@ const HomePage: React.FC = () => {
 
         {/* Country detail panel */}
         <motion.div
-        className={`relative  bg-white dark:bg-black bg-opacity-0 dark:bg-opacity-50 backdrop backdrop-blur-md dark:backdrop-blur-2xl
+        className={`relative  bg-sky-300 dark:bg-sky-700 bg-opacity-60 dark:bg-opacity-50 backdrop backdrop-blur-md dark:backdrop-blur-2xl
           ${isVisible ? 'z-50' : 'z-10'}
           ${isVisible ? 'rounded-lg' : 'opacity-10'}
           `}
