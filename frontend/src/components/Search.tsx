@@ -34,9 +34,10 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
   const [inputValue, setInputValue] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
+  const [loading, setLoading] = useState(false);
 
   const handleSearch = async (query: string) => {
+    setLoading(true);
     try {
       const results = await fetchTavilySearchResults(query);
       setResults(results);
@@ -57,6 +58,8 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
       }
     } catch (error) {
       console.error('Error in handleSearch:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -132,6 +135,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
           placeholder="e.g. Economy of Oman"
           style={{ fontSize: '16px' }}
         />
+        {loading && <div className="spinner">Loading...</div>}
         <div className="absolute right-2 top-2 md:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

@@ -121,7 +121,7 @@ const HomePage: React.FC = () => {
   };
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      <div className="container relative mx-auto px-4 mt-0 min-h-screen max-w-full max-h-full overflow-x-hidden">
+      <div className="container relative mx-auto px-4 mt-0 min-h-screen max-w-full max-h-full overflow-x-hidde py-2">
         <div className="background"></div> {/* Background div */}
         <h1 suppressHydrationWarning className="my-0 pt-2 text-3xl text-left ml-8 z-52">{currentTime}</h1>
 
@@ -193,7 +193,7 @@ const HomePage: React.FC = () => {
           className="absolute w-full"
           initial={{ display: 'none' }}
           animate={getWindowWidth() > 768 ? {
-            // desktop view
+            // desktop viewq
             top: isBrowseMode ? 'calc(50% + 300px)' : 'calc(50%)',
             left: isBrowseMode ? 'calc(50% + 1/6 * 100%)' : 'calc(50% + 1/6 * 100%)',
             transform: isBrowseMode ? 'translate(-50%, 0)' : 'translate(-50%, 0)',
@@ -217,7 +217,7 @@ const HomePage: React.FC = () => {
 
         {/* Country detail panel */}
         <motion.div
-        className={`relative  bg-sky-300 dark:bg-sky-700 bg-opacity-60 dark:bg-opacity-50 backdrop backdrop-blur-md dark:backdrop-blur-2xl
+        className={`relative bg-sky-400 dark:bg-[#373737] bg-opacity-20 dark:bg-opacity-40 backdrop backdrop-blur-md dark:backdrop-blur-2xl
           ${isVisible ? 'z-50' : 'z-10'}
           ${isVisible ? 'rounded-lg' : 'opacity-10'}
           `}
@@ -229,7 +229,7 @@ const HomePage: React.FC = () => {
           left: '50%',
           transform: 'translate(-50%, 0)',
           height: '100%',
-          width: '100%',
+          width: isBrowseMode ? '50%' : '100%',
           display: isVisible ? 'block' : 'none', // Control display here
         } : {
           // mobile view
@@ -239,7 +239,7 @@ const HomePage: React.FC = () => {
           left: '50%',
           transform: 'translate(-50%, 0)',
           height: '100%',
-          width: '100%',
+          width: isBrowseMode ? '100%' : '100%',
         }}
         transition={{ duration: 0.5 }}
       >
@@ -263,7 +263,7 @@ const HomePage: React.FC = () => {
           animate={getWindowWidth() > 768 ? {
             // desktop view
             opacity: isBrowseMode ? 1 : 0.5,
-            top: isBrowseMode ? '50%' : '20%',
+            top: isBrowseMode ? '45%' : '20%',
             left: isBrowseMode ? '50%' : '50%',
             transform: 'translate(-50%, -50%)',
             position: 'absolute',

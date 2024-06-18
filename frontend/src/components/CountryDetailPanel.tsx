@@ -29,7 +29,7 @@ const CountryDetailPanel: React.FC<CountryDetailPanelProps> = ({
   toggleVisibility
 }) => {
   return (
-    <div className="country-detail-panel space-y-4 flex flex-col max-h-5/6 items-center relative rounded-lg">
+    <div className="country-detail-panel space-y-4 flex flex-col max-h-5/6 items-center relative rounded-lg pb-16">
       <Button onClick={toggleVisibility} className="w-16 border-none absolute top-2 right-2">
         {isVisible ? <CircleX /> : 'Show Country Infos'}
       </Button>

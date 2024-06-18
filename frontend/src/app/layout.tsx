@@ -24,7 +24,7 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning style={{ overflowX: 'hidden' }}>
       <head>
         {/* Add meta tags, title, and other head elements here */}
       </head>
@@ -33,6 +33,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           "min-h-screen bg-background font-sans antialiased",
           fontSans.variable
         )}
+        style={{ overflowX: 'hidden', position: 'relative' }}
       >
         <Header />
         <ThemeProvider
@@ -42,8 +43,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
           disableTransitionOnChange
         >
           <ToastProvider>
-            {children}
-            <ToastViewport />
+            <div style={{ overflowX: 'hidden' }}>
+              {children}
+              <ToastViewport />
+            </div>
           </ToastProvider>
         </ThemeProvider>
       </body>

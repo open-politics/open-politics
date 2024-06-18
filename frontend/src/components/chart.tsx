@@ -17,7 +17,7 @@ const CustomTooltip = ({ active, payload, label }) => {
     const gdpGrowthRate = payload.find(p => p.dataKey === 'gdpGrowthRate').value;
 
     return (    
-      <div className="custom-tooltip p-2 bg-transparent bg-opacity-90  shadow-xl rounded-xl backdrop-blur-lg">
+      <div className="custom-tooltip p-2 bg-transparent bg-opacity-80  shadow-xl rounded-xl backdrop-blur-lg">
         <p className="intro text-sm text-black dark:text-white">{`GDP: ${gdp} billion $`}</p>
         <p className="desc text-sm text-green-500">{`GDP Growth Rate: ${gdpGrowthRate}%`}</p>
       </div>

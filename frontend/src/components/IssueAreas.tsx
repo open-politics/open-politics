@@ -201,7 +201,7 @@ export function IssueAreas({ legislativeData, economicData }) {
   );
 
   return (
-    <div className="relative md:w-2/3 w-full py-2">
+    <div className="relative md:w-2/3 w-full py-2 px-0">
       <Tabs defaultValue="news" className="w-full px-2">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="news">News

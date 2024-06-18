@@ -138,11 +138,11 @@ const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCou
     });
 
     polygonSeries.mapPolygons.template.states.create("hover", {
-      fill: am5.color(0x6e6e6e),
+      fill: am5.color(0x38BDF8),
     });
 
     polygonSeries.mapPolygons.template.states.create("active", {
-      fill: am5.color(0x6e6e6e),
+      fill: am5.color(0x38BDF8),
     });
 
     let previousPolygon: am5map.MapPolygon | null = null;
