@@ -7,16 +7,10 @@ import { useToast } from '@/components/ui/use-toast';
 import { ThemeProvider } from './layout';
 import { Button } from '@/components/ui/button';
 import Search from '../components/Search';
-import WikipediaView from '@/components/WikipediaView';
-import LeaderInfo from '../components/LeaderInfo';
 import Results from '../components/Results';
-import { IssueAreas } from '../components/IssueAreas';
 import { OpenAPI } from 'src/client';
 import CountryDetailPanel from '../components/CountryDetailPanel';
-import { MoveLeftIcon } from 'lucide-react';
-import { Map } from 'lucide-react';
-import { FileSearch2 } from 'lucide-react';
-import { CircleX } from 'lucide-react';
+import { Map, FileSearch2 } from 'lucide-react';
 
 const Globe = dynamic(() => import('../components/Globe'), { ssr: false });
 
@@ -37,8 +31,8 @@ const HomePage: React.FC = () => {
   const globeRef = useRef<any>(null);
   const [legislativeData, setLegislativeData] = useState([]);
   const [economicData, setEconomicData] = useState([]);
-  const [isVisible, setIsVisible] = useState(false); // Added state for visibility
-  const [windowWidth, setWindowWidth] = useState<number>(0); // Added state for window width
+  const [isVisible, setIsVisible] = useState(false);
+  const [windowWidth, setWindowWidth] = useState<number>(0);
 
   const { toast } = useToast();
 
@@ -46,19 +40,15 @@ const HomePage: React.FC = () => {
     if (country) {
       const fetchLeaderInfo = async () => {
         try {
-          console.log(`Fetching leader info for country: ${country}`);
           const response = await axios.get(`http://dev.open-politics.org/api/v1/countries/leaders/${country}`);
-          console.log('Leader info response:', response.data);
           setLeaderInfo(response.data);
         } catch (error) {
-          console.error('Error fetching leader info:', error);
           toast({
             title: "Error",
             description: `Failed to fetch leader info for ${country}. Please try again later.`,
           });
         }
       };
-
       fetchLeaderInfo();
     }
   }, [country, toast]);
@@ -67,7 +57,6 @@ const HomePage: React.FC = () => {
     const timer = setInterval(() => {
       setCurrentTime(new Date().toLocaleString());
     }, 1000);
-
     return () => clearInterval(timer);
   }, []);
 
@@ -75,10 +64,8 @@ const HomePage: React.FC = () => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
-
     window.addEventListener('resize', handleResize);
     handleResize();
-
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
@@ -94,6 +81,12 @@ const HomePage: React.FC = () => {
       title: "Search Completed",
       description: "Your search results are now available.",
     });
+  };
+
+  const handleCountryZoom = (latitude: number, longitude: number, countryName: string) => {
+    if (globeRef.current) {
+      globeRef.current.zoomToCountry(latitude, longitude, countryName);
+    }
   };
 
   const handleSummary = (summary: string) => {
@@ -116,32 +109,31 @@ const HomePage: React.FC = () => {
     }
     return 0;
   };
+
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
   };
+
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       <div className="container relative mx-auto px-4 mt-0 min-h-screen max-w-full max-h-full overflow-x-hidde py-2">
-        <div className="background"></div> {/* Background div */}
+        <div className="background"></div>
         <h1 suppressHydrationWarning className="my-0 pt-2 text-3xl text-left ml-8 z-52">{currentTime}</h1>
 
-        {/* Globe */}
         <motion.div
           id="globe-container"
           className="relative"
           initial={{ top: '10%', left: '50%', transform: 'translateX(-50%)' }}
           animate={getWindowWidth() > 768 ? {
-            // desktop view
             opacity: 1,
             top: isBrowseMode ? '50%' : '20%',
             left: isBrowseMode ? '50%' : '50%',
             transform: 'translate(-50%, -50%)',
             position: 'absolute',
             height: isBrowseMode ? '100%' : '50%',
-            width: isBrowseMode ? '100%' : '10%', // Adjust width for detail mode
+            width: isBrowseMode ? '100%' : '10%',
             zIndex: isBrowseMode ? 0 : 0,
           } : {
-            // mobile view
             opacity: 1,
             top: isBrowseMode ? '50%' : '10%',
             left: isBrowseMode ? '50%' : '50%',
@@ -161,39 +153,35 @@ const HomePage: React.FC = () => {
             toggleMode={toggleMode}
             setLegislativeData={setLegislativeData}
             setEconomicData={setEconomicData}
+            onCountryZoom={handleCountryZoom}
           />
         </motion.div>
-        
-        {/* Search */}
+
         <motion.div
           className="absolute w-full"
           initial={{ top: 'calc(50% + 250px)', left: '50%', transform: 'translate(-50%, 0)' }}
           animate={getWindowWidth() > 768 ? {
-            // desktop view
             top: isBrowseMode ? 'calc(100% - 200px)' : '30%',
             left: isBrowseMode ? 'calc(50% + 1/6 * 100%)' : 'calc(50% + 1/6 * 100%)',
-            transform: 'translate(-50%, -50%)', // Centers both horizontally and vertically
-            height: isBrowseMode ? '700px' : '50px', // Adjust height based on mode
-            width: isBrowseMode ? '100%' : '100%' // Adjust width based on mode
+            transform: 'translate(-50%, -50%)',
+            height: isBrowseMode ? '700px' : '50px',
+            width: isBrowseMode ? '100%' : '100%'
           } : {
-            // mobile view
             top: isBrowseMode ? 'calc(110%)' : 'calc(35%)',
             left: isBrowseMode ? '50%' : '50%',
-            transform: 'translate(-50%, -50%)', // Centers both horizontally and vertically
-            height: isBrowseMode ? '700px' : '50px', // Adjust height based on mode
-            width: isBrowseMode ? '100%' : '100%' // Adjust width based on mode
+            transform: 'translate(-50%, -50%)',
+            height: isBrowseMode ? '700px' : '50px',
+            width: isBrowseMode ? '100%' : '100%'
           }}
           transition={{ duration: 0.5 }}
         >
           <Search setResults={handleSearch} setCountry={setCountry} globeRef={globeRef} setSummary={handleSummary} />
         </motion.div>
 
-        {/* Results */}
         <motion.div
           className="absolute w-full"
           initial={{ display: 'none' }}
           animate={getWindowWidth() > 768 ? {
-            // desktop viewq
             top: isBrowseMode ? 'calc(50% + 300px)' : 'calc(50%)',
             left: isBrowseMode ? 'calc(50% + 1/6 * 100%)' : 'calc(50% + 1/6 * 100%)',
             transform: isBrowseMode ? 'translate(-50%, 0)' : 'translate(-50%, 0)',
@@ -201,7 +189,6 @@ const HomePage: React.FC = () => {
             width: isBrowseMode ? '100%' : '100%',
             display: isBrowseMode ? 'none' : 'block',
           } : {
-            // mobile view
             position: 'absolute',
             top: isBrowseMode ? '0px' : 'calc(45%)',
             left: isBrowseMode ? '50%' : '50%',
@@ -215,60 +202,51 @@ const HomePage: React.FC = () => {
           <Results results={results} summary={summary} />
         </motion.div>
 
-        {/* Country detail panel */}
         <motion.div
-        className={`relative bg-sky-400 dark:bg-[#373737] mt-2 bg-opacity-20 dark:bg-opacity-40 backdrop backdrop-blur-md dark:backdrop-blur-2xl
-          ${isVisible ? 'z-50' : 'z-10'}
-          ${isVisible ? 'rounded-lg' : 'opacity-10'}
+          className={`relative bg-sky-400 dark:bg-[#373737] mt-2 bg-opacity-20 dark:bg-opacity-40 backdrop backdrop-blur-md dark:backdrop-blur-2xl
+            ${isVisible ? 'z-50' : 'z-10'}
+            ${isVisible ? 'rounded-lg' : 'opacity-10'}
           `}
-        initial={{ bottom: '0', display: 'block' }}
-        animate={getWindowWidth() > 768 ? {
-          // desktop view
-          bottom: isVisible ? '0' : 'auto',
-          top: isVisible ? 'auto' : 'calc(100vh - 200px)',
-          left: '50%',
-          transform: 'translate(-50%, 0)',
-          height: '100%',
-          width: isBrowseMode ? '50%' : '100%',
-          display: isVisible ? 'block' : 'none', // Control display here
-        } : {
-          // mobile view
-          display: isVisible ? 'block' : 'none',
-          bottom: isVisible ? '0' : 'auto',
-          top: isVisible ? 'auto' : 'calc(0vh)',
-          left: '50%',
-          transform: 'translate(-50%, 0)',
-          height: '100%',
-          width: isBrowseMode ? '100%' : '100%',
-        }}
-        transition={{ duration: 0.5 }}
-      >
-        {/* <Button onClick={toggleVisibility} className="w-16 border-none">
-          {isVisible ? <CircleX /> : 'Show Country Infos'}
-        </Button> */}
-        <CountryDetailPanel
-          articleContent={articleContent}
-          legislativeData={legislativeData}
-          economicData={economicData}
-          leaderInfo={leaderInfo}
-          isVisible={isVisible}
-          toggleVisibility={toggleVisibility}
-        />
-      </motion.div>
+          initial={{ bottom: '0', display: 'block' }}
+          animate={getWindowWidth() > 768 ? {
+            bottom: isVisible ? '0' : 'auto',
+            top: isVisible ? 'auto' : 'calc(100vh - 200px)',
+            left: '50%',
+            transform: 'translate(-50%, 0)',
+            height: '100%',
+            width: isBrowseMode ? '50%' : '100%',
+            display: isVisible ? 'block' : 'none',
+          } : {
+            display: isVisible ? 'block' : 'none',
+            bottom: isVisible ? '0' : 'auto',
+            top: isVisible ? 'auto' : 'calc(0vh)',
+            left: '50%',
+            transform: 'translate(-50%, 0)',
+            height: '100%',
+            width: isBrowseMode ? '100%' : '100%',
+          }}
+          transition={{ duration: 0.5 }}
+        >
+          <CountryDetailPanel
+            articleContent={articleContent}
+            legislativeData={legislativeData}
+            economicData={economicData}
+            leaderInfo={leaderInfo}
+            isVisible={isVisible}
+            toggleVisibility={toggleVisibility}
+          />
+        </motion.div>
 
-        {/* Toggle button */}
         <motion.div
           className="relative"
           initial={{ }}
           animate={getWindowWidth() > 768 ? {
-            // desktop view
             opacity: isBrowseMode ? 1 : 0.5,
             top: isBrowseMode ? '45%' : '20%',
             left: isBrowseMode ? '50%' : '50%',
             transform: 'translate(-50%, -50%)',
             position: 'absolute',
           } : {
-            // mobile view
             opacity: isBrowseMode ? 1 : 0.5,
             top: isBrowseMode ? '60%' : '20%',
             left: isBrowseMode ? '50%' : '50%',
@@ -277,7 +255,7 @@ const HomePage: React.FC = () => {
           }}
           transition={{ duration: 0.5 }}
         >
-        <Button onClick={toggleMode} className="z-50 dark:invert bg-sky-300 dark:bg-sky-700">
+          <Button onClick={toggleMode} className="z-50 dark:invert bg-sky-300 dark:bg-sky-700">
             {isBrowseMode ? <FileSearch2 className="dark:invert" /> : <Map className="dark:invert" />}
           </Button>
         </motion.div>

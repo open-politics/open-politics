@@ -24,7 +24,6 @@ import {
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from "@/components/ui/button"
 
-
 interface SearchProps {
   setResults: (results: any) => void;
   setCountry: (country: string | null) => void;
@@ -33,6 +32,7 @@ interface SearchProps {
 }
 
 const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, globeRef }) => {
+
   const [inputValue, setInputValue] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -41,33 +41,32 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
   const handleSearch = async (query: string) => {
     setLoading(true);
     try {
-        const results = await fetchTavilySearchResults(query);
-        setResults(results);
+      const results = await fetchTavilySearchResults(query);
+      setResults(results);
 
-        const articles = results.results.map((result: any) => ({ content: result.content }));
-        const { output } = await generateSummaryFromArticles(articles);
-        let fullSummary = '';
-        for await (const delta of readStreamableValue(output)) {
-            fullSummary += delta;
-            setSummary(fullSummary);
-        }
+      const articles = results.results.map((result: any) => ({ content: result.content }));
+      const { output } = await generateSummaryFromArticles(articles);
+      let fullSummary = '';
+      for await (const delta of readStreamableValue(output)) {
+        fullSummary += delta;
+        setSummary(fullSummary);
+      }
 
-        const country = await fetchCountryFromQuery(query);
-        setCountry(country?.country_name);
+      const country = await fetchCountryFromQuery(query);
+      setCountry(country?.country_name);
 
-        if (globeRef.current && country) {
-            globeRef.current.zoomToCountry(country.latitude, country.longitude);
-        }
+      if (country && globeRef.current) {
+        globeRef.current.zoomToCountry(country.latitude, country.longitude, country.country_name);
+      }
     } catch (error) {
-        console.error('Error in handleSearch:', error);
+      console.error('Error in handleSearch:', error);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
-
   const fetchTavilySearchResults = async (query: string) => {
-    const apiKey = "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"; // Replace with your actual API key
+    const apiKey = "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";
     const payload = {
       api_key: apiKey,
       query: query,
@@ -82,7 +81,6 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
 
     try {
       const response = await axios.post('https://api.tavily.com/search', payload);
-      console.log('Search results:', response.data);
       return response.data;
     } catch (error) {
       console.error('Error fetching search results:', error);
@@ -92,23 +90,19 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
 
   const fetchCountryFromQuery = async (query: string) => {
     try {
-        const response = await axios.get(`http://dev.open-politics.org/api/v1/countries/country_from_query?query=${query}`);
-        console.log('Country response:', response.data);
-        if (response.data.error) {
-            console.error('Error fetching country data:', response.data.error);
-            return null;
-        }
-        return {
-            country_name: response.data.country_name,
-            latitude: response.data.latitude,
-            longitude: response.data.longitude
-        };
-    } catch (error) {
-        console.error('Error fetching country data:', error);
+      const response = await axios.get(`http://dev.open-politics.org/api/v1/countries/country_from_query?query=${query}`);
+      if (response.data.error) {
         return null;
+      }
+      return {
+        country_name: response.data.country_name,
+        latitude: response.data.latitude,
+        longitude: response.data.longitude
+      };
+    } catch (error) {
+      return null;
     }
-};
-
+  };
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -122,7 +116,6 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
   }, []);
 
   const handleSuggestionSelect = (query: string) => {
-    console.log('Suggestion selected:', query);
     setInputValue(query);
     handleSearch(query);
   };
@@ -139,7 +132,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
             placeholder="e.g. Economy of Oman"
             style={{ fontSize: '16px' }}
           />
-          <Button onClick={() => handleSearch(inputValue)} className="absolute bg-sky-300 dark:bg-sky-700 dark:text-white dark:invert  right-0 top-0 h-full">Search</Button>
+          <Button onClick={() => handleSearch(inputValue)} className="absolute bg-sky-300 dark:bg-sky-700 dark:text-white dark:invert right-0 top-0 h-full">Search</Button>
         </div>
         {loading && <div className="spinner">Loading...</div>}
         <div className="absolute right-2 top-2 md:hidden">
@@ -201,7 +194,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
             value={inputValue}
             onValueChange={setInputValue}
             placeholder="e.g. Economy of Oman"
-            style={{ fontSize: '16px' }} // Ensure the font size is 16px or larger
+            style={{ fontSize: '16px' }}
           />
           <Button onClick={() => handleSearch(inputValue)} className="absolute right-0 top-0 h-full">Search</Button>
         </div>
@@ -224,7 +217,6 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
           </div>
           <CommandSeparator />
           <CommandGroup heading="Recent Searches">
-            {/* Future place for recent search items */}
           </CommandGroup>
         </CommandList>
       </CommandDialog>

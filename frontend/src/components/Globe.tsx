@@ -3,14 +3,10 @@ import * as am5 from "@amcharts/amcharts5";
 import * as am5map from "@amcharts/amcharts5/map";
 import am5geodata_worldLow from "@amcharts/amcharts5-geodata/worldLow";
 import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
+import axios from 'axios';
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import axios from 'axios';
-import { Compass } from 'lucide-react';
-import { RotateCcw } from 'lucide-react';
-import { Play } from 'lucide-react';
-import { Pause } from 'lucide-react';
-import { Cog } from 'lucide-react';
+import { Compass, RotateCcw, Cog } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface GlobeProps {
@@ -21,9 +17,10 @@ interface GlobeProps {
   toggleMode: () => void;
   setLegislativeData: (data: any) => void;
   setEconomicData: (data: any) => void;
+  onCountryZoom: (latitude: number, longitude: number, countryName: string) => void;
 }
 
-const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCountryClick, isBrowseMode, toggleMode, setLegislativeData, setEconomicData }, ref) => {
+const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCountryClick, isBrowseMode, toggleMode, setLegislativeData, setEconomicData, onCountryZoom }, ref) => {
   const chartRef = useRef<am5.Root | null>(null);
   const polygonSeriesRef = useRef<am5map.MapPolygonSeries | null>(null);
   const pointSeriesRef = useRef<am5map.MapPointSeries | null>(null);
@@ -102,7 +99,7 @@ const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCou
     pointSeries.bullets.push(function() {
       const circle = am5.Circle.new(root, {
         radius: 2.5,
-        fill: am5.color(0xcc0000), // Dimmer red color
+        fill: am5.color(0xcc0000),
         fillOpacity: 0.5,
         tooltipText: "{title}\n{articles[0].headline}",
       });
@@ -131,7 +128,7 @@ const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCou
       tooltipText: "{name}",
       toggleKey: "active",
       interactive: true,
-      fill: am5.color(0xfcfcfc), // White
+      fill: am5.color(0xfcfcfc),
       fillOpacity: 1,
       stroke: am5.color(0x0e1a36), 
       strokeWidth: 0.45,
@@ -176,35 +173,38 @@ const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCou
   }, [geojsonUrl, isClient]);
 
   useImperativeHandle(ref, () => ({
-    zoomToCountry: async (latitude: number, longitude: number, countryName: string) => {
-      if (chartInstanceRef.current) {
-        chartInstanceRef.current.animate({ key: "rotationX", to: -longitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
-        chartInstanceRef.current.animate({ key: "rotationY", to: -latitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
-        chartInstanceRef.current.zoomToGeoPoint({ latitude, longitude }, 1.5);
-        if (rotationAnimationRef.current) {
-          rotationAnimationRef.current.stop();
-        }
-        setTimeout(() => {
-          if (isRotating) {
-            startRotationAnimation();
-          }
-        }, 1600);
-        await handleCountrySelection(latitude, longitude, countryName);
-      }
-    },
     loadGeoJSON: () => {
       fetch(geojsonUrl)
         .then(response => response.json())
         .then(data => {
-          pointSeriesRef.current.data.setAll(data.features.map((feature: any) => ({
+          pointSeriesRef.current.data.setAll(data.features.map((feature) => ({
             geometry: feature.geometry,
             title: feature.properties.location,
             articles: feature.properties.articles
           })));
         })
         .catch(error => console.error('Error fetching GeoJSON data:', error));
+    },
+    zoomToCountry: (latitude: number, longitude: number, countryName: string) => {
+      handleCountryZoom(latitude, longitude, countryName);
     }
   }));
+  
+  const handleCountryZoom = (latitude: number, longitude: number, countryName: string) => {
+    if (chartInstanceRef.current) {
+      chartInstanceRef.current.animate({ key: "rotationX", to: -longitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
+      chartInstanceRef.current.animate({ key: "rotationY", to: -latitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
+      chartInstanceRef.current.zoomToGeoPoint({ latitude, longitude }, 3.5);
+      if (rotationAnimationRef.current) {
+        rotationAnimationRef.current.stop();
+      }
+      setTimeout(() => {
+        if (isRotating) {
+          startRotationAnimation();
+        }
+      }, 1600);
+    }
+  };
 
   const fetchWikipediaContent = async (countryName: string) => {
     try {
@@ -212,7 +212,6 @@ const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCou
       const data = await response.json();
       return data.extract ? `<div><strong>${countryName}</strong><br>${data.extract}</div>` : `<div><strong>${countryName}</strong>: No information available.</div>`;
     } catch (error) {
-      console.error('Error fetching Wikipedia content:', error);
       return `<div><strong>${countryName}</strong>: Error fetching information.</div>`;
     }
   };
@@ -221,26 +220,19 @@ const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCou
     const content = await fetchWikipediaContent(countryName);
     setArticleContent(content);
     onCountryClick(countryName);
+    handleCountryZoom(latitude, longitude, countryName);
 
-    // Fetch legislative data for the selected country
     const legislativeDataUrl = `http://dev.open-politics.org/api/v1/countries/legislation/${countryName}`;
     try {
       const legislativeResponse = await axios.get(legislativeDataUrl);
-      console.log('Legislative info:', legislativeResponse.data);
-      setLegislativeData(legislativeResponse.data); // Ensure you have setLegislativeData in the props
-    } catch (error) {
-      console.error('Error fetching legislative data:', error);
-    }
+      setLegislativeData(legislativeResponse.data);
+    } catch (error) {}
 
-    // Fetch economic data for the selected country
     const economicDataUrl = `http://dev.open-politics.org/api/v1/countries/econ_data/${countryName}`;
     try {
       const economicResponse = await axios.get(economicDataUrl);
-      console.log('Economic info:', economicResponse.data);
-      setEconomicData(economicResponse.data); // Ensure you have setEconomicData in the props
-    } catch (error) {
-      console.error('Error fetching economic data:', error);
-    }
+      setEconomicData(economicResponse.data);
+    } catch (error) {}
   };
 
   const handlePlayPause = () => {
@@ -262,11 +254,9 @@ const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCou
       if (rotationAnimationRef.current) {
         rotationAnimationRef.current.stop();
       }
-
       chartInstanceRef.current.animate({ key: "rotationX", to: 0, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
       chartInstanceRef.current.animate({ key: "rotationY", to: 0, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
       chartInstanceRef.current.zoomToGeoPoint({ latitude: 0, longitude: 0 }, initialZoomLevel);
-
       setTimeout(() => {
         if (isRotating) {
           startRotationAnimation();
@@ -343,4 +333,3 @@ const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCou
 });
 
 export default Globe;
-
