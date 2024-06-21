@@ -44,7 +44,7 @@ services:
       # Enable Docker in Traefik, so that it reads labels from Docker services
       - --providers.docker
       # Do not expose all Docker services, only the ones explicitly exposed
-      - --providers.docker.exposedbydefault=false
+      - --providers.docker.exposedbydefault=true
       # Create an entrypoint "http" listening on port 80
       - --entrypoints.http.address=:80
       # Create an entrypoint "https" listening on port 443
@@ -65,6 +65,7 @@ services:
       # Use the public network created to be shared between Traefik and
       # any other service that needs to be publicly available with HTTPS
       - traefik-public
+      - app_network
 
 volumes:
   # Create a volume to store the certificates, even if the container is recreated
@@ -74,4 +75,6 @@ networks:
   # Use the previously created public network "traefik-public", shared with other
   # services that need to be publicly available via this Traefik
   traefik-public:
+    external: true
+  app_network:
     external: true

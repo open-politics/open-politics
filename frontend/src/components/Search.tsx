@@ -22,6 +22,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { Button } from "@/components/ui/button"
+
 
 interface SearchProps {
   setResults: (results: any) => void;
@@ -39,29 +41,30 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
   const handleSearch = async (query: string) => {
     setLoading(true);
     try {
-      const results = await fetchTavilySearchResults(query);
-      setResults(results);
+        const results = await fetchTavilySearchResults(query);
+        setResults(results);
 
-      const articles = results.results.map((result: any) => ({ content: result.content }));
-      const { output } = await generateSummaryFromArticles(articles);
-      let fullSummary = '';
-      for await (const delta of readStreamableValue(output)) {
-        fullSummary += delta;
-        setSummary(fullSummary);
-      }
+        const articles = results.results.map((result: any) => ({ content: result.content }));
+        const { output } = await generateSummaryFromArticles(articles);
+        let fullSummary = '';
+        for await (const delta of readStreamableValue(output)) {
+            fullSummary += delta;
+            setSummary(fullSummary);
+        }
 
-      const country = await fetchCountryFromQuery(query);
-      setCountry(country?.country_name);
+        const country = await fetchCountryFromQuery(query);
+        setCountry(country?.country_name);
 
-      if (globeRef.current && country) {
-        globeRef.current.zoomToCountry(country.latitude, country.longitude);
-      }
+        if (globeRef.current && country) {
+            globeRef.current.zoomToCountry(country.latitude, country.longitude);
+        }
     } catch (error) {
-      console.error('Error in handleSearch:', error);
+        console.error('Error in handleSearch:', error);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
   };
+
 
   const fetchTavilySearchResults = async (query: string) => {
     const apiKey = "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"; // Replace with your actual API key
@@ -89,23 +92,23 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
 
   const fetchCountryFromQuery = async (query: string) => {
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/country_from_query?query=${query}`);
-      console.log('Country response:', response.data);
-      if (response.data.error) {
-        console.error('Error fetching country data:', response.data.error);
-        return null;
-      }
-      return {
-        country_name: response.data.country_name,
-        country_code: response.data.country_code,
-        latitude: response.data.latitude,
-        longitude: response.data.longitude
-      };
+        const response = await axios.get(`http://dev.open-politics.org/api/v1/countries/country_from_query?query=${query}`);
+        console.log('Country response:', response.data);
+        if (response.data.error) {
+            console.error('Error fetching country data:', response.data.error);
+            return null;
+        }
+        return {
+            country_name: response.data.country_name,
+            latitude: response.data.latitude,
+            longitude: response.data.longitude
+        };
     } catch (error) {
-      console.error('Error fetching country data:', error);
-      return null;
+        console.error('Error fetching country data:', error);
+        return null;
     }
-  };
+};
+
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -128,13 +131,16 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
     <div className="relative mt-2 w-full md:w-2/3 px-4">
       <h2 className="text-xl font-bold mb-2">Search News and all things Politics</h2>
       <Command className="mx-auto">
-        <CommandInput
-          onKeyDown={(e) => e.key === 'Enter' && handleSearch(inputValue)}
-          value={inputValue}
-          onValueChange={setInputValue}
-          placeholder="e.g. Economy of Oman"
-          style={{ fontSize: '16px' }}
-        />
+        <div className="relative">
+          <CommandInput
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch(inputValue)}
+            value={inputValue}
+            onValueChange={setInputValue}
+            placeholder="e.g. Economy of Oman"
+            style={{ fontSize: '16px' }}
+          />
+          <Button onClick={() => handleSearch(inputValue)} className="absolute bg-sky-300 dark:bg-sky-700 dark:text-white dark:invert  right-0 top-0 h-full">Search</Button>
+        </div>
         {loading && <div className="spinner">Loading...</div>}
         <div className="absolute right-2 top-2 md:hidden">
           <DropdownMenu>
@@ -189,13 +195,16 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
         </CommandList>
       </Command>
       <CommandDialog open={dialogOpen} onOpenChange={(open) => setDialogOpen(open)}>
-        <CommandInput
-          onKeyDown={(e) => e.key === 'Enter' && handleSearch(inputValue)}
-          value={inputValue}
-          onValueChange={setInputValue}
-          placeholder="e.g. Economy of Oman"
-          style={{ fontSize: '16px' }} // Ensure the font size is 16px or larger
-        />
+        <div className="relative">
+          <CommandInput
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch(inputValue)}
+            value={inputValue}
+            onValueChange={setInputValue}
+            placeholder="e.g. Economy of Oman"
+            style={{ fontSize: '16px' }} // Ensure the font size is 16px or larger
+          />
+          <Button onClick={() => handleSearch(inputValue)} className="absolute right-0 top-0 h-full">Search</Button>
+        </div>
         <CommandList>
           <div className="hidden md:block">
             <CommandGroup heading="Suggestions">

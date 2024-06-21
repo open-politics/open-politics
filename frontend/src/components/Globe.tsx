@@ -134,7 +134,7 @@ const Globe = forwardRef<{}, GlobeProps>(({ geojsonUrl, setArticleContent, onCou
       fill: am5.color(0xfcfcfc), // White
       fillOpacity: 1,
       stroke: am5.color(0x0e1a36), 
-      strokeWidth: 0.25,
+      strokeWidth: 0.45,
     });
 
     polygonSeries.mapPolygons.template.states.create("hover", {

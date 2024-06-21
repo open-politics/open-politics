@@ -217,7 +217,7 @@ const HomePage: React.FC = () => {
 
         {/* Country detail panel */}
         <motion.div
-        className={`relative bg-sky-400 dark:bg-[#373737] bg-opacity-20 dark:bg-opacity-40 backdrop backdrop-blur-md dark:backdrop-blur-2xl
+        className={`relative bg-sky-400 dark:bg-[#373737] mt-2 bg-opacity-20 dark:bg-opacity-40 backdrop backdrop-blur-md dark:backdrop-blur-2xl
           ${isVisible ? 'z-50' : 'z-10'}
           ${isVisible ? 'rounded-lg' : 'opacity-10'}
           `}

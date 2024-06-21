@@ -20,9 +20,11 @@ router = APIRouter()
 @router.get("/country_from_query/")
 async def country_from_query(query: str):
     country_name = marvin.cast(query, target=str, instructions="Return the country name most relevant to the query.")
-    response = requests.get(f"http://localhost:3690/call_pelias_api?location={country_name}", verify=False)
-    
+
+    response = requests.get(f"http://geo_service:3690/call_pelias_api?location={country_name}", verify=False)
+    print(response)
     try:
+        # return {"country_name": country_name}
         if response.status_code == 200:
             coordinates = response.json()
             return {"country_name": country_name, "latitude": coordinates[0], "longitude": coordinates[1]}

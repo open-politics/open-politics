@@ -11,6 +11,8 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
       - POSTGRES_USER=${POSTGRES_USER?Variable not set}
       - POSTGRES_DB=${POSTGRES_DB?Variable not set}
+    networks:
+      - app_network
 
   adminer:
     image: adminer
@@ -18,6 +20,7 @@ services:
     networks:
       - traefik-public
       - default
+      - app_network
     depends_on:
       - db
     environment:
@@ -41,6 +44,7 @@ services:
     networks:
       - traefik-public
       - default
+      - app_network
     depends_on:
       - db
     env_file:
@@ -73,8 +77,8 @@ services:
     platform: linux/amd64 # Patch for M1 Mac
     labels:
       - traefik.enable=true
-      - traefik.docker.network=traefik-public
-      - traefik.constraint-label=traefik-public
+      - traefik.docker.network=traefik-public, app_network
+      # - traefik.constraint-label=traefik-public
 
       - traefik.http.services.${STACK_NAME?Variable not set}-backend.loadbalancer.server.port=80
 
@@ -130,4 +134,6 @@ volumes:
 networks:
   traefik-public:
     # Allow setting it to false for testing
+    external: true
+  app_network:
     external: true
