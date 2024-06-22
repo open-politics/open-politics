@@ -132,7 +132,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
             placeholder="e.g. Economy of Oman"
             style={{ fontSize: '16px' }}
           />
-          <Button onClick={() => handleSearch(inputValue)} className="absolute bg-sky-300 dark:bg-sky-700 dark:text-white dark:invert right-0 top-0 h-full">Search</Button>
+          <Button onClick={() => handleSearch(inputValue)} className="absolute bg-[#BED4FF] dark:bg-sky-700 dark:bg-[#D2FFD9] right-2 top-0 h-8">Search</Button>
         </div>
         {loading && <div className="spinner">Loading...</div>}
         <div className="absolute right-2 top-2 md:hidden">
@@ -196,7 +196,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
             placeholder="e.g. Economy of Oman"
             style={{ fontSize: '16px' }}
           />
-          <Button onClick={() => handleSearch(inputValue)} className="absolute right-0 top-0 h-full">Search</Button>
+          <Button onClick={() => handleSearch(inputValue)} className="absolute right-2 top-1/2 transform -translate-y-1/2" size="sm">Search</Button>
         </div>
         <CommandList>
           <div className="hidden md:block">

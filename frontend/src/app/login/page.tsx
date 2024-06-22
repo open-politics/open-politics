@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { LoginService } from 'src/client/services';
+import { LoginService } from 'src/client';
 import { useForm } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardFooter, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,8 +11,8 @@ import { Button } from '@/components/ui/button';
 export const LoginPage: React.FC = () => {
   const { register, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
-      username: '',
-      password: ''
+      username: 'your email',
+      password: 'your password'
     }
   });
   const [errorMessage, setErrorMessage] = React.useState('');
@@ -28,7 +28,7 @@ export const LoginPage: React.FC = () => {
   const onSubmit = async (data: { username: string; password: string }) => {
     setErrorMessage('');
     try {
-      const response = await LoginService.loginAccessToken({ 
+      const response = await LoginService.loginLoginAccessToken({ 
         formData: {
           ...data,
           grant_type: 'password',
@@ -37,7 +37,7 @@ export const LoginPage: React.FC = () => {
       localStorage.setItem('token', response.access_token);
       router.push('/');
     } catch (error: any) {
-      if (error.response && error.response.status === 422) {
+      if (error.response && error.response.status === 400) {
         setErrorMessage('Invalid username or password. Please try again.');
       } else {
         setErrorMessage('An error occurred. Please try again.');

@@ -255,8 +255,8 @@ const HomePage: React.FC = () => {
           }}
           transition={{ duration: 0.5 }}
         >
-          <Button onClick={toggleMode} className="z-50 dark:invert bg-sky-300 dark:bg-sky-700">
-            {isBrowseMode ? <FileSearch2 className="dark:invert" /> : <Map className="dark:invert" />}
+          <Button onClick={toggleMode} className="z-50 bg-[#BED4FF] dark:bg-[#D2FFD9]">
+            {isBrowseMode ? <FileSearch2 className="" /> : <Map className="" />}
           </Button>
         </motion.div>
       </div>

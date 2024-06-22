@@ -19,6 +19,7 @@
     "@fortawesome/react-fontawesome": "^0.2.1",
     "@hey-api/openapi-ts": "^0.34.1",
     "@hookform/resolvers": "^3.4.2",
+    "@imbios/next-pwa": "^1.1.1",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-aspect-ratio": "^1.0.3",
     "@radix-ui/react-avatar": "^1.0.4",
