@@ -71,6 +71,18 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
     );
     chartInstanceRef.current = chart;
 
+    // const backgroundSeries = chart.series.push(
+    //   am5map.MapPolygonSeries.new(root, {})
+    // );
+    // backgroundSeries.mapPolygons.template.setAll({
+    //   fill: am5.color(0xDCDCDC), // Set your desired sea color here
+    //   fillOpacity: 1,
+    //   stroke: am5.color(0x1e90ff),
+    // });
+    // backgroundSeries.data.push({
+    //   geometry: am5map.getGeoRectangle(90, 180, -90, -180),
+    // });
+
     const polygonSeries = chart.series.push(
       am5map.MapPolygonSeries.new(root, {
         geoJSON: am5geodata_worldLow,
@@ -84,6 +96,15 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
       })
     );
     pointSeriesRef.current = pointSeries;
+
+    const graticuleSeries = chart.series.push(
+      am5map.GraticuleSeries.new(root, {
+        stroke: am5.color(0x0e1a36),
+        opacity: 0.05,
+        step: 4,
+        
+      })
+    );
 
     fetch(geojsonUrl)
       .then(response => response.json())
@@ -129,7 +150,7 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
       toggleKey: "active",
       interactive: true,
       fill: am5.color(0xfcfcfc),
-      fillOpacity: 1,
+      fillOpacity: 0.4,
       stroke: am5.color(0x0e1a36), 
       strokeWidth: 0.45,
     });

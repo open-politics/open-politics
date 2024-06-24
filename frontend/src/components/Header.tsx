@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import Image from 'next/image';
 import useAuth, { isLoggedIn } from '@/hooks/useAuth';
 
-
 const Header = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
