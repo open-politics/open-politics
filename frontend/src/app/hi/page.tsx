@@ -24,13 +24,16 @@ const TypeAsync = ({ words = [] }) => {
     };
 
     const runTypeAsync = async () => {
-      for (let word of words) {
+      for (let i = 0; i < words.length; i++) {
+        const word = words[i];
         setTyping(true);
         await type(word);
         await sleep(2000); // Pause after typing the word
         setTyping(false);
-        await del(word);
-        await sleep(500); // Pause after deleting the word
+        if (i < words.length - 1) {
+          await del(word);
+          await sleep(500); // Pause after deleting the word
+        }
       }
     };
 
@@ -46,7 +49,7 @@ const Hi = ({ user }) => {
   const words = ['looking', 'researching', 'rooting', 'developing', 'asking']; // add your words here
 
   return (
-    <div className="bg-white text-black p-8 dark:bg-gray-900 dark:text-white">
+    <div className="p-8">
       <div className="flex flex-col justify-center items-center h-screen" style={{ marginTop: '-2px' }}>
         <div className="text-center mb-4">
           <h1 className="text-6xl font-bold leading-none sd:mt-8" style={{ marginTop: '-8rem' }}>

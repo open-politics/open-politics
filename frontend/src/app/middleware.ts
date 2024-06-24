@@ -1,16 +1,11 @@
-import { useAuth } from '../context/AuthContext';
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { withAuth } from "next-auth/middleware";
 
-const useAuthMiddleware = () => {
-    const { isAuthenticated } = useAuth();
-    const router = useRouter();
+export default withAuth({
+  pages: {
+    signIn: "/login",
+  },
+});
 
-    useEffect(() => {
-        if (!isAuthenticated) {
-            router.push('/login');
-        }
-    }, [isAuthenticated, router]);
+export const config = {
+  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
 };
-
-export default useAuthMiddleware;

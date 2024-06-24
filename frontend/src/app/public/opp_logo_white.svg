@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Ebene_1" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1016.14 623.13">
+  <text transform="translate(31.45 276.68)" style="font-family: SuisseIntl-Regular, &apos;Suisse Int&apos;l&apos;; font-size: 286.31px;"><tspan x="0" y="0" style="letter-spacing: -.05em;">O</tspan><tspan x="209.58" y="0" style="letter-spacing: -.04em;">p</tspan><tspan x="370.48" y="0" style="letter-spacing: -.05em;">en</tspan></text>
+  <text transform="translate(46.05 539.32)" style="font-family: SuisseIntl-Regular, &apos;Suisse Int&apos;l&apos;; font-size: 286.31px;"><tspan x="0" y="0" style="letter-spacing: -.07em;">P</tspan><tspan x="160.62" y="0" style="letter-spacing: -.05em;">oli</tspan><tspan x="421.15" y="0" style="letter-spacing: -.04em;">t</tspan><tspan x="502.75" y="0" style="letter-spacing: -.05em;">i</tspan><tspan x="555.71" y="0" style="letter-spacing: -.05em;">c</tspan><tspan x="702.3" y="0" style="letter-spacing: -.05em;">s*</tspan></text>
+  <g id="Netzwerk">
+    <g id="dots">
+      <circle cx="113.11" cy="156.82" r="4.36"/>
+      <circle cx="98.87" cy="198.4" r="4.36"/>
+      <circle cx="145.73" cy="180.49" r="4.36"/>
+      <circle cx="169.39" cy="131.33" r="4.36"/>
+      <circle cx="141.37" cy="158.2" r="4.36"/>
+      <circle cx="178.12" cy="192.43" r="4.36"/>
+      <circle cx="138.6" cy="137.07" r="9.19"/>
+      <circle cx="122.3" cy="176.12" r="9.19"/>
+      <circle cx="151.82" cy="213.56" r="9.19"/>
+      <circle cx="176.06" cy="153.84" r="9.19"/>
+    </g>
+    <g id="lines">
+      <line x1="176.06" y1="153.84" x2="151.82" y2="213.56" style="fill: none; stroke: #000; stroke-miterlimit: 10;"/>
+      <line x1="122.3" y1="176.12" x2="151.82" y2="213.56" style="fill: none; stroke: #000; stroke-miterlimit: 10;"/>
+      <line x1="176.06" y1="153.84" x2="122.3" y2="176.12" style="fill: none; stroke: #000; stroke-miterlimit: 10;"/>
+      <line x1="138.6" y1="137.07" x2="176.06" y2="153.84" style="fill: none; stroke: #000; stroke-miterlimit: 10;"/>
+      <line x1="122.3" y1="176.12" x2="138.6" y2="137.07" style="fill: none; stroke: #000; stroke-miterlimit: 10;"/>
+      <line x1="98.87" y1="198.4" x2="145.73" y2="180.49" style="fill: none; stroke: #000; stroke-miterlimit: 10;"/>
+      <line x1="141.37" y1="158.2" x2="145.73" y2="180.49" style="fill: none; stroke: #000; stroke-miterlimit: 10;"/>
+      <line x1="113.11" y1="156.82" x2="141.37" y2="158.2" style="fill: none; stroke: #000; stroke-miterlimit: 10;"/>
+      <line x1="98.87" y1="198.4" x2="113.11" y2="156.82" style="fill: none; stroke: #000; stroke-miterlimit: 10;"/>
+      <line x1="141.37" y1="158.2" x2="169.39" y2="131.33" style="fill: none; stroke: #000; stroke-miterlimit: 10;"/>
+      <line x1="145.73" y1="181.18" x2="178.12" y2="192.43" style="fill: none; stroke: #000; stroke-miterlimit: 10;"/>
+      <line x1="169.39" y1="131.33" x2="178.12" y2="192.43" style="fill: none; stroke: #000; stroke-miterlimit: 10;"/>
+    </g>
+  </g>
+</svg>

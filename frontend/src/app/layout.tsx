@@ -1,5 +1,4 @@
-// src/app/layout.tsx
-'use client'
+'use client';
 
 import './globals.css';
 import { Inter as FontSans } from "next/font/google";
@@ -8,6 +7,9 @@ import Header from "@/components/Header";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { type ThemeProviderProps } from "next-themes/dist/types";
 import { ToastProvider, ToastViewport } from '@/components/ui/toast';
+import { SessionProvider } from 'next-auth/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useState } from 'react';
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   return <NextThemesProvider {...props}>{children}</NextThemesProvider>
@@ -23,6 +25,8 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
+  const [queryClient] = useState(() => new QueryClient());
+
   return (
     <html lang="en" suppressHydrationWarning style={{ overflowX: 'hidden' }}>
       <head>
@@ -35,20 +39,22 @@ export default function RootLayout({ children }: RootLayoutProps) {
         )}
         style={{ overflowX: 'hidden', position: 'relative' }}
       >
-        <Header />
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ToastProvider>
-            <div style={{ overflowX: 'hidden' }}>
-              {children}
-              <ToastViewport />
-            </div>
-          </ToastProvider>
-        </ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <Header />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <ToastProvider>
+              <div style={{ overflowX: 'hidden' }}>
+                {children}
+                <ToastViewport />
+              </div>
+            </ToastProvider>
+          </ThemeProvider>
+        </QueryClientProvider>
       </body>
     </html>
   );

@@ -1,48 +1,30 @@
-"use client";
+'use client';
 
-import React from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { LoginService } from 'src/client';
-import { useForm } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardFooter, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import useAuth, { isLoggedIn } from "@/hooks/useAuth";
 
-export const LoginPage: React.FC = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm({
-    defaultValues: {
-      username: 'your email',
-      password: 'your password'
-    }
-  });
-  const [errorMessage, setErrorMessage] = React.useState('');
+export default function LoginPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
+  const { loginMutation, error, resetError } = useAuth();
 
-  React.useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      router.push('/'); // Redirect if already logged in
-    }
-  }, [router]);
-
-  const onSubmit = async (data: { username: string; password: string }) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setErrorMessage('');
+    resetError();
+
     try {
-      const response = await LoginService.loginLoginAccessToken({ 
-        formData: {
-          ...data,
-          grant_type: 'password',
-        }
-      });
-      localStorage.setItem('token', response.access_token);
-      router.push('/');
-    } catch (error: any) {
-      if (error.response && error.response.status === 400) {
-        setErrorMessage('Invalid username or password. Please try again.');
-      } else {
-        setErrorMessage('An error occurred. Please try again.');
-      }
-      console.error('Login failed', error);
+      await loginMutation.mutateAsync({ username: email, password });
+      router.push('/desk');
+    } catch {
+      // error is handled by useAuth hook
+      setErrorMessage('Invalid email or password. Please try again.');
     }
   };
 
@@ -53,24 +35,28 @@ export const LoginPage: React.FC = () => {
           <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm">Username</label>
+              <label className="block text-sm">Email</label>
               <Input
-                type="text"
-                {...register('username', { required: 'Username is required' })}
-                className={errors.username ? 'error' : ''}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
+                required
+                className="w-full p-2 border border-gray-300 rounded"
               />
-              {errors.username && <p className="text-red-500">{errors.username.message}</p>}
             </div>
             <div>
               <label className="block text-sm">Password</label>
               <Input
                 type="password"
-                {...register('password', { required: 'Password is required' })}
-                className={errors.password ? 'error' : ''}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                required
+                className="w-full p-2 border border-gray-300 rounded"
               />
-              {errors.password && <p className="text-red-500">{errors.password.message}</p>}
             </div>
             {errorMessage && <p className="text-red-500">{errorMessage}</p>}
             <Button type="submit" className="w-full">Login</Button>
@@ -82,6 +68,4 @@ export const LoginPage: React.FC = () => {
       </Card>
     </div>
   );
-};
-
-export default LoginPage;
+}

@@ -1,0 +1,1 @@
+docker compose -f docker-compose.yml up -d && docker exec -it open-politics-db-1 psql -U postgres -c "CREATE DATABASE app;

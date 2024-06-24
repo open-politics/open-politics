@@ -7,11 +7,14 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import Image from 'next/image';
+import useAuth, { isLoggedIn } from '@/hooks/useAuth';
+
 
 const Header = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { setTheme } = useTheme();
+  const { user, logout, isLoading, error } = useAuth();
 
   useEffect(() => {
     const savedDarkMode = localStorage.getItem('darkMode') === 'enabled';
@@ -20,6 +23,10 @@ const Header = () => {
       document.documentElement.classList.add('dark');
     }
   }, []);
+
+  useEffect(() => {
+    console.log('User state in Header:', user);
+  }, [user]);
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -34,6 +41,14 @@ const Header = () => {
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
+  };
+
+  const renderAuthButton = () => {
+    if (isLoggedIn()) {
+      return <button onClick={logout} className="text-gray-700 dark:text-white">Logout</button>;
+    } else {
+      return <Link href="/login" className="text-gray-700 dark:text-white">Login</Link>;
+    }
   };
 
   return (
@@ -55,9 +70,7 @@ const Header = () => {
             <a href="https://github.com/JimVincentW/open-politics" className="py-5 px-3 flex items-center">
               <FaGithub className="h-6 w-6" style={{ margin: '0 auto' }} />
             </a>
-            <form id="login-form" method="GET" action="/login" className="flex items-center py-5 px-3 dark:text-white">
-              <button type="submit" className="text-gray-700 dark:text-white">Login</button>
-            </form>
+            {renderAuthButton()}
             <div className="flex items-center py-5 px-3 dark:text-white">
               <Switch checked={darkMode} onCheckedChange={toggleDarkMode} />
               {darkMode ? <Sun className="ml-2" /> : <Moon className="ml-2" />}
@@ -82,9 +95,7 @@ const Header = () => {
           <a href="https://github.com/JimVincentW/open-politics" className="block py-2 px-2 text-sm mb-2 flex items-center">
             <FaGithub className="h-6 w-6" />
           </a>
-          <form id="login-form" method="GET" action="/login" className="py-2 px-2 text-sm mb-2 flex items-center">
-            <button type="submit" className="w-full text-left">Login</button>
-          </form>
+          {renderAuthButton()}
           <div className="flex items-center py-4 mb-2 px-3 dark:text-white">
               <Switch checked={darkMode} onCheckedChange={toggleDarkMode} />
               {darkMode ? <Sun className="ml-2" /> : <Moon className="ml-2" />}

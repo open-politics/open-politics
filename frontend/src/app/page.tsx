@@ -1,267 +1,142 @@
-'use client'
-import React, { useState, useEffect, useRef } from 'react';
-import dynamic from 'next/dynamic';
-import axios from 'axios';
-import { motion } from 'framer-motion';
-import { useToast } from '@/components/ui/use-toast';
-import { ThemeProvider } from './layout';
-import { Button } from '@/components/ui/button';
-import Search from '../components/Search';
-import Results from '../components/Results';
-import { OpenAPI } from 'src/client';
-import CountryDetailPanel from '../components/CountryDetailPanel';
-import { Map, FileSearch2 } from 'lucide-react';
+'use client';
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 
-const Globe = dynamic(() => import('../components/Globe'), { ssr: false });
+const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
-OpenAPI.BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'
-OpenAPI.TOKEN = async () => {
-  return localStorage.getItem("access_token") || ""
-}
-
-const HomePage: React.FC = () => {
-  const geojsonUrl = 'http://dev.open-politics.org/api/v1/countries/geojson/';
-  const [results, setResults] = useState(null);
-  const [summary, setSummary] = useState<string>('');
-  const [articleContent, setArticleContent] = useState<string>('');
-  const [country, setCountry] = useState<string | null>(null);
-  const [leaderInfo, setLeaderInfo] = useState<any | null>(null);
-  const [currentTime, setCurrentTime] = useState<string>(new Date().toLocaleString());
-  const [isBrowseMode, setIsBrowseMode] = useState(true);
-  const globeRef = useRef<any>(null);
-  const [legislativeData, setLegislativeData] = useState([]);
-  const [economicData, setEconomicData] = useState([]);
-  const [isVisible, setIsVisible] = useState(false);
-  const [windowWidth, setWindowWidth] = useState<number>(0);
-
-  const { toast } = useToast();
+const TypeAsync = ({ words = [] }) => {
+  const [text, setText] = useState('');
+  const [typing, setTyping] = useState(true);
 
   useEffect(() => {
-    if (country) {
-      const fetchLeaderInfo = async () => {
-        try {
-          const response = await axios.get(`http://dev.open-politics.org/api/v1/countries/leaders/${country}`);
-          setLeaderInfo(response.data);
-        } catch (error) {
-          toast({
-            title: "Error",
-            description: `Failed to fetch leader info for ${country}. Please try again later.`,
-          });
-        }
-      };
-      fetchLeaderInfo();
-    }
-  }, [country, toast]);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date().toLocaleString());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
+    const type = async (word) => {
+      for (let i = 0; i <= word.length; i++) {
+        setText(word.slice(0, i));
+        await sleep(100); // Set your typing interval here
+      }
     };
-    window.addEventListener('resize', handleResize);
-    handleResize();
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
-  const handleCountryClick = async (countryName: string) => {
-    setCountry(countryName);
-    setIsVisible(true);
-  };
+    const del = async (word) => {
+      for (let i = word.length; i >= 0; i--) {
+        setText(word.slice(0, i));
+        await sleep(50); // Set your deleting interval here
+      }
+    };
 
-  const handleSearch = (results: any) => {
-    setResults(results);
-    setIsBrowseMode(false);
-    toast({
-      title: "Search Completed",
-      description: "Your search results are now available.",
-    });
-  };
+    const runTypeAsync = async () => {
+      for (let word of words) {
+        setTyping(true);
+        await type(word);
+        await sleep(2000); // Pause after typing the word
+        setTyping(false);
+        await del(word);
+        await sleep(500); // Pause after deleting the word
+      }
+    };
 
-  const handleCountryZoom = (latitude: number, longitude: number, countryName: string) => {
-    if (globeRef.current) {
-      globeRef.current.zoomToCountry(latitude, longitude, countryName);
+    if (words.length > 0) {
+      runTypeAsync();
     }
-  };
+  }, [words]);
 
-  const handleSummary = (summary: string) => {
-    setSummary(summary);
-  }
+  return <span dangerouslySetInnerHTML={{ __html: text }} />;
+};
 
-  const toggleMode = () => {
-    setIsBrowseMode(!isBrowseMode);
-  };
-
-  const loadGeoJSON = () => {
-    if (globeRef.current) {
-      globeRef.current.loadGeoJSON();
-    }
-  };
-
-  const getWindowWidth = () => {
-    if (typeof window !== 'undefined') {
-      return window.innerWidth;
-    }
-    return 0;
-  };
-
-  const toggleVisibility = () => {
-    setIsVisible(!isVisible);
-  };
+const Hi = ({ user }) => {
+  const words = ['looking', 'researching', 'rooting', 'developing', 'asking']; // add your words here
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      <div className="container relative mx-auto px-4 mt-0 min-h-screen max-w-full max-h-full overflow-x-hidde py-2">
-        <div className="background"></div>
-        <h1 suppressHydrationWarning className="my-0 pt-2 text-3xl text-left ml-8 z-52">{currentTime}</h1>
+    <div className="">
+      <div className="flex flex-col justify-center items-center h-screen" style={{ marginTop: '-2px' }}>
+        <div className="text-center mb-4">
+          <h1 className="text-6xl font-bold leading-none sd:mt-8" style={{ marginTop: '-8rem' }}>
+            <div className="fixed-height">What are you</div>
+            <div className="fixed-height flex justify-center">
+              <span id="shimmer-ast" className="shimmer">*</span>
+              <TypeAsync words={words} />
+            </div>
+            <div className="fixed-height">for?</div>
+          </h1>
+        </div>
 
-        <motion.div
-          id="globe-container"
-          className="relative"
-          initial={{ top: '10%', left: '50%', transform: 'translateX(-50%)' }}
-          animate={getWindowWidth() > 768 ? {
-            opacity: 1,
-            top: isBrowseMode ? '50%' : '20%',
-            left: isBrowseMode ? '50%' : '50%',
-            transform: 'translate(-50%, -50%)',
-            position: 'absolute',
-            height: isBrowseMode ? '100%' : '50%',
-            width: isBrowseMode ? '100%' : '10%',
-            zIndex: isBrowseMode ? 0 : 0,
-          } : {
-            opacity: 1,
-            top: isBrowseMode ? '50%' : '10%',
-            left: isBrowseMode ? '50%' : '50%',
-            transform: 'translate(-50%, -50%)',
-            position: 'absolute',
-            height: isBrowseMode ? '100%' : '50%',
-            width: isBrowseMode ? '100%' : '30%'
-          }}
-          transition={{ duration: 0.5 }}
-        >
-          <Globe
-            ref={globeRef}
-            geojsonUrl={geojsonUrl}
-            setArticleContent={setArticleContent}
-            onCountryClick={handleCountryClick}
-            isBrowseMode={isBrowseMode}
-            toggleMode={toggleMode}
-            setLegislativeData={setLegislativeData}
-            setEconomicData={setEconomicData}
-            onCountryZoom={handleCountryZoom}
-          />
-        </motion.div>
+        <div className="mt-2 mr-8 text-right">
+          <p className="text-pink-600 font-bold mb-1">Rethinking News Analysis with Open Source & AI.</p>
+          <p className="text-lg mt-1 mb-2">Navigate news with next-gen tools.</p>
+          <p className="mt-1 mb-2">Come back soon for feature releases.</p>
 
-        <motion.div
-          className="absolute w-full"
-          initial={{ top: 'calc(50% + 250px)', left: '50%', transform: 'translate(-50%, 0)' }}
-          animate={getWindowWidth() > 768 ? {
-            top: isBrowseMode ? 'calc(100% - 200px)' : '30%',
-            left: isBrowseMode ? 'calc(50% + 1/6 * 100%)' : 'calc(50% + 1/6 * 100%)',
-            transform: 'translate(-50%, -50%)',
-            height: isBrowseMode ? '700px' : '50px',
-            width: isBrowseMode ? '100%' : '100%'
-          } : {
-            top: isBrowseMode ? 'calc(110%)' : 'calc(35%)',
-            left: isBrowseMode ? '50%' : '50%',
-            transform: 'translate(-50%, -50%)',
-            height: isBrowseMode ? '700px' : '50px',
-            width: isBrowseMode ? '100%' : '100%'
-          }}
-          transition={{ duration: 0.5 }}
-        >
-          <Search setResults={handleSearch} setCountry={setCountry} globeRef={globeRef} setSummary={handleSummary} />
-        </motion.div>
+          <div className="space-x-2 max-w-sm mx-auto mt-4">
+            <Link href="https://github.com/JimVincentW/open-politics" className="inline-block bg-black text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:hover:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white transition-colors duration-300 ease-in-out">
+              Project on GitHub
+            </Link>
+            <Link href="https://zu61ygkfc3v.typeform.com/to/KHZeedk3" className="inline-block bg-black text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:hover:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white transition-colors duration-300 ease-in-out">
+              Join the waitlist
+            </Link>
 
-        <motion.div
-          className="absolute w-full"
-          initial={{ display: 'none' }}
-          animate={getWindowWidth() > 768 ? {
-            top: isBrowseMode ? 'calc(50% + 300px)' : 'calc(50%)',
-            left: isBrowseMode ? 'calc(50% + 1/6 * 100%)' : 'calc(50% + 1/6 * 100%)',
-            transform: isBrowseMode ? 'translate(-50%, 0)' : 'translate(-50%, 0)',
-            height: isBrowseMode ? '0px' : '100%',
-            width: isBrowseMode ? '100%' : '100%',
-            display: isBrowseMode ? 'none' : 'block',
-          } : {
-            position: 'absolute',
-            top: isBrowseMode ? '0px' : 'calc(45%)',
-            left: isBrowseMode ? '50%' : '50%',
-            transform: isBrowseMode ? 'translate(-50%, 0)' : 'translate(-50%, 0)',
-            height: isBrowseMode ? '0px' : '100%',
-            width: isBrowseMode ? '100%' : '100%',
-            display: isBrowseMode ? 'none' : 'block',
-          }}
-          transition={{ duration: 0.5 }}
-        >
-          <Results results={results} summary={summary} />
-        </motion.div>
+            {user && (
+              <>
+                <div className="mt-4">
+                  <Link href="/news_home" className="inline-block bg-pink-600 text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:bg-pink-600 dark:text-white dark:hover:bg-black dark:hover:text-white dark:hover:border-white transition-colors duration-300 ease-in-out">
+                    Search News
+                  </Link>
+                </div>
+                <div className="mt-4">
+                  <Link href="/globe" className="inline-block bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:bg-pink-600 dark:text-white dark:hover:bg-black dark:hover:text-white dark:hover:border-white transition-colors duration-300 ease-in-out">
+                    Open Globe
+                  </Link>
+                </div>
+              </>
+            )}
 
-        <motion.div
-          className={`relative bg-sky-400 dark:bg-[#373737] mt-2 bg-opacity-20 dark:bg-opacity-40 backdrop backdrop-blur-md dark:backdrop-blur-2xl
-            ${isVisible ? 'z-50' : 'z-10'}
-            ${isVisible ? 'rounded-lg' : 'opacity-10'}
-          `}
-          initial={{ bottom: '0', display: 'block' }}
-          animate={getWindowWidth() > 768 ? {
-            bottom: isVisible ? '0' : 'auto',
-            top: isVisible ? 'auto' : 'calc(100vh - 200px)',
-            left: '50%',
-            transform: 'translate(-50%, 0)',
-            height: '100%',
-            width: isBrowseMode ? '50%' : '100%',
-            display: isVisible ? 'block' : 'none',
-          } : {
-            display: isVisible ? 'block' : 'none',
-            bottom: isVisible ? '0' : 'auto',
-            top: isVisible ? 'auto' : 'calc(0vh)',
-            left: '50%',
-            transform: 'translate(-50%, 0)',
-            height: '100%',
-            width: isBrowseMode ? '100%' : '100%',
-          }}
-          transition={{ duration: 0.5 }}
-        >
-          <CountryDetailPanel
-            articleContent={articleContent}
-            legislativeData={legislativeData}
-            economicData={economicData}
-            leaderInfo={leaderInfo}
-            isVisible={isVisible}
-            toggleVisibility={toggleVisibility}
-          />
-        </motion.div>
-
-        <motion.div
-          className="relative"
-          initial={{ }}
-          animate={getWindowWidth() > 768 ? {
-            opacity: isBrowseMode ? 1 : 0.5,
-            top: isBrowseMode ? '45%' : '20%',
-            left: isBrowseMode ? '50%' : '50%',
-            transform: 'translate(-50%, -50%)',
-            position: 'absolute',
-          } : {
-            opacity: isBrowseMode ? 1 : 0.5,
-            top: isBrowseMode ? '60%' : '20%',
-            left: isBrowseMode ? '50%' : '50%',
-            transform: 'translate(-50%, -50%)',
-            position: 'absolute',
-          }}
-          transition={{ duration: 0.5 }}
-        >
-          <Button onClick={toggleMode} className="z-50 bg-[#BED4FF] dark:bg-[#D2FFD9]">
-            {isBrowseMode ? <FileSearch2 className="" /> : <Map className="" />}
-          </Button>
-        </motion.div>
+            {user && user.groups.includes("Dashboard Users") && (
+              <div className="mt-4">
+                <Link href="/dashboard" className="inline-block bg-blue-500 text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:hover:border-white dark:bg-blue-500 dark:text-white dark:hover:bg-black dark:hover:text-white transition-colors duration-300 ease-in-out">
+                  Dashboard
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-    </ThemeProvider>
+
+      <style jsx>{`
+        .shimmer {
+          display: inline-block;
+          animation: shimmer 2s infinite linear;
+        }
+
+        @keyframes shimmer {
+          0% { color: red; }
+          20% { color: orange; }
+          40% { color: yellow; }
+          60% { color: green; }
+          80% { color: blue; }
+          100% { color: violet; }
+        }
+
+        .blinking-cursor {
+          font-weight: bold;
+          font-size: inherit; /* Match the font size of surrounding text */
+          color: white;
+          animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+          from, to { color: transparent; }
+          50% { color: white; }
+        }
+
+        .ast {
+          display: inline-block;
+        }
+
+        .fixed-height {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+      `}</style>
+    </div>
   );
 };
 
-export default HomePage;
+export default Hi;
