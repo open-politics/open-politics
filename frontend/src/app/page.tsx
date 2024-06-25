@@ -64,7 +64,7 @@ const Hi = ({ user }) => {
           <p className="text-lg mt-1 mb-2">Navigate news with next-gen tools.</p>
           <p className="mt-1 mb-2">Come back soon for feature releases.</p>
 
-          <div className="space-x-2 max-w-sm mx-auto mt-4">
+          <div className="space-x-2 max-w-md mx-auto mt-4">
             <Link href="https://github.com/JimVincentW/open-politics" className="inline-block bg-black text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:hover:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white transition-colors duration-300 ease-in-out">
               Project on GitHub
             </Link>

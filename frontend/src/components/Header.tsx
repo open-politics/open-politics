@@ -7,14 +7,14 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import Image from 'next/image';
-import useAuth, { isLoggedIn } from '@/hooks/useAuth';
+import useAuth from '@/hooks/useAuth';
 
 const Header = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { setTheme } = useTheme();
   const { user, logout, isLoading, error } = useAuth();
-
+  
   useEffect(() => {
     const savedDarkMode = localStorage.getItem('darkMode') === 'enabled';
     setDarkMode(savedDarkMode);
@@ -43,7 +43,7 @@ const Header = () => {
   };
 
   const renderAuthButton = () => {
-    if (isLoggedIn()) {
+    if (user) {
       return <button onClick={logout} className="text-gray-700 dark:text-white">Logout</button>;
     } else {
       return <Link href="/login" className="text-gray-700 dark:text-white">Login</Link>;

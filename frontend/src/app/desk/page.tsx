@@ -12,6 +12,8 @@ import { OpenAPI } from 'src/client';
 import CountryDetailPanel from '@/components/CountryDetailPanel';
 import { Map, FileSearch2 } from 'lucide-react';
 import { useSession } from "next-auth/react"
+import { NewsHome } from '@/components/NewsHome';
+
 
 const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
@@ -35,12 +37,14 @@ const Desk: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [windowWidth, setWindowWidth] = useState<number>(0);
   const { toast } = useToast();
+  const [newsHomeData, setNewsHomeData] = useState<any | null>(null);
+
 
   useEffect(() => {
     if (country) {
       const fetchLeaderInfo = async () => {
         try {
-          const response = await axios.get(`https://dev.open-politics.org/api/v1/countries/leaders/${country}`);
+          const response = await axios.get(`https://open-politics.org/api/v1/countries/leaders/${country}`);
           setLeaderInfo(response.data);
         } catch (error) {
           toast({
@@ -125,13 +129,14 @@ const Desk: React.FC = () => {
           className="relative"
           initial={{ top: '10%', left: '50%', transform: 'translateX(-50%)' }}
           animate={getWindowWidth() > 768 ? {
+            // Desktop
             opacity: 1,
-            top: isBrowseMode ? '50%' : '20%',
+            top: isBrowseMode ? '50%' : '0%',
             left: isBrowseMode ? '50%' : '50%',
             transform: 'translate(-50%, -50%)',
             position: 'absolute',
-            height: isBrowseMode ? '100%' : '50%',
-            width: isBrowseMode ? '100%' : '10%',
+            height: isBrowseMode ? '100%' : '-10%',
+            width: isBrowseMode ? '100%' : '100%',
             zIndex: isBrowseMode ? 0 : 0,
           } : {
             opacity: 1,
@@ -214,7 +219,7 @@ const Desk: React.FC = () => {
             left: '50%',
             transform: 'translate(-50%, 0)',
             height: '100%',
-            width: isBrowseMode ? '50%' : '100%',
+            width: isBrowseMode ? '100%' : '100%',
             display: isVisible ? 'block' : 'none',
           } : {
             display: isVisible ? 'block' : 'none',
@@ -260,6 +265,7 @@ const Desk: React.FC = () => {
           </Button>
         </motion.div>
       </div>
+      <NewsHome prompt="News Home" country_focus={newsHomeData?.country_focus} articles={newsHomeData?.articles} images={newsHomeData?.images} summary={newsHomeData?.summary} topics={newsHomeData?.topics} entities={newsHomeData?.entities} country={newsHomeData?.country} />
     </ThemeProvider>
   );
 };

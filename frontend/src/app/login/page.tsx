@@ -30,7 +30,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <Card className="w-full max-w-md p-8 space-y-4">
+      <Card className="w-full max-w-sm p-8 space-y-4">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
         </CardHeader>
@@ -44,7 +44,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
                 required
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-2 border border-gray-300 rounded text-base" // Added text-base class
               />
             </div>
             <div>
@@ -55,7 +55,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
                 required
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-2 border border-gray-300 rounded text-base" // Added text-base class
               />
             </div>
             {errorMessage && <p className="text-red-500">{errorMessage}</p>}

@@ -33,21 +33,21 @@ const nextConfig = {
         destination:
           process.env.NODE_ENV === "development"
             ? "http://127.0.0.1:8000/api/:path*"
-            : "/api/:path*",
+            : "https://open-politics.org/api/:path*",
       },
       {
         source: "/docs",
         destination:
           process.env.NODE_ENV === "development"
             ? "http://127.0.0.1:8000/docs"
-            : "/api/docs",
+            : "https://open-politics.org/docs",
       },
       {
         source: "/openapi.json",
         destination:
           process.env.NODE_ENV === "development"
             ? "http://127.0.0.1:8000/openapi.json"
-            : "/api/openapi.json",
+            : "https://open-politics.org/openapi.json",
       },
     ];
   },

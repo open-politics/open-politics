@@ -64,24 +64,25 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
         panX: "rotateX",
         panY: "rotateY",
         projection: am5map.geoOrthographic(),
-        homeGeoPoint: { longitude: initialRotationX, latitude: initialRotationY },
+        // homeGeoPoint: { longitude: initialRotationX, latitude: initialRotationY },
         homeZoomLevel: initialZoomLevel,
         wheelY: "zoom",
+        centerMapOnZoomOut: true,
       })
     );
     chartInstanceRef.current = chart;
 
-    // const backgroundSeries = chart.series.push(
-    //   am5map.MapPolygonSeries.new(root, {})
-    // );
-    // backgroundSeries.mapPolygons.template.setAll({
-    //   fill: am5.color(0xDCDCDC), // Set your desired sea color here
-    //   fillOpacity: 1,
-    //   stroke: am5.color(0x1e90ff),
-    // });
-    // backgroundSeries.data.push({
-    //   geometry: am5map.getGeoRectangle(90, 180, -90, -180),
-    // });
+    const backgroundSeries = chart.series.push(
+      am5map.MapPolygonSeries.new(root, {})
+    );
+    backgroundSeries.mapPolygons.template.setAll({
+      fill: am5.color(0xDCDCDC), // Set your desired sea color here
+      fillOpacity: .05,
+      stroke: am5.color(0x1e90ff),
+    });
+    backgroundSeries.data.push({
+      geometry: am5map.getGeoRectangle(90, 180, -90, -180),
+    });
 
     const polygonSeries = chart.series.push(
       am5map.MapPolygonSeries.new(root, {
@@ -150,7 +151,7 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
       toggleKey: "active",
       interactive: true,
       fill: am5.color(0xfcfcfc),
-      fillOpacity: 0.4,
+      fillOpacity: 0.8,
       stroke: am5.color(0x0e1a36), 
       strokeWidth: 0.45,
     });
@@ -243,13 +244,13 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
     onCountryClick(countryName);
     handleCountryZoom(latitude, longitude, countryName);
 
-    const legislativeDataUrl = `http://dev.open-politics.org/api/v1/countries/legislation/${countryName}`;
+    const legislativeDataUrl = `https://open-politics.org/api/v1/countries/legislation/${countryName}`;
     try {
       const legislativeResponse = await axios.get(legislativeDataUrl);
       setLegislativeData(legislativeResponse.data);
     } catch (error) {}
 
-    const economicDataUrl = `http://dev.open-politics.org/api/v1/countries/econ_data/${countryName}`;
+    const economicDataUrl = `https://open-politics.org/api/v1/countries/econ_data/${countryName}`;
     try {
       const economicResponse = await axios.get(economicDataUrl);
       setEconomicData(economicResponse.data);

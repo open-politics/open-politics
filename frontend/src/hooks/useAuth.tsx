@@ -12,6 +12,7 @@ const isLoggedIn = () => {
 
 export const logout = () => {
   localStorage.removeItem('access_token');
+  console.log('User logged out');
 };
 
 export const handleLogout = () => {
@@ -20,33 +21,41 @@ export const handleLogout = () => {
 
 const useAuth = () => {
   const [error, setError] = useState<string | null>(null);
-  const [isClient, setIsClient] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const { data: user, isLoading } = useQuery<UserPublic | null, Error>({
     queryKey: ['currentUser'],
     queryFn: getCurrentUser,
     enabled: isLoggedIn(),
+    onError: (err) => {
+      if (err.response?.status === 401) {
+        console.error('Unauthorized access - redirecting to login');
+        logout();
+        router.push('/login');
+      } else {
+        console.error('Error fetching current user:', err);
+      }
+    },
   });
 
   const login = async (data: AccessToken) => {
-    const response = await loginAccessToken({
-      formData: data,
-    })
-    localStorage.setItem("access_token", response.access_token)
-  }
+    try {
+      const response = await loginAccessToken({
+        formData: data,
+      });
+      localStorage.setItem("access_token", response.access_token);
+      console.log('Access token set in localStorage:', localStorage.getItem('access_token'));
+    } catch (error) {
+      console.error('Error during login:', error);
+      throw error;
+    }
+  };
 
   const loginMutation = useMutation({
     mutationFn: login,
     onSuccess: () => {
       console.log('Login successful');
-      if (isClient) {
-        router.push('/');
-      }
+      router.push('/');
     },
     onError: (err: ApiError) => {
       let errDetail = (err.body as any)?.detail;
@@ -65,10 +74,9 @@ const useAuth = () => {
   });
 
   const logout = () => {
-      localStorage.removeItem('access_token');
-      if (isClient) {
-        router.push('/login');
-      }
+    localStorage.removeItem('access_token');
+    console.log('Access token removed from localStorage:', localStorage.getItem('access_token'));
+    router.push('/login');
   };
 
   return {
