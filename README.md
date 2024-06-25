@@ -113,14 +113,12 @@ Including but not limited to tasks like:
 A fundamental challenge this project has to tackle is how to make information and insights accessible. 
 
 ### Vision
-![Open Politics Vision](assets/images/globe1.png)
-
 The "Open Globe" Interface is set out to display articles and events interactively on a globe.
 It should enable to browse global news exploratively.
 Heatmap events, timeseries/ timeline scrolling and filter for issue areas are also on the roadmap.
 
 ### Current UI
-![Open Politics Vision](assets/images/globe2.png)
+![Open Politics Vision](assets/images/globe_2.png)
 
 This interface enables you to formulate two questions in natural language and retrieve relevant articles. The globe serves as an interaction component for country-related information.
 
