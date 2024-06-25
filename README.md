@@ -27,7 +27,7 @@ The mission is to create an open-source data science and AI toolkit to analyse, 
 
 As a quick pitch element to get you interested; this is where we are going:
 
-![Open Politics Vision](assets/images/open_globe_1.png)
+![Open Politics Vision](assets/images/globe_1.png)
 
 # Why Open Politics Exists
 - All things regarding politics, be they news, conflicts or legislative procedures, are hard to keep track of. It's hard to find the time to read through all the documents and news articles necessary to gain a broad and well-informed understanding of political situations. Technology offers great possibilities to make such processes more accessible. Recently, the advent of Large Language Models has extended the capabilities of textual analysis and understanding. Especially the ability to formulate tasks in natural language opens up new possibilities for analysing text data. Potentially revolutionising the way qualitative and quantitative research can be combined.
@@ -38,8 +38,24 @@ As a quick pitch element to get you interested; this is where we are going:
 #### [SSARE - (Semantic Search Article Recommendation Engine)](https://github.com/JimVincentW/SSARE)
 SSARE is Open Politics' data aggregation system and vector storage endpoint. It aims to create up-to-date and relevant datasets for the LLMs to work with. A microservice infrastructure continuously scrapes news sites and stores them in a vector storage and a relational database (Postgres). Sources can be added with Python scripts which yield a dataframe with: URL | Headline | Paragraphs | Source. Just clone the service, add your scripts and bring your own data endpoint into production.
 
-### The Webapp:
-05.06.2024: The Django backend is now replaced by a FastAPI backend (a fork of Tiangolo's highly functional Fullstack Template). The frontend is now a Next.js app using shadcn as a UI library, amcharts for the globe and axios data fatches to the backend. 
+### The Webapp (Overview):
+25.06.2024: 
+**The Django stack is now replaced by a FastAPI backend + NextJS Frontend.**
+The stack setup & is largely based on Tiangolo's Fullstack Template. 
+Security and configuration updates will be fetched from the template.
+
+Backend:
+FastAPI, Postgres, Adminer \
+The API's can be generated into OpenAPI clients. 
+For the prototype some static data is served to illustrate future purposes (like the leaders of countries, articles on the globe, etc.).
+The rest of the data is pulled from APIs, SSARE (https://github.com/JimVincentW/SSARE) and storages like Tavily, Bundestag API, OECD API, etc.
+
+**The methodic layer** of what information is presented and when is currently buried in the frontend with the help of the Vercel AI SDK. The plan is to dynamically choose data analysis and presentation methods that are presented as streaming generative interfaces. 
+
+Once it is more clear how FastAPI can provide the same capabilities as the Vercel AI SDK, the methodic layer will be moved to the backend. 
+
+Frontend:
+The frontend is now a Next.js app using shadcn as a UI library, amcharts for the globe and axios data fatches to the backend. The roamdap foresees that Open Politics will provide a unified interface for data resource management.
 
 ## Want to engage? Look into our Developer Jour Fixe!
 - Interested in the project? Want to contribute? Share a thought?
