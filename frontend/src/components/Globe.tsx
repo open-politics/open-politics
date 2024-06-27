@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Compass, RotateCcw, Cog } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import am5themes_Material from "@amcharts/amcharts5/themes/Material";
 
 interface GlobeProps {
   geojsonUrl: string;
@@ -57,7 +58,9 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
     const root = am5.Root.new("chartdiv");
     chartRef.current = root;
 
-    root.setThemes([am5themes_Animated.new(root)]);
+    root.setThemes([
+      am5themes_Animated.new(root)
+    ]);
 
     const chart = root.container.children.push(
       am5map.MapChart.new(root, {
@@ -79,6 +82,8 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
       fill: am5.color(0xDCDCDC), // Set your desired sea color here
       fillOpacity: .05,
       stroke: am5.color(0x1e90ff),
+      // saturate: 2.5,
+      blur: 2,
     });
     backgroundSeries.data.push({
       geometry: am5map.getGeoRectangle(90, 180, -90, -180),
@@ -102,7 +107,7 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
       am5map.GraticuleSeries.new(root, {
         stroke: am5.color(0x0e1a36),
         opacity: 0.05,
-        step: 4,
+        step: 50,
         
       })
     );

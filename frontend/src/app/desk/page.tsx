@@ -13,7 +13,7 @@ import CountryDetailPanel from '@/components/CountryDetailPanel';
 import { Map, FileSearch2 } from 'lucide-react';
 import { useSession } from "next-auth/react"
 import { NewsHome } from '@/components/NewsHome';
-
+import { ExpoTest } from '@/components/ExpoTest';
 
 const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
@@ -208,7 +208,7 @@ const Desk: React.FC = () => {
         </motion.div>
 
         <motion.div
-          className={`relative bg-sky-400 dark:bg-[#373737] mt-2 bg-opacity-20 dark:bg-opacity-40 backdrop backdrop-blur-md dark:backdrop-blur-2xl
+          className={`relative bg-sky-400 dark:bg-[#373737] mt-2 bg-opacity-20 dark:bg-opacity-40 backdrop backdrop-blur-md dark:backdrop-blur-2xl max-w-[800px]
             ${isVisible ? 'z-50' : 'z-10'}
             ${isVisible ? 'rounded-lg' : 'opacity-10'}
           `}
@@ -255,7 +255,7 @@ const Desk: React.FC = () => {
             opacity: isBrowseMode ? 1 : 0.5,
             top: isBrowseMode ? '60%' : '20%',
             left: isBrowseMode ? '50%' : '50%',
-            transform: 'translate(-50%, -50%)',
+            transform: 'translate(-50%, -50%)',   
             position: 'absolute',
           }}
           transition={{ duration: 0.5 }}
@@ -265,7 +265,8 @@ const Desk: React.FC = () => {
           </Button>
         </motion.div>
       </div>
-      <NewsHome prompt="News Home" country_focus={newsHomeData?.country_focus} articles={newsHomeData?.articles} images={newsHomeData?.images} summary={newsHomeData?.summary} topics={newsHomeData?.topics} entities={newsHomeData?.entities} country={newsHomeData?.country} />
+      {/* <NewsHome prompt="News Home" country_focus={newsHomeData?.country_focus} articles={newsHomeData?.articles} images={newsHomeData?.images} summary={newsHomeData?.summary} topics={newsHomeData?.topics} entities={newsHomeData?.entities} country={newsHomeData?.country} /> */}
+      {/* <ExpoTest /> */}
     </ThemeProvider>
   );
 };

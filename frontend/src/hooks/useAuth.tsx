@@ -4,7 +4,9 @@ import { useRouter } from 'next/navigation';
 import { AxiosError } from 'axios';
 import { loginAccessToken, getCurrentUser } from '../app/auth';
 import { LoginService } from '../client';
-import type { Body_login_login_access_token as AccessToken, ApiError, UserPublic } from '../client';
+import type { Body_login_login_access_token as AccessToken, ApiError } from '../client';
+import { UsersService } from '../client';
+
 
 const isLoggedIn = () => {
   return typeof window !== 'undefined' && localStorage.getItem('access_token') !== null;
@@ -24,23 +26,14 @@ const useAuth = () => {
   const router = useRouter();
 
   const { data: user, isLoading } = useQuery<UserPublic | null, Error>({
-    queryKey: ['currentUser'],
-    queryFn: getCurrentUser,
+    queryKey: ["currentUser"],
+    queryFn: UsersService.readUserMe,
     enabled: isLoggedIn(),
-    onError: (err) => {
-      if (err.response?.status === 401) {
-        console.error('Unauthorized access - redirecting to login');
-        logout();
-        router.push('/login');
-      } else {
-        console.error('Error fetching current user:', err);
-      }
-    },
   });
 
   const login = async (data: AccessToken) => {
     try {
-      const response = await loginAccessToken({
+      const response = await LoginService.loginAccessToken({
         formData: data,
       });
       localStorage.setItem("access_token", response.access_token);

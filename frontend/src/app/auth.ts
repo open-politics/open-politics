@@ -8,7 +8,7 @@ const getAccessToken = () => {
 
 export const loginAccessToken = async ({ formData }: { formData: Body_login_login_access_token }): CancelablePromise<Token> => {
   try {
-    const response = await LoginService.loginLoginAccessToken({ formData });
+    const response = await LoginService.loginAccessToken({ formData });
     console.log('Login access token response:', response);
     return response;
   } catch (error) {
@@ -24,11 +24,8 @@ export const getCurrentUser = async (): CancelablePromise<UserOut> => {
       throw new Error('No access token found');
     }
 
-    const response = await UsersService.usersReadUserMe({
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await UsersService.usersReadUserMe();
+
     console.log('Current user response:', response);
     return response;
   } catch (error) {

@@ -2,12 +2,14 @@
   "name": "next-generation-interface",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "generate-client": "openapi-ts --input ./openapi.json --output ./src/client --client axios --exportSchemas true"
+
   },
   "dependencies": {
     "@ai-sdk/openai": "^0.0.17",
