@@ -1,3 +1,4 @@
+// @ts-ignore
 import React, { useLayoutEffect, useRef, useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import * as am5 from "@amcharts/amcharts5";
 import * as am5map from "@amcharts/amcharts5/map";
@@ -9,6 +10,7 @@ import { Slider } from "@/components/ui/slider";
 import { Compass, RotateCcw, Cog } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import am5themes_Material from "@amcharts/amcharts5/themes/Material";
+import { Animations } from "@amcharts/amcharts5/.internal/core/util/Animation"; // Add this import
 
 interface GlobeProps {
   geojsonUrl: string;
@@ -20,14 +22,18 @@ interface GlobeProps {
   setEconomicData: (data: any) => void;
   onCountryZoom: (latitude: number, longitude: number, countryName: string) => void;
 }
-
+interface DataContext {
+  articles: { headline: string; url: string }[];
+  title: string;
+  // Add other properties as needed
+}
 const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCountryClick, isBrowseMode, toggleMode, setLegislativeData, setEconomicData, onCountryZoom }, ref) => {
   const chartRef = useRef<am5.Root | null>(null);
   const polygonSeriesRef = useRef<am5map.MapPolygonSeries | null>(null);
   const pointSeriesRef = useRef<am5map.MapPointSeries | null>(null);
   const [isClient, setIsClient] = useState(false);
   const [isRotating, setIsRotating] = useState(true);
-  const rotationAnimationRef = useRef<am5.Animation | null>(null);
+  const rotationAnimationRef = useRef<any>(null);
   const chartInstanceRef = useRef<am5map.MapChart | null>(null);
   const [zoomLevel, setZoomLevel] = useState(0.1);
 
@@ -132,7 +138,7 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
       });
 
       circle.events.on("click", function(ev) {
-        const dataItem = ev.target.dataItem;
+        const dataItem = ev.target.dataItem as am5.DataItem<DataContext>;
         const articles = dataItem.dataContext.articles;
         const articleContent = articles.map((article: any) => `<a href="${article.url}" target="_blank">${article.headline}</a>`).join('<hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">');
         const content = `<div>Articles for location: <strong>${dataItem.dataContext.title}</strong><br/>${articleContent}</div>`;

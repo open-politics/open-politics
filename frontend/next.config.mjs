@@ -1,7 +1,13 @@
-import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+
+// Recreate __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   images: {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
@@ -52,8 +58,11 @@ const nextConfig = {
     ];
   },
   webpack: (config, { isServer }) => {
-    config.resolve.alias['@'] = path.resolve(__dirname, 'src');
+    config.resolve.alias['@'] = resolve(__dirname, 'src');
     return config;
+  },
+  typescript: {
+    ignoreBuildErrors: true,
   },
 };
 

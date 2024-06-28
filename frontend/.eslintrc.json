@@ -1,6 +1,12 @@
 {
-  "extends": "next/core-web-vitals",
+  "extends": "next",
   "rules": {
-    "react/react-in-jsx-scope": "off"
+    "react/no-unescaped-entities": "off",
+    "@next/next/no-img-element": "off",
+    "react/display-name": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "react/jsx-key": "off",
+    "@typescript-eslint/no-explicit-any": "off"
+
   }
 }

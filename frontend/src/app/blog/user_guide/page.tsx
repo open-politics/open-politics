@@ -2,7 +2,6 @@
 import React from 'react';
 import { Separator } from "@/components/ui/separator";
 import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
-import { isAxiosError } from 'axios';
 
 const ArticlePage: React.FC = () => {
   return (
@@ -28,7 +27,7 @@ const ArticlePage: React.FC = () => {
           
           <figure className='my-4'>
             <img src="/images/political_intelligence.png" alt="Political Intelligence" />
-            <figcaption>DALL·E 3; <i> "Imagine a world where everybody has access to political intelligence."</i></figcaption>
+            <figcaption className='mt-3'>DALL·E 3; <i> "Imagine a world where everybody has access to political intelligence."</i></figcaption>
           </figure>
 
           <h2>Getting started with OPP</h2>
@@ -80,7 +79,7 @@ const ArticlePage: React.FC = () => {
           <p>A language model extends your questions and presses it in a certain frame. Take for example the question: <code>What is happening in southeast asia?</code>.</p>
           <p>This will extend to multiple queries like this:</p>
 
-          <pre className="max-h-[100]"><code className="language-html max-h-[100]">
+          <pre><code className="language-html max-h-[100]">
             {`{
               "queries": [
                 {

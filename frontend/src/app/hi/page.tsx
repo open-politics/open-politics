@@ -2,21 +2,25 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
+const sleep = (time: number) => new Promise((resolve) => setTimeout(resolve, time));
 
-const TypeAsync = ({ words = [] }) => {
+interface TypeAsyncProps {
+  words: string[];
+}
+
+const TypeAsync: React.FC<TypeAsyncProps> = ({ words = [] }) => {
   const [text, setText] = useState('');
   const [typing, setTyping] = useState(true);
 
   useEffect(() => {
-    const type = async (word) => {
+    const type = async (word: string) => {
       for (let i = 0; i <= word.length; i++) {
         setText(word.slice(0, i));
         await sleep(100); // Set your typing interval here
       }
     };
 
-    const del = async (word) => {
+    const del = async (word: string) => {
       for (let i = word.length; i >= 0; i--) {
         setText(word.slice(0, i));
         await sleep(50); // Set your deleting interval here
@@ -45,7 +49,14 @@ const TypeAsync = ({ words = [] }) => {
   return <span dangerouslySetInnerHTML={{ __html: text }} />;
 };
 
-const Hi = ({ user }) => {
+interface HiProps {
+  user?: {
+    name: string;
+    groups: string[];
+  };
+}
+
+const Hi: React.FC<HiProps> = ({ user }) => {
   const words = ['looking', 'researching', 'rooting', 'developing', 'asking']; // add your words here
 
   return (

@@ -7,14 +7,22 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import Image from 'next/image';
-import useAuth from '@/hooks/useAuth';
+import useAuth, { isLoggedIn } from '@/hooks/useAuth';
+import { useQueryClient } from "@tanstack/react-query"
 
 const Header = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { setTheme } = useTheme();
-  const { user, logout, isLoading, error } = useAuth();
-  
+  const queryClient = useQueryClient();
+  const { logout } = useAuth();
+  const currentUser = typeof window !== 'undefined' ? queryClient.getQueryData<UserPublic>(["currentUser"]) : null;
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   useEffect(() => {
     const savedDarkMode = localStorage.getItem('darkMode') === 'enabled';
     setDarkMode(savedDarkMode);
@@ -23,9 +31,14 @@ const Header = () => {
     }
   }, []);
 
-  useEffect(() => {
-    console.log('User state in Header:', user);
-  }, [user]);
+  const handleLogout = async () => {
+    try {
+      logout();
+      console.log("Logout successful");
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+  };
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -42,14 +55,6 @@ const Header = () => {
     setMenuOpen(!menuOpen);
   };
 
-  const renderAuthButton = () => {
-    if (user) {
-      return <button onClick={logout} className="text-gray-700 dark:text-white">Logout</button>;
-    } else {
-      return <Link href="/login" className="text-gray-700 dark:text-white">Login</Link>;
-    }
-  };
-
   return (
     <nav className="text-gray-900 dark:text-white">
       <div className="max-w-full mx-auto px-4">
@@ -64,12 +69,16 @@ const Header = () => {
 
           <div className="hidden md:flex items-center space-x-1">
             <Link href="/about" className="py-5 px-3 text-gray-700 dark:text-white">About</Link>
-            <Link href="/news_blog" className="py-5 px-3 text-gray-700 dark:text-white">News</Link>
+            <Link href="/blog/user_guide" className="py-5 px-3 text-gray-700 dark:text-white">News</Link>
             <a href="mailto:engage@open-politics.org" className="py-5 px-3 text-gray-700 dark:text-white">Contact</a>
             <a href="https://github.com/JimVincentW/open-politics" className="py-5 px-3 flex items-center">
               <FaGithub className="h-6 w-6" style={{ margin: '0 auto' }} />
             </a>
-            {renderAuthButton()}
+            {currentUser?.email ? (
+              <button onClick={handleLogout} className="text-gray-700 dark:text-white">Logout</button>
+            ) : (
+              <Link href="/login" className="text-gray-700 dark:text-white">Login</Link>
+            )}
             <div className="flex items-center py-5 px-3 dark:text-white">
               <Switch checked={darkMode} onCheckedChange={toggleDarkMode} />
               {darkMode ? <Sun className="ml-2" /> : <Moon className="ml-2" />}
@@ -89,12 +98,16 @@ const Header = () => {
       {menuOpen && (
         <div className="mobile-menu md:hidden z-10 flex flex-column items-center justify-center">
           <Link href="/about" className="block py-2 px-2 text-sm mb-2">About</Link>
-          <Link href="/news_blog" className="block py-2 px-2 text-sm mb-2">News</Link>
+          <Link href="/blog/user_guide" className="block py-2 px-2 text-sm mb-2">News</Link>
           <a href="mailto:engage@open-politics.org" className="block py-2 px-2 text-sm mb-2">Contact</a>
           <a href="https://github.com/JimVincentW/open-politics" className="block py-2 px-2 text-sm mb-2 flex items-center">
             <FaGithub className="h-6 w-6" />
           </a>
-          {renderAuthButton()}
+          {currentUser?.email ? (
+            <button onClick={logout} className="text-gray-700 dark:text-white">Logout</button>
+          ) : (
+            <Link href="/login" className="text-gray-700 dark:text-white">Login</Link>
+          )}
           <div className="flex items-center py-4 mb-2 px-3 dark:text-white">
               <Switch checked={darkMode} onCheckedChange={toggleDarkMode} />
               {darkMode ? <Sun className="ml-2" /> : <Moon className="ml-2" />}

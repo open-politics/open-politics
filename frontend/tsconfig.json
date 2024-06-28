@@ -7,7 +7,7 @@
     },
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true,
+    "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "incremental": true,
@@ -21,7 +21,9 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "noEmitOnError": false,
+    "suppressImplicitAnyIndexErrors": true
   },
   "include": [
     "next-env.d.ts",

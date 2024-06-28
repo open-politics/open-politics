@@ -25,11 +25,9 @@ WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 
 # Copy static assets from builder stage
-COPY --from=build-stage /app/.next/static ./.next/static
-
-# Copy Next.js specific files
-COPY --from=build-stage /app/public /public
-COPY --from=build-stage /app/next.config.js .
+COPY --from=build-stage /app/.next /usr/share/nginx/html/.next
+COPY --from=build-stage /app/public /usr/share/nginx/html/public
+COPY --from=build-stage /app/next.config.js /usr/share/nginx/html/next.config.js
 
 # Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf

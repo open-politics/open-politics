@@ -25,7 +25,7 @@ export interface ClientMessage {
   display: ReactNode;
 }
 
-export async function generateSummaryFromArticles(articles: string[]) {
+export async function generateSummaryFromArticles(articles: { content: string }[]) {
   const stream = createStreamableValue('');
 
   const combinedDescriptions = articles.map(article => article.content).join('\n\n');

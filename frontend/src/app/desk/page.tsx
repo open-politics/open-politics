@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { useToast } from '@/components/ui/use-toast';
-import { ThemeProvider } from '../layout';
+import { ThemeProvider } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import Search from '@/components/Search';
 import Results from '@/components/Results';

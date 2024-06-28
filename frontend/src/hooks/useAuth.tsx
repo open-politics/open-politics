@@ -2,47 +2,42 @@ import { useState, useEffect } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { AxiosError } from 'axios';
-import { loginAccessToken, getCurrentUser } from '../app/auth';
 import { LoginService } from '../client';
 import type { Body_login_login_access_token as AccessToken, ApiError } from '../client';
 import { UsersService } from '../client';
+import { useQueryClient } from '@tanstack/react-query';
 
+type UserPublic = {
+  email: string
+  is_active?: boolean
+  is_superuser?: boolean
+  full_name?: string | null
+  id: number
+}
 
 const isLoggedIn = () => {
-  return typeof window !== 'undefined' && localStorage.getItem('access_token') !== null;
-};
-
-export const logout = () => {
-  localStorage.removeItem('access_token');
-  console.log('User logged out');
-};
-
-export const handleLogout = () => {
-  logout();
-};
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem("access_token") !== null;
+  }
+  return false;
+}
 
 const useAuth = () => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-
+  const queryClient = useQueryClient();
   const { data: user, isLoading } = useQuery<UserPublic | null, Error>({
     queryKey: ["currentUser"],
     queryFn: UsersService.readUserMe,
     enabled: isLoggedIn(),
-  });
+  })
 
   const login = async (data: AccessToken) => {
-    try {
-      const response = await LoginService.loginAccessToken({
-        formData: data,
-      });
-      localStorage.setItem("access_token", response.access_token);
-      console.log('Access token set in localStorage:', localStorage.getItem('access_token'));
-    } catch (error) {
-      console.error('Error during login:', error);
-      throw error;
-    }
-  };
+    const response = await LoginService.loginAccessToken({
+      formData: data,
+    })
+    localStorage.setItem("access_token", response.access_token)
+  }
 
   const loginMutation = useMutation({
     mutationFn: login,
@@ -68,6 +63,7 @@ const useAuth = () => {
 
   const logout = () => {
     localStorage.removeItem('access_token');
+    queryClient.invalidateQueries(["currentUser"]);
     console.log('Access token removed from localStorage:', localStorage.getItem('access_token'));
     router.push('/login');
   };
