@@ -56,7 +56,7 @@ interface HiProps {
   };
 }
 
-const Hi: React.FC<HiProps> = ({ user }) => {
+const HomePage: React.FC<HiProps> = () => {
   const words = ['looking', 'researching', 'rooting', 'developing', 'asking']; // add your words here
 
   return (
@@ -78,36 +78,13 @@ const Hi: React.FC<HiProps> = ({ user }) => {
           <p className="text-lg mt-1 mb-2">Navigate news with next-gen tools.</p>
           <p className="mt-1 mb-2">Come back soon for feature releases.</p>
 
-          <div className="space-y-2 max-w-sm mx-auto mt-4">
+          <div className="space-y-2 space-x-3 max-w-sm mx-auto mt-4">
             <Link href="https://github.com/JimVincentW/open-politics" className="inline-block bg-black text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:hover:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white transition-colors duration-300 ease-in-out">
               Project on GitHub
             </Link>
             <Link href="https://zu61ygkfc3v.typeform.com/to/KHZeedk3" className="inline-block bg-black text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:hover:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white transition-colors duration-300 ease-in-out">
               Join the waitlist
             </Link>
-
-            {user && (
-              <>
-                <div className="mt-4">
-                  <Link href="/news_home" className="inline-block bg-pink-600 text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:bg-pink-600 dark:text-white dark:hover:bg-black dark:hover:text-white dark:hover:border-white transition-colors duration-300 ease-in-out">
-                    Search News
-                  </Link>
-                </div>
-                <div className="mt-4">
-                  <Link href="/globe" className="inline-block bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:bg-pink-600 dark:text-white dark:hover:bg-black dark:hover:text-white dark:hover:border-white transition-colors duration-300 ease-in-out">
-                    Open Globe
-                  </Link>
-                </div>
-              </>
-            )}
-
-            {user && user.groups.includes("Dashboard Users") && (
-              <div className="mt-4">
-                <Link href="/dashboard" className="inline-block bg-blue-500 text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:hover:border-white dark:bg-blue-500 dark:text-white dark:hover:bg-black dark:hover:text-white transition-colors duration-300 ease-in-out">
-                  Dashboard
-                </Link>
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -153,4 +130,4 @@ const Hi: React.FC<HiProps> = ({ user }) => {
   );
 };
 
-export default Hi;
+export default HomePage;

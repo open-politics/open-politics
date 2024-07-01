@@ -35,7 +35,10 @@ export async function generateSummaryFromArticles(articles: { content: string }[
       model: openai('gpt-4o'),
       prompt: `You are an political intelligence analyst. 
       Provide a distillation of the information of the articles, 
-      ${combinedDescriptions}\n\n.`
+      ${combinedDescriptions}\n\n.
+      Use markdown styling to make the output look good.
+      Don't write "This is the distillation" or similar first sentences. Just start straight away with the most important points.
+      `
       ,
     });
 

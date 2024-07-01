@@ -25,8 +25,8 @@ interface GlobeProps {
 interface DataContext {
   articles: { headline: string; url: string }[];
   title: string;
-  // Add other properties as needed
 }
+
 const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCountryClick, isBrowseMode, toggleMode, setLegislativeData, setEconomicData, onCountryZoom }, ref) => {
   const chartRef = useRef<am5.Root | null>(null);
   const polygonSeriesRef = useRef<am5map.MapPolygonSeries | null>(null);
@@ -61,7 +61,10 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
   useLayoutEffect(() => {
     if (!isClient) return;
 
-    const root = am5.Root.new("chartdiv");
+    const root = am5.Root.new("chartdiv", {
+      useSafeResolution: false
+    });
+
     chartRef.current = root;
 
     root.setThemes([
@@ -109,14 +112,13 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
     );
     pointSeriesRef.current = pointSeries;
 
-    const graticuleSeries = chart.series.push(
-      am5map.GraticuleSeries.new(root, {
-        stroke: am5.color(0x0e1a36),
-        opacity: 0.05,
-        step: 50,
-        
-      })
-    );
+    // const graticuleSeries = chart.series.push(
+    //   am5map.GraticuleSeries.new(root, {
+    //     stroke: am5.color(0x0e1a36),
+    //     opacity: 0.05,
+    //     step: 0,
+    //   })
+    // );
 
     fetch(geojsonUrl)
       .then(response => response.json())

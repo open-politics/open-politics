@@ -51,7 +51,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
         fullSummary += delta;
         setSummary(fullSummary);
       }
-
+      setLoading(false);
       const country = await fetchCountryFromQuery(query);
       setCountry(country?.country_name);
 
