@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 const sleep = (time: number) => new Promise((resolve) => setTimeout(resolve, time));
 
@@ -57,35 +58,38 @@ interface HiProps {
 }
 
 const HomePage: React.FC<HiProps> = () => {
-  const words = ['looking', 'researching', 'rooting', 'developing', 'asking']; // add your words here
+  const words = ['looking', 'researching', 'rooting', 'developing', 'asking', '']; 
 
   return (
-    <div className="p-8">
-      <div className="flex flex-col justify-center items-center h-screen" style={{ marginTop: '-2px' }}>
-        <div className="text-center mb-4">
-          <h1 className="text-6xl font-bold leading-none sd:mt-8" style={{ marginTop: '-8rem' }}>
-            <div className="fixed-height">What are you</div>
-            <div className="fixed-height flex justify-center">
-              <span id="shimmer-ast" className="shimmer">*</span>
+    <div className="p-8 flex flex-col items-center justify-center min-h-screen">
+      <div className="text-center mb-8">
+        <h1 className="text-4xl md:text-6xl font-bold leading-none">
+          <div className="flex flex-col items-center">
+            <span>What are you</span>
+            <div className="flex items-center">
+              <span id="shimmer-ast" className="shimmer mt-2">*</span>
               <TypeAsync words={words} />
             </div>
-            <div className="fixed-height">for?</div>
-          </h1>
-        </div>
+            <span className="">for?</span>
+          </div>
+        </h1>
+      </div>
 
-        <div className="mt-2 mr-8 text-right">
-          <p className="text-pink-600 font-bold mb-1">Rethinking News Analysis with Open Source & AI.</p>
-          <p className="text-lg mt-1 mb-2">Navigate news with next-gen tools.</p>
-          <p className="mt-1 mb-2">Come back soon for feature releases.</p>
+      <div className="mt-2 text-center">
+        <p className="text-pink-600 font-bold mb-1">Rethinking News Analysis with Open Source & AI.</p>
+        <p className="mb-3 font-bold">Navigate news with next-gen tools.</p>
 
-          <div className="space-y-2 space-x-3 max-w-sm mx-auto mt-4">
-            <Link href="https://github.com/JimVincentW/open-politics" className="inline-block bg-black text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:hover:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white transition-colors duration-300 ease-in-out">
+        <div className="space-x-3">
+          <Button asChild variant="secondary">
+            <Link href="https://github.com/JimVincentW/open-politics">
               Project on GitHub
             </Link>
-            <Link href="https://zu61ygkfc3v.typeform.com/to/KHZeedk3" className="inline-block bg-black text-white py-2 px-4 rounded-full border border-transparent hover:bg-white hover:text-black hover:border-black dark:hover:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white transition-colors duration-300 ease-in-out">
+          </Button>
+          <Button asChild>
+            <Link href="https://zu61ygkfc3v.typeform.com/to/KHZeedk3">
               Join the waitlist
             </Link>
-          </div>
+          </Button>
         </div>
       </div>
 
@@ -102,28 +106,6 @@ const HomePage: React.FC<HiProps> = () => {
           60% { color: green; }
           80% { color: blue; }
           100% { color: violet; }
-        }
-
-        .blinking-cursor {
-          font-weight: bold;
-          font-size: inherit; /* Match the font size of surrounding text */
-          color: white;
-          animation: blink 1s step-end infinite;
-        }
-
-        @keyframes blink {
-          from, to { color: transparent; }
-          50% { color: white; }
-        }
-
-        .ast {
-          display: inline-block;
-        }
-
-        .fixed-height {
-          display: flex;
-          justify-content: center;
-          align-items: center;
         }
       `}</style>
     </div>

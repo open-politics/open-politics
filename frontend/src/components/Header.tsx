@@ -68,7 +68,7 @@ const Header = () => {
           </div>
 
           <div className="hidden md:flex items-center space-x-1">
-            <Link href="/about" className="py-5 px-3 text-gray-700 dark:text-white">About</Link>
+            <Link href="/blog/about" className="py-5 px-3 text-gray-700 dark:text-white">About</Link>
             <Link href="/blog/user_guide" className="py-5 px-3 text-gray-700 dark:text-white">News</Link>
             <a href="mailto:engage@open-politics.org" className="py-5 px-3 text-gray-700 dark:text-white">Contact</a>
             <a href="https://github.com/JimVincentW/open-politics" className="py-5 px-3 flex items-center">
@@ -97,7 +97,7 @@ const Header = () => {
 
       {menuOpen && (
         <div className="mobile-menu md:hidden z-10 flex flex-column items-center justify-center">
-          <Link href="/about" className="block py-2 px-2 text-sm mb-2">About</Link>
+          <Link href="/blog/about" className="block py-2 px-2 text-sm mb-2">About</Link>
           <Link href="/blog/user_guide" className="block py-2 px-2 text-sm mb-2">News</Link>
           <a href="mailto:engage@open-politics.org" className="block py-2 px-2 text-sm mb-2">Contact</a>
           <a href="https://github.com/JimVincentW/open-politics" className="block py-2 px-2 text-sm mb-2 flex items-center">
