@@ -63,7 +63,7 @@ const HomePage: React.FC<HiProps> = () => {
   return (
     <div className="p-8 flex flex-col items-center justify-center min-h-screen">
       <div className="text-center mb-8">
-        <h1 className="text-4xl md:text-6xl font-bold leading-none">
+        <h1 className="text-4xl md:text-6xl font-bold leading-none dark:text-white">
           <div className="flex flex-col items-center">
             <span style={{ letterSpacing: '0.1em' }}>What are you</span>
             <div className="flex items-center">
@@ -76,11 +76,11 @@ const HomePage: React.FC<HiProps> = () => {
       </div>
 
       <div className="mt-2 text-center">
-        <p className="text-pink-600 font-bold mb-1">Rethinking News Analysis with Open Source & AI.</p>
+        <p className="text-blue-500 font-bold mb-1">Rethinking News Analysis with Open Source & AI.</p>
         <p className="mb-3 font-bold">Navigate news with next-gen tools.</p>
 
         <div className="space-x-2">
-          <Button asChild variant="outline" className="border border-pink-600">
+          <Button asChild variant="outline" className="border border-blue-500">
             <Link href="https://github.com/JimVincentW/open-politics">
               Project on GitHub
             </Link>
