@@ -94,24 +94,34 @@ const Header = () => {
           </div>
         </div>
       </div>
-
       {menuOpen && (
-        <div className="mobile-menu md:hidden z-10 flex flex-column items-center justify-center">
-          <Link href="/blog/about" className="block py-2 px-2 text-sm mb-2">About</Link>
-          <Link href="/blog/user_guide" className="block py-2 px-2 text-sm mb-2">News</Link>
-          <a href="mailto:engage@open-politics.org" className="block py-2 px-2 text-sm mb-2">Contact</a>
-          <a href="https://github.com/JimVincentW/open-politics" className="block py-2 px-2 text-sm mb-2 flex items-center">
-            <FaGithub className="h-6 w-6" />
-          </a>
-          {currentUser?.email ? (
-            <button onClick={logout} className="text-gray-700 dark:text-white">Logout</button>
-          ) : (
-            <Link href="/login" className="text-gray-700 dark:text-white">Login</Link>
-          )}
-          <div className="flex items-center py-4 mb-2 px-3 dark:text-white">
-              <Switch checked={darkMode} onCheckedChange={toggleDarkMode} />
-              {darkMode ? <Sun className="ml-2" /> : <Moon className="ml-2" />}
+        <div className="fixed inset-0 z-50">
+          <div className="fixed right-0 top-0 h-full w-64 bg-white dark:bg-gray-900 shadow-lg overflow-y-auto">
+            <div className="flex justify-end p-4">
+              <button onClick={toggleMenu} className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
             </div>
+            <nav className="px-4 pt-4 pb-8">
+              <Link href="/blog/about" className="block py-2 text-lg font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded">About</Link>
+              <Link href="/blog/user_guide" className="block py-2 text-lg font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded">News</Link>
+              <a href="mailto:engage@open-politics.org" className="block py-2 text-lg font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded">Contact</a>
+              <a href="https://github.com/JimVincentW/open-politics" className="flex items-center py-2 text-lg font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
+                <FaGithub className="h-6 w-6 mr-2" />
+              </a>
+              {currentUser?.email ? (
+                <button onClick={logout} className="block w-full text-left py-2 text-lg font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded">Logout</button>
+              ) : (
+                <Link href="/login" className="block py-2 text-lg font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded">Login</Link>
+              )}
+              <div className="flex items-center justify-between py-4 mt-4 border-t border-gray-200 dark:border-gray-700">
+                <span className="text-sm font-medium text-gray-700 dark:text-white">Dark Mode</span>
+                <Switch checked={darkMode} onCheckedChange={toggleDarkMode} />
+              </div>
+            </nav>
+          </div>
         </div>
       )}
       <div className="w-4/5 h-px mt-0 bg-black dark:bg-white mx-auto"></div>

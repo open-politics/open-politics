@@ -1,7 +1,8 @@
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
+import createMDX from '@next/mdx';
+import remarkGfm from 'remark-gfm'
 
-// Recreate __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -66,4 +67,13 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+const withMDX = createMDX({
+  // Add markdown plugins here, if needed
+  options: {
+    remarkPlugins: [remarkGfm],
+    rehypePlugins: [],
+  },
+});
+
+// Merge and export the final configuration
+export default withMDX(nextConfig);

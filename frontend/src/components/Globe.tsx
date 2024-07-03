@@ -164,7 +164,7 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
       toggleKey: "active",
       interactive: true,
       fill: am5.color(0xfcfcfc),
-      fillOpacity: 0.8,
+      fillOpacity: 1,
       stroke: am5.color(0x0e1a36), 
       strokeWidth: 0.45,
     });

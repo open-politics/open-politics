@@ -47,7 +47,7 @@ const TypeAsync: React.FC<TypeAsyncProps> = ({ words = [] }) => {
     }
   }, [words]);
 
-  return <span dangerouslySetInnerHTML={{ __html: text }} />;
+  return <span style={{ letterSpacing: '0.1em' }} dangerouslySetInnerHTML={{ __html: text }} />;
 };
 
 interface HiProps {
@@ -65,12 +65,12 @@ const HomePage: React.FC<HiProps> = () => {
       <div className="text-center mb-8">
         <h1 className="text-4xl md:text-6xl font-bold leading-none">
           <div className="flex flex-col items-center">
-            <span>What are you</span>
+            <span style={{ letterSpacing: '0.1em' }}>What are you</span>
             <div className="flex items-center">
-              <span id="shimmer-ast" className="shimmer mt-2">*</span>
+              <span id="shimmer-ast" className="shimmer mt-2" style={{ letterSpacing: '0.1em' }}>*</span>
               <TypeAsync words={words} />
             </div>
-            <span className="">for?</span>
+            <span className="" style={{ letterSpacing: '0.1em' }}>for?</span>
           </div>
         </h1>
       </div>
@@ -79,8 +79,8 @@ const HomePage: React.FC<HiProps> = () => {
         <p className="text-pink-600 font-bold mb-1">Rethinking News Analysis with Open Source & AI.</p>
         <p className="mb-3 font-bold">Navigate news with next-gen tools.</p>
 
-        <div className="space-x-3">
-          <Button asChild variant="secondary">
+        <div className="space-x-2">
+          <Button asChild variant="outline" className="border border-pink-600">
             <Link href="https://github.com/JimVincentW/open-politics">
               Project on GitHub
             </Link>

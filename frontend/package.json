@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -61,6 +61,9 @@
     "next": "^14.2.4",
     "next-auth": "^4.24.7",
     "next-themes": "^0.3.0",
+    "nextra": "^2.13.4",
+    "nextra-theme-blog": "^2.13.4",
+    "nextra-theme-docs": "^2.13.4",
     "openai": "^4.47.2",
     "openai-edge": "^1.2.2",
     "prismjs": "^1.27.0",
