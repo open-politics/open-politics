@@ -1,14 +1,24 @@
 'use client';
-// src/app/page.tsx
 import React from 'react';
-import Deck from './Deck';
+import { Button } from '@/components/ui/button';
 
-const pitchdeck: React.FC = () => {
+const Pitchdeck: React.FC = () => {
+  const handleDownload = () => {
+    const link = document.createElement('a');
+    link.href = '/other/deck_v1.pdf';
+    link.download = 'deck_v1.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <main className="min-h-screen flex items-center justify-center">
-      <Deck />
+      <Button onClick={handleDownload}>
+        Download Pitch Deck
+      </Button>
     </main>
   );
 };
 
-export default pitchdeck;
+export default Pitchdeck;

@@ -11,25 +11,25 @@ import useAuth, { isLoggedIn } from '@/hooks/useAuth';
 import { useQueryClient } from "@tanstack/react-query"
 
 const Header = () => {
-  const [darkMode, setDarkMode] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const { setTheme } = useTheme();
   const queryClient = useQueryClient();
   const { logout } = useAuth();
   const currentUser = typeof window !== 'undefined' ? queryClient.getQueryData<UserPublic>(["currentUser"]) : null;
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     setIsClient(true);
   }, []);
 
   useEffect(() => {
-    const savedDarkMode = localStorage.getItem('darkMode') === 'enabled';
-    setDarkMode(savedDarkMode);
-    if (savedDarkMode) {
-      document.documentElement.classList.add('dark');
+    if (mounted) {
+      const isDarkMode = theme === 'dark';
+      localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
     }
-  }, []);
+  }, [theme, mounted]);
 
   const handleLogout = async () => {
     try {
@@ -41,14 +41,8 @@ const Header = () => {
   };
 
   const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    if (darkMode) {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('darkMode', 'disabled');
-    } else {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('darkMode', 'enabled');
-    }
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
   };
 
   const toggleMenu = () => {
@@ -56,7 +50,7 @@ const Header = () => {
   };
 
   return (
-    <nav className="text-gray-900 dark:text-white">
+    <nav className="sticky top-0 z-50 text-gray-900 dark:text-white">
       <div className="max-w-full mx-auto px-4">
         <div className="flex items-center justify-between">
           <div className="flex space-x-4 items-center">
@@ -68,20 +62,25 @@ const Header = () => {
           </div>
 
           <div className="hidden md:flex items-center space-x-1">
-            <Link href="/blog/about" className="py-5 px-3 text-gray-700 dark:text-white">About</Link>
-            <Link href="/blog/user_guide" className="py-5 px-3 text-gray-700 dark:text-white">News</Link>
-            <a href="mailto:engage@open-politics.org" className="py-5 px-3 text-gray-700 dark:text-white">Contact</a>
-            <a href="https://github.com/JimVincentW/open-politics" className="py-5 px-3 flex items-center">
+            <Link href="/blog/about" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">About</Link>
+            <Link href="/documentation" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Docs</Link>
+            <a href="mailto:engage@open-politics.org" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Contact</a>
+            <a href="https://github.com/JimVincentW/open-politics" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground flex items-center">
               <FaGithub className="h-6 w-6" style={{ margin: '0 auto' }} />
             </a>
             {currentUser?.email ? (
-              <button onClick={handleLogout} className="text-gray-700 dark:text-white">Logout</button>
+              <button onClick={handleLogout} className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Logout</button>
             ) : (
-              <Link href="/login" className="text-gray-700 dark:text-white">Login</Link>
+              <Link href="/login" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Login</Link>
             )}
-            <div className="flex items-center py-5 px-3 dark:text-white">
-              <Switch checked={darkMode} onCheckedChange={toggleDarkMode} />
-              {darkMode ? <Sun className="ml-2" /> : <Moon className="ml-2" />}
+            <div className="flex items-center py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground dark:text-white">
+              {mounted && (
+                <Switch
+                  checked={theme === 'dark'}
+                  onCheckedChange={toggleDarkMode}
+                />
+              )}
+              {mounted && (theme === 'dark' ? <Sun className="ml-2" /> : <Moon className="ml-2" />)}
             </div>
           </div>
 
@@ -96,7 +95,7 @@ const Header = () => {
       </div>
       {menuOpen && (
         <div className="fixed inset-0 z-50">
-          <div className="fixed right-0 top-0 h-full w-64 bg-white dark:bg-gray-900 shadow-lg overflow-y-auto">
+          <div className="fixed right-0 top-0 h-full w-64 top-0 z-50 w-1/2 border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 text-gray-900 dark:text-whiteoverflow-y-auto">
             <div className="flex justify-end p-4">
               <button onClick={toggleMenu} className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -105,20 +104,25 @@ const Header = () => {
               </button>
             </div>
             <nav className="px-4 pt-4 pb-8">
-              <Link href="/blog/about" className="block py-2 text-lg font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded">About</Link>
-              <Link href="/blog/user_guide" className="block py-2 text-lg font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded">News</Link>
-              <a href="mailto:engage@open-politics.org" className="block py-2 text-lg font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded">Contact</a>
-              <a href="https://github.com/JimVincentW/open-politics" className="flex items-center py-2 text-lg font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
+              <Link href="/blog/about" className="block py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">About</Link>
+              <Link href="/documentation" className="block py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Docs</Link>
+              <a href="mailto:engage@open-politics.org" className="block py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Contact</a>
+              <a href="https://github.com/JimVincentW/open-politics" className="flex items-center py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">
                 <FaGithub className="h-6 w-6 mr-2" />
               </a>
               {currentUser?.email ? (
-                <button onClick={logout} className="block w-full text-left py-2 text-lg font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded">Logout</button>
+                <button onClick={logout} className="block w-full text-left py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Logout</button>
               ) : (
-                <Link href="/login" className="block py-2 text-lg font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded">Login</Link>
+                <Link href="/login" className="block py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Login</Link>
               )}
               <div className="flex items-center justify-between py-4 mt-4 border-t border-gray-200 dark:border-gray-700">
                 <span className="text-sm font-medium text-gray-700 dark:text-white">Dark Mode</span>
-                <Switch checked={darkMode} onCheckedChange={toggleDarkMode} />
+                {mounted && (
+                  <Switch
+                    checked={theme === 'dark'}
+                    onCheckedChange={toggleDarkMode}
+                  />
+                )}
               </div>
             </nav>
           </div>

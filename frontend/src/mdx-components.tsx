@@ -40,8 +40,8 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         className="rounded-lg shadow-md my-8"
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         style={{ width: '100%', height: 'auto' }}
-        width={800} // Add a default width
-        height={600} // Add a default height
+        width={800} 
+        height={600} 
         {...(props as ImageProps)}
       />
     ),
@@ -53,7 +53,6 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     th: ({ children }) => <th className="p-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 font-semibold text-left">{children}</th>,
     td: ({ children }) => <td className="p-2 border border-gray-300 dark:border-gray-700">{children}</td>,
 
-    // Custom components can be added here
     ...components,
   }
 }

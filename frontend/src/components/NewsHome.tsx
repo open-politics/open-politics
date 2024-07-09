@@ -23,7 +23,7 @@ export const NewsHome: React.FC<NewsHomeProps> = (props) => {
 
   const badgeColors = ['bg-blue-700', 'bg-blue-600', 'bg-blue-500', 'bg-blue-400', 'bg-blue-300'];
   return (
-    <Card className='absolute w-1/3 h-1/2 left-1/3 overflow-hidden overflow-scroll top-1/2 p-6 shadow-lg rounded-lg'>
+    <Card className='absolute h-1/2 left-1/3 overflow-hidden overflow-scroll top-1/2 p-6 shadow-lg rounded-lg'>
       <div>
         <h1 className=' mb-4'>News Home</h1>
         <ul className='space-y-4'>

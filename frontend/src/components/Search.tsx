@@ -121,7 +121,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
   };
 
   return (
-    <div className="relative mt-2 w-full md:w-2/3 px-4">
+    <div className="relative mt-2 w-full px-4">
       <h2 className="text-xl font-bold mb-2">Search News and all things Politics</h2>
       <Command className="mx-auto">
         <div className="relative">

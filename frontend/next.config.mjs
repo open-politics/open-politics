@@ -73,6 +73,9 @@ const withMDX = createMDX({
     remarkPlugins: [remarkGfm],
     rehypePlugins: [],
   },
+  experimental: {
+    mdxRs: true,
+  },
 });
 
 // Merge and export the final configuration

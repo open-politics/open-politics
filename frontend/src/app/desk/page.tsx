@@ -11,9 +11,6 @@ import Results from '@/components/Results';
 import { OpenAPI } from 'src/client';
 import CountryDetailPanel from '@/components/CountryDetailPanel';
 import { Map, FileSearch2 } from 'lucide-react';
-import { useSession } from "next-auth/react"
-import { NewsHome } from '@/components/NewsHome';
-import { ExpoTest } from '@/components/ExpoTest';
 
 const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
@@ -163,14 +160,14 @@ const Desk: React.FC = () => {
         </motion.div>
 
         <motion.div
-          className="absolute w-full"
+          className="absolute"
           initial={{ top: 'calc(50% + 250px)', left: '50%', transform: 'translate(-50%, 0)' }}
           animate={getWindowWidth() > 768 ? {
-            top: isBrowseMode ? 'calc(100% - 200px)' : '30%',
-            left: isBrowseMode ? 'calc(50% + 1/6 * 100%)' : 'calc(50% + 1/6 * 100%)',
+            top: isBrowseMode ? 'calc(100% - 100px)' : 'calc(30%)',
+            left: isBrowseMode ? 'calc(50%)' : 'calc(50%)',
             transform: 'translate(-50%, -50%)',
             height: isBrowseMode ? '700px' : '50px',
-            width: isBrowseMode ? '100%' : '100%'
+            width: isBrowseMode ? '50%' : '50%'
           } : {
             top: isBrowseMode ? 'calc(110%)' : 'calc(35%)',
             left: isBrowseMode ? '50%' : '50%',
@@ -188,10 +185,10 @@ const Desk: React.FC = () => {
           initial={{ display: 'none' }}
           animate={getWindowWidth() > 768 ? {
             top: isBrowseMode ? 'calc(50% + 300px)' : 'calc(50%)',
-            left: isBrowseMode ? 'calc(50% + 1/6 * 100%)' : 'calc(50% + 1/6 * 100%)',
+            left: isBrowseMode ? 'calc(50%)' : 'calc(50%)',
             transform: isBrowseMode ? 'translate(-50%, 0)' : 'translate(-50%, 0)',
             height: isBrowseMode ? '0px' : '100%',
-            width: isBrowseMode ? '100%' : '100%',
+            width: isBrowseMode ? '50%' : '50%',
             display: isBrowseMode ? 'none' : 'block',
           } : {
             position: 'absolute',

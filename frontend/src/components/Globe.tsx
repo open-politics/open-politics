@@ -233,11 +233,11 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
       if (rotationAnimationRef.current) {
         rotationAnimationRef.current.stop();
       }
-      setTimeout(() => {
-        if (isRotating) {
-          startRotationAnimation();
-        }
-      }, 1600);
+      // setTimeout(() => {
+      //   if (isRotating) {
+      //     startRotationAnimation();
+      //   }
+      // }, 1600);
     }
   };
 
@@ -256,7 +256,7 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
     setArticleContent(content);
     onCountryClick(countryName);
     handleCountryZoom(latitude, longitude, countryName);
-
+    
     const legislativeDataUrl = `https://open-politics.org/api/v1/countries/legislation/${countryName}`;
     try {
       const legislativeResponse = await axios.get(legislativeDataUrl);
