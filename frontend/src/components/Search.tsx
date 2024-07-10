@@ -23,6 +23,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from "@/components/ui/button"
+import SpinningBrainLoader from './SpinningImageLoader';
+import LottieLoader from './LottieLoader';
 
 interface SearchProps {
   setResults: (results: any) => void;
@@ -121,7 +123,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
   };
 
   return (
-    <div className="relative mt-2 w-full px-4">
+    <div className="relative w-full px-4">
       <h2 className="text-xl font-bold mb-2">Search News and all things Politics</h2>
       <Command className="mx-auto">
         <div className="relative">
@@ -134,7 +136,11 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
           />
           <Button onClick={() => handleSearch(inputValue)} className="absolute bg-[#BED4FF] dark:bg-sky-700 dark:bg-[#D2FFD9] right-2 top-0 h-8">Search</Button>
         </div>
-        {loading && <div className="spinner">Loading...</div>}
+        {loading && (
+          <div className="absolute left-0 right-0 flex justify-center mt-24">
+            <LottieLoader />
+          </div>
+        )}
         <div className="absolute right-2 top-2 md:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

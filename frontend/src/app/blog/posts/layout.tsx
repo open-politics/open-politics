@@ -2,7 +2,7 @@ import DocsSidebar from "@/components/DocsSidebar"
 
 export default function MdxLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex">
+    <div className="flex relative z-10">
       <DocsSidebar />
       <div className="
         flex-1

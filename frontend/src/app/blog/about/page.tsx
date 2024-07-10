@@ -74,6 +74,9 @@ export default function AboutPage() {
               <ul className="list-disc pl-5 space-y-2 mt-2">
                 <li>Open-source tech stack available on GitHub</li>
                 <li>Customizable and expandable architecture</li>
+                <li>
+                  <a href="https://discord.gg/vnaarBdV" className="text-blue-600 hover:underline">Join our community on Discord</a>
+                </li>
               </ul>
             </li>
           </ul>
@@ -127,7 +130,6 @@ export default function AboutPage() {
           <CardTitle>Get in Touch</CardTitle>
         </CardHeader>
         <CardContent>
-          <p>Address: Katzbachstraße 38, 10965 Berlin</p>
           <p>Email: engage@open-politics.org</p>
           <p>Contact: <a href="https://www.linkedin.com/in/jim-vincent-wagner-051818257" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Jim Vincent Wagner, Founder</a></p>
           <a href="mailto:engage@open-politics.org" className="mt-4 inline-block text-blue-600 hover:underline">We'd love to hear from you. Get in touch!</a>

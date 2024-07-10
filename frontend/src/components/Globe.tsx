@@ -92,7 +92,7 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
       fillOpacity: .05,
       stroke: am5.color(0x1e90ff),
       // saturate: 2.5,
-      blur: 2,
+      blur: 0.5,
     });
     backgroundSeries.data.push({
       geometry: am5map.getGeoRectangle(90, 180, -90, -180),
@@ -170,7 +170,7 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
     });
 
     polygonSeries.mapPolygons.template.states.create("hover", {
-      fill: am5.color(0x38BDF8),
+      fill: am5.color(0x1E40AF),
     });
 
     polygonSeries.mapPolygons.template.states.create("active", {
@@ -328,41 +328,39 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
     }
     return 0;
   };
-
   if (!isClient) return null;
   return (
     <div className="relative flex flex-col items-center">
-      <div id="chartdiv" className="w-full h-96 sm:h-128 mt-16 relative">
-        <div id="mover" className="absolute bottom-0 left-0 w-14 h-12 bg-white dark:bg-background text-zinc-100 z-10"></div>
-      </div>
-      {isBrowseMode && (
-        <div className="absolute bottom-8 left-3/4 z-10">
-          <Popover>
-            <PopoverTrigger as={Button} className='mt-2' variant="outline">
-              {getWindowWidth() <= 768 ? <Cog /> : <Cog />}
-            </PopoverTrigger>
-            <PopoverContent className="flex flex-col items-center">
-              <Button className='mt-2 w-full' variant="outline" onClick={handleHome}>
-                <RotateCcw className={`${getWindowWidth() <= 768 ? "w-4 h-4" : "w-6 h-6"}`} />
-              </Button>
-              <Button className='mt-2 w-full' variant="outline" onClick={handleResume}>
-                <Compass className={`${getWindowWidth() <= 768 ? "w-4 h-4" : "w-6 h-6"}`} />
-              </Button>
-              <div className="flex items-center mt-2 w-full justify-center">
-                <span className="text-white bg-transparent ml-2">+ -</span>
-                <Slider
-                  value={[zoomLevel]}
-                  onValueChange={handleZoomChange}
-                  min={0.4}
-                  max={3}
-                  step={0.35}
-                  className="w-full"
-                />
+      <div id="chartdiv" className="w-full h-96 sm:h-128 mt-16 relative z-0">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button className="bg-background absolute bottom-0 left-0 w-14 h-12 z-20 rounded-tl-none rounded-bl-none rounded-tr-md rounded-br-md" variant="outline">
+              <div className="relative">
+                <Cog className="text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-200" />
               </div>
-            </PopoverContent>
-          </Popover>
-        </div>
-      )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="flex flex-col items-center">
+            <Button className='mt-2 w-full' variant="outline" onClick={handleHome}>
+              <RotateCcw className={`${getWindowWidth() <= 768 ? "w-4 h-4" : "w-6 h-6"}`} />
+            </Button>
+            <Button className='mt-2 w-full' variant="outline" onClick={handleResume}>
+              <Compass className={`${getWindowWidth() <= 768 ? "w-4 h-4" : "w-6 h-6"}`} />
+            </Button>
+            <div className="flex items-center mt-2 w-full justify-center">
+              <span className="text-white bg-transparent ml-2">+ -</span>
+              <Slider
+                value={[zoomLevel]}
+                onValueChange={handleZoomChange}
+                min={0.4}
+                max={3}
+                step={0.35}
+                className="w-full"
+              />
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
     </div>
   );
 });

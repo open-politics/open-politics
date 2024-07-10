@@ -24,7 +24,7 @@ const WikipediaView: React.FC<WikipediaViewProps> = ({ content }) => {
   }, []);
 
   return (
-    <div id="articleWindow" className={cn("h-80 md:max-h-128 rounded-lg p-4 shadow-sm overflow-hidden")}>
+    <div id="articleWindow" className={cn("h-80 md:max-h-128 rounded-lg p-0 pt-2 shadow-sm min-h-36 overflow-hidden")}>
       <div ref={contentRef} className={cn("inner-content h-full overflow-auto")}>
         <div dangerouslySetInnerHTML={{ __html: content }} />
       </div>

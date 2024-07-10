@@ -39,7 +39,7 @@ const DocsSidebar = () => {
       </Sheet>
 
       {/* Desktop Sidebar */}
-      <aside id="desktop-sidebar" className="hidden xl:block w-64 border-r sticky top-0 h-screen overflow-y-auto">
+      <aside id="desktop-sidebar" className="hidden xl:block w-64 sticky top-0 h-screen overflow-y-auto">
         <SidebarContent />
       </aside>
 
