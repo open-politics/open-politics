@@ -45,7 +45,7 @@ export default function AboutPage() {
                 <li>Dynamic, interactive dashboard featuring a global data visualization</li>
                 <li>Context-aware generative interfaces for intuitive user experience</li>
                 <li>
-                  <a href="/" className="text-blue-600 hover:underline">Explore our web application</a>
+                  <a href="/" className="text-blue-600 hover:underline">Explore our web application (limited access, request an invite)</a>
                 </li>
               </ul>
             </li>

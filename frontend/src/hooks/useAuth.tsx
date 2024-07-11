@@ -63,7 +63,7 @@ const useAuth = () => {
 
   const logout = () => {
     localStorage.removeItem('access_token');
-    queryClient.invalidateQueries(["currentUser"]);
+    queryClient.invalidateQueries({ queryKey: ["currentUser"] });
     console.log('Access token removed from localStorage:', localStorage.getItem('access_token'));
     router.push('/login');
   };

@@ -2,7 +2,7 @@ import DocsSidebar from "@/components/DocsSidebar"
 
 export default function MdxLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex relative z-10">
+    <div className="flex relative z-20">
       <DocsSidebar />
       <div className="
         flex-1
@@ -27,6 +27,7 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
         prose-code:text-primary
         prose-a:text-primary hover:prose-a:text-primary/80
         prose-img:rounded-lg prose-img:shadow-md
+        relative z-20
       ">
         {children}
       </div>

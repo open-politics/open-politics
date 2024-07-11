@@ -21,7 +21,7 @@ export default function LoginPage() {
 
     try {
       await loginMutation.mutateAsync({ username: email, password });
-      router.push('/desk');
+      router.push('/desk_synthese');
     } catch {
       // error is handled by useAuth hook
       setErrorMessage('Invalid email or password. Please try again.');
@@ -30,7 +30,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <Card className="w-full max-w-sm p-8 space-y-4">
+      <Card className="w-full max-w-sm p-8 space-y-4 bg-transparent bg-opacity-95 backdrop-blur-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
         </CardHeader>
@@ -63,7 +63,7 @@ export default function LoginPage() {
           </form>
         </CardContent>
         <CardFooter>
-          <p className="text-center text-sm">Don't have an account? Sign up</p>
+          <p className="text-center text-sm">For an account, please contact us at <a href="mailto:engage@open-politics.org">engage@open-politics.org</a></p>
         </CardFooter>
       </Card>
     </div>

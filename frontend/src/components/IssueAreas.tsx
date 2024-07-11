@@ -13,6 +13,12 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
+import { CalendarDays } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { useMemo } from "react";
@@ -126,7 +132,25 @@ export function IssueAreas({ legislativeData, economicData }) {
                 </Tooltip>
               </TooltipProvider>
             )}
-            {row.original.law}
+            <HoverCard>
+              <HoverCardTrigger asChild>
+                <span className="cursor-pointer">{row.original.law}</span>
+              </HoverCardTrigger>
+              <HoverCardContent className="w-80">
+                <div className="space-y-1">
+                  <h4 className="text-sm font-semibold">{row.original.law}</h4>
+                  <p className="text-sm">
+                    Status: {row.original.status}
+                  </p>
+                  <div className="flex items-center pt-2">
+                    <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
+                    <span className="text-xs text-muted-foreground">
+                      Date: {row.original.date}
+                    </span>
+                  </div>
+                </div>
+              </HoverCardContent>
+            </HoverCard>
           </div>
         ),
       },
@@ -242,7 +266,7 @@ export function IssueAreas({ legislativeData, economicData }) {
               </div>
             </CardContent>
             <CardFooter>
-              <Button>View detailed report</Button>
+              <Button>View detailed report (Up</Button>
             </CardFooter>
           </Card>
         </TabsContent>

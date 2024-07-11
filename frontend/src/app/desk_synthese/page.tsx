@@ -168,7 +168,7 @@ const Desk: React.FC = () => {
             </AnimatePresence>
           </div>
         ) : (
-          <div className={`${isMobile ? 'flex flex-col h-screen overflow-y-auto' : 'grid grid-cols-1 md:grid-cols-3 gap-4 h-full'}`}>
+          <div className={`${isMobile ? 'flex flex-col h-screen overflow-y-auto' : 'grid grid-cols-1 md:grid-cols-3 gap-2 h-full'}`}>
             <div className={`${isMobile ? 'h-screen flex flex-col' : 'col-span-1'}`}>
               <motion.div
                 className="flex-1 relative"
@@ -209,7 +209,7 @@ const Desk: React.FC = () => {
             </motion.div>
             {hasClicked && isVisible && (
               <motion.div
-                className={`${isMobile ? 'fixed top-0 right-0 w-5/6 h-screen overflow-y-auto z-50' : 'col-span-1 flex flex-col'} text-white`}
+                className={`${isMobile ? 'fixed top-0 right-0 w-5/6 h-screen overflow-y-auto z-50' : 'col-span-1 flex flex-col'}`}
                 initial={{ opacity: 0, x: '100%' }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: '100%' }}

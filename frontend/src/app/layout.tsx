@@ -22,10 +22,9 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <AI>
           <ClientWrapper>
             <BlurredDots />
-            <div className="flex flex-col min-h-screen relative z-20">
-
+            <div className="flex flex-col min-h-screen relative z-30">
               <Header />
-              <main className="flex-grow">
+              <main className="flex-grow relative z-20">
                 <ToastProvider>
                   <div style={{ overflowX: 'hidden' }}>
                     {children}

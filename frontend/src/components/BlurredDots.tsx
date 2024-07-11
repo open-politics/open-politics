@@ -1,7 +1,7 @@
 'use client';
 import { usePathname } from 'next/navigation';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { motion, useScroll, useTransform, useAnimation } from 'framer-motion';
+import { useEffect, useState, useRef } from 'react';
 
 const BlurredDot = ({ color, x, y, size }) => {
   return (
@@ -32,14 +32,18 @@ const dotsConfig = {
     { color: '#76B900', size: '35vw' },
     { color: '#DDA0DD', size: '30vw' },
   ],
-  
-  // Add more configurations for different routes
+  '/login': [
+    { color: '#800080', size: '40vw' },
+    { color: '#008000', size: '20vw' },
+  ],
 };
 
 const BlurredDots = () => {
   const pathname = usePathname();
   const [dots, setDots] = useState(dotsConfig['/']);
   const { scrollYProgress } = useScroll();
+  const controls = useAnimation();
+  const containerRef = useRef(null);
 
   useEffect(() => {
     if (dotsConfig[pathname]) {
@@ -56,7 +60,7 @@ const BlurredDots = () => {
         setDots(dotsConfig['/']);
       }
     }
-  }, [pathname]);
+  }, [pathname, controls]);
 
   const topLeftX = useTransform(scrollYProgress, [0, 1], ['-20vw', '-20vw']);
   const topLeftY = useTransform(scrollYProgress, [0, 1], ['-10vh', '80vh']);

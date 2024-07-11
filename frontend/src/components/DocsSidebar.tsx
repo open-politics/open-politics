@@ -29,7 +29,7 @@ const DocsSidebar = () => {
       {/* Mobile Sidebar */}
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="outline" size="icon" className="fixed top-16 left-4 z-40 xl:hidden">
+          <Button variant="outline" size="icon" className="fixed top-16 bg-opacity-75 left-4 z-40 xl:hidden">
             <NotebookText className="h-4 w-4" />
           </Button>
         </SheetTrigger>
@@ -47,7 +47,7 @@ const DocsSidebar = () => {
       {isCollapsed && (
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="outline" size="icon" className="fixed top-16 left-4 z-40 hidden xl:flex">
+            <Button variant="outline" size="icon" className="fixed top-16 bg-opacity-75 backdrop-blur-sm left-4 z-40 hidden xl:flex">
               <NotebookText className="h-4 w-4" />
             </Button>
           </SheetTrigger>

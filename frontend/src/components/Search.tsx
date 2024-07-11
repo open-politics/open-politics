@@ -134,7 +134,12 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
             placeholder="e.g. Economy of Oman"
             style={{ fontSize: '16px' }}
           />
-          <Button onClick={() => handleSearch(inputValue)} className="absolute bg-[#BED4FF] dark:bg-sky-700 dark:bg-[#D2FFD9] right-2 top-0 h-8">Search</Button>
+          <Button 
+            onClick={() => handleSearch(inputValue)} 
+            className="absolute bg-[#BED4FF] dark:bg-sky-700 dark:bg-[#D2FFD9] right-2 top-1/4 h-8 md:h-8 h-6 md:text-base text-xs"
+          >
+            Search
+          </Button>
         </div>
         {loading && (
           <div className="absolute left-0 right-0 flex justify-center mt-24">
