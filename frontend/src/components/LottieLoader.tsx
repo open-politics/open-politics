@@ -31,7 +31,7 @@ const LottieLoader: React.FC = () => {
   }
 
   return (
-    <div className="flex justify-center items-center bg-transparent" style={{ width: 150, height: 150 }}>
+    <div className="flex justify-center items-center bg-transparent mt-0" style={{ width: 150, height: 150 }}>
       <Lottie
         lottieRef={lottieRef}
         animationData={animationData}

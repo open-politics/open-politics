@@ -1,0 +1,21 @@
+# Use the official Node.js image as the base image
+FROM node:20-alpine
+
+# Set the working directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json (or yarn.lock)
+COPY package.json package-lock.json* ./
+ENV NEXT_PUBLIC_API_URL=https://open-politics.org
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of your app's source code
+COPY . .
+
+# Expose the port the app runs on
+EXPOSE 3001
+
+# Command to run the app in staging mode on port 3001
+CMD ["npm", "run", "dev", "--", "--port", "3001"]

@@ -12,6 +12,7 @@ import { OpenAPI } from 'src/client';
 import CountryDetailPanel from '@/components/CountryDetailPanel';
 import { Map, FileSearch2 } from 'lucide-react';
 import { Settings, HelpCircle } from 'lucide-react';
+import withAuth from '@/hooks/withAuth';
 
 const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
@@ -21,7 +22,7 @@ OpenAPI.TOKEN = async () => {
 };
 
 const Desk: React.FC = () => {
-    const geojsonUrl = 'https://open-politics.org/api/v1/countries/geojson/';
+    const geojsonUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/countries/geojson/`;
     const [results, setResults] = useState(null);
     const [summary, setSummary] = useState<string>('');
     const [articleContent, setArticleContent] = useState<string>('');
@@ -81,6 +82,25 @@ const Desk: React.FC = () => {
     setCountryKey(prevKey => prevKey + 1);
   };
 
+  useEffect(() => {
+    const preventFocus = (e: TouchEvent) => {
+      if (isMobile && !hasSearched) {
+        e.preventDefault();
+      }
+    };
+
+    const searchInput = document.querySelector('input[type="search"]');
+    if (searchInput) {
+      searchInput.addEventListener('touchstart', preventFocus, { passive: false });
+    }
+
+    return () => {
+      if (searchInput) {
+        searchInput.removeEventListener('touchstart', preventFocus);
+      }
+    };
+  }, [isMobile, hasSearched]);
+
   const handleSearch = (searchResults: any) => {
     setResults(searchResults);
     setIsBrowseMode(false);
@@ -89,6 +109,13 @@ const Desk: React.FC = () => {
       title: "Search Completed",
       description: "Your search results are now available.",
     });
+
+    // Scroll down slightly after search on mobile
+    if (isMobile) {
+      setTimeout(() => {
+        window.scrollTo({ top: 100, behavior: 'smooth' });
+      }, 100);
+    }
   };
 
   const handleCountryZoom = (latitude: number, longitude: number, countryName: string) => {
@@ -112,13 +139,13 @@ const Desk: React.FC = () => {
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      <div className="relative w-full h-screen overflow-hidden">
+      <div className="relative w-full h-screen overflow-hidden overflow-x-hidden">
         <div className="absolute top-2 left-8 z-50">
           <h1 suppressHydrationWarning className="text-sm text-gray-400">{currentTime}</h1>
         </div>
         
         {!hasSearched ? (
-          <div className="relative w-full h-full">
+          <div className="relative w-full h-full overflow-x-hidden">
             <motion.div
               className="absolute inset-0"
               initial={{ opacity: 0 }}
@@ -138,7 +165,7 @@ const Desk: React.FC = () => {
               />
             </motion.div>
             <motion.div
-                className={`absolute ${isMobile ? 'top-[calc(50%+100px)] left-2/12 transform -translate-x-1/2 w-11/12' : 'top-1/2 left-1/4 transform -translate-x-1/2 -translate-y-1/2 w-1/2'} px-0`}
+                className={`absolute ${isMobile ? 'top-[calc(50%+100px)] transform -translate-x-1/2 w-full' : 'top-1/2 left-1/4 transform -translate-x-1/2 -translate-y-1/2 w-1/2'} px-0`}
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
@@ -148,28 +175,26 @@ const Desk: React.FC = () => {
             <AnimatePresence>
               {hasClicked && (
                 <motion.div
-                  className={`absolute top-2 right-0 h-full ${isMobile ? 'w-3/4' : 'w-1/3'}`}
-                  initial={{ x: '100%' }}
-                  animate={{ x: 0 }}
-                  exit={{ x: '100%' }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <CountryDetailPanel
+                className={`absolute top-2 right-0 h-full ${isMobile ? 'w-3/4' : 'w-1/3'}`}
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ duration: 0.3 }}
+            >
+                <CountryDetailPanel
                     key={countryKey}
+                    country={country}
                     articleContent={articleContent}
-                    legislativeData={legislativeData}
-                    economicData={economicData}
-                    leaderInfo={leaderInfo}
                     isVisible={isVisible}
                     toggleVisibility={toggleVisibility}
-                  />
-                </motion.div>
-              )}
+                />
+              </motion.div>
+            )}
             </AnimatePresence>
           </div>
         ) : (
           <div className={`${isMobile ? 'flex flex-col h-screen overflow-y-auto' : 'grid grid-cols-1 md:grid-cols-3 gap-2 h-full'}`}>
-            <div className={`${isMobile ? 'h-screen flex flex-col' : 'col-span-1'}`}>
+            <div className={`${isMobile ? 'h-2/3 flex flex-col' : 'col-span-1'}`}>
               <motion.div
                 className="flex-1 relative"
                 initial={{ opacity: 0 }}
@@ -189,7 +214,7 @@ const Desk: React.FC = () => {
                 />
               </motion.div>
               <motion.div
-                className={`${isMobile ? 'w-full px-4 mt-4' : 'absolute top-[calc(50%-50px)] max-h-5/6 overflow-y-auto left-0 w-1/3'}`}
+                className={`${isMobile ? 'w-full ml-4 mt-[-20px]' : 'max-h-5/6 overflow-y-auto w-full'}`}
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
@@ -203,7 +228,7 @@ const Desk: React.FC = () => {
               animate={{ opacity: 1 }}  
               transition={{ duration: 0.5 }}
             >
-              <div className="flex-1 relative min-h-screen overflow-y-auto">
+              <div className="flex-1 relative min-h-screen overflow-y-auto max-w-screen overflow-x-hidden">
                 <Results results={results} summary={summary} />
               </div>
             </motion.div>

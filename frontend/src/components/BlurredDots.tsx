@@ -36,6 +36,10 @@ const dotsConfig = {
     { color: '#800080', size: '40vw' },
     { color: '#008000', size: '20vw' },
   ],
+  '/documentation': [
+    { color: '#800080', size: '40vw' },
+    { color: '#008000', size: '20vw' },
+  ],
 };
 
 const BlurredDots = () => {
@@ -64,7 +68,7 @@ const BlurredDots = () => {
 
   const topLeftX = useTransform(scrollYProgress, [0, 1], ['-20vw', '-20vw']);
   const topLeftY = useTransform(scrollYProgress, [0, 1], ['-10vh', '80vh']);
-  const bottomRightX = useTransform(scrollYProgress, [0, 1], ['80vw', '80vw']);
+  const bottomRightX = useTransform(scrollYProgress, [0, 1], ['90vw', '90vw']);
   const bottomRightY = useTransform(scrollYProgress, [0, 1], ['80vh', '-40vh']);
 
   return (

@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import WikipediaView from './WikipediaView';
 import { IssueAreas } from './IssueAreas';
 import LeaderInfo from './LeaderInfo';
 import { Button } from '@/components/ui/button';
-import { CircleX } from 'lucide-react';
-import { ListCollapse } from 'lucide-react';
+import { CircleX, ListCollapse } from 'lucide-react';
 
 interface CountryDetailPanelProps {
+  country: string;
   articleContent: string;
-  legislativeData: any[];
-  economicData: any[];
   leaderInfo: {
     state: string;
     headOfState: string;
@@ -22,9 +20,8 @@ interface CountryDetailPanelProps {
 }
 
 const CountryDetailPanel: React.FC<CountryDetailPanelProps> = ({
+  country,
   articleContent,
-  legislativeData,
-  economicData,
   leaderInfo,
   isVisible,
   toggleVisibility
@@ -45,10 +42,8 @@ const CountryDetailPanel: React.FC<CountryDetailPanelProps> = ({
               headOfGovernmentImage={leaderInfo['Head of Government Image']}
             />
           )}
-          <WikipediaView content={articleContent} />
-          {leaderInfo && (
-            <IssueAreas legislativeData={legislativeData} economicData={economicData} />
-          )}
+          {articleContent && <WikipediaView content={articleContent} />}
+          <IssueAreas countryName={country} />
         </>
       )}
     </div>

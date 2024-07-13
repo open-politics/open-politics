@@ -68,13 +68,14 @@ const Header = () => {
 						<a href="https://github.com/JimVincentW/open-politics" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground flex items-center">
 							<FaGithub className="h-6 w-6" style={{ margin: '0 auto' }} />
 						</a>
-						{isClient && !isLoading && (
+						{isClient && (
 							<>
 								{user ? (
 									<>
+										<Link href="/desk" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Desk</Link>
 										<button onClick={handleLogout} className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Logout</button>
 										{user.is_superuser && (
-											<Link href="/admin/users" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Admin Users</Link>
+											<Link href="/admin/users" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Admin</Link>
 										)}
 									</>
 								) : (
@@ -123,9 +124,10 @@ const Header = () => {
 								<>
 									{user ? (
 										<>
+											<Link href="/desk_synthese" className="block py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Desk</Link>
 											<button onClick={handleLogout} className="block w-full text-left py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Logout</button>
 											{user.is_superuser && (
-												<Link href="/admin/users" className="block py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Admin Users</Link>
+												<Link href="/admin/users" className="block py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Admin</Link>
 											)}
 										</>
 									) : (

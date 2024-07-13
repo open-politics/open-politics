@@ -569,7 +569,8 @@ query,
 	 * @throws ApiError
 	 */
 	public static geojsonView(): CancelablePromise<unknown> {
-				return __request(OpenAPI, {
+		console.log("API Base URL:", OpenAPI.BASE); // This should print 'https://open-politics.org'
+		return __request(OpenAPI, {
 			method: 'GET',
 			url: '/api/v1/countries/geojson/',
 		});

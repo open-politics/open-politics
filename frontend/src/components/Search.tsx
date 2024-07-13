@@ -136,7 +136,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
           />
           <Button 
             onClick={() => handleSearch(inputValue)} 
-            className="absolute bg-[#BED4FF] dark:bg-sky-700 dark:bg-[#D2FFD9] right-2 top-1/4 h-8 md:h-8 h-6 md:text-base text-xs"
+            className="absolute bg-[#BED4FF] dark:bg-sky-700 dark:bg-[#D2FFD9] right-2 top-1/4 sm:top-1 h-8 md:h-8 h-6 md:text-base text-xs"
           >
             Search
           </Button>
@@ -146,7 +146,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
             <LottieLoader />
           </div>
         )}
-        <div className="absolute right-2 top-2 md:hidden">
+        <div className="absolute right-2 top-1 md:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button onClick={() => setDropdownOpen(!dropdownOpen)}>

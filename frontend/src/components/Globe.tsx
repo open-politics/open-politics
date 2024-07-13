@@ -10,7 +10,10 @@ import { Slider } from "@/components/ui/slider";
 import { Compass, RotateCcw, Cog } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import am5themes_Material from "@amcharts/amcharts5/themes/Material";
-import { Animations } from "@amcharts/amcharts5/.internal/core/util/Animation"; // Add this import
+import { Animations } from "@amcharts/amcharts5/.internal/core/util/Animation";
+import { CountriesService } from 'src/client'; // Import the CountriesService
+import { useToast } from "@/components/ui/use-toast"; // Import useToast
+import { OpenAPI } from 'src/client';
 
 interface GlobeProps {
   geojsonUrl: string;
@@ -22,10 +25,13 @@ interface GlobeProps {
   setEconomicData: (data: any) => void;
   onCountryZoom: (latitude: number, longitude: number, countryName: string) => void;
 }
+
 interface DataContext {
   articles: { headline: string; url: string }[];
   title: string;
 }
+
+OpenAPI.BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
 
 const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCountryClick, isBrowseMode, toggleMode, setLegislativeData, setEconomicData, onCountryZoom }, ref) => {
   const chartRef = useRef<am5.Root | null>(null);
@@ -36,6 +42,7 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
   const rotationAnimationRef = useRef<any>(null);
   const chartInstanceRef = useRef<am5map.MapChart | null>(null);
   const [zoomLevel, setZoomLevel] = useState(0.1);
+  const { toast } = useToast(); // Add this line to use the toast
 
   const initialRotationX = 0;
   const initialRotationY = 0;
@@ -76,7 +83,6 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
         panX: "rotateX",
         panY: "rotateY",
         projection: am5map.geoOrthographic(),
-        // homeGeoPoint: { longitude: initialRotationX, latitude: initialRotationY },
         homeZoomLevel: initialZoomLevel,
         wheelY: "zoom",
         centerMapOnZoomOut: true,
@@ -88,10 +94,9 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
       am5map.MapPolygonSeries.new(root, {})
     );
     backgroundSeries.mapPolygons.template.setAll({
-      fill: am5.color(0xDCDCDC), // Set your desired sea color here
+      fill: am5.color(0xDCDCDC),
       fillOpacity: .05,
       stroke: am5.color(0x1e90ff),
-      // saturate: 2.5,
       blur: 0.5,
     });
     backgroundSeries.data.push({
@@ -112,24 +117,33 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
     );
     pointSeriesRef.current = pointSeries;
 
-    // const graticuleSeries = chart.series.push(
-    //   am5map.GraticuleSeries.new(root, {
-    //     stroke: am5.color(0x0e1a36),
-    //     opacity: 0.05,
-    //     step: 0,
-    //   })
-    // );
-
-    fetch(geojsonUrl)
-      .then(response => response.json())
-      .then(data => {
+    const fetchGeoJSONData = async (retries = 3) => {
+      try {
+        const data = await CountriesService.geojsonView();
         pointSeries.data.setAll(data.features.map((feature: any) => ({
           geometry: feature.geometry,
           title: feature.properties.location,
           articles: feature.properties.articles
         })));
-      })
-      .catch(error => console.error('Error fetching GeoJSON data:', error));
+      } catch (error) {
+        console.error('Error fetching GeoJSON data:', error);
+        if (retries > 0) {
+          toast({
+            title: "Fetching data failed",
+            description: `Retrying... (${retries} attempts left)`,
+          });
+          setTimeout(() => fetchGeoJSONData(retries - 1), 2000); // Retry after 2 seconds
+        } else {
+          toast({
+            title: "Error",
+            description: "Failed to fetch GeoJSON data. Please try refreshing the page.",
+            variant: "destructive",
+          });
+        }
+      }
+    };
+
+    fetchGeoJSONData();
 
     pointSeries.bullets.push(function() {
       const circle = am5.Circle.new(root, {
@@ -209,16 +223,32 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
 
   useImperativeHandle(ref, () => ({
     loadGeoJSON: () => {
-      fetch(geojsonUrl)
-        .then(response => response.json())
-        .then(data => {
+      const fetchGeoJSONData = async (retries = 3) => {
+        try {
+          const data = await CountriesService.geojsonView();
           pointSeriesRef.current.data.setAll(data.features.map((feature) => ({
             geometry: feature.geometry,
             title: feature.properties.location,
             articles: feature.properties.articles
           })));
-        })
-        .catch(error => console.error('Error fetching GeoJSON data:', error));
+        } catch (error) {
+          console.error('Error fetching GeoJSON data:', error);
+          if (retries > 0) {
+            toast({
+              title: "Fetching data failed",
+              description: `Retrying... (${retries} attempts left)`,
+            });
+            setTimeout(() => fetchGeoJSONData(retries - 1), 2000); // Retry after 2 seconds
+          } else {
+            toast({
+              title: "Error",
+              description: "Failed to fetch GeoJSON data. Please try refreshing the page.",
+              variant: "destructive",
+            });
+          }
+        }
+      };
+      fetchGeoJSONData();
     },
     zoomToCountry: (latitude: number, longitude: number, countryName: string) => {
       handleCountryZoom(latitude, longitude, countryName);
@@ -233,11 +263,6 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
       if (rotationAnimationRef.current) {
         rotationAnimationRef.current.stop();
       }
-      // setTimeout(() => {
-      //   if (isRotating) {
-      //     startRotationAnimation();
-      //   }
-      // }, 1600);
     }
   };
 
@@ -328,7 +353,9 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
     }
     return 0;
   };
+
   if (!isClient) return null;
+
   return (
     <div className="relative flex flex-col items-center">
       <div id="chartdiv" className="w-full h-96 sm:h-128 mt-16 relative z-0">
@@ -341,14 +368,16 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
             </Button>
           </PopoverTrigger>
           <PopoverContent className="flex flex-col items-center">
-            <Button className='mt-2 w-full' variant="outline" onClick={handleHome}>
+            <Button className='mt-2 w-full' variant="outline" onClick={handleHome} title="Reset Globe Position">
               <RotateCcw className={`${getWindowWidth() <= 768 ? "w-4 h-4" : "w-6 h-6"}`} />
+              <span className="ml-2">Reset View</span>
             </Button>
-            <Button className='mt-2 w-full' variant="outline" onClick={handleResume}>
+            <Button className='mt-2 w-full' variant="outline" onClick={handleResume} title="Resume Globe Rotation">
               <Compass className={`${getWindowWidth() <= 768 ? "w-4 h-4" : "w-6 h-6"}`} />
+              <span className="ml-2">Resume Rotation</span>
             </Button>
             <div className="flex items-center mt-2 w-full justify-center">
-              <span className="text-white bg-transparent ml-2">+ -</span>
+              <span className="text-white bg-transparent mr-2">Zoom:</span>
               <Slider
                 value={[zoomLevel]}
                 onValueChange={handleZoomChange}
@@ -357,12 +386,13 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
                 step={0.35}
                 className="w-full"
               />
+              <span className="text-white bg-transparent ml-2">-  +</span>
             </div>
           </PopoverContent>
         </Popover>
       </div>
     </div>
   );
-});
-
-export default Globe;
+  });
+  
+  export default Globe;

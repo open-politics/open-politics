@@ -29,7 +29,6 @@
       }
     ],
     "noEmitOnError": false,
-    "suppressImplicitAnyIndexErrors": true,
     "strictNullChecks": true
   },
   "include": [

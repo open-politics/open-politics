@@ -22,7 +22,7 @@ const Results: React.FC<{ results: any, summary?: string }> = ({ results, summar
   };
 
   return (
-    <div className="bg-opacity-20 backdrop backdrop-blur-lg w-full rounded-lg p-4 mb-16 ">
+    <div className="bg-opacity-20 backdrop backdrop-blur-lg w-full rounded-lg p-4 mb-16 overflow-x-hidden">
       <h2 className="text-xl mb-2">Articles & Summary</h2>
       <Button className='my-2 mb-3' variant="outline" onClick={() => setShowArticles(!showArticles)}>
         {showArticles ? 'Hide' : 'Show'}
@@ -34,13 +34,13 @@ const Results: React.FC<{ results: any, summary?: string }> = ({ results, summar
           </div>
         )}
         {showArticles && (
-          <div className="flex-grow overflow-auto">
+          <div className="flex-grow overflow-auto max-w-screen overflow-x-hidden">
             {results.images && results.images.length > 0 && (
-              <div className="flex overflow-x-auto space-x-4 mb-4">
+              <div className="flex overflow-x-auto space-x-4 mb-4 pb-2">
                 {results.images.map((image: string, index: number) => (
                   <Popover key={index}>
                     <PopoverTrigger>
-                      <Image src={image} alt={`Image ${index + 1}`} width={128} height={128} className="w-32 h-32 object-cover rounded-md" />
+                      <Image src={image} alt={`Image ${index + 1}`} width={96} height={96} className="w-24 h-24 object-cover rounded-md flex-shrink-0" />
                     </PopoverTrigger>
                     <PopoverContent>
                       <a href={image} target="_blank" rel="noopener noreferrer">
@@ -51,7 +51,7 @@ const Results: React.FC<{ results: any, summary?: string }> = ({ results, summar
                 ))}
               </div>
             )}
-            <div className="max-h-[28rem] overflow-y-auto pb-4">
+            <div className="max-h-[28rem] overflow-y-auto overflow-x-hidden pb-4">
               {results.results && results.results.map((result: any, index: number) => (
                 <ArticleCard
                   className={index === 0 ? 'first-article' : ''}
