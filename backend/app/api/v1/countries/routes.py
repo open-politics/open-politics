@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import JSONResponse
 from .services import update_leaders
 from .schemas import CountryRequest, CountryResponse, Law
@@ -7,6 +7,7 @@ import json
 import requests
 import marvin
 from pathlib import Path
+from typing import List
 from .country_services import legislation, economy
 import tavily
 
@@ -56,7 +57,7 @@ async def get_leader_info(state: str):
                 return leader
         raise HTTPException(status_code=404, detail="State not found")
     except FileNotFoundError:
-        logging.error(f"Leaders JSON file not found at {leaders_file_path}")
+        logging.error(f"Leaders JSON file not found at {leaders_file_path}")  
         raise HTTPException(status_code=404, detail="Leaders file not found")
     except json.JSONDecodeError:
         logging.error("Error decoding JSON data.")
@@ -71,8 +72,8 @@ async def get_legislation_data(state: str):
         return JSONResponse(content={'error': 'State not found'}, status_code=404)
 
 @router.get("/econ_data/{state}", response_model=None)
-async def get_econ_data(state: str):
-    result = economy.get_econ_data(state)
+async def get_econ_data(state: str, indicators: List[str] = Query(["GDP", "GDP_GROWTH"])):
+    result = await economy.get_econ_data(state, indicators)
     return JSONResponse(content=result, status_code=200)
 
 @router.get("/update_leaders/")

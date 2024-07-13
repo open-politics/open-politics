@@ -1,9 +1,20 @@
-import requests
 from fastapi.responses import JSONResponse
 import xml.etree.ElementTree as ET
+from typing import List
 import sdmx
+from fastapi import Query
+import logging
+import aiohttp
+import asynci
+import requests
 
-def get_econ_data(state: str):
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+async def get_econ_data(state: str, indicators: List[str] = Query(["B1GQ+B1GQ"])):
+    logger.debug(f"get_econ_data called with state: {state}, indicators: {indicators}")
+    
     country_to_iso = {
         "Argentina": "ARG",
         "Australia": "AUS",
@@ -59,35 +70,71 @@ def get_econ_data(state: str):
         "United States": "USA",
         "Vietnam": "VNM"
     }
-    
+
+    indicator_mapping = {
+        "GDP": "B1GQ",
+        "GDP_GROWTH": "B1GQ_R_GR",
+        "CPI": "CPI"
+    }
+
     iso_code = country_to_iso.get(state)
     if not iso_code:
-        raise ValueError(f"No ISO code found for country: {state}")
+        logger.error(f"Invalid country name: {state}")
+        return JSONResponse(
+        status_code=400,
+        content={"error": f"Invalid country name: {state}"}
+    )
     
-    url = f'https://sdmx.oecd.org/public/rest/data/OECD.SDD.NAD,DSD_NAAG@DF_NAAG_I,1.0/A.{iso_code}.B1GQ+B1GQ_R_GR..?startPeriod=2000&dimensionAtObservation=AllDimensions'
-    headers = {
-        'Accept': 'application/vnd.sdmx.data+json; charset=utf-8; version=1.0'
-    }
+    logger.info(f"ISO code for {state}: {iso_code}")
+
+    async def fetch_data(url):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers={'Accept': 'application/vnd.sdmx.data+json; charset=utf-8; version=1.0'}) as response:
+                if response.status == 200:
+                    return await response.json()
+                else:
+                    logger.error(f"Failed to retrieve data: {response.status}")
+                    logger.error(f"Response content: {await response.text()}")
+                    return None
     
-    response = requests.get(url, headers=headers)
+    # Map the requested indicators to their SDMX codes
+    sdmx_indicators = [indicator_mapping.get(ind, ind) for ind in indicators]
+    indicators_query = '+'.join(sdmx_indicators)
+    
+    url = f'https://sdmx.oecd.org/public/rest/data/OECD.SDD.NAD,DSD_NAAG@DF_NAAG_I,1.0/A.{iso_code}.{indicators_query}..?startPeriod=2000&dimensionAtObservation=AllDimensions'
+    logger.debug(f"Constructed URL: {url}")
+    
+    response = requests.get(url, headers={'Accept': 'application/vnd.sdmx.data+json; charset=utf-8; version=1.0'})
+    logger.info(f"API response status code: {response.status_code}")
     
     if response.status_code == 200:
         data = response.json()
+        logger.debug(f"Received data structure: {data.keys()}")
+        
         observations = data['data']['dataSets'][0]['observations']
         time_periods = data['data']['structure']['dimensions']['observation'][5]['values']
         
+        logger.debug(f"Number of observations: {len(observations)}")
+        logger.debug(f"Number of time periods: {len(time_periods)}")
+        
         formatted_data = []
         for i, period in enumerate(time_periods):
-            gdp = observations.get(f'0:0:0:0:0:{i}', [None])[0]
-            gdp_growth_rate = observations.get(f'0:0:1:1:0:{i}', [None])[0]
-            if gdp is not None and gdp_growth_rate is not None:
-                formatted_data.append({
-                    'name': period['name'],
-                    'gdp': gdp,
-                    'gdp_growth_rate': gdp_growth_rate
-                })
+            period_data = {'name': period['name']}
+            for index, indicator in enumerate(indicators):
+                sdmx_code = sdmx_indicators[index]
+                key = f'0:0:{index}:{index}:0:{i}'
+                value = observations.get(key, [None])[0]
+                logger.debug(f"Period: {period['name']}, Indicator: {indicator}, Key: {key}, Value: {value}")
+                if value is not None:
+                    period_data[indicator] = value
+            formatted_data.append(period_data)
         
+        logger.info(f"Formatted data length: {len(formatted_data)}")
         return formatted_data
     else:
-        print("Failed to retrieve data:", response.status_code)
+        logger.error(f"Failed to retrieve data: {response.status_code}")
+        logger.error(f"Response content: {response.text}")
         return []
+
+#  For future CPI integration
+#     url_cpi = f'https://sdmx.oecd.org/public/rest/data/OECD.SDD.TPS,DSD_PRICES@DF_PRICES_ALL,/.M.{iso_code}.CPI.PA._T.N.GY?startPeriod=2000&dimensionAtObservation=AllDimensions'
