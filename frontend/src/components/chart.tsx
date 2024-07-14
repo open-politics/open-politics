@@ -13,7 +13,7 @@ import {
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (    
-      <div className="custom-tooltip p-2 bg-white bg-opacity-80 shadow-xl rounded-xl backdrop-blur-lg">
+      <div className="custom-tooltip p-2 bg-opacity-80 shadow-xl backdrop-blur-lg">
         <p className="label">{`Year: ${label}`}</p>
         {payload.map((entry, index) => (
           <p key={index} className={`text-sm ${index % 2 === 0 ? 'text-blue-500' : 'text-green-500'}`}>

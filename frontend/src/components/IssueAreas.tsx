@@ -32,6 +32,17 @@ import {
 } from "@/components/ui/tooltip";
 import { useCountryData } from "@/hooks/useCountryData";
 import DotLoader from 'react-spinners/DotLoader';
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
+import LeaderInfo from "./LeaderInfo";
+import axios from 'axios';
+import WikipediaView from './WikipediaView';
+
+interface IssueAreasProps {
+  countryName: string;
+  articleContent: string;
+}
 
 const DataTable = ({ columns, data }) => {
   const table = useReactTable({
@@ -57,7 +68,7 @@ const DataTable = ({ columns, data }) => {
           ))}
         </TableHeader>
         
-        <tbody>
+        <tbody className="max-h-96 overflow-y-auto block">
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow key={row.id}>
@@ -81,10 +92,15 @@ const DataTable = ({ columns, data }) => {
   );
 };
 
-export function IssueAreas({ countryName }) {
+export function IssueAreas({ countryName, articleContent }: IssueAreasProps) {
+  const [leaderInfo, setLeaderInfo] = useState(null);
+  const { toast } = useToast();
   const [selectedIndicators, setSelectedIndicators] = useState(['GDP', 'GDP_GROWTH']);
   const { data, isLoading, error } = useCountryData(countryName);
   const [chartKey, setChartKey] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("all");
 
   const economicDataRows = useMemo(() => {
     if (!data?.economicData) return [];
@@ -111,6 +127,27 @@ export function IssueAreas({ countryName }) {
     );
   }, []);
 
+
+  useEffect(() => {
+    const fetchLeaderInfo = async () => {
+      if (!countryName) return;
+      
+      try {
+        const response = await axios.get(`https://open-politics.org/api/v1/countries/leaders/${countryName}`);
+        setLeaderInfo(response.data);
+      } catch (error) {
+        console.error("Error fetching leader info:", error);
+        toast({
+          title: "Error",
+          description: `Failed to fetch leader info for ${countryName}. Please try again later.`,
+        });
+      }
+    };
+
+    fetchLeaderInfo();
+  }, [countryName, toast]);
+
+
   const legislationColumns = useMemo(
     () => [
       {
@@ -124,37 +161,47 @@ export function IssueAreas({ countryName }) {
                   <TooltipTrigger>
                     <span
                       className={`flex h-3 w-3 mr-2 rounded-full ${
-                        row.original.status === "rejected"
+                        row.original.label === "red"
                           ? "bg-red-500"
-                          : row.original.status === "pending"
+                          : row.original.label === "yellow"
                           ? "bg-yellow-500"
-                          : row.original.status === "accepted"
+                          : row.original.label === "green"
                           ? "bg-green-500"
                           : "bg-gray-500"
                       }`}
                     />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>
-                      {row.original.status === "rejected"
-                        ? "Proposal rejected"
-                        : row.original.status === "pending"
-                        ? "Proposal under review"
-                        : "Proposal accepted"}
-                    </p>
+                    <p>{row.original.status}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             )}
             <HoverCard>
               <HoverCardTrigger asChild>
-                <span className="cursor-pointer">{row.original.law}</span>
+                <span className="cursor-pointer">
+                  {row.original.href ? (
+                    <a 
+                      href={row.original.href} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      {row.original.law}
+                    </a>
+                  ) : (
+                    row.original.law
+                  )}
+                </span>
               </HoverCardTrigger>
               <HoverCardContent className="w-80">
                 <div className="space-y-1">
                   <h4 className="text-sm font-semibold">{row.original.law}</h4>
                   <p className="text-sm">
                     Status: {row.original.status}
+                  </p>
+                  <p className="text-sm">
+                    Initiative: {row.original.initiative}
                   </p>
                   <div className="flex items-center pt-2">
                     <CalendarDays className="mr-2 h-4 w-4 opacity-70" />
@@ -172,33 +219,49 @@ export function IssueAreas({ countryName }) {
     []
   );
 
+  const filteredLegislativeData = useMemo(() => {
+    if (!data?.legislativeData) return [];
+    return data.legislativeData.filter(item => {
+      const matchesSearch = item.law.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = statusFilter === "all" || item.label === statusFilter;
+      const matchesDate = dateFilter === "all" || (
+        dateFilter === "last30" ? new Date(item.date) >= new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) :
+        dateFilter === "last90" ? new Date(item.date) >= new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) :
+        true
+      );
+      return matchesSearch && matchesStatus && matchesDate;
+    });
+  }, [data?.legislativeData, searchTerm, statusFilter, dateFilter]);
+
   const availableIndicators = ['GDP', 'GDP_GROWTH', 'CPI', 'UNEMP_RATE'];
 
-  if (error.legislative && error.economic) {
-    return <div>Error loading data: Unable to fetch legislative and economic data.</div>;
-  }
-
   return (
-    <div className="relative w-full py-2 px-0">
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold mb-2">Select Indicators:</h3>
-        <div className="flex flex-wrap gap-2">
-          {availableIndicators.map(indicator => (
-            <Button 
-              key={indicator}
-              onClick={() => handleIndicatorSelection(indicator)}
-              variant={selectedIndicators.includes(indicator) ? "default" : "outline"}
-            >
-              {indicator}
-            </Button>
-          ))}
-        </div>
-      </div>
-      <Tabs defaultValue="economic-data" className="w-full px-2">
-        <TabsList className="grid w-full grid-cols-2">
+    <div className="relative w-full py-4 px-0">
+      <Tabs defaultValue="overview" className="w-full px-2 pt-2">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="economic-data">Econ. Data</TabsTrigger>
           <TabsTrigger value="legislation">Legislation</TabsTrigger>
         </TabsList>
+        <TabsContent value="overview">
+          <Card>
+            <CardHeader>
+              <CardTitle>Overview of {countryName}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {leaderInfo && (
+                <LeaderInfo
+                  state={leaderInfo['State']}
+                  headOfState={leaderInfo['Head of State']}
+                  headOfStateImage={leaderInfo['Head of State Image']}
+                  headOfGovernment={leaderInfo['Head of Government']}
+                  headOfGovernmentImage={leaderInfo['Head of Government Image']}
+                />
+              )}
+              {articleContent && <WikipediaView content={articleContent} />}
+            </CardContent>
+          </Card>
+        </TabsContent>
         <TabsContent value="economic-data">
           <Card>
             <CardHeader>
@@ -208,6 +271,19 @@ export function IssueAreas({ countryName }) {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
+              <div className="mb-4">
+                <div className="flex flex-wrap gap-2">
+                  {availableIndicators.map(indicator => (
+                    <Button 
+                      key={indicator}
+                      onClick={() => handleIndicatorSelection(indicator)}
+                      variant={selectedIndicators.includes(indicator) ? "default" : "outline"}
+                    >
+                      {indicator}
+                    </Button>
+                  ))}
+                </div>
+              </div>
               <div style={{ height: 250 }}>
                 {isLoading ? (
                   <div className="flex flex-col items-center justify-center h-full">
@@ -241,15 +317,49 @@ export function IssueAreas({ countryName }) {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {isLoading ? (
-                <p>Loading legislative data...</p>
-              ) : error.legislative ? (
-                <p>Error loading legislative data: {error.legislative.message}</p>
-              ) : data?.legislativeData && data.legislativeData.length > 0 ? (
-                <DataTable columns={legislationColumns} data={data.legislativeData} />
-              ) : (
+              <div className="space-y-4">
+                <div className="flex space-x-2">
+                  <Input
+                    placeholder="Search legislation..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="flex-grow"
+                  />
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Filter by status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Statuses</SelectItem>
+                      <SelectItem value="red">Red</SelectItem>
+                      <SelectItem value="yellow">Yellow</SelectItem>
+                      <SelectItem value="green">Green</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select value={dateFilter} onValueChange={setDateFilter}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Filter by date" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Time</SelectItem>
+                      <SelectItem value="last30">Last 30 Days</SelectItem>
+                      <SelectItem value="last90">Last 90 Days</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {isLoading ? (
+                   <div className="flex flex-col items-center justify-center h-full">
+                   <DotLoader color="#000" size={50} />
+                   <p className="mt-4">Legislative data is loading...</p>
+                 </div>
+                ) : error.legislative ? (
                 <p>No legislative data available for {countryName}.</p>
-              )}
+                ) : filteredLegislativeData.length > 0 ? (
+                  <DataTable columns={legislationColumns} data={filteredLegislativeData} />
+                ) : (
+                  <p>No legislative data available for {countryName}.</p>
+                )}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

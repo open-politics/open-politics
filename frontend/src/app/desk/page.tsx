@@ -13,7 +13,7 @@ import CountryDetailPanel from '@/components/CountryDetailPanel';
 import { Map, FileSearch2 } from 'lucide-react';
 import { Settings, HelpCircle } from 'lucide-react';
 import withAuth from '@/hooks/withAuth';
-import Countr
+
 const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
 OpenAPI.BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
@@ -22,9 +22,8 @@ OpenAPI.TOKEN = async () => {
 };
 
 const Desk: React.FC = () => {
-    const [geojsonData, setGeojsonData] = useState<any>(null);
-    const geojsonUrl = 'https://open-politics.org:80/api/v1/countries/geojson/';
-    const [results, setResults] = useState<any>(null);
+    const geojsonUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/countries/geojson/`;
+    const [results, setResults] = useState(null);
     const [summary, setSummary] = useState<string>('');
     const [articleContent, setArticleContent] = useState<string>('');
     const [country, setCountry] = useState<string | null>(null);
@@ -41,19 +40,6 @@ const Desk: React.FC = () => {
     const { toast } = useToast();
     const [countryKey, setCountryKey] = useState<number>(0);
     const [isMobile, setIsMobile] = useState(false);
-
-    useEffect(() => {
-      const fetchGeojsonData = async () => {
-          try {
-              const data = await CountriesService.geojsonView();
-              setGeojsonData(data);
-          } catch (error) {
-              console.error('Error fetching geojson data:', error);
-          }
-      };
-      fetchGeojsonData();
-  }, []);
-
 
   useEffect(() => {
     if (country) {
@@ -189,23 +175,21 @@ const Desk: React.FC = () => {
             <AnimatePresence>
               {hasClicked && (
                 <motion.div
-                  className={`absolute top-2 right-0 h-full ${isMobile ? 'w-3/4' : 'w-1/3'}`}
-                  initial={{ x: '100%' }}
-                  animate={{ x: 0 }}
-                  exit={{ x: '100%' }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <CountryDetailPanel
+                className={`absolute top-2 right-0 h-full ${isMobile ? 'w-3/4' : 'w-1/3'}`}
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ duration: 0.3 }}
+            >
+                <CountryDetailPanel
                     key={countryKey}
+                    country={country}
                     articleContent={articleContent}
-                    legislativeData={legislativeData}
-                    economicData={economicData}
-                    leaderInfo={leaderInfo}
                     isVisible={isVisible}
                     toggleVisibility={toggleVisibility}
-                  />
-                </motion.div>
-              )}
+                />
+              </motion.div>
+            )}
             </AnimatePresence>
           </div>
         ) : (
@@ -276,4 +260,4 @@ const Desk: React.FC = () => {
   );
 };
 
-export default withAuth(Desk);
+export default Desk;

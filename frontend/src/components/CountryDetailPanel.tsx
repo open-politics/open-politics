@@ -1,20 +1,11 @@
 import React from 'react';
-import WikipediaView from './WikipediaView';
 import { IssueAreas } from './IssueAreas';
-import LeaderInfo from './LeaderInfo';
 import { Button } from '@/components/ui/button';
 import { CircleX, ListCollapse } from 'lucide-react';
 
 interface CountryDetailPanelProps {
   country: string;
   articleContent: string;
-  leaderInfo: {
-    state: string;
-    headOfState: string;
-    headOfStateImage: string | null;
-    headOfGovernment: string;
-    headOfGovernmentImage: string | null;
-  } | null;
   isVisible: boolean;
   toggleVisibility: () => void;
 }
@@ -22,7 +13,6 @@ interface CountryDetailPanelProps {
 const CountryDetailPanel: React.FC<CountryDetailPanelProps> = ({
   country,
   articleContent,
-  leaderInfo,
   isVisible,
   toggleVisibility
 }) => {
@@ -32,19 +22,7 @@ const CountryDetailPanel: React.FC<CountryDetailPanelProps> = ({
         {isVisible ? <CircleX size={24} /> : <ListCollapse size={24} />}
       </Button> 
       {isVisible && (
-        <>
-          {leaderInfo && (
-            <LeaderInfo
-              state={leaderInfo['State']}
-              headOfState={leaderInfo['Head of State']}
-              headOfStateImage={leaderInfo['Head of State Image']}
-              headOfGovernment={leaderInfo['Head of Government']}
-              headOfGovernmentImage={leaderInfo['Head of Government Image']}
-            />
-          )}
-          {articleContent && <WikipediaView content={articleContent} />}
-          <IssueAreas countryName={country} />
-        </>
+        <IssueAreas countryName={country} articleContent={articleContent} />
       )}
     </div>
   );

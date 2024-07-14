@@ -1,0 +1,134 @@
+services:
+  db:
+    image: postgres:12
+    restart: always
+    volumes:
+      - app-db-data-staging:/var/lib/postgresql/data/pgdata
+    env_file:
+      - .env.staging
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+      - POSTGRES_USER=${POSTGRES_USER?Variable not set}
+      - POSTGRES_DB=${POSTGRES_DB?Variable not set}
+    ports:
+      - "5433:5432"
+
+  adminer:
+    image: adminer
+    restart: always
+    networks:
+      - traefik-public
+      - default
+      - app_network
+    depends_on:
+      - db
+    environment:
+      - ADMINER_DESIGN=pepa-linha-dark
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.constraint-label=traefik-public
+      - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-http-staging.rule=Host(`adminer-staging.${DOMAIN?Variable not set}`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-http-staging.entrypoints=http
+      - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-http-staging.middlewares=https-redirect
+      - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-https-staging.rule=Host(`adminer-staging.${DOMAIN?Variable not set}`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-https-staging.entrypoints=https
+      - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-https-staging.tls=true
+      - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-https-staging.tls.certresolver=le
+      - traefik.http.services.${STACK_NAME?Variable not set}-adminer-staging.loadbalancer.server.port=8080
+    ports:
+      - "8081:8080"
+
+  backend:
+    image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    restart: always
+    networks:
+      - traefik-public
+      - default
+      - app_network
+    depends_on:
+      - db
+    env_file:
+      - .env.staging
+    environment:
+      - DOMAIN=${DOMAIN}-staging
+      - ENVIRONMENT=staging
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS}
+      - SECRET_KEY=${SECRET_KEY?Variable not set}
+      - FIRST_SUPERUSER=${FIRST_SUPERUSER?Variable not set}
+      - FIRST_SUPERUSER_PASSWORD=${FIRST_SUPERUSER_PASSWORD?Variable not set}
+      - USERS_OPEN_REGISTRATION=${USERS_OPEN_REGISTRATION}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - EMAILS_FROM_EMAIL=${EMAILS_FROM_EMAIL}
+      - POSTGRES_SERVER=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER?Variable not set}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+      - SENTRY_DSN=${SENTRY_DSN}
+      - TAVILY_API_KEY=${TAVILY_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    build:
+      context: ./backend
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}
+    platform: linux/amd64
+    ports:
+      - "8001:80"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public, app_network
+      - traefik.http.services.${STACK_NAME?Variable not set}-backend-staging.loadbalancer.server.port=80
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http-staging.rule=Host(`staging.${DOMAIN?Variable not set}`) && PathPrefix(`/api`, `/docs`, `/redoc`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http-staging.entrypoints=http
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https-staging.rule=Host(`staging.${DOMAIN?Variable not set}`) && PathPrefix(`/api`, `/docs`, `/redoc`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https-staging.entrypoints=https
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https-staging.tls=true
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https-staging.tls.certresolver=le
+      - traefik.http.middlewares.${STACK_NAME?Variable not set}-www-redirect-staging.redirectregex.regex=^http(s)?://www.(${DOMAIN?Variable not set})/(.*)
+      - traefik.http.middlewares.${STACK_NAME?Variable not set}-www-redirect-staging.redirectregex.replacement=http$${1}://${DOMAIN?Variable not set}/$${3}
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http-staging.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect-staging
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https-staging.middlewares=${STACK_NAME?Variable not set}-www-redirect-staging
+    command: /start-reload.sh
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev.staging
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./frontend:/app
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=https://open-politics.org
+      - NEXT_PUBLIC_API_BASE_URL=https://open-politics.org
+    networks:
+      - traefik-public
+      - default
+      - app_network
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.constraint-label=traefik-public
+      - traefik.http.services.${STACK_NAME?Variable not set}-frontend-staging.loadbalancer.server.port=3001
+      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http-staging.rule=Host(`staging.${DOMAIN?Variable not set}`, `www-staging.${DOMAIN?Variable not set}`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http-staging.entrypoints=http
+      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https-staging.rule=Host(`staging.${DOMAIN?Variable not set}`, `www-staging.${DOMAIN?Variable not set}`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https-staging.entrypoints=https
+      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https-staging.tls=true
+      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https-staging.tls.certresolver=le
+      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https-staging.middlewares=${STACK_NAME?Variable not set}-www-redirect-staging
+      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http-staging.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect-staging
+
+volumes:
+  app-db-data-staging:
+
+networks:
+  traefik-public:
+    external: true
+  app_network:
+    external: true

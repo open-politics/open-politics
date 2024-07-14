@@ -33,7 +33,7 @@ interface DataContext {
 
 OpenAPI.BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
 
-const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCountryClick, isBrowseMode, toggleMode, setLegislativeData, setEconomicData, onCountryZoom }, ref) => {
+const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCountryClick, isBrowseMode, toggleMode, setLegislativeData, setEconomicData, onCountryZoom }, ref) => {
   const chartRef = useRef<am5.Root | null>(null);
   const polygonSeriesRef = useRef<am5map.MapPolygonSeries | null>(null);
   const pointSeriesRef = useRef<am5map.MapPointSeries | null>(null);
@@ -42,7 +42,7 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
   const rotationAnimationRef = useRef<any>(null);
   const chartInstanceRef = useRef<am5map.MapChart | null>(null);
   const [zoomLevel, setZoomLevel] = useState(0.1);
-  const { toast } = useToast(); // Add this line to use the toast
+  const { toast } = useToast(); 
 
   const initialRotationX = 0;
   const initialRotationY = 0;
@@ -270,7 +270,7 @@ const Globe = forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCo
     try {
       const response = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${countryName}`);
       const data = await response.json();
-      return data.extract ? `<div><strong>${countryName}</strong><br>${data.extract}</div>` : `<div><strong>${countryName}</strong>: No information available.</div>`;
+      return data.extract ? `<div><strong>Wikipedia</strong><br>${data.extract}</div>` : `<div><strong>${countryName}</strong>: No information available.</div>`;
     } catch (error) {
       return `<div><strong>${countryName}</strong>: Error fetching information.</div>`;
     }

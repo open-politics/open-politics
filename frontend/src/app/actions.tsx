@@ -34,10 +34,11 @@ export async function generateSummaryFromArticles(articles: { content: string }[
     const { textStream } = await streamText({
       model: openai('gpt-4o'),
       prompt: `You are an political intelligence analyst. 
-      Provide a distillation of the information of the articles, 
+      Provide a distillation of the information of the articles.
       ${combinedDescriptions}\n\n.
-      Use markdown styling to make the output look good.
-      Don't write "This is the distillation" or similar first sentences. Just start straight away with the most important points.
+
+      If the search is in German please return the analysis in the respective language. You start directly with a well structured text and no intro section.
+      Your result:
       `
       ,
     });

@@ -23,7 +23,7 @@ export default function LoginPage() {
 
     try {
       await loginMutation.mutateAsync({ username: email, password });
-      router.push('/desk');
+      router.push('/desk_synthese');
     } catch {
       // error is handled by useAuth hook
       setErrorMessage('Invalid email or password. Please try again.');

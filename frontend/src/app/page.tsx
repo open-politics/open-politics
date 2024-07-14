@@ -63,9 +63,9 @@ const HomePage: React.FC<HiProps> = () => {
   return (
     <div className="p-8 flex flex-col items-center justify-center min-h-screen">
       <div className="text-center mb-8">
-      <div className="text-sm text-gray-500 sticky top-16 left-0 p-2 z-50 w-full">
+      {/* <div className="text-sm text-gray-500 sticky top-16 left-0 p-2 z-50 w-full">
         <p>Public Maintenance Notice: Scheduled downtime on July 13, 2024</p>
-      </div>
+      </div> */}
         <h1 className="text-4xl md:text-6xl font-bold leading-none dark:text-white">
           <div className="flex flex-col items-center">
             <span style={{ letterSpacing: '0.1em' }}>What are you</span>

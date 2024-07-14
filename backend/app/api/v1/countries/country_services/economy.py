@@ -4,8 +4,6 @@ from typing import List
 import sdmx
 from fastapi import Query
 import logging
-import aiohttp
-import asynci
 import requests
 
 # Configure logging
@@ -74,28 +72,14 @@ async def get_econ_data(state: str, indicators: List[str] = Query(["B1GQ+B1GQ"])
     indicator_mapping = {
         "GDP": "B1GQ",
         "GDP_GROWTH": "B1GQ_R_GR",
-        "CPI": "CPI"
     }
 
     iso_code = country_to_iso.get(state)
     if not iso_code:
-        logger.error(f"Invalid country name: {state}")
-        return JSONResponse(
-        status_code=400,
-        content={"error": f"Invalid country name: {state}"}
-    )
+        logger.error(f"No ISO code found for country: {state}")
+        raise ValueError(f"No ISO code found for country: {state}")
     
     logger.info(f"ISO code for {state}: {iso_code}")
-
-    async def fetch_data(url):
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url, headers={'Accept': 'application/vnd.sdmx.data+json; charset=utf-8; version=1.0'}) as response:
-                if response.status == 200:
-                    return await response.json()
-                else:
-                    logger.error(f"Failed to retrieve data: {response.status}")
-                    logger.error(f"Response content: {await response.text()}")
-                    return None
     
     # Map the requested indicators to their SDMX codes
     sdmx_indicators = [indicator_mapping.get(ind, ind) for ind in indicators]
@@ -136,5 +120,6 @@ async def get_econ_data(state: str, indicators: List[str] = Query(["B1GQ+B1GQ"])
         logger.error(f"Response content: {response.text}")
         return []
 
-#  For future CPI integration
+
+#  For future 
 #     url_cpi = f'https://sdmx.oecd.org/public/rest/data/OECD.SDD.TPS,DSD_PRICES@DF_PRICES_ALL,/.M.{iso_code}.CPI.PA._T.N.GY?startPeriod=2000&dimensionAtObservation=AllDimensions'

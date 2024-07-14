@@ -12,8 +12,8 @@ interface LeaderInfoProps {
 
 const LeaderInfo: React.FC<LeaderInfoProps> = ({ state, headOfState, headOfStateImage, headOfGovernment, headOfGovernmentImage }) => {
   return (
-    <div className="leader-info h-30 md:pt-12 md:pb-4 shadow-sm overflow-hidden">
-      <h2 className="text-xl text-center font-semibold mb-2">Head(s) of State</h2>
+    <div className="leader-info md:pb-4 shadow-sm overflow-hidden">
+      <h2 className="text-center">Head(s) of State</h2>
       <div className="flex justify-center space-x-4">
         {headOfStateImage && (
           <div className="flex flex-col items-center space-y-2">

@@ -29,19 +29,25 @@ def get_legislation_data(state: str):
     results = []
     
     for item in data.get('documents', []):
-        status = item.get('stand')
-        if status == 'Nicht beantwortet':
+        status = item.get('beratungsstand')
+        if status == 'Noch nicht beantwortet':
             label = 'yellow'
         elif status == 'Beantwortet':
             label = 'green'
         else:
             label = 'red'
         
+        # Construct the href link using the fundstelle field
+        id = item.get('id')
+        href = f"https://dip.bundestag.de/suche?term={id}&f.wahlperiode=20&rows=25"
+        
         results.append({
             'law': item.get('titel'),
             'status': status,
             'label': label,
-            'date': item.get('datum')
+            'date': item.get('datum'),
+            'initiative': item.get('initiative'),
+            'href': href
         })
     
     results.sort(key=lambda x: x['label'])

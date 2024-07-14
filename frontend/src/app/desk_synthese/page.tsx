@@ -27,7 +27,6 @@ const Desk: React.FC = () => {
     const [summary, setSummary] = useState<string>('');
     const [articleContent, setArticleContent] = useState<string>('');
     const [country, setCountry] = useState<string | null>(null);
-    const [leaderInfo, setLeaderInfo] = useState<any | null>(null);
     const [currentTime, setCurrentTime] = useState<string>(new Date().toLocaleString());
     const [isBrowseMode, setIsBrowseMode] = useState(true);
     const [hasSearched, setHasSearched] = useState(false);
@@ -40,23 +39,6 @@ const Desk: React.FC = () => {
     const { toast } = useToast();
     const [countryKey, setCountryKey] = useState<number>(0);
     const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    if (country) {
-      const fetchLeaderInfo = async () => {
-        try {
-          const response = await axios.get(`https://open-politics.org/api/v1/countries/leaders/${country}`);
-          setLeaderInfo(response.data);
-        } catch (error) {
-          toast({
-            title: "Error",
-            description: `Failed to fetch leader info for ${country}. Please try again later.`,
-          });
-        }
-      };
-      fetchLeaderInfo();
-    }
-  }, [country, toast]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -175,7 +157,7 @@ const Desk: React.FC = () => {
             <AnimatePresence>
               {hasClicked && (
                 <motion.div
-                className={`absolute top-2 right-0 h-full ${isMobile ? 'w-3/4' : 'w-1/3'}`}
+                className={`absolute top-2 right-0 h-full ${isMobile ? 'w-3/4' : 'w-5/12'}`}
                 initial={{ x: '100%' }}
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
@@ -246,7 +228,6 @@ const Desk: React.FC = () => {
                     articleContent={articleContent}
                     legislativeData={legislativeData}
                     economicData={economicData}
-                    leaderInfo={leaderInfo}
                     isVisible={isVisible}
                     toggleVisibility={toggleVisibility}
                   />

@@ -5,8 +5,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - "80:80"
-      - "8090:8080"
+      - "82:80"
+      - "8284:8080"
     # Duplicate the command from docker-compose.yml to add --api.insecure=true
     command:
       # Enable Docker in Traefik, so that it reads labels from Docker services
@@ -16,7 +16,7 @@ services:
       # Do not expose all Docker services, only the ones explicitly exposed
       - --providers.docker.exposedbydefault=false
       # Create an entrypoint "http" listening on port 80
-      - --entrypoints.http.address=:80
+      - --entrypoints.http.address=:82
       # Create an entrypoint "https" listening on port 443
       - --entrypoints.https.address=:443
       # Enable the access log, with HTTP requests
