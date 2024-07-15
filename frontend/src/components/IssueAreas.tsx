@@ -185,7 +185,7 @@ export function IssueAreas({ countryName, articleContent }: IssueAreasProps) {
                       href={row.original.href} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
+                      className="text-inherit hover:underline"
                     >
                       {row.original.law}
                     </a>

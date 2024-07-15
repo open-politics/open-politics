@@ -16,7 +16,7 @@ import withAuth from '@/hooks/withAuth';
 
 const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
-OpenAPI.BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+OpenAPI.BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://open-politics.org/api';
 OpenAPI.TOKEN = async () => {
   return localStorage.getItem("access_token") || "";
 };
@@ -225,6 +225,7 @@ const Desk: React.FC = () => {
                 <div className="flex-1 relative">
                   <CountryDetailPanel
                     key={countryKey}
+                    country={country} // Add this line
                     articleContent={articleContent}
                     legislativeData={legislativeData}
                     economicData={economicData}

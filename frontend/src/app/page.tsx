@@ -79,8 +79,8 @@ const HomePage: React.FC<HiProps> = () => {
       </div>
 
       <div className="mt-2 text-center">
-        <p className="text-blue-500 font-bold mb-1">Rethinking News Analysis with Open Source & AI.</p>
-        <p className="mb-3 font-bold">Navigate news with next-gen tools.</p>
+        <p className="text-blue-500 font-bold mb-3">Next-gen political analysis for everyone.</p>
+        {/* <p className="mb-3 font-bold">Navigate news with next-gen tools.</p> */}
 
         <div className="space-x-2">
           <Button asChild variant="outline" className="border border-blue-500">

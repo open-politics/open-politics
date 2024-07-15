@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 const Pitchdeck: React.FC = () => {
   const handleDownload = () => {
     const link = document.createElement('a');
-    link.href = '/other/deck_v1.pdf';
+    link.href = '/other/deck_v2.pdf';
     link.download = 'deck_v2.pdf';
     document.body.appendChild(link);
     link.click();

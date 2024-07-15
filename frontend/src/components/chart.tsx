@@ -9,8 +9,9 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
+import { TooltipProps } from 'recharts';
 
-const CustomTooltip = ({ active, payload, label }) => {
+const CustomTooltip: React.FC<TooltipProps<number, string>> = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (    
       <div className="custom-tooltip p-2 bg-opacity-80 shadow-xl backdrop-blur-lg">
