@@ -1,0 +1,23 @@
+{{- if eq .Values.postgres.enabled and .Values.general.environment "prod" }}
+apiVersion: gemini.fairwinds.com/v1
+kind: SnapshotGroup
+metadata:
+  name: open-politics-backend-documents-backups
+spec:
+  persistentVolumeClaim:
+    claimName: open-politics-backend-documents
+  template:
+    spec:
+      volumeSnapshotClassName: csi-disk-snapclass
+  schedule:
+    - every: 10 minutes
+      keep: 3
+    - every: hour
+      keep: 1
+    - every: day
+      keep: 1
+    - every: month
+      keep: 1
+    - every: year
+      keep: 1
+{{ end }}
