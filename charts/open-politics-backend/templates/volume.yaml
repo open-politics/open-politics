@@ -1,4 +1,4 @@
-{{- if eq .Values.postgres.enabled and .Values.general.environment "prod" }}
+{{- if eq .Values.postgres.enabled and eq .Values.general.environment "prod" }}
 apiVersion: gemini.fairwinds.com/v1
 kind: SnapshotGroup
 metadata:
