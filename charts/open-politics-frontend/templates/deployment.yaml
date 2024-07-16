@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "open-politics-frontend"
+spec:
+  selector:
+    matchLabels:
+      app: "open-politics-frontend"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: "open-politics-frontend"
+    spec:
+      serviceAccountName: "open-politics-frontend"
+      containers:
+        - name: "open-politics-frontend"
+          image: "{{ .Values.general.imageRepo }}/{{ .Values.general.imageTag }}"
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          env:
+            - name: ENVIRONMENT
+              value: "{{ .Values.general.environment }}"
+            - name: BACKEND_DOMAIN
+              value: "{{ .Values.application.backendDomain }}"
+            - name: DOMAIN
+              value: "{{ .Values.application.frontendDomain }}"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6

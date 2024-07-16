@@ -1,0 +1,28 @@
+general:
+  storageClass: standard
+  imageTag: "latest"
+  imageRepo: "registry.docker.io/open-politics/backend"
+  environment: "dev"
+  branch: "my-feature-1"
+application:
+  frontendDomain: "open-politics.org"
+  backendDomain: "api.open-politics.org"
+externalSmtp:
+  enabled: true
+  host: "smtp.example.com"
+  port: "587"
+  username: "do-not-reply@open-politics.org"
+  fromEmail: "do-not-reply@open-politics.org"
+  password: "smtp-password"
+  tls: "true"
+postgres:
+  enabled: false
+  auth:
+    username: "open-politics-backend"
+    database: "my-database"
+externalDatabase:
+  host: "my-database-host"
+  port: "5432"
+  user: "my-user"
+  password: "my-super-secret-password"
+  database: "my-database"
