@@ -4,6 +4,8 @@ FROM node:20-alpine
 # Set the working directory
 WORKDIR /app
 
+RUN npm install -g pnpm
+
 # Copy package.json and package-lock.json (or yarn.lock)
 COPY package.json package-lock.json* ./
 
