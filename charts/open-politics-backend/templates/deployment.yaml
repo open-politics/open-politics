@@ -22,11 +22,6 @@ spec:
                 matchLabels:
                   affinityGroup: "open-politics-backend"
               topologyKey: "kubernetes.io/hostname"
-      volumes:
-        - name: open-politics-backend-documents
-          persistentVolumeClaim:
-            claimName: open-politics-backend-documents
-            readOnly: false
       serviceAccountName: "open-politics-backend"
       containers:
         - name: "open-politics-backend"
