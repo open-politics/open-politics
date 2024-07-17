@@ -25,7 +25,7 @@ spec:
       serviceAccountName: "open-politics-backend"
       containers:
         - name: "open-politics-backend"
-          image: "{{ .Values.general.imageRepo }}/{{ .Values.general.imageTag }}"
+          image: "{{ .Values.general.imageRepo }}:{{ .Values.general.imageTag }}"
           imagePullPolicy: Always
           ports:
             - name: http
