@@ -21,6 +21,7 @@ postgres:
   auth:
     username: "open-politics-backend"
     database: "my-database"
+    password: "my-super-secret-password"
 externalDatabase:
   host: "my-database-host"
   port: "5432"
