@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: "open-politics-frontend"
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 80
-      targetPort: 80
+      targetPort: 3000
       protocol: TCP
       name: http
   selector:
