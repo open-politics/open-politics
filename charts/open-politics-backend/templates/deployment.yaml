@@ -44,7 +44,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: "secret-key"
-                  key: "token"
+                  key: "password"
             - name: FIRST_SUPERUSER
               value: "superuser@open-politics-status.org"
             - name: FIRST_SUPERUSER_PASSWORD
