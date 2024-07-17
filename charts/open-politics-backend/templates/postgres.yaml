@@ -40,6 +40,7 @@ spec:
             - mountPath: /var/lib/postgresql/data
               name: postgres-data
               readOnly: false
+              subPath: data
           ports:
             - name: postgres
               containerPort: 5432
