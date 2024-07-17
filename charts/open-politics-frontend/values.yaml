@@ -1,7 +1,7 @@
 general:
   storageClass: standard
   imageTag: "latest"
-  imageRepo: "registry.docker.io/open-politics/frontend"
+  imageRepo: "registry.docker.io/openpoliticsproject/frontend"
   environment: "dev"
   branch: "my-feature-1"
 application:
