@@ -75,29 +75,50 @@ spec:
             {{ end }}
             {{ if .Values.postgres.enabled }}
             - name: POSTGRES_SERVER
-              value: "{{ .Values.postgres.auth.instanceName }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+              value: "postgres.{{ .Release.Namespace }}.svc.cluster.local" #TODO: Add dynamic environment
             - name: POSTGRES_PORT
               value: "5432"
             - name: POSTGRES_DB
-              value: "{{ .Values.postgres.auth.database }}"
+              valueFrom:
+                secretKeyRef:
+                  name: "postgres-auth"
+                  key: "database"
             - name: POSTGRES_USER
-              value: "{{ .Values.postgres.auth.username }}"
+              valueFrom:
+                secretKeyRef:
+                  name: "postgres-auth"
+                  key: "username"
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
+                  name: "postgres-auth"
                   key: "password"
-                  name: "postgres-user-password"
             {{ else }}
             - name: POSTGRES_SERVER
-              value: "{{ .Values.externalDatabase.host }}"
+              valueFrom:
+                secretKeyRef:
+                  name: "external-database"
+                  key: "host"
             - name: POSTGRES_PORT
-              value: "{{ .Values.externalDatabase.port }}"
+              valueFrom:
+                secretKeyRef:
+                  name: "external-database"
+                  key: "port"
             - name: POSTGRES_DB
-              value: "{{ .Values.externalDatabase.database }}"
+              valueFrom:
+                secretKeyRef:
+                  name: "external-database"
+                  key: "database"
             - name: POSTGRES_USER
-              value: "{{ .Values.externalDatabase.user }}"
+              valueFrom:
+                secretKeyRef:
+                  name: "external-database"
+                  key: "username"
             - name: POSTGRES_PASSWORD
-              value: "{{ .Values.externalDatabase.password }}"
+              valueFrom:
+                secretKeyRef:
+                  name: "external-database"
+                  key: "password"
             {{ end }}
             - name: SENTRY_DSN
               value: todo

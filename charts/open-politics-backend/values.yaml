@@ -1,5 +1,6 @@
 general:
   storageClass: standard
+  clusterDomain: cluster.local
   imageTag: "latest"
   imageRepo: "openpoliticsproject/backend"
   environment: "dev"
