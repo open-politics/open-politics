@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   open-politics-backend:
   - apiVersion: v2
+    appVersion: 1.0.9
+    created: "2024-07-17T14:45:56.262184548Z"
+    description: open-politics-backend
+    digest: bc948864d33f804f70451041c7f5d6fffb0d470b7d9725d4a425482aeaec58f4
+    name: open-politics-backend
+    type: application
+    urls:
+    - https://github.com/open-politics/open-politics/releases/download/open-politics-backend-1.0.9/open-politics-backend-1.0.9.tgz
+    version: 1.0.9
+  - apiVersion: v2
     appVersion: 1.0.8
     created: "2024-07-17T10:29:00.571293384Z"
     description: open-politics-backend
@@ -132,4 +142,4 @@ entries:
     urls:
     - https://github.com/open-politics/open-politics/releases/download/open-politics-frontend-1.0.1/open-politics-frontend-1.0.1.tgz
     version: 1.0.1
-generated: "2024-07-17T10:29:00.700386908Z"
+generated: "2024-07-17T14:45:56.262240533Z"
