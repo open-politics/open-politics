@@ -128,7 +128,7 @@ spec:
               value: todo
           livenessProbe:
             httpGet:
-              path: /healthz/liveness
+              path: /api/v1/healthz/liveness
               port: 80
             initialDelaySeconds: 10
             periodSeconds: 10
@@ -136,7 +136,7 @@ spec:
             failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /healthz/readiness
+              path: /api/v1//healthz/readiness
               port: 80
             initialDelaySeconds: 10
             periodSeconds: 10

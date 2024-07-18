@@ -14,8 +14,9 @@ RUN npm run build
 # Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
 FROM nginx:1
 
+RUN rm -rf /usr/share/nginx/html/*
 COPY --from=build-stage /app/.next /usr/share/nginx/html/.next
-COPY --from=build-stage /app/public /usr/share/nginx/html/public
+COPY --from=build-stage /app/public /usr/share/nginx/html
 COPY --from=build-stage /app/next.config.mjs /usr/share/nginx/html/next.config.mjs
 
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
