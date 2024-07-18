@@ -131,7 +131,7 @@ spec:
               path: /api/v1/healthz/liveness
               port: 80
               host: localhost
-            initialDelaySeconds: 20
+            initialDelaySeconds: 6000
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
@@ -140,7 +140,7 @@ spec:
               path: /api/v1/healthz/readiness
               port: 80
               host: localhost
-            initialDelaySeconds: 20
+            initialDelaySeconds: 6000
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 6
