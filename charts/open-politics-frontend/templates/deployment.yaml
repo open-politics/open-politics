@@ -19,7 +19,7 @@ spec:
           imagePullPolicy: Always
           ports:
             - name: http
-              containerPort: 3000
+              containerPort: 80
               protocol: TCP
           env:
             - name: ENVIRONMENT
@@ -31,7 +31,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /
-              port: 3000
+              port: 80
             initialDelaySeconds: 10
             periodSeconds: 10
             timeoutSeconds: 5
@@ -39,7 +39,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /
-              port: 3000
+              port: 80
             initialDelaySeconds: 10
             periodSeconds: 10
             timeoutSeconds: 5
