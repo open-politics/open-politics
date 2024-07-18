@@ -9,3 +9,7 @@ def readyz():
 @router.get('/liveness')
 def liveness():
     return {"status": "ok"}
+
+@router.get('/healthz')
+def healthz():
+    return {"status": "ok"}
