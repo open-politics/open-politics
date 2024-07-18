@@ -32,15 +32,15 @@ spec:
             httpGet:
               path: /
               port: 3000
-            initialDelaySeconds: 10
-            periodSeconds: 10
+            initialDelaySeconds: 2
+            periodSeconds: 5
             timeoutSeconds: 5
             failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /
               port: 3000
-            initialDelaySeconds: 10
-            periodSeconds: 10
+            initialDelaySeconds: 2
+            periodSeconds: 5
             timeoutSeconds: 5
             failureThreshold: 6

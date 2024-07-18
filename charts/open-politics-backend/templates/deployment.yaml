@@ -130,7 +130,8 @@ spec:
             httpGet:
               path: /api/v1/healthz/liveness
               port: 80
-            initialDelaySeconds: 10
+              host: localhost
+            initialDelaySeconds: 20
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
@@ -138,7 +139,8 @@ spec:
             httpGet:
               path: /api/v1/healthz/readiness
               port: 80
-            initialDelaySeconds: 10
+              host: localhost
+            initialDelaySeconds: 20
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 6
