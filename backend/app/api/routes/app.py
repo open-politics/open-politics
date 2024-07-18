@@ -7,3 +7,7 @@ from app.api.deps import CurrentUser, SessionDep
 from app.models import Item, ItemCreate, ItemOut, ItemsOut, ItemUpdate, Message
 
 router = APIRouter()
+
+@router.get('/healthz')
+def healthz():
+    return {"status": "ok"}, 200
