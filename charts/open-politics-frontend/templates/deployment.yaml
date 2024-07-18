@@ -24,8 +24,8 @@ spec:
           env:
             - name: ENVIRONMENT
               value: "{{ .Values.general.environment }}"
-            - name: BACKEND_DOMAIN
-              value: "{{ .Values.application.backendDomain }}"
+            - name: NEXT_PUBLIC_API_URL
+              value: "https://{{ .Values.application.backendDomain }}"
             - name: DOMAIN
               value: "{{ .Values.application.frontendDomain }}"
           livenessProbe:
