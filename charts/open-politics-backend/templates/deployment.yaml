@@ -130,7 +130,7 @@ spec:
             exec:
               command:
                 - "curl"
-                - "-f"
+                - "-sSf"
                 - "http://localhost:80/api/v1/healthz/liveness"
             initialDelaySeconds: 5
             periodSeconds: 5
