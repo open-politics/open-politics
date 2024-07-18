@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   open-politics-backend:
   - apiVersion: v2
+    appVersion: 1.1.5
+    created: "2024-07-18T13:35:14.215198483Z"
+    description: open-politics-backend
+    digest: 9c1bde7cbd6e45966af9597560992c505cba60eb5988ee53223547139ec61031
+    name: open-politics-backend
+    type: application
+    urls:
+    - https://github.com/open-politics/open-politics/releases/download/open-politics-backend-1.1.5/open-politics-backend-1.1.5.tgz
+    version: 1.1.5
+  - apiVersion: v2
     appVersion: 1.1.4
     created: "2024-07-18T13:27:16.64500038Z"
     description: open-politics-backend
@@ -143,6 +153,16 @@ entries:
     version: 1.0.1
   open-politics-frontend:
   - apiVersion: v2
+    appVersion: 1.1.5
+    created: "2024-07-18T13:35:14.378902403Z"
+    description: open-politics-frontend
+    digest: 14295376983ca2cae2f90d8f14a044e5c5a6506804de404b7d1136e29687b0ea
+    name: open-politics-frontend
+    type: application
+    urls:
+    - https://github.com/open-politics/open-politics/releases/download/open-politics-frontend-1.1.5/open-politics-frontend-1.1.5.tgz
+    version: 1.1.5
+  - apiVersion: v2
     appVersion: 1.1.4
     created: "2024-07-18T13:27:16.747505786Z"
     description: open-politics-frontend
@@ -212,4 +232,4 @@ entries:
     urls:
     - https://github.com/open-politics/open-politics/releases/download/open-politics-frontend-1.0.1/open-politics-frontend-1.0.1.tgz
     version: 1.0.1
-generated: "2024-07-18T13:27:16.747631652Z"
+generated: "2024-07-18T13:35:14.379085212Z"
