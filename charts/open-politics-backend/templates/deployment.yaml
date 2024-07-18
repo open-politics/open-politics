@@ -134,7 +134,7 @@ spec:
                 - "curl"
                 - "-sSf"
                 - "http://localhost:80/api/v1/healthz/liveness"
-            initialDelaySeconds: 5
+            initialDelaySeconds: 20
             periodSeconds: 5
             timeoutSeconds: 5
             failureThreshold: 12
@@ -144,7 +144,7 @@ spec:
                 - "curl"
                 - "-f"
                 - "http://localhost:80/api/v1/healthz/readiness"
-            initialDelaySeconds: 5
+            initialDelaySeconds: 20
             periodSeconds: 5
             timeoutSeconds: 5
             failureThreshold: 12
