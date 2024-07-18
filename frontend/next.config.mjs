@@ -1,5 +1,5 @@
-import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
+import {fileURLToPath} from 'url';
+import {dirname, resolve} from 'path';
 import createMDX from '@next/mdx';
 import remarkGfm from 'remark-gfm'
 
@@ -38,13 +38,11 @@ const nextConfig = {
       {
         source: "/api/:path*",
         destination:
-          process.env.NODE_ENV === "development"
-            ? "http://backend:80/api/:path*"
-            : "https://open-politics.org/api/:path*",
+            process.env.BACKEND_DOMAIN != "" ? `https://${process.env.BACKEND_DOMAIN}/api/:path*` : "http://backend:80/api/:path*"
       }
     ];
   },
-  webpack: (config, { isServer }) => {
+  webpack: (config, {isServer}) => {
     config.resolve.alias['@'] = resolve(__dirname, 'src');
     return config;
   },
