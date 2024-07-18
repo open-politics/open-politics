@@ -11,3 +11,11 @@ router = APIRouter()
 @router.get('/healthz')
 def healthz():
     return {"status": "ok"}, 200
+
+@router.get('/healthz/readiness')
+def readyz():
+    return {"status": "ok"}, 200
+
+@router.get('/healthz/liveness')
+def liveness():
+    return {"status": "ok"}, 200
