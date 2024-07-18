@@ -8,14 +8,12 @@ from app.models import Item, ItemCreate, ItemOut, ItemsOut, ItemUpdate, Message
 
 router = APIRouter()
 
-@router.get('/healthz')
-def healthz():
-    return {"status": "ok"}, 200
 
-@router.get('/healthz/readiness')
+@router.get('/readiness')
 def readyz():
     return {"status": "ok"}, 200
 
-@router.get('/healthz/liveness')
+
+@router.get('/liveness')
 def liveness():
     return {"status": "ok"}, 200
