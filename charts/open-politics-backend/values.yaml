@@ -1,0 +1,31 @@
+general:
+  storageClass: standard
+  clusterDomain: cluster.local
+  imageTag: "latest"
+  imageRepo: "openpoliticsproject/backend"
+  environment: "dev"
+  branch: "my-feature-1"
+application:
+  frontendDomain: "open-politics.org"
+  backendDomain: "api.open-politics.org"
+  sentryDsn: "please-set-this-individually"
+externalSmtp:
+  enabled: true
+  host: "smtp.example.com"
+  port: "587"
+  username: "do-not-reply@open-politics.org"
+  fromEmail: "do-not-reply@open-politics.org"
+  password: "smtp-password"
+  tls: "true"
+postgres:
+  enabled: false
+  auth:
+    username: "open-politics-backend"
+    database: "my-database"
+    password: "my-super-secret-password"
+externalDatabase:
+  host: "my-database-host"
+  port: "5432"
+  user: "my-user"
+  password: "my-super-secret-password"
+  database: "my-database"

@@ -1,0 +1,144 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "open-politics-backend"
+  labels:
+    affinityGroup: "open-politics-backend"
+spec:
+  selector:
+    matchLabels:
+      app: "open-politics-backend"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: "open-politics-backend"
+        affinityGroup: "open-politics-backend"
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  affinityGroup: "open-politics-backend"
+              topologyKey: "kubernetes.io/hostname"
+      serviceAccountName: "open-politics-backend"
+      containers:
+        - name: "open-politics-backend"
+          image: "{{ .Values.general.imageRepo }}:{{ .Values.general.imageTag }}"
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          env:
+            - name: PROJECT_NAME
+              value: "Open Politics Project"
+            - name: STACK_NAME
+              value: "opp-stack"
+            - name: BACKEND_CORS_ORIGINS
+              value: "https://{{ .Values.application.frontendDomain }}"
+            - name: DOMAIN
+              value: "{{ .Values.application.backendDomain }}"
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: "secret-key"
+                  key: "password"
+            - name: FIRST_SUPERUSER
+              value: "superuser@open-politics-status.org"
+            - name: FIRST_SUPERUSER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: "password"
+                  name: first-superuser-password
+            - name: USERS_OPEN_REGISTRATION
+              value: "False"
+            {{ if .Values.externalSmtp.enabled }}
+            - name: EMAILS_ENABLED
+              value: "True"
+            - name: SMTP_HOST
+              value: "{{ .Values.externalSmtp.host }}"
+            - name: SMTP_PASSWORD
+              value: "{{ .Values.externalSmtp.password }}"
+            - name: EMAILS_FROM_EMAIL
+              value: "{{ .Values.externalSmtp.fromEmail }}"
+            - name: SMTP_TLS
+              value: "True"
+            - name: SMTP_SSL
+              value: "False"
+            - name: SMTP_PORT
+              value: "587"
+            {{ else }}
+            - name: EMAILS_ENABLED
+              value: "False"
+            {{ end }}
+            {{ if .Values.postgres.enabled }}
+            - name: POSTGRES_SERVER
+              value: "postgres.{{ .Release.Namespace }}.svc.cluster.local" #TODO: Add dynamic environment
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: "postgres-auth"
+                  key: "database"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: "postgres-auth"
+                  key: "username"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "postgres-auth"
+                  key: "password"
+            {{ else }}
+            - name: POSTGRES_SERVER
+              valueFrom:
+                secretKeyRef:
+                  name: "external-database"
+                  key: "host"
+            - name: POSTGRES_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: "external-database"
+                  key: "port"
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: "external-database"
+                  key: "database"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: "external-database"
+                  key: "username"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "external-database"
+                  key: "password"
+            {{ end }}
+            - name: SENTRY_DSN
+              value: {{ .Values.application.sentryDsn | quote }}
+            - name: OPENAI_API_KEY
+              value: todo
+            - name: TAVILY_API_KEY
+              value: todo
+          livenessProbe:
+            httpGet:
+              path: /healthz/liveness
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz/readiness
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6

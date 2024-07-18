@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: "open-politics-frontend"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: "nginx"
+  tls:
+    - hosts:
+        - "{{ .Values.application.frontendDomain }}"
+      secretName: "open-politics-frontend-tls"
+  rules:
+    - host: "{{ .Values.application.frontendDomain }}"
+      http:
+        paths:
+          - path: /
+            pathType: "Prefix"
+            backend:
+              service:
+                name: "open-politics-frontend"
+                port:
+                  number: 80

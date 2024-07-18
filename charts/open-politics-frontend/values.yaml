@@ -1,0 +1,9 @@
+general:
+  storageClass: standard
+  imageTag: "latest"
+  imageRepo: "openpoliticsproject/frontend"
+  environment: "dev"
+  branch: "my-feature-1"
+application:
+  frontendDomain: "open-politics.org"
+  backendDomain: "api.open-politics.org"
