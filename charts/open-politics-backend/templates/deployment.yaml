@@ -40,6 +40,8 @@ spec:
               value: "https://{{ .Values.application.frontendDomain }}"
             - name: DOMAIN
               value: "{{ .Values.application.backendDomain }}"
+            - name: NEXT_PUBLIC_API_BASE_URL
+              value: "https://{{ .Values.application.backendDomain }}"
             - name: SECRET_KEY
               valueFrom:
                 secretKeyRef:
