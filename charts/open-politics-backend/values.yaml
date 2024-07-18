@@ -8,6 +8,7 @@ general:
 application:
   frontendDomain: "open-politics.org"
   backendDomain: "api.open-politics.org"
+  sentryDsn: "please-set-this-individually"
 externalSmtp:
   enabled: true
   host: "smtp.example.com"

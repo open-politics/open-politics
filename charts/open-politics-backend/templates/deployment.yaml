@@ -121,7 +121,7 @@ spec:
                   key: "password"
             {{ end }}
             - name: SENTRY_DSN
-              value: todo
+              value: {{ .Values.application.sentryDsn | quote }}
             - name: OPENAI_API_KEY
               value: todo
             - name: TAVILY_API_KEY
