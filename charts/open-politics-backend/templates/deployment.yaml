@@ -127,20 +127,22 @@ spec:
             - name: TAVILY_API_KEY
               value: todo
           livenessProbe:
-            httpGet:
-              path: /api/v1/healthz/liveness
-              port: 80
-              host: localhost
-            initialDelaySeconds: 6000
-            periodSeconds: 10
+            exec:
+              command:
+                - "curl"
+                - "-f"
+                - "http://localhost:80/api/v1/healthz/liveness"
+            initialDelaySeconds: 5
+            periodSeconds: 5
             timeoutSeconds: 5
-            failureThreshold: 3
+            failureThreshold: 12
           readinessProbe:
-            httpGet:
-              path: /api/v1/healthz/readiness
-              port: 80
-              host: localhost
-            initialDelaySeconds: 6000
-            periodSeconds: 10
+            exec:
+              command:
+                - "curl"
+                - "-f"
+                - "http://localhost:80/api/v1/healthz/readiness"
+            initialDelaySeconds: 5
+            periodSeconds: 5
             timeoutSeconds: 5
-            failureThreshold: 6
+            failureThreshold: 12
