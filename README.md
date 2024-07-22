@@ -39,6 +39,7 @@ As a quick pitch element to get you interested; this is where we are going:
 SSARE is Open Politics' data aggregation system and vector storage endpoint. It aims to create up-to-date and relevant datasets for the LLMs to work with. A microservice infrastructure continuously scrapes news sites and stores them in a vector storage and a relational database (Postgres). Sources can be added with Python scripts which yield a dataframe with: URL | Headline | Paragraphs | Source. Just clone the service, add your scripts and bring your own data endpoint into production.
 
 ### The Webapp (Overview):
+![Open Politics Stack](assets/images/opp_high_level.png)
 25.06.2024: 
 **The Django stack is now replaced by a FastAPI backend + NextJS Frontend.**
 The stack setup & is largely based on Tiangolo's Fullstack Template. 
