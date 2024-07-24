@@ -109,9 +109,10 @@ Including but not limited to tasks like:
 - Automatic Evaluation of Results Pipelines needed (conciseness, accuracy, bias weighting etc.)
 
 # Architecture
-## Frontend
-#### The Challenge
-A fundamental challenge this project has to tackle is how to make information and insights accessible. 
+## Development
+Run `docker compose -f docker-compose.yml up` to start the backend and frontend.
+You can also go into the frontendfolder and run npm run dev. You need to plugin the backend url into the .env file inside of frontent( which you have to create).
+We recommend at least booting up the backend as a docker container. It has configurations set to rebuild on code changes.
 
 ### Vision
 The "Open Globe" Interface is set out to display articles and events interactively on a globe.
