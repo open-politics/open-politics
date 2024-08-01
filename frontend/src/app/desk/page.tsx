@@ -20,6 +20,7 @@ OpenAPI.BASE = process.env.BACKEND_URL != null
   ? "http://backend:80/api"
   : `https://${process.env.BACKEND_URL}/api`;
 
+
 OpenAPI.TOKEN = async () => {
   return localStorage.getItem("access_token") || "";
 };
