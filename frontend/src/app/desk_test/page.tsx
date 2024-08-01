@@ -17,7 +17,7 @@ import { ExpoTest } from '@/components/ExpoTest';
 
 const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
-OpenAPI.BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+// OpenAPI.BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
 OpenAPI.TOKEN = async () => {
   return localStorage.getItem("access_token") || "";
 };
