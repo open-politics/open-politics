@@ -25,7 +25,7 @@ OpenAPI.TOKEN = async () => {
 };
 
 const Desk: React.FC = () => {
-    const geojsonUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/countries/geojson/`;
+    const geojsonUrl = `${process.env.}/api/v1/countries/geojson/`;
     const [results, setResults] = useState(null);
     const [summary, setSummary] = useState<string>('');
     const [articleContent, setArticleContent] = useState<string>('');
