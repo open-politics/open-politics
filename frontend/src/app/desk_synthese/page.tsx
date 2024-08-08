@@ -16,16 +16,16 @@ import withAuth from '@/hooks/withAuth';
 
 const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
-OpenAPI.BASE = process.env.BACKEND_URL != null
+OpenAPI.BASE = process.env.NEXT_PUBLIC_API_URL != null
   ? "http://backend:80/api"
-  : `https://${process.env.BACKEND_URL}/api`;
+  : `https://${process.env.NEXT_PUBLIC_API_URL}/api`;
 
 OpenAPI.TOKEN = async () => {
   return localStorage.getItem("access_token") || "";
 };
 
 const Desk: React.FC = () => {
-    const geojsonUrl = `${process.env.BACKEND_URL}/api/v1/countries/geojson/`;
+    const geojsonUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/countries/geojson/`;
     const [results, setResults] = useState(null);
     const [summary, setSummary] = useState<string>('');
     const [articleContent, setArticleContent] = useState<string>('');
