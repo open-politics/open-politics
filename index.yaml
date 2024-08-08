@@ -234,6 +234,16 @@ entries:
   open-politics-frontend:
   - apiVersion: v2
     appVersion: 1.2.4
+    created: "2024-08-08T14:22:16.344367932Z"
+    description: open-politics-frontend
+    digest: 6c0c0493c86f0c21c1e677042f309ba627fc47c07400f6c8b317de9e74f8b705
+    name: open-politics-frontend
+    type: application
+    urls:
+    - https://github.com/open-politics/open-politics/releases/download/open-politics-frontend-1.2.5/open-politics-frontend-1.2.5.tgz
+    version: 1.2.5
+  - apiVersion: v2
+    appVersion: 1.2.4
     created: "2024-07-18T15:24:05.756075184Z"
     description: open-politics-frontend
     digest: 2e3120f1231ccd8dc668a06cbabe535a8822811977f1e565c4aa0c08915c2c82
@@ -372,4 +382,4 @@ entries:
     urls:
     - https://github.com/open-politics/open-politics/releases/download/open-politics-frontend-1.0.1/open-politics-frontend-1.0.1.tgz
     version: 1.0.1
-generated: "2024-07-18T15:24:05.756368995Z"
+generated: "2024-08-08T14:22:16.344543179Z"
