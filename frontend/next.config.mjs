@@ -40,8 +40,8 @@ const nextConfig = {
         source: "/api/:path*",
         destination:
           process.env.BACKEND_URL != null
-            ? "http://backend:80/api/:path*"
-            : `https://${process.env.BACKEND_URL}/api/:path*`,
+            ? `http://${process.env.BACKEND_URL}/api/:path*`
+            : "http://backend:80/api/:path*",
       }
     ];
   },
