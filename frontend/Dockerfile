@@ -17,6 +17,7 @@ COPY . .
 
 # Disable telemetry during the build
 ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_PUBLIC_API_URL=https://api.open-politics.org
 
 RUN npm run build
 
@@ -46,6 +47,5 @@ EXPOSE 3000
 
 ENV PORT 3000
 
-ENV NEXT_PUBLIC_API_URL=https://api.open-politics.org
 
 CMD HOSTNAME="0.0.0.0" node server.js
