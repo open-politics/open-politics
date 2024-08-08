@@ -28,6 +28,8 @@ spec:
               value: "https://{{ .Values.application.backendDomain }}"
             - name: NEXT_PUBLIC_API_BASE_URL
               value: "https://{{ .Values.application.backendDomain }}"
+            - name: BACKEND_URL
+              value: "https://{{ .Values.application.backendDomain }}"
             - name: DOMAIN
               value: "{{ .Values.application.frontendDomain }}"
           livenessProbe:

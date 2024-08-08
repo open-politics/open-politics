@@ -91,15 +91,15 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    volumes:
-      - ./frontend:/app
+    # volumes:
+      # - ./frontend:/app
     #   - /app/node_modules
     environment:
       - NODE_ENV=development
-      - NEXT_PUBLIC_API_URL=
+      - NEXT_PUBLIC_API_URL=http://backend:80
     networks:
       - traefik-public
       - default
@@ -122,6 +122,6 @@ volumes:
 
 networks:
   traefik-public:
-    external: true
+    external: false
   app_network:
-    external: true
+    external: false
