@@ -17,13 +17,9 @@ import { ExpoTest } from '@/components/ExpoTest';
 
 const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
-// OpenAPI.BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
-OpenAPI.TOKEN = async () => {
-  return localStorage.getItem("access_token") || "";
-};
 
 const Desk: React.FC = () => {
-  const geojsonUrl = 'https://api.open-politics.org/api/v1/countries/geojson/';
+  const geojsonUrl = '/api/v1/countries/geojson/';
   const [results, setResults] = useState(null);
   const [summary, setSummary] = useState<string>('');
   const [articleContent, setArticleContent] = useState<string>('');
@@ -44,7 +40,7 @@ const Desk: React.FC = () => {
     if (country) {
       const fetchLeaderInfo = async () => {
         try {
-          const response = await axios.get(`https://api.open-politics.org/api/v1/countries/leaders/${country}`);
+          const response = await axios.get(`/api/v1/countries/leaders/${country}`);
           setLeaderInfo(response.data);
         } catch (error) {
           toast({

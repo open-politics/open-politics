@@ -49,7 +49,7 @@ const Desk: React.FC = () => {
     if (country) {
       const fetchLeaderInfo = async () => {
         try {
-          const response = await axios.get(`https://api.open-politics.org/api/v1/countries/leaders/${country}`);
+          const response = await axios.get(`/api/v1/countries/leaders/${country}`);
           setLeaderInfo(response.data);
         } catch (error) {
           toast({

@@ -31,7 +31,7 @@ interface LegislativeItem {
         if (!countryName) return;
         
         try {
-          const response = await axios.get(`https://api.open-politics.org/api/v1/countries/legislation/${countryName}`);
+          const response = await axios.get(`/api/v1/countries/legislation/${countryName}`);
           if (isMounted) {
             const mappedData = response.data.map(item => ({
               ...item,
@@ -54,7 +54,7 @@ interface LegislativeItem {
         if (!countryName) return;
         
         try {
-          const response = await axios.get(`https://api.open-politics.org/api/v1/countries/econ_data/${countryName}`);
+          const response = await axios.get(`/api/v1/countries/econ_data/${countryName}`);
           if (isMounted) {
             setEconomicData(response.data);
           }

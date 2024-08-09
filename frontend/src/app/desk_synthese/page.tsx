@@ -16,7 +16,6 @@ import withAuth from '@/hooks/withAuth';
 
 const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
-OpenAPI.BASE = 'https://api.open-politics.org'
 
 
 const Desk: React.FC = () => {
