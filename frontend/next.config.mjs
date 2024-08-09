@@ -43,7 +43,7 @@ const nextConfig = {
         },
         {
           source: "/docs/:path*",
-          destination: "https://api.open-politics.org/docs/:path*",
+          destination: "https://api.open-politics.org/docs/",
         }
       ];
   },
