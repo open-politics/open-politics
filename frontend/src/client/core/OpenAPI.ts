@@ -28,7 +28,7 @@ export class Interceptors<T> {
 }
 
 export type OpenAPIConfig = {
-	BASE: 'http://api.open-politics.org';
+	BASE: 'https://api.open-politics.org';
 	CREDENTIALS: 'include' | 'omit' | 'same-origin';
 	ENCODE_PATH?: ((path: string) => string) | undefined;
 	HEADERS?: Headers | Resolver<Headers> | undefined;
@@ -38,12 +38,14 @@ export type OpenAPIConfig = {
 	USERNAME?: string | Resolver<string> | undefined;
 	VERSION: string;
 	WITH_CREDENTIALS: boolean;
-	interceptors: {request: Interceptors<AxiosRequestConfig>;
-		response: Interceptors<AxiosResponse>;};
-};
-
-export const OpenAPI: OpenAPIConfig = {
-	BASE: 'http://api.open-politics.org',
+	interceptors: {
+	  request: Interceptors<AxiosRequestConfig>;
+	  response: Interceptors<AxiosResponse>;
+	};
+  };
+  
+  export const OpenAPI: OpenAPIConfig = {
+	BASE: 'https://api.open-politics.org',
 	CREDENTIALS: 'include',
 	ENCODE_PATH: undefined,
 	HEADERS: undefined,
@@ -53,6 +55,8 @@ export const OpenAPI: OpenAPIConfig = {
 	USERNAME: undefined,
 	VERSION: '0.1.0',
 	WITH_CREDENTIALS: false,
-	interceptors: {request: new Interceptors(),response: new Interceptors(),
+	interceptors: {
+	  request: new Interceptors(),
+	  response: new Interceptors(),
 	},
-};
+  };
