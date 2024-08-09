@@ -36,17 +36,17 @@ const nextConfig = {
     unoptimized: false,
   },
   rewrites: async () => {
-    return [
-      {
-        source: "/api/*",
-        destination: "https://api.open-politics.org/:path*",
-      },
-      {
-        source: "/docs/:path*",
-        destination: "https://api.open-politics.org/docs/",
-      }
-    ];
-  },
+     return [
+       {
+         source: "/api/:path*",
+         destination: "https://api.open-politics.org/:path*",
+       },
+       {
+         source: "/docs/:path*",
+         destination: "https://api.open-politics.org/docs/",
+       }
+     ];
+   },
   webpack: (config, { isServer }) => {
     config.resolve.alias['@'] = resolve(__dirname, 'src');
     return config;
