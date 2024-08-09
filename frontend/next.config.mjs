@@ -38,14 +38,14 @@ const nextConfig = {
   rewrites: async () => {
     return [
       {
-        source: "/api/:path*",
-          destination: "https://api.open-politics.org/:path*",
-        },
-        {
-          source: "/docs/:path*",
-          destination: "https://api.open-politics.org/docs/",
-        }
-      ];
+        source: "*/api/:path*",
+        destination: "https://api.open-politics.org/:path*",
+      },
+      {
+        source: "/docs/:path*",
+        destination: "https://api.open-politics.org/docs/",
+      }
+    ];
   },
   webpack: (config, { isServer }) => {
     config.resolve.alias['@'] = resolve(__dirname, 'src');
