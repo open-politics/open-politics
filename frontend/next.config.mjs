@@ -38,7 +38,7 @@ const nextConfig = {
   rewrites: async () => {
     return [
       {
-        source: "*/api/:path*",
+        source: "/api/*:path*",
         destination: "https://api.open-politics.org/:path*",
       },
       {
