@@ -39,14 +39,14 @@ const nextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "https://api.open-politics.org/:path*",
+        destination: "https://api.open-politics.org/api/:path*",
       },
       {
         source: "/docs/:path*",
         destination: "https://api.open-politics.org/docs/",
       }
     ];
-   },
+  },
   webpack: (config, { isServer }) => {
     config.resolve.alias['@'] = resolve(__dirname, 'src');
     return config;
