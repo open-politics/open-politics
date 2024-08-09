@@ -28,7 +28,7 @@ export class Interceptors<T> {
 }
 
 export type OpenAPIConfig = {
-	BASE: '';
+	BASE: 'http://api.open-politics.org';
 	CREDENTIALS: 'include' | 'omit' | 'same-origin';
 	ENCODE_PATH?: ((path: string) => string) | undefined;
 	HEADERS?: Headers | Resolver<Headers> | undefined;
@@ -43,7 +43,7 @@ export type OpenAPIConfig = {
 };
 
 export const OpenAPI: OpenAPIConfig = {
-	BASE: '',
+	BASE: 'http://api.open-politics.org',
 	CREDENTIALS: 'include',
 	ENCODE_PATH: undefined,
 	HEADERS: undefined,
