@@ -133,7 +133,7 @@ export function IssueAreas({ countryName, articleContent }: IssueAreasProps) {
       if (!countryName) return;
       
       try {
-        const response = await axios.get(`https://open-politics.org/api/v1/countries/leaders/${countryName}`);
+        const response = await axios.get(`https://api.open-politics.org/api/v1/countries/leaders/${countryName}`);
         setLeaderInfo(response.data);
       } catch (error) {
         console.error("Error fetching leader info:", error);

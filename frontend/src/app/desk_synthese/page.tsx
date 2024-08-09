@@ -16,11 +16,11 @@ import withAuth from '@/hooks/withAuth';
 
 const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
-OpenAPI.BASE = "https://api.open-politics.org";
+OpenAPI.BASE = 'https://api.open-politics.org'
 
 
 const Desk: React.FC = () => {
-    const geojsonUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/countries/geojson/`;
+    const geojsonUrl = `/api/v1/countries/geojson/`;
     const [results, setResults] = useState(null);
     const [summary, setSummary] = useState<string>('');
     const [articleContent, setArticleContent] = useState<string>('');

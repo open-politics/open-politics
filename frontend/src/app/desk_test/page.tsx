@@ -23,7 +23,7 @@ OpenAPI.TOKEN = async () => {
 };
 
 const Desk: React.FC = () => {
-  const geojsonUrl = 'https://open-politics.org/api/v1/countries/geojson/';
+  const geojsonUrl = 'https://api.open-politics.org/api/v1/countries/geojson/';
   const [results, setResults] = useState(null);
   const [summary, setSummary] = useState<string>('');
   const [articleContent, setArticleContent] = useState<string>('');
@@ -44,7 +44,7 @@ const Desk: React.FC = () => {
     if (country) {
       const fetchLeaderInfo = async () => {
         try {
-          const response = await axios.get(`https://open-politics.org/api/v1/countries/leaders/${country}`);
+          const response = await axios.get(`https://api.open-politics.org/api/v1/countries/leaders/${country}`);
           setLeaderInfo(response.data);
         } catch (error) {
           toast({

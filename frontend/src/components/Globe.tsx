@@ -282,13 +282,13 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
     onCountryClick(countryName);
     handleCountryZoom(latitude, longitude, countryName);
     
-    const legislativeDataUrl = `https://open-politics.org/api/v1/countries/legislation/${countryName}`;
+    const legislativeDataUrl = `https://api.open-politics.org/api/v1/countries/legislation/${countryName}`;
     try {
       const legislativeResponse = await axios.get(legislativeDataUrl);
       setLegislativeData(legislativeResponse.data);
     } catch (error) {}
 
-    const economicDataUrl = `https://open-politics.org/api/v1/countries/econ_data/${countryName}`;
+    const economicDataUrl = `https://api.open-politics.org/api/v1/countries/econ_data/${countryName}`;
     try {
       const economicResponse = await axios.get(economicDataUrl);
       setEconomicData(economicResponse.data);
