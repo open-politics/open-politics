@@ -33,24 +33,11 @@ const useAuth = () => {
   })
 
   const login = async (data: AccessToken) => {
-    const formData = new FormData();
-    formData.append('username', data.username);
-    formData.append('password', data.password);
-    if (data.grant_type) formData.append('grant_type', data.grant_type);
-    if (data.scope) formData.append('scope', data.scope);
-    if (data.client_id) formData.append('client_id', data.client_id);
-    if (data.client_secret) formData.append('client_secret', data.client_secret);
-
-    console.log('FormData entries:');
-    formData.forEach((value, key) => {
-      console.log(key, value);
-    });
-
     const response = await LoginService.loginAccessToken({
-      formData: formData as unknown as Body_login_login_access_token,
-    });
-    localStorage.setItem("access_token", response.access_token);
-  };
+      formData: data,
+    })
+    localStorage.setItem("access_token", response.access_token)
+  }
 
   const loginMutation = useMutation({
     mutationFn: login,
