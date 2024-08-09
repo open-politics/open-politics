@@ -16,13 +16,7 @@ import withAuth from '@/hooks/withAuth';
 
 const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
-OpenAPI.BASE = process.env.NEXT_PUBLIC_API_URL != null
-  ? "http://backend:80/api"
-  : `https://${process.env.NEXT_PUBLIC_API_URL}/api`;
-
-OpenAPI.TOKEN = async () => {
-  return localStorage.getItem("access_token") || "";
-};
+OpenAPI.BASE = "https://api.open-politics.org";
 
 
 const Desk: React.FC = () => {

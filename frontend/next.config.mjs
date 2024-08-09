@@ -10,6 +10,7 @@ const __dirname = dirname(__filename);
 const nextConfig = {
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   output: "standalone",
+  productionBrowserSourceMaps: true,
   images: {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
@@ -39,9 +40,7 @@ const nextConfig = {
       {
         source: "/api/:path*",
         destination:
-          process.env.NEXT_PUBLIC_API_URL != null
-            ? `http://${process.env.NEXT_PUBLIC_API_URL}/api/:path*`
-            : "http://backend:80/api/:path*",
+          "https://api.open-politics.org/:path*",
       }
     ];
   },

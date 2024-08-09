@@ -99,7 +99,7 @@ services:
     #   - /app/node_modules
     environment:
       - NODE_ENV=development
-      - NEXT_PUBLIC_API_URL=http://backend:80
+      - NEXT_PUBLIC_API_URL=https://api.open-politics.org
     networks:
       - traefik-public
       - default
