@@ -40,9 +40,9 @@ const useAuth = () => {
     if (data.scope) formData.append('scope', data.scope);
     if (data.client_id) formData.append('client_id', data.client_id);
     if (data.client_secret) formData.append('client_secret', data.client_secret);
-  
+
     const response = await LoginService.loginAccessToken({
-      formData: formData,
+      formData: formData as unknown as Body_login_login_access_token,
     });
     localStorage.setItem("access_token", response.access_token);
   };
