@@ -35,17 +35,28 @@ const nextConfig = {
     contentDispositionType: 'attachment',
     unoptimized: false,
   },
-  rewrites: async () => {
+  async rewrites() {
     return [
       {
         source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`,
+        destination: 'https://api.open-politics.org/api/:path*',
       },
       {
         source: '/docs/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL}/docs/:path*`,
-      }
-    ];
+        destination: 'https://api.open-politics.org/docs/:path*',
+      },
+      // Add a fallback rewrite to catch any other API requests
+      {
+        source: '/:path*',
+        destination: 'https://api.open-politics.org/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'api.open-politics.org',
+          },
+        ],
+      },
+    ]
   },
   webpack: (config, { isServer }) => {
     config.resolve.alias['@'] = resolve(__dirname, 'src');
@@ -54,23 +65,22 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // async headers() {
-  //   return [
-  //     {
-  //       source: '/(.*)',
-  //       headers: [
-  //         {
-  //           key: 'Content-Security-Policy',
-  //           value: "upgrade-insecure-requests",
-  //         },
-  //       ],
-  //     },
-  //   ]
-  // },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: "upgrade-insecure-requests",
+          },
+        ],
+      },
+    ]
+  },
 };
 
 const withMDX = createMDX({
-  // Add markdown plugins here, if needed
   options: {
     remarkPlugins: [remarkGfm],
     rehypePlugins: [],
