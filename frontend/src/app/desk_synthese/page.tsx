@@ -13,7 +13,6 @@ import CountryDetailPanel from '@/components/CountryDetailPanel';
 import { Map, FileSearch2 } from 'lucide-react';
 import { Settings, HelpCircle } from 'lucide-react';
 import withAuth from '@/hooks/withAuth';
-import OpenAPI from 'src/client';
 
 const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
