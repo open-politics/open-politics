@@ -39,11 +39,11 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://api.open-politics.org/api/:path*',
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`,
       },
       {
         source: '/docs/:path*',
-        destination: 'https://api.open-politics.org/docs/',
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/docs/:path*`,
       }
     ];
   },
@@ -54,19 +54,19 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  async headers() {
-    return [
-      {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: "upgrade-insecure-requests",
-          },
-        ],
-      },
-    ]
-  },
+  // async headers() {
+  //   return [
+  //     {
+  //       source: '/(.*)',
+  //       headers: [
+  //         {
+  //           key: 'Content-Security-Policy',
+  //           value: "upgrade-insecure-requests",
+  //         },
+  //       ],
+  //     },
+  //   ]
+  // },
 };
 
 const withMDX = createMDX({
