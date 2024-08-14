@@ -38,22 +38,12 @@ const nextConfig = {
   rewrites: async () => {
     return [
       {
-        source: '/:path*',
-        has: [
-          {
-            type: 'host',
-            value: 'api.open-politics.org',
-          },
-        ],
-        destination: 'https://api.open-politics.org/:path*',
+        source: '/api/:path*',
+        destination: 'https://api.open-politics.org/api/:path*',
       },
       {
-        source: "/api/:path*",
-        destination: "https://api.open-politics.org/api/:path*",
-      },
-      {
-        source: "/docs/:path*",
-        destination: "https://api.open-politics.org/docs/",
+        source: '/docs/:path*',
+        destination: 'https://api.open-politics.org/docs/',
       }
     ];
   },
