@@ -21,7 +21,7 @@ OpenAPI.BASE = process.env.NEXT_PUBLIC_API_URL || 'https://open-politics.org';
 
 
 const Desk: React.FC = () => {
-    const geojsonUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/countries/geojson/`;
+    const geojsonUrl = 'https://open-politics.org/api/v1/countries/geojson/';
     const [results, setResults] = useState(null);
     const [summary, setSummary] = useState<string>('');
     const [articleContent, setArticleContent] = useState<string>('');
