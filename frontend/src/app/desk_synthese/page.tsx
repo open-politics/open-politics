@@ -13,13 +13,16 @@ import CountryDetailPanel from '@/components/CountryDetailPanel';
 import { Map, FileSearch2 } from 'lucide-react';
 import { Settings, HelpCircle } from 'lucide-react';
 import withAuth from '@/hooks/withAuth';
+import OpenAPI from 'src/client';
 
 const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
 
+OpenAPI.BASE = 'https://open-politics.org/';
+
 
 const Desk: React.FC = () => {
-    const geojsonUrl = `/api/v1/countries/geojson/`;
+    const geojsonUrl = `https://open-politics.org/api/v1/countries/geojson/`;
     const [results, setResults] = useState(null);
     const [summary, setSummary] = useState<string>('');
     const [articleContent, setArticleContent] = useState<string>('');
