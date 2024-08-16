@@ -38,25 +38,13 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: '/api/:path*',
-        destination: 'https://api.open-politics.org/api/:path*',
-      },
-      {
-        source: '/docs/:path*',
-        destination: 'https://api.open-politics.org/docs/:path*',
-      },
-      // Add a fallback rewrite to catch any other API requests
-      {
-        source: '/:path*',
-        destination: 'https://api.open-politics.org/:path*',
-        has: [
-          {
-            type: 'host',
-            value: 'api.open-politics.org',
-          },
-        ],
-      },
-    ]
+        source: "/api/:path*",
+        destination:
+          process.env.NODE_ENV === "development"
+            ? "http://backend:80/api/:path*"
+            : process.env.NEXT_PUBLIC_API_BASE_URL + "/api/:path*",
+      }
+    ];
   },
   webpack: (config, { isServer }) => {
     config.resolve.alias['@'] = resolve(__dirname, 'src');
@@ -65,19 +53,19 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: "upgrade-insecure-requests",
-          },
-        ],
-      },
-    ]
-  },
+  // async headers() {
+  //   return [
+  //     {
+  //       source: '/:path*',
+  //       headers: [
+  //         {
+  //           key: 'Content-Security-Policy',
+  //           value: "upgrade-insecure-requests",
+  //         },
+  //       ],
+  //     },
+  //   ]
+  // },
 };
 
 const withMDX = createMDX({

@@ -17,11 +17,12 @@ import withAuth from '@/hooks/withAuth';
 const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
 
-OpenAPI.BASE = process.env.NEXT_PUBLIC_API_URL || 'https://open-politics.org';
+OpenAPI.BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
+console.log(process.env.NEXT_PUBLIC_API_URL);
 
 const Desk: React.FC = () => {
-    const geojsonUrl = process.env.NEXT_PUBLIC_API_URL + '/api/v1/countries/geojson/';
+    const geojsonUrl = process.env.NEXT_PUBLIC_API_URL ? '/api/v1/countries/geojson/' : 'http://localhost:8000/api/v1/countries/geojson/';
     const [results, setResults] = useState(null);
     const [summary, setSummary] = useState<string>('');
     const [articleContent, setArticleContent] = useState<string>('');
@@ -224,7 +225,7 @@ const Desk: React.FC = () => {
                 <div className="flex-1 relative">
                   <CountryDetailPanel
                     key={countryKey}
-                    country={country} // Add this line
+                    country={country}
                     articleContent={articleContent}
                     legislativeData={legislativeData}
                     economicData={economicData}

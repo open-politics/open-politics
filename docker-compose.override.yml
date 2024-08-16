@@ -67,9 +67,10 @@ services:
     restart: "no"
     build:
       context: ./frontend
+      dockerfile: Dockerfile.dev
       args:
-        - VITE_API_URL=http://${DOMAIN?Variable not set}
         - NODE_ENV=development
+        - NEXT_PUBLIC_API_URL=http://localhost:8000
 
 networks:
   traefik-public:

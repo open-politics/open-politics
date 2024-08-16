@@ -75,7 +75,7 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
-      - NEXT_PUBLIC_API_URL=https://api.open-politics.org
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
     networks:
       - default
       - app_network
