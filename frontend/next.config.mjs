@@ -39,10 +39,10 @@ const nextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination:
-          process.env.NODE_ENV === "development"
-            ? "http://backend:80/api/:path*"
-            : process.env.NEXT_PUBLIC_API_BASE_URL + "/api/:path*",
+        destination: process.env.NEXT_PUBLIC_API_BASE_URL + "/api/:path*",
+
+        source: "/docs",
+        destination: process.env.NEXT_PUBLIC_API_BASE_URL + "/docs"
       }
     ];
   },
