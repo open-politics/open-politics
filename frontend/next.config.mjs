@@ -43,8 +43,8 @@ const nextConfig = {
         destination: `${apiBaseUrl}/api/:path*`,
       },
       {
-        source: "/docs*",
-        destination: `${apiBaseUrl}/docs*`
+        source: "/docs/:path*",
+        destination: `${apiBaseUrl}/docs/:path*`
       }
     ];
   },
