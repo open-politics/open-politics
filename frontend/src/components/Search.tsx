@@ -92,7 +92,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
 
   const fetchCountryFromQuery = async (query: string) => {
     try {
-      const response = await axios.get(`https://api.pen-politics.org/api/v1/countries/country_from_query?query=${query}`);
+      const response = await axios.get(`/api/v1/countries/country_from_query?query=${query}`);
       if (response.data.error) {
         return null;
       }

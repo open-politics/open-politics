@@ -17,7 +17,7 @@ import withAuth from '@/hooks/withAuth';
 const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
 
-OpenAPI.BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4322';
+// OpenAPI.BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4322';
 
 console.log(process.env.NEXT_PUBLIC_API_URL);
 

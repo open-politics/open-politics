@@ -36,18 +36,14 @@ const nextConfig = {
     unoptimized: false,
   },
   async rewrites() {
-    const apiBaseUrl = process.env.NODE_ENV === 'development'
-      ? process.env.NEXT_PUBLIC_API_URL
-      : 'https://api.open-politics.org';
-
     return [
       { 
         source: "/api/:path*",
-        destination: `${apiBaseUrl}/api/:path*`,
+        destination: `http://backend:8080/api/:path*`,
       },
       {
         source: "/docs/:path*",
-        destination: `${apiBaseUrl}/docs/:path*`
+        destination: `http://backend:8080/docs/:path*`
       }
     ];
   },
