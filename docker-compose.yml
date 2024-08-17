@@ -7,30 +7,28 @@ services:
     env_file:
       - .env
     environment:
-      - POSTGRES_PORT=${POSTGRES_PORT:-5444}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
       - PGDATA=/var/lib/postgresql/data/pgdata
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
       - POSTGRES_USER=${POSTGRES_USER?Variable not set}
       - POSTGRES_DB=${POSTGRES_DB?Variable not set}
 
-  adminer:
-    image: adminer
-    restart: always
-    networks:
-      - traefik-public
-      - default
-      - app_network
-    depends_on:
-      - db
-    environment:
-      - ADMINER_DESIGN=pepa-linha-dark
+  # adminer:
+  #   image: adminer
+  #   restart: always
+  #   networks:
+  #     - default
+  #     - app_network
+  #   depends_on:
+  #     - db
+  #   environment:
+  #     - ADMINER_DESIGN=pepa-linha-dark
 
 
   backend:
     image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
     restart: always
     networks:
-      - traefik-public
       - default
       - app_network
     depends_on:
@@ -38,10 +36,10 @@ services:
     env_file:
       - .env
     ports:
-      - "4322:4322"
+      - "8080:8080"
     environment:
-      - PORT=4322
-      - BIND="0.0.0.0:4322"
+      - PORT=8080
+      - BIND=0.0.0.0:8080
       - DOMAIN=${DOMAIN}
       - ENVIRONMENT=${ENVIRONMENT}
       - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS}
@@ -79,7 +77,7 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
-      - NEXT_PUBLIC_API_URL=http://backend:4322
+      - NEXT_PUBLIC_API_URL=http://localhost:8080
     networks:
       - default
       - app_network
@@ -88,7 +86,5 @@ volumes:
   app-db-data:
 
 networks:
-  traefik-public:
-    external: false
   app_network:
     external: false

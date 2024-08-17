@@ -1,14 +1,14 @@
 services:
 
-  # db:
-  #   restart: "no"
-  #   ports:
-  #     - "5432:5432"
-
-  adminer:
+  db:
     restart: "no"
     ports:
-      - "8080:8080"
+      - "5432:5432"
+
+  # adminer:
+  #   restart: "no"
+  #   ports:
+  #     - "8080:8080"
 
   backend:
     restart: "no"
@@ -30,7 +30,7 @@ services:
       dockerfile: Dockerfile.dev
       args:
         - NODE_ENV=development
-        - NEXT_PUBLIC_API_URL=http://backend:4322
+        - NEXT_PUBLIC_API_URL=http://localhost:8080
 
 networks:
   traefik-public:

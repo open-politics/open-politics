@@ -45,7 +45,9 @@ export type OpenAPIConfig = {
   };
   
   export const OpenAPI: OpenAPIConfig = {
-	BASE: '',
+	BASE: process.env.NEXT_PUBLIC_API_URL != null
+    ? "http://backend:80/api"
+    : `https://${process.env.NEXT_PUBLIC_API_URL}/api`,
 	CREDENTIALS: 'include',
 	ENCODE_PATH: undefined,
 	HEADERS: undefined,
