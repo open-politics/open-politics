@@ -36,15 +36,14 @@ const nextConfig = {
     unoptimized: false,
   },
   async rewrites() {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
     return [
       {
         source: "/api/:path*",
-        destination: `${apiBaseUrl}/api/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`,
       },
       {
         source: "/docs/:path*",
-        destination: `${apiBaseUrl}/docs/:path*`
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/docs/:path*`
       }
     ];
   },

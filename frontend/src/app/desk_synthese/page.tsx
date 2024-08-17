@@ -22,7 +22,7 @@ OpenAPI.BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 console.log(process.env.NEXT_PUBLIC_API_URL);
 
 const Desk: React.FC = () => {
-    const geojsonUrl = process.env.NEXT_PUBLIC_API_URL ? '/api/v1/countries/geojson/' : 'http://localhost:8000/api/v1/countries/geojson/';
+    const geojsonUrl = '/api/v1/countries/geojson/';
     const [results, setResults] = useState(null);
     const [summary, setSummary] = useState<string>('');
     const [articleContent, setArticleContent] = useState<string>('');

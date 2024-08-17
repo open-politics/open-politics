@@ -37,7 +37,11 @@ services:
       - db
     env_file:
       - .env
+    ports:
+      - "4322:4322"
     environment:
+      - PORT=4322
+      - BIND="0.0.0.0:4322"
       - DOMAIN=${DOMAIN}
       - ENVIRONMENT=${ENVIRONMENT}
       - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS}
@@ -75,7 +79,7 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_API_URL=http://backend:4322
     networks:
       - default
       - app_network
