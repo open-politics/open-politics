@@ -36,15 +36,8 @@ async def country_from_query(query: str):
 
 @router.get("/geojson/")
 async def geojson_view():
-    geojson_file_path = BASE_DIR / 'static' / 'geo_data' / 'articles.geojson'
-    try:
-        with open(geojson_file_path, 'r') as file:
-            data = json.load(file)
-        return data
-    except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="GeoJSON file not found")
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=500, detail="Error decoding GeoJSON data")
+    request = requests.get("http://geo_service:3690/geojson", verify=False)
+    return request.json()
 
 @router.get("/leaders/{state}")
 async def get_leader_info(state: str):

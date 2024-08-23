@@ -31,6 +31,7 @@ services:
     networks:
       - default
       - app_network
+      - ssare_network
     depends_on:
       - db
     env_file:
@@ -81,6 +82,7 @@ services:
     networks:
       - default
       - app_network
+      - ssare_network
     
 volumes:
   app-db-data:
@@ -88,3 +90,5 @@ volumes:
 networks:
   app_network:
     external: false
+  ssare_network:
+    external: true

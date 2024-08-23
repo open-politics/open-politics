@@ -44,6 +44,10 @@ const nextConfig = {
       {
         source: "/docs/:path*",
         destination: `http://backend:8080/docs/:path*`
+      },
+      {
+        source: "/geojson",
+        destination: `http://geo_service:3690/geojson`
       }
     ];
   },

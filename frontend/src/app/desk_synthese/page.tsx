@@ -22,7 +22,7 @@ const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 console.log(process.env.NEXT_PUBLIC_API_URL);
 
 const Desk: React.FC = () => {
-    const geojsonUrl = '/api/v1/countries/geojson/';
+    const geojsonUrl = '/geojson';
     const [results, setResults] = useState(null);
     const [summary, setSummary] = useState<string>('');
     const [articleContent, setArticleContent] = useState<string>('');

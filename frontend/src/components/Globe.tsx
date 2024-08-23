@@ -122,8 +122,9 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
         const data = await CountriesService.geojsonView();
         pointSeries.data.setAll(data.features.map((feature: any) => ({
           geometry: feature.geometry,
-          title: feature.properties.location,
-          articles: feature.properties.articles
+          title: feature.properties.name,
+          articles: feature.properties.articles,
+          articleCount: feature.properties.article_count
         })));
       } catch (error) {
         console.error('Error fetching GeoJSON data:', error);
@@ -238,7 +239,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
               title: "Fetching data failed",
               description: `Retrying... (${retries} attempts left)`,
             });
-            setTimeout(() => fetchGeoJSONData(retries - 1), 2000); // Retry after 2 seconds
+            setTimeout(() => fetchGeoJSONData(retries - 1), 2000); 
           } else {
             toast({
               title: "Error",
