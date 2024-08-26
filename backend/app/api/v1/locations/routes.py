@@ -9,14 +9,42 @@ import marvin
 from pathlib import Path
 from typing import List
 from .country_services import legislation, economy
+from .country_services import articles
 import tavily
-
+from enum import Enum
+from typing import Optional
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
+class SearchType(str, Enum):
+    TEXT = "text"
+    SEMANTIC = "semantic"
+
+@router.get("/{location}/articles", response_model=None)
+async def get_location_articles(
+    location: str,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(20, ge=1, le=100),
+    search_query: Optional[str] = None,
+    search_type: SearchType = SearchType.TEXT,
+    has_geocoding: Optional[bool] = Query(None),
+    has_entities: Optional[bool] = Query(None),
+    has_classification: Optional[bool] = Query(None),
+    has_embeddings: Optional[bool] = Query(None),
+):
+    try:
+        result = await articles.get_articles(
+            location, skip, limit, search_query, search_type.value,
+            has_geocoding, has_entities, has_classification, has_embeddings
+        )
+        return JSONResponse(content=result, status_code=200)
+    except Exception as e:
+        logger.error(f"Error fetching articles: {str(e)}")
+        return JSONResponse(content={'error': 'Failed to fetch articles'}, status_code=500)
 
 @router.get("/country_from_query/")
 async def country_from_query(query: str):
@@ -38,6 +66,8 @@ async def country_from_query(query: str):
 async def geojson_view():
     request = requests.get("http://geo_service:3690/geojson", verify=False)
     return request.json()
+
+
 
 @router.get("/leaders/{state}")
 async def get_leader_info(state: str):

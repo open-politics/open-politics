@@ -22,7 +22,7 @@ if settings.BACKEND_CORS_ORIGINS:
         CORSMiddleware,
         allow_origins=[
             str(origin).strip("/") for origin in settings.BACKEND_CORS_ORIGINS
-        ],
+        ] + ["https://d69c-2a02-8388-1ac7-b100-f98e-15e8-dfd0-7ee1.ngrok-free.app"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

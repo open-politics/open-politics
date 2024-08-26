@@ -29,25 +29,25 @@ const CustomTooltip: React.FC<TooltipProps<number, string>> = ({ active, payload
   return null;
 };
 
-const EconomicDataChart = ({ data, indicators }) => {
+const EconomicDataChart = ({ data, selectedIndicators }) => {
   console.log('Chart data:', data);
-  console.log('Chart indicators:', indicators);
+  console.log('Chart selectedIndicators:', selectedIndicators);
 
   const processedData = useMemo(() => {
-    if (!data || data.length === 0) return [];
+    if (!data || data.length === 0 || !selectedIndicators || selectedIndicators.length === 0) return [];
     return data
       .filter(item => item.name !== undefined && item.name !== null)
       .sort((a, b) => parseInt(a.name) - parseInt(b.name))
       .map(item => ({
         ...item,
-        ...indicators.reduce((acc, indicator) => {
+        ...selectedIndicators.reduce((acc, indicator) => {
           acc[indicator] = item[indicator] !== undefined && item[indicator] !== null 
             ? parseFloat(item[indicator]) 
             : null;
           return acc;
         }, {})
       }));
-  }, [data, indicators]);
+  }, [data, selectedIndicators]);
 
   console.log('Processed chart data:', processedData);
 
@@ -68,7 +68,7 @@ const EconomicDataChart = ({ data, indicators }) => {
           <YAxis yAxisId="right" orientation="right" />
           <Tooltip content={<CustomTooltip />} />
           <Legend />
-          {indicators.map((indicator, index) => (
+          {selectedIndicators.map((indicator, index) => (
             <Line 
               key={indicator}
               yAxisId={indicator.includes('GROWTH') ? "right" : "left"}

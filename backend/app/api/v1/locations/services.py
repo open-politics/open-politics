@@ -1,9 +1,10 @@
 import requests
 import json
+from .schemas import CountryResponse
 from bs4 import BeautifulSoup
 
 
-def update_leaders():
+def update_leaders(request):
     url = "https://en.wikipedia.org/wiki/List_of_current_heads_of_state_and_government"
     response = requests.get(url, verify=False)
     html_content = response.text
@@ -51,5 +52,7 @@ def update_leaders():
             })
 
     # Save the leaders data to a JSON file in the static directory
-    with open('/static/countries/leaders.json', 'w') as file:
+    with open('/static/locations/leaders.json', 'w') as file:
         json.dump(leaders, file)
+
+    return leaders

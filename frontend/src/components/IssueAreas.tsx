@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -30,18 +29,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useCountryData } from "@/hooks/useCountryData";
+import { useLocationData } from "@/hooks/useLocationData";
 import DotLoader from 'react-spinners/DotLoader';
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import LeaderInfo from "./LeaderInfo";
-import axios from 'axios';
 import WikipediaView from './WikipediaView';
+import ArticlesView from './ArticlesView';
 
 interface IssueAreasProps {
-  countryName: string;
-  articleContent: string;
+  locationName: string;
 }
 
 const DataTable = ({ columns, data }) => {
@@ -61,17 +59,22 @@ const DataTable = ({ columns, data }) => {
                 <TableHead key={header.id}>
                   {header.isPlaceholder
                     ? null
-                    : flexRender(header.column.columnDef.header, header.getContext())}
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                 </TableHead>
               ))}
             </TableRow>
           ))}
         </TableHeader>
-        
-        <tbody className="max-h-96 overflow-y-auto block">
+        <tbody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+              >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -92,67 +95,36 @@ const DataTable = ({ columns, data }) => {
   );
 };
 
-export function IssueAreas({ countryName, articleContent }: IssueAreasProps) {
-  const [leaderInfo, setLeaderInfo] = useState(null);
-  const { toast } = useToast();
+export function IssueAreas({ locationName }: IssueAreasProps) {
+  const { data, isLoading, error, fetchArticles, resetArticles } = useLocationData(locationName);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('all');
   const [selectedIndicators, setSelectedIndicators] = useState(['GDP', 'GDP_GROWTH']);
-  const { data, isLoading, error } = useCountryData(countryName);
-  const [chartKey, setChartKey] = useState(0);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [dateFilter, setDateFilter] = useState("all");
+  const { toast } = useToast();
 
-  const economicDataRows = useMemo(() => {
-    if (!data?.economicData) return [];
-    return data.economicData.map((item) => ({
-      name: item.name,
-      ...selectedIndicators.reduce((acc, indicator) => {
-        acc[indicator] = parseFloat(item[indicator]);
-        return acc;
-      }, {})
-    }));
-  }, [data?.economicData, selectedIndicators]);
+  const filteredLegislativeData = useMemo(() => {
+    if (!data?.legislativeData) return [];
+    return data.legislativeData.filter(item => {
+      const matchesSearch = item.law.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = statusFilter === 'all' || item.label === statusFilter;
+      const itemDate = new Date(item.date);
+      const now = new Date();
+      const thirtyDaysAgo = new Date(now.setDate(now.getDate() - 30));
+      const ninetyDaysAgo = new Date(now.setDate(now.getDate() - 90));
+      const matchesDate = 
+        dateFilter === 'all' ||
+        (dateFilter === 'last30' && itemDate >= thirtyDaysAgo) ||
+        (dateFilter === 'last90' && itemDate >= ninetyDaysAgo);
+      return matchesSearch && matchesStatus && matchesDate;
+    });
+  }, [data?.legislativeData, searchTerm, statusFilter, dateFilter]);
 
-  useEffect(() => {
-    console.log("Selected indicators changed:", selectedIndicators);
-    console.log("Current economic data rows:", economicDataRows);
-    setChartKey(prev => prev + 1);  // Force chart re-render
-  }, [selectedIndicators, economicDataRows]);
-
-  const handleIndicatorSelection = useCallback((indicator) => {
-    setSelectedIndicators(prev => 
-      prev.includes(indicator) 
-        ? prev.filter(i => i !== indicator) 
-        : [...prev, indicator]
-    );
-  }, []);
-
-
-  useEffect(() => {
-    const fetchLeaderInfo = async () => {
-      if (!countryName) return;
-      
-      try {
-        const response = await axios.get(`/api/v1/countries/leaders/${countryName}`);
-        setLeaderInfo(response.data);
-      } catch (error) {
-        console.error("Error fetching leader info:", error);
-        toast({
-          title: "Error",
-          description: `Failed to fetch leader info for ${countryName}. Please try again later.`,
-        });
-      }
-    };
-
-    fetchLeaderInfo();
-  }, [countryName, toast]);
-
-
-  const legislationColumns = useMemo(
+  const legislationColumns = useMemo<ColumnDef<any>[]>(
     () => [
       {
-        accessorKey: "law",
-        header: "Law",
+        accessorKey: "status",
+        header: "Status",
         cell: ({ row }) => (
           <div className="flex items-center">
             {row.original.status && (
@@ -177,141 +149,116 @@ export function IssueAreas({ countryName, articleContent }: IssueAreasProps) {
                 </Tooltip>
               </TooltipProvider>
             )}
-            <HoverCard>
-              <HoverCardTrigger asChild>
-                <span className="cursor-pointer">
-                  {row.original.href ? (
-                    <a 
-                      href={row.original.href} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-inherit hover:underline"
-                    >
-                      {row.original.law}
-                    </a>
-                  ) : (
-                    row.original.law
-                  )}
-                </span>
-              </HoverCardTrigger>
-              <HoverCardContent className="w-80">
-                <div className="space-y-1">
-                  <h4 className="text-sm font-semibold">{row.original.law}</h4>
-                  <p className="text-sm">
-                    Status: {row.original.status}
-                  </p>
-                  <p className="text-sm">
-                    Initiative: {row.original.initiative}
-                  </p>
-                  <div className="flex items-center pt-2">
-                    <CalendarDays className="mr-2 h-4 w-4 opacity-70" />
-                    <span className="text-xs text-muted-foreground">
-                      Date: {row.original.date}
-                    </span>
-                  </div>
-                </div>
-              </HoverCardContent>
-            </HoverCard>
           </div>
         ),
+      },
+      {
+        accessorKey: "law",
+        header: "Law",
+        cell: ({ row }) => (
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <span className="cursor-pointer">
+                {row.original.href ? (
+                  <a 
+                    href={row.original.href} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-inherit hover:underline"
+                  >
+                    {row.original.law}
+                  </a>
+                ) : (
+                  row.original.law
+                )}
+              </span>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-80">
+              <div className="space-y-1">
+                <h4 className="text-sm font-semibold">{row.original.law}</h4>
+                <p className="text-sm">
+                  Status: {row.original.status}
+                </p>
+                <p className="text-sm">
+                  Initiative: {row.original.initiative}
+                </p>
+                <div className="flex items-center pt-2">
+                  <CalendarDays className="mr-2 h-4 w-4 opacity-70" />
+                  <span className="text-xs text-muted-foreground">
+                    Date: {row.original.date}
+                  </span>
+                </div>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
+        ),
+      },
+      {
+        accessorKey: "date",
+        header: "Date",
       },
     ],
     []
   );
 
-  const filteredLegislativeData = useMemo(() => {
-    if (!data?.legislativeData) return [];
-    return data.legislativeData.filter(item => {
-      const matchesSearch = item.law.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = statusFilter === "all" || item.label === statusFilter;
-      const matchesDate = dateFilter === "all" || (
-        dateFilter === "last30" ? new Date(item.date) >= new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) :
-        dateFilter === "last90" ? new Date(item.date) >= new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) :
-        true
-      );
-      return matchesSearch && matchesStatus && matchesDate;
-    });
-  }, [data?.legislativeData, searchTerm, statusFilter, dateFilter]);
+  const availableIndicators = useMemo(() => {
+    if (!data?.economicData || data.economicData.length === 0) return [];
+    return Object.keys(data.economicData[0]).filter(key => key !== 'name');
+  }, [data?.economicData]);
 
-  const availableIndicators = ['GDP', 'GDP_GROWTH', 'CPI', 'UNEMP_RATE'];
+  const toggleIndicator = useCallback((indicator: string) => {
+    setSelectedIndicators(prev => 
+      prev.includes(indicator)
+        ? prev.filter(i => i !== indicator)
+        : [...prev, indicator]
+    );
+  }, []);
+
+  useEffect(() => {
+    if (error.legislative || error.economic || error.leaderInfo || error.articles) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch some data. Please try again later.",
+        variant: "destructive",
+      });
+    }
+  }, [error, toast]);
 
   return (
-    <div className="relative w-full py-4 px-0">
-      <Tabs defaultValue="overview" className="w-full px-2 pt-2">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="economic-data">Econ. Data</TabsTrigger>
-          <TabsTrigger value="legislation">Legislation</TabsTrigger>
+    <div className="space-y-4">
+      <Tabs defaultValue="articles" className="w-full">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="articles">Articles</TabsTrigger>
+          <TabsTrigger value="legislative">Legislative</TabsTrigger>
+          <TabsTrigger value="economic-data">Economic Data</TabsTrigger>
+          <TabsTrigger value="leader-info">Leader Info</TabsTrigger>
+          <TabsTrigger value="wikipedia">Wikipedia</TabsTrigger>
         </TabsList>
-        <TabsContent value="overview">
-          <Card>
-            <CardHeader>
-              <CardTitle>Overview of {countryName}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {leaderInfo && (
-                <LeaderInfo
-                  state={leaderInfo['State']}
-                  headOfState={leaderInfo['Head of State']}
-                  headOfStateImage={leaderInfo['Head of State Image']}
-                  headOfGovernment={leaderInfo['Head of Government']}
-                  headOfGovernmentImage={leaderInfo['Head of Government Image']}
+        <div className="flex-grow overflow-hidden">
+          <TabsContent value="articles" className="h-full">
+            <Card className="h-full flex flex-col">
+              <CardHeader>
+                <CardTitle>Articles for {locationName}</CardTitle>
+                <CardDescription>
+                  Articles related to {locationName}.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-grow overflow-hidden">
+                <ArticlesView 
+                  locationName={locationName} 
+                  articles={data.articles}
+                  isLoading={isLoading.articles}
+                  error={error.articles}
+                  fetchArticles={fetchArticles}
+                  resetArticles={resetArticles}
                 />
-              )}
-              {articleContent && <WikipediaView content={articleContent} />}
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="economic-data">
+              </CardContent>
+            </Card>
+          </TabsContent>
+        <TabsContent value="legislative">
           <Card>
             <CardHeader>
-              <CardTitle>Economic Data for {countryName}</CardTitle>
-              <CardDescription>
-                Key economic indicators and market trends.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="mb-4">
-                <div className="flex flex-wrap gap-2">
-                  {availableIndicators.map(indicator => (
-                    <Button 
-                      key={indicator}
-                      onClick={() => handleIndicatorSelection(indicator)}
-                      variant={selectedIndicators.includes(indicator) ? "default" : "outline"}
-                    >
-                      {indicator}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-              <div style={{ height: 250 }}>
-                {isLoading ? (
-                  <div className="flex flex-col items-center justify-center h-full">
-                    <DotLoader color="#000" size={50} />
-                    <p className="mt-4">Economic data is loading...</p>
-                  </div>
-                ) : error.economic ? (
-                  <p>Error loading economic data: {error.economic.message}</p>
-                ) : economicDataRows.length > 0 ? (
-                  <EconomicDataChart 
-                    key={chartKey} 
-                    data={economicDataRows} 
-                    indicators={selectedIndicators} 
-                  />
-                ) : (
-                  <p>No economic data available for {countryName}.</p>
-                )}
-              </div>
-            </CardContent>
-            <CardFooter>
-              {/* <Button>View detailed report</Button> */}
-            </CardFooter>
-          </Card>
-        </TabsContent>
-        <TabsContent value="legislation">
-          <Card>
-            <CardHeader>
-              <CardTitle>Legislation for {countryName}</CardTitle>
+              <CardTitle>Legislation for {locationName}</CardTitle>
               <CardDescription>
                 Recent legislative activities and proposals.
               </CardDescription>
@@ -347,23 +294,98 @@ export function IssueAreas({ countryName, articleContent }: IssueAreasProps) {
                     </SelectContent>
                   </Select>
                 </div>
-                {isLoading ? (
+                {isLoading.legislative ? (
                    <div className="flex flex-col items-center justify-center h-full">
                    <DotLoader color="#000" size={50} />
                    <p className="mt-4">Legislative data is loading...</p>
                  </div>
                 ) : error.legislative ? (
-                <p>No legislative data available for {countryName}.</p>
+                <p>No legislative data available for {locationName}.</p>
                 ) : filteredLegislativeData.length > 0 ? (
                   <DataTable columns={legislationColumns} data={filteredLegislativeData} />
                 ) : (
-                  <p>No legislative data available for {countryName}.</p>
+                  <p>No legislative data available for {locationName}.</p>
                 )}
               </div>
             </CardContent>
           </Card>
         </TabsContent>
-      </Tabs>
-    </div>
+        <TabsContent value="economic-data">
+          <Card>
+            <CardHeader>
+              <CardTitle>Economic Data for {locationName}</CardTitle>
+              <CardDescription>
+                Key economic indicators and market trends.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="mb-4">
+                <div className="flex flex-wrap gap-2">
+                  {availableIndicators.map(indicator => (
+                    <Button 
+                      key={indicator}
+                      variant={selectedIndicators.includes(indicator) ? "default" : "outline"}
+                      onClick={() => toggleIndicator(indicator)}
+                    >
+                      {indicator}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+              {isLoading.economic ? (
+                <div className="flex flex-col items-center justify-center h-full">
+                  <DotLoader color="#000" size={50} />
+                  <p className="mt-4">Economic data is loading...</p>
+                </div>
+              ) : error.economic ? (
+                <p>Failed to load economic data.</p>
+              ) : data?.economicData && data.economicData.length > 0 ? (
+                <EconomicDataChart data={data.economicData} selectedIndicators={selectedIndicators} />
+              ) : (
+                <p>No economic data available for {locationName}.</p>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="leader-info">
+          <Card>
+            <CardHeader>
+              <CardTitle>Leader Information for {locationName}</CardTitle>
+              <CardDescription>
+                Current leadership and key political figures.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoading.leaderInfo ? (
+                <div className="flex flex-col items-center justify-center h-full">
+                  <DotLoader color="#000" size={50} />
+                  <p className="mt-4">Leader information is loading...</p>
+                </div>
+              ) : error.leaderInfo ? (
+                <p>Failed to load leader information.</p>
+              ) : data?.leaderInfo ? (
+                <LeaderInfo leaderInfo={data.leaderInfo} />
+              ) : (
+                <p>No leader information available for {locationName}.</p>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="wikipedia">
+          <Card>
+            <CardHeader>
+              <CardTitle>Wikipedia Information for {locationName}</CardTitle>
+              <CardDescription>
+                General information from Wikipedia.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <WikipediaView locationName={locationName} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+          </div>
+        </Tabs>
+      </div>
   );
 }

@@ -1039,13 +1039,13 @@
   }
   }
   },
-  "/api/v1/countries/country_from_query/": {
+  "/api/v1/locations/location_from_query/": {
   "get": {
   "tags": [
-  "countries"
+  "locations"
   ],
-  "summary": "Country From Query",
-  "operationId": "countries-country_from_query",
+  "summary": "Location From Query",
+  "operationId": "locations-location_from_query",
   "parameters": [
   {
   "name": "query",
@@ -1079,13 +1079,13 @@
   }
   }
   },
-  "/api/v1/countries/geojson/": {
+  "/api/v1/locations/geojson/": {
   "get": {
   "tags": [
-  "countries"
+  "locations"
   ],
   "summary": "Geojson View",
-  "operationId": "countries-geojson_view",
+  "operationId": "locations-geojson_view",
   "responses": {
   "200": {
   "description": "Successful Response",
@@ -1098,13 +1098,13 @@
   }
   }
   },
-  "/api/v1/countries/leaders/{state}": {
+  "/api/v1/locations/leaders/{state}": {
   "get": {
   "tags": [
-  "countries"
+  "locations"
   ],
   "summary": "Get Leader Info",
-  "operationId": "countries-get_leader_info",
+  "operationId": "locations-get_leader_info",
   "parameters": [
   {
   "name": "state",
@@ -1138,13 +1138,13 @@
   }
   }
   },
-  "/api/v1/countries/legislation/{state}": {
+  "/api/v1/locations/legislation/{state}": {
   "get": {
   "tags": [
-  "countries"
+  "locations"
   ],
   "summary": "Get Legislation Data",
-  "operationId": "countries-get_legislation_data",
+  "operationId": "locations-get_legislation_data",
   "parameters": [
   {
   "name": "state",
@@ -1178,13 +1178,13 @@
   }
   }
   },
-  "/api/v1/countries/econ_data/{state}": {
+  "/api/v1/locations/econ_data/{state}": {
   "get": {
   "tags": [
-  "countries"
+  "locations"
   ],
   "summary": "Get Econ Data",
-  "operationId": "countries-get_econ_data",
+  "operationId": "locations-get_econ_data",
   "parameters": [
   {
   "name": "state",
@@ -1234,13 +1234,13 @@
   }
   }
   },
-  "/api/v1/countries/update_leaders/": {
+  "/api/v1/locations/update_leaders/": {
   "get": {
   "tags": [
-  "countries"
+  "locations"
   ],
   "summary": "Update Leaders",
-  "operationId": "countries-update_leaders",
+  "operationId": "locations-update_leaders",
   "responses": {
   "200": {
   "description": "Successful Response",
@@ -1253,10 +1253,10 @@
   }
   }
   },
-  "/api/v1/countries/get_articles": {
+  "/api/v1/locations/get_articles": {
   "get": {
   "tags": [
-  "countries"
+  "locations"
   ],
   "summary": "Get Tavily Data",
   "operationId": "countries-get_tavily_data",

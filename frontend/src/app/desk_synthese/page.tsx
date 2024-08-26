@@ -9,15 +9,12 @@ import { Button } from '@/components/ui/button';
 import Search from '@/components/Search';
 import Results from '@/components/Results';
 import { OpenAPI } from 'src/client';
-import CountryDetailPanel from '@/components/CountryDetailPanel';
 import { Map, FileSearch2 } from 'lucide-react';
 import { Settings, HelpCircle } from 'lucide-react';
 import withAuth from '@/hooks/withAuth';
+import LocationDetailPanel from '@/components/LocationDetailPanel';
 
 const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
-
-
-// OpenAPI.BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4322';
 
 console.log(process.env.NEXT_PUBLIC_API_URL);
 
@@ -26,7 +23,7 @@ const Desk: React.FC = () => {
     const [results, setResults] = useState(null);
     const [summary, setSummary] = useState<string>('');
     const [articleContent, setArticleContent] = useState<string>('');
-    const [country, setCountry] = useState<string | null>(null);
+    const [location, setLocation] = useState<string | null>(null);
     const [currentTime, setCurrentTime] = useState<string>(new Date().toLocaleString());
     const [isBrowseMode, setIsBrowseMode] = useState(true);
     const [hasSearched, setHasSearched] = useState(false);
@@ -37,7 +34,7 @@ const Desk: React.FC = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [windowWidth, setWindowWidth] = useState<number>(0);
     const { toast } = useToast();
-    const [countryKey, setCountryKey] = useState<number>(0);
+    const [locationKey, setLocationKey] = useState<number>(0);
     const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -50,38 +47,38 @@ const Desk: React.FC = () => {
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
-      setIsMobile(window.innerWidth < 768); // Consider mobile if width is less than 768px
+      setIsMobile(window.innerWidth < 768);
     };
     window.addEventListener('resize', handleResize);
     handleResize();
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleCountryClick = async (countryName: string) => {
-    setCountry(countryName);
-    setIsVisible(true);
-    setHasClicked(true);
-    setCountryKey(prevKey => prevKey + 1);
-  };
-
   useEffect(() => {
-    const preventFocus = (e: TouchEvent) => {
-      if (isMobile && !hasSearched) {
-        e.preventDefault();
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsVisible(false);
+        setHasClicked(false);
+      }
+      if (event.key === 'b' || event.key === 'B') {
+        setIsVisible(true);
+        setHasClicked(true);
       }
     };
 
-    const searchInput = document.querySelector('input[type="search"]');
-    if (searchInput) {
-      searchInput.addEventListener('touchstart', preventFocus, { passive: false });
-    }
+    window.addEventListener('keydown', handleEscKey);
 
     return () => {
-      if (searchInput) {
-        searchInput.removeEventListener('touchstart', preventFocus);
-      }
+      window.removeEventListener('keydown', handleEscKey);
     };
-  }, [isMobile, hasSearched]);
+  }, []);
+
+  const handleLocationClick = async (locationName: string) => {
+    setLocation(locationName);
+    setIsVisible(true);
+    setHasClicked(true);
+    setLocationKey(prevKey => prevKey + 1);
+  };
 
   const handleSearch = (searchResults: any) => {
     setResults(searchResults);
@@ -92,7 +89,6 @@ const Desk: React.FC = () => {
       description: "Your search results are now available.",
     });
 
-    // Scroll down slightly after search on mobile
     if (isMobile) {
       setTimeout(() => {
         window.scrollTo({ top: 100, behavior: 'smooth' });
@@ -100,9 +96,9 @@ const Desk: React.FC = () => {
     }
   };
 
-  const handleCountryZoom = (latitude: number, longitude: number, countryName: string) => {
+  const handleLocationZoom = (latitude: number, longitude: number, locationName: string) => {
     if (globeRef.current) {
-      globeRef.current.zoomToCountry(latitude, longitude, countryName);
+      globeRef.current.zoomToCountry(latitude, longitude, locationName);
     }
   };
 
@@ -138,40 +134,39 @@ const Desk: React.FC = () => {
                 ref={globeRef}
                 geojsonUrl={geojsonUrl}
                 setArticleContent={setArticleContent}
-                onCountryClick={handleCountryClick}
+                onLocationClick={handleLocationClick}
                 isBrowseMode={isBrowseMode}
                 toggleMode={toggleMode}
                 setLegislativeData={setLegislativeData}
                 setEconomicData={setEconomicData}
-                onCountryZoom={handleCountryZoom}
+                onLocationZoom={handleLocationZoom}
               />
             </motion.div>
             <motion.div
-                className={`absolute ${isMobile ? 'top-[calc(50%+100px)] transform -translate-x-1/2 w-full' : 'top-1/2 left-1/4 transform -translate-x-1/2 -translate-y-1/2 w-1/2'} px-0`}
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
+              className={`absolute ${isMobile ? 'top-[calc(50%+100px)] transform -translate-x-1/2 w-full' : 'top-1/2 left-1/4 transform -translate-x-1/2 -translate-y-1/2 w-1/2'} px-0`}
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <Search setResults={handleSearch} setCountry={setCountry} globeRef={globeRef} setSummary={handleSummary} />
+              <Search setResults={handleSearch} setLocation={setLocation} globeRef={globeRef} setSummary={handleSummary} />
             </motion.div>
             <AnimatePresence>
               {hasClicked && (
                 <motion.div
-                className={`absolute top-2 right-0 h-full ${isMobile ? 'w-3/4' : 'w-5/12'}`}
-                initial={{ x: '100%' }}
-                animate={{ x: 0 }}
-                exit={{ x: '100%' }}
-                transition={{ duration: 0.3 }}
-            >
-                <CountryDetailPanel
-                    key={countryKey}
-                    country={country}
-                    articleContent={articleContent}
+                  className={`absolute top- right-0 h-full ${isMobile ? 'w-3/4' : 'w-1/2'}`}
+                  initial={{ x: '100%' }}
+                  animate={{ x: 0 }}
+                  exit={{ x: '100%' }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <LocationDetailPanel
+                    key={locationKey}
+                    location={location}
                     isVisible={isVisible}
                     toggleVisibility={toggleVisibility}
-                />
-              </motion.div>
-            )}
+                  />
+                </motion.div>
+              )}
             </AnimatePresence>
           </div>
         ) : (
@@ -187,12 +182,12 @@ const Desk: React.FC = () => {
                   ref={globeRef}
                   geojsonUrl={geojsonUrl}
                   setArticleContent={setArticleContent}
-                  onCountryClick={handleCountryClick}
+                  onLocationClick={handleLocationClick}
                   isBrowseMode={isBrowseMode}
                   toggleMode={toggleMode}
                   setLegislativeData={setLegislativeData}
                   setEconomicData={setEconomicData}
-                  onCountryZoom={handleCountryZoom}
+                  onLocationZoom={handleLocationZoom}
                 />
               </motion.div>
               <motion.div
@@ -201,7 +196,7 @@ const Desk: React.FC = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <Search setResults={handleSearch} setCountry={setCountry} globeRef={globeRef} setSummary={handleSummary} />
+                <Search setResults={handleSearch} setLocation={setLocation} globeRef={globeRef} setSummary={handleSummary} />
               </motion.div>
             </div>
             <motion.div
@@ -223,12 +218,9 @@ const Desk: React.FC = () => {
                 transition={{ duration: 0.3 }}
               >
                 <div className="flex-1 relative">
-                  <CountryDetailPanel
-                    key={countryKey}
-                    country={country}
-                    articleContent={articleContent}
-                    legislativeData={legislativeData}
-                    economicData={economicData}
+                  <LocationDetailPanel
+                    key={locationKey}
+                    location={location}
                     isVisible={isVisible}
                     toggleVisibility={toggleVisibility}
                   />

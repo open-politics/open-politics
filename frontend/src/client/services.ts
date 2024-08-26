@@ -553,7 +553,7 @@ query,
 } = data;
 		return __request(OpenAPI, {
 			method: 'GET',
-			url: '/api/v1/countries/country_from_query/',
+			url: '/api/v1/locations/location_from_query/',
 			query: {
 				query
 			},
@@ -571,7 +571,7 @@ query,
 	public static geojsonView(): CancelablePromise<unknown> {
 		return __request(OpenAPI, {
 			method: 'GET',
-			url: '/api/v1/countries/geojson/',
+			url: '/api/v1/locations/geojson/',
 		});
 	}
 
@@ -586,7 +586,7 @@ state,
 } = data;
 		return __request(OpenAPI, {
 			method: 'GET',
-			url: '/api/v1/countries/leaders/{state}',
+			url: '/api/v1/locations/leaders/{state}',
 			path: {
 				state
 			},
@@ -607,7 +607,7 @@ state,
 } = data;
 		return __request(OpenAPI, {
 			method: 'GET',
-			url: '/api/v1/countries/legislation/{state}',
+			url: '/api/v1/locations/legislation/{state}',
 			path: {
 				state
 			},
@@ -628,7 +628,7 @@ state,
 } = data;
 		return __request(OpenAPI, {
 			method: 'GET',
-			url: '/api/v1/countries/econ_data/{state}',
+			url: '/api/v1/locations/econ_data/{state}',
 			path: {
 				state
 			},
@@ -646,7 +646,7 @@ state,
 	public static updateLeaders(): CancelablePromise<unknown> {
 				return __request(OpenAPI, {
 			method: 'GET',
-			url: '/api/v1/countries/update_leaders/',
+			url: '/api/v1/locations/update_leaders/',
 		});
 	}
 
@@ -658,7 +658,7 @@ state,
 	public static getTavilyData(): CancelablePromise<unknown> {
 				return __request(OpenAPI, {
 			method: 'GET',
-			url: '/api/v1/countries/get_articles',
+			url: '/api/v1/locations/get_articles',
 		});
 	}
 

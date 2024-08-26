@@ -18,7 +18,7 @@ import { OpenAPI } from 'src/client';
 interface GlobeProps {
   geojsonUrl: string;
   setArticleContent: (content: string) => void;
-  onCountryClick: (country: string) => void;
+  onLocationClick: (location: string) => void;
   isBrowseMode: boolean;
   toggleMode: () => void;
   setLegislativeData: (data: any) => void;
@@ -33,7 +33,7 @@ interface DataContext {
 
 OpenAPI.BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
 
-const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onCountryClick, isBrowseMode, toggleMode, setLegislativeData, setEconomicData, onCountryZoom }, ref) => {
+const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onLocationClick, isBrowseMode, toggleMode, setLegislativeData, setEconomicData, onCountryZoom }, ref) => {
   const chartRef = useRef<am5.Root | null>(null);
   const polygonSeriesRef = useRef<am5map.MapPolygonSeries | null>(null);
   const pointSeriesRef = useRef<am5map.MapPointSeries | null>(null);
@@ -121,7 +121,10 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
       try {
         const data = await CountriesService.geojsonView();
         pointSeries.data.setAll(data.features.map((feature: any) => ({
-          geometry: feature.geometry,
+          geometry: {
+            type: "Point",
+            coordinates: [feature.geometry.coordinates[1], feature.geometry.coordinates[0]] // Swap coordinates here
+          },
           title: feature.properties.name,
           articles: feature.properties.articles,
           articleCount: feature.properties.article_count
@@ -148,7 +151,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
 
     pointSeries.bullets.push(function() {
       const circle = am5.Circle.new(root, {
-        radius: 2.5,
+        radius: 1.5,
         fill: am5.color(0xcc0000),
         fillOpacity: 0.5,
         tooltipText: "{title}\n{articles[0].headline}",
@@ -160,7 +163,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
         const articleContent = articles.map((article: any) => `<a href="${article.url}" target="_blank">${article.headline}</a>`).join('<hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">');
         const content = `<div>Articles for location: <strong>${dataItem.dataContext.title}</strong><br/>${articleContent}</div>`;
         setArticleContent(content);
-        onCountryClick(dataItem.dataContext.title);
+        onLocationClick(dataItem.dataContext.title);
       });
 
       circle.states.create("hover", {
@@ -205,8 +208,8 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
           chart.animate({ key: "rotationY", to: -centroid.latitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
         }
 
-        const countryName = target.dataItem.dataContext.name;
-        await handleCountrySelection(centroid.latitude, centroid.longitude, countryName);
+        const locationName = target.dataItem.dataContext.name;
+        await handleLocationSelection(centroid.latitude, centroid.longitude, locationName);
       }
       previousPolygon = target;
     });
@@ -228,7 +231,10 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
         try {
           const data = await CountriesService.geojsonView();
           pointSeriesRef.current.data.setAll(data.features.map((feature) => ({
-            geometry: feature.geometry,
+            geometry: {
+              type: "Point",
+              coordinates: [feature.geometry.coordinates[1], feature.geometry.coordinates[0]] // Swap coordinates because amcharts is a b
+            },
             title: feature.properties.location,
             articles: feature.properties.articles
           })));
@@ -277,19 +283,19 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
     }
   };
 
-  const handleCountrySelection = async (latitude, longitude, countryName) => {
-    const content = await fetchWikipediaContent(countryName);
+  const handleLocationSelection = async (latitude, longitude, locationName) => {
+    const content = await fetchWikipediaContent(locationName);
     setArticleContent(content);
-    onCountryClick(countryName);
-    handleCountryZoom(latitude, longitude, countryName);
+    onLocationClick(locationName);
+    handleCountryZoom(latitude, longitude, locationName);
     
-    const legislativeDataUrl = `/api/v1/countries/legislation/${countryName}`;
+    const legislativeDataUrl = `/api/v1/locations/legislation/${locationName}`;
     try {
       const legislativeResponse = await axios.get(legislativeDataUrl);
       setLegislativeData(legislativeResponse.data);
     } catch (error) {}
 
-    const economicDataUrl = `/api/v1/countries/econ_data/${countryName}`;
+    const economicDataUrl = `/api/v1/locations/econ_data/${locationName}`;
     try {
       const economicResponse = await axios.get(economicDataUrl);
       setEconomicData(economicResponse.data);
