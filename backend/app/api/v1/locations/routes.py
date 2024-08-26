@@ -46,6 +46,8 @@ async def get_location_articles(
         logger.error(f"Error fetching articles: {str(e)}")
         return JSONResponse(content={'error': 'Failed to fetch articles'}, status_code=500)
 
+
+
 @router.get("/country_from_query/")
 async def country_from_query(query: str):
     country_name = marvin.cast(query, target=str, instructions="Return the country name most relevant to the query.")
@@ -67,7 +69,15 @@ async def geojson_view():
     request = requests.get("http://geo_service:3690/geojson", verify=False)
     return request.json()
 
-
+@router.get("/entities/{state}", response_model=None)
+async def get_location_entities(state: str, skip: int = 0, limit: int = 50):
+    try:
+        response = requests.get(f"http://postgres_service:5434/location_entities/{state}?skip={skip}&limit={limit}")
+        response.raise_for_status()
+        return JSONResponse(content=response.json(), status_code=200)
+    except requests.RequestException as e:
+        logger.error(f"Error fetching location entities: {str(e)}")
+        return JSONResponse(content={'error': 'Failed to fetch location entities'}, status_code=500)
 
 @router.get("/leaders/{state}")
 async def get_leader_info(state: str):

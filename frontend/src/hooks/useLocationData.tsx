@@ -6,6 +6,15 @@ interface LocationData {
   economicData: any[];
   leaderInfo: any;
   articles: Article[];
+  entities: Entity[];
+}
+
+interface Entity {
+  name: string;
+  type: string;
+  article_count: number;
+  total_frequency: number;
+  relevance_score: number;
 }
 
 interface Article {
@@ -38,28 +47,32 @@ export function useLocationData(locationName: string | null) {
     economicData: [],
     leaderInfo: null,
     articles: [],
+    entities: [],
   });
   const [isLoading, setIsLoading] = useState({
     legislative: false,
     economic: false,
     leaderInfo: false,
     articles: false,
+    entities: false,
   });
   const [error, setError] = useState<{
     legislative: Error | null;
     economic: Error | null;
     leaderInfo: Error | null;
     articles: Error | null;
+    entities: Error | null;
   }>({
     legislative: null,
     economic: null,
     leaderInfo: null,
     articles: null,
+    entities: null,
   });
 
   const fetchData = useCallback(async (dataType: keyof LocationData, url: string) => {
     if (!locationName) return;
-
+  
     setIsLoading(prev => ({ ...prev, [dataType]: true }));
     try {
       const response = await axios.get(url);
@@ -95,14 +108,35 @@ export function useLocationData(locationName: string | null) {
     setData((prev) => ({ ...prev, articles: [] }));
   }, []);
 
+  const fetchEntities = useCallback(async (skip: number, limit: number) => {
+    if (!locationName) return;
+    setIsLoading((prev) => ({ ...prev, entities: true }));
+    try {
+      const response = await fetch(`/api/v1/locations/entities/${locationName}?skip=${skip}&limit=${limit}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch entities');
+      }
+      const data = await response.json();
+      setData((prev) => ({
+        ...prev,
+        entities: skip === 0 ? data : [...prev.entities, ...data],
+      }));
+    } catch (error) {
+      setError((prev) => ({ ...prev, entities: error as Error }));
+    } finally {
+      setIsLoading((prev) => ({ ...prev, entities: false }));
+    }
+  }, [locationName]);
+
   useEffect(() => {
     if (locationName) {
       fetchArticles('', 0);
       fetchData('legislativeData', `/api/v1/locations/legislation/${locationName}`);
       fetchData('economicData', `/api/v1/locations/econ_data/${locationName}`);
       fetchData('leaderInfo', `/api/v1/locations/leaders/${locationName}`);
+      fetchEntities(0, 50);
     }
-  }, [locationName, fetchArticles, fetchData]);
+  }, [locationName, fetchArticles, fetchData, fetchEntities]);
 
   return {
     data,
@@ -110,6 +144,7 @@ export function useLocationData(locationName: string | null) {
     error,
     fetchArticles,
     resetArticles,
+    fetchEntities,
   };
 }
 

@@ -67,7 +67,7 @@ export function ArticlesView({ locationName, articles, isLoading, error, fetchAr
           {!isLoading && articles.length >= 20 && (
             <Button onClick={loadMore} className="w-full mt-4">Load More</Button>
           )}
-          {articles.length > 0 && (
+          {isLoading &&articles.length > 0 && (
             <div className="flex justify-center mt-4">
               <DotLoader color="#000" size={30} />
             </div>

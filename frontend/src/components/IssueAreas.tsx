@@ -188,6 +188,11 @@ export function IssueAreas({ locationName }: IssueAreasProps) {
                     Date: {row.original.date}
                   </span>
                 </div>
+                <Button variant='outline'>
+                  <a href={row.original.href} target="_blank" rel="noopener noreferrer">
+                    View
+                  </a>
+                </Button>
               </div>
             </HoverCardContent>
           </HoverCard>
@@ -231,7 +236,7 @@ export function IssueAreas({ locationName }: IssueAreasProps) {
           <TabsTrigger value="articles">Articles</TabsTrigger>
           <TabsTrigger value="legislative">Legislative</TabsTrigger>
           <TabsTrigger value="economic-data">Economic Data</TabsTrigger>
-          <TabsTrigger value="leader-info">Leader Info</TabsTrigger>
+          <TabsTrigger value="leader-info">Entites</TabsTrigger>
           <TabsTrigger value="wikipedia">Wikipedia</TabsTrigger>
         </TabsList>
         <div className="flex-grow overflow-hidden">
@@ -311,14 +316,23 @@ export function IssueAreas({ locationName }: IssueAreasProps) {
           </Card>
         </TabsContent>
         <TabsContent value="economic-data">
-          <Card>
-            <CardHeader>
-              <CardTitle>Economic Data for {locationName}</CardTitle>
-              <CardDescription>
-                Key economic indicators and market trends.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
+      <Card>
+        <CardHeader>
+          <CardTitle>Economic Data for {locationName}</CardTitle>
+          <CardDescription>
+            Key economic indicators and market trends.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {isLoading.economic ? (
+            <div className="flex flex-col items-center justify-center h-full">
+              <DotLoader color="#000" size={50} />
+              <p className="mt-4">Economic data is loading...</p>
+            </div>
+          ) : error.economic ? (
+            <p>Failed to load economic data.</p>
+          ) : data?.economicData && data.economicData.length > 0 ? (
+            <>
               <div className="mb-4">
                 <div className="flex flex-wrap gap-2">
                   {availableIndicators.map(indicator => (
@@ -332,41 +346,34 @@ export function IssueAreas({ locationName }: IssueAreasProps) {
                   ))}
                 </div>
               </div>
-              {isLoading.economic ? (
-                <div className="flex flex-col items-center justify-center h-full">
-                  <DotLoader color="#000" size={50} />
-                  <p className="mt-4">Economic data is loading...</p>
-                </div>
-              ) : error.economic ? (
-                <p>Failed to load economic data.</p>
-              ) : data?.economicData && data.economicData.length > 0 ? (
-                <EconomicDataChart data={data.economicData} selectedIndicators={selectedIndicators} />
-              ) : (
-                <p>No economic data available for {locationName}.</p>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+              <EconomicDataChart data={data.economicData} selectedIndicators={selectedIndicators} />
+            </>
+          ) : (
+            <p>No economic data available for {locationName}.</p>
+          )}
+        </CardContent>
+      </Card>
+    </TabsContent>
         <TabsContent value="leader-info">
           <Card>
             <CardHeader>
-              <CardTitle>Leader Information for {locationName}</CardTitle>
+              <CardTitle>Leaders and Entities for {locationName}</CardTitle>
               <CardDescription>
-                Current leadership and key political figures.
+                Current leadership, key political figures, and relevant entities.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {isLoading.leaderInfo ? (
+              {isLoading.leaderInfo || isLoading.entities ? (
                 <div className="flex flex-col items-center justify-center h-full">
                   <DotLoader color="#000" size={50} />
-                  <p className="mt-4">Leader information is loading...</p>
+                  <p className="mt-4">Loading information...</p>
                 </div>
-              ) : error.leaderInfo ? (
-                <p>Failed to load leader information.</p>
-              ) : data?.leaderInfo ? (
-                <LeaderInfo leaderInfo={data.leaderInfo} />
+              ) : error.leaderInfo || error.entities ? (
+                <p>Failed to load information.</p>
+              ) : data?.leaderInfo && data?.entities ? (
+                <LeaderInfo leaderInfo={data.leaderInfo} entities={data.entities} />
               ) : (
-                <p>No leader information available for {locationName}.</p>
+                <p>No information available for {locationName}.</p>
               )}
             </CardContent>
           </Card>
