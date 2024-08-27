@@ -234,9 +234,9 @@ export function IssueAreas({ locationName }: IssueAreasProps) {
       <Tabs defaultValue="articles" className="w-full">
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="articles">Articles</TabsTrigger>
-          <TabsTrigger value="legislative">Legislative</TabsTrigger>
           <TabsTrigger value="economic-data">Economic Data</TabsTrigger>
           <TabsTrigger value="leader-info">Entites</TabsTrigger>
+          <TabsTrigger value="legislative">Legislative</TabsTrigger>
           <TabsTrigger value="wikipedia">Wikipedia</TabsTrigger>
         </TabsList>
         <div className="flex-grow overflow-hidden">

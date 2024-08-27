@@ -94,6 +94,7 @@
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "usehooks-ts": "^3.1.0",
+    "vaul": "^0.9.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {
