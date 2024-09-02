@@ -49,7 +49,7 @@ export function ArticlesView({ locationName, articles, isLoading, error, fetchAr
         />
         <Button onClick={handleSearch}>Search</Button>
       </div>
-      {articles.length === 0 ? (
+      {isLoading ? (
         <div className="flex flex-col items-center justify-center flex-grow">
           <DotLoader color="#000" size={50} />
           <p className="mt-4">Loading articles...</p>

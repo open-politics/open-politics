@@ -16,6 +16,7 @@ const LocationDetailPanel: React.FC<LocationDetailPanelProps> = ({
 }) => {
   return (
     <div className="flex flex-col h-full p-4 bg-background/75 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <h2 className="text-xl mb-2">Context Data Modules</h2>
       <Button onClick={toggleVisibility} className="w-14 h-8 p-2 border-none self-end mb-4">
         {isVisible ? <CircleX size={24} /> : <ListCollapse size={24} />}
       </Button> 

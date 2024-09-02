@@ -32,6 +32,8 @@ interface SearchProps {
   setSummary: (summary: string) => void;
   globeRef: React.RefObject<any>;
 }
+import { ArticleCardProps } from '@/components/ArticleCard';
+
 
 const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, globeRef }) => {
 
@@ -39,15 +41,25 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [analysisType, setAnalysisType] = useState('Conflict Analysis');
+
 
   const handleSearch = async (query: string) => {
     setLoading(true);
     try {
-      const results = await fetchTavilySearchResults(query);
-      setResults(results);
-
-      const articles = results.results.map((result: any) => ({ content: result.content }));
-      const { output } = await generateSummaryFromArticles(articles);
+      const [tavilyResults, ssareResults] = await Promise.all([
+        fetchTavilySearchResults(query),
+        fetchSSAREArticles(query)
+      ]);
+  
+      const combinedResults = {
+        tavilyResults,
+        ssareResults
+      };
+      setResults(combinedResults);
+  
+      const tavilyArticles = tavilyResults.results.map((result: any) => ({ content: result.content }));
+      const { output } = await generateSummaryFromArticles(tavilyArticles, ssareResults);
       let fullSummary = '';
       for await (const delta of readStreamableValue(output)) {
         fullSummary += delta;
@@ -56,7 +68,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
       setLoading(false);
       const country = await fetchCountryFromQuery(query);
       setCountry(country?.country_name);
-
+  
       if (country && globeRef.current) {
         globeRef.current.zoomToCountry(country.latitude, country.longitude, country.country_name);
       }
@@ -76,7 +88,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
       include_answer: false,
       include_images: true,
       include_raw_content: false,
-      max_results: 5,
+      max_results: 4,
       include_domains: [],
       exclude_domains: []
     };
@@ -87,6 +99,23 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
     } catch (error) {
       console.error('Error fetching search results:', error);
       return null;
+    }
+  };
+  
+  const fetchSSAREArticles = async (query: string) => {
+    try {
+      const response = await axios.get(`/api/v1/search/articles`, {
+        params: {
+          search_query: query,
+          limit: 8,
+          skip: 0,
+          search_type: 'semantic'  // Add this line
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching SSARE articles:', error);
+      return [];
     }
   };
 
@@ -181,21 +210,24 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
           </div>
           <CommandSeparator />
           <CommandGroup heading="Method Focus">
-            <RadioGroup defaultValue="option-one">
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="option-one" id="option-one" />
-                <Label htmlFor="option-one">Conflict Analysis</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="option-two" id="option-two" />
-                <Label htmlFor="option-two">News Analysis</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="option-three" id="option-three" />
-                <Label htmlFor="option-three">Economic Analysis</Label>
-              </div>
-            </RadioGroup>
-          </CommandGroup>
+          <RadioGroup 
+            defaultValue="Conflict Analysis" 
+            onValueChange={(value) => setAnalysisType(value)}
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="Conflict Analysis" id="conflict-analysis" />
+              <Label htmlFor="conflict-analysis">Conflict Analysis</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="News Analysis" id="news-analysis" />
+              <Label htmlFor="news-analysis">News Analysis</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="Economic Analysis" id="economic-analysis" />
+              <Label htmlFor="economic-analysis">Economic Analysis</Label>
+            </div>
+          </RadioGroup>
+        </CommandGroup>
         </CommandList>
       </Command>
       <CommandDialog open={dialogOpen} onOpenChange={(open) => setDialogOpen(open)}>

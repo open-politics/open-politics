@@ -299,7 +299,7 @@ export function IssueAreas({ locationName }: IssueAreasProps) {
                     </SelectContent>
                   </Select>
                 </div>
-                {isLoading.legislative ? (
+                {isLoading.legislative || isLoading.entities || isLoading.leaderInfo || isLoading.articles ? (
                    <div className="flex flex-col items-center justify-center h-full">
                    <DotLoader color="#000" size={50} />
                    <p className="mt-4">Legislative data is loading...</p>
@@ -324,7 +324,7 @@ export function IssueAreas({ locationName }: IssueAreasProps) {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
-          {isLoading.economic ? (
+          {isLoading.economic || isLoading.entities || isLoading.leaderInfo || isLoading.articles ? (
             <div className="flex flex-col items-center justify-center h-full">
               <DotLoader color="#000" size={50} />
               <p className="mt-4">Economic data is loading...</p>

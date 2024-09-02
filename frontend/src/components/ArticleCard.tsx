@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-type ArticleCardProps = {
+export type ArticleCardProps = {
   id: string;
   headline: string;
   paragraphs: string;

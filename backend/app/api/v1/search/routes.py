@@ -1,36 +1,40 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import JSONResponse
 import logging
-import json
-import requests
-from tavily import TavilyClient
-from pathlib import Path
-from gpt_researcher import GPTResearcher
+from enum import Enum
+from typing import Optional
+import httpx
 
-
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
-
-logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-@router.get("/get_articles", response_model=None)
-async def get_tavily_data(query: str):
-    tavily = TavilyClient(api_key="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")
-    response = tavily.search(query=query, search_depth="advanced")
+class SearchType(str, Enum):
+    TEXT = "text"
+    SEMANTIC = "semantic"
 
-    if 'results' in response:
-        context = [{"url": obj["url"], "content": obj["content"]} for obj in response['results']]
-    else:
-        context = []
+@router.get("/articles", response_model=None)
+async def get_articles(
+    search_query: str,
+    search_type: SearchType = SearchType.SEMANTIC,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(20, ge=1, le=100),
+):
+    try:
+        params = {
+            "search_query": search_query,
+            "skip": skip,
+            "limit": limit,
+            "search_type": search_type.value, 
+        }
 
-    return context
-
-@router.get("/report/{query}")
-async def get_report(query: str) -> dict:
-    report_type = "research_report"
-    researcher = GPTResearcher(query, report_type)
-    research_result = await researcher.conduct_research()
-    report = await researcher.write_report()
-    return {"report": report}
-
+        async with httpx.AsyncClient() as client:
+            response = await client.get("http://postgres_service:5434/articles", params=params)
+            response.raise_for_status()
+            return JSONResponse(content=response.json(), status_code=200)
+    except httpx.HTTPError as e:
+        logger.error(f"HTTP error occurred while fetching articles: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch articles")
+    except Exception as e:
+        logger.error(f"Unexpected error occurred while fetching articles: {e}")
+        raise HTTPException(status_code=500, detail="An unexpected error occurred")

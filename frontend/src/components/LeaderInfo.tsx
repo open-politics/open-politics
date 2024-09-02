@@ -31,7 +31,7 @@ interface LeaderInfoProps {
 
 const LeaderInfo: React.FC<LeaderInfoProps> = ({ leaderInfo, entities }) => {
   const [selectedEntityTypes, setSelectedEntityTypes] = useState<string[]>([
-    'PERSON', 'ORG', 'GPE', 'LOC', 'EVENT'
+    'PERSON',
   ]);
 
   const toggleEntityType = (type: string) => {

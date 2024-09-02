@@ -198,18 +198,41 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
     let previousPolygon: am5map.MapPolygon | null = null;
 
     polygonSeries.mapPolygons.template.on("active", async (active, target) => {
+      if (!target) return;
+
       if (previousPolygon && previousPolygon !== target) {
         previousPolygon.set("active", false);
       }
       if (target.get("active")) {
         const centroid = target.geoCentroid();
         if (centroid) {
-          chart.animate({ key: "rotationX", to: -centroid.longitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
-          chart.animate({ key: "rotationY", to: -centroid.latitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
+          const currentZoom = chart.get("zoomLevel");
+          const targetZoom = Math.min(currentZoom, 4); // Limit zoom level
+
+          chart.animate({ 
+            key: "rotationX", 
+            to: -centroid.longitude, 
+            duration: 1500, 
+            easing: am5.ease.inOut(am5.ease.cubic) 
+          });
+          chart.animate({ 
+            key: "rotationY", 
+            to: -centroid.latitude, 
+            duration: 1500, 
+            easing: am5.ease.inOut(am5.ease.cubic) 
+          });
+          chart.animate({ 
+            key: "zoomLevel", 
+            to: targetZoom, 
+            duration: 1500, 
+            easing: am5.ease.inOut(am5.ease.cubic) 
+          });
         }
 
-        const locationName = target.dataItem.dataContext.name;
-        await handleLocationSelection(centroid.latitude, centroid.longitude, locationName);
+        const locationName = target.dataItem?.dataContext?.name;
+        if (centroid && locationName) {
+          await handleLocationSelection(centroid.latitude, centroid.longitude, locationName);
+        }
       }
       previousPolygon = target;
     });
@@ -262,16 +285,16 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
     }
   }));
   
-  const handleCountryZoom = (latitude: number, longitude: number, countryName: string) => {
-    if (chartInstanceRef.current) {
-      chartInstanceRef.current.animate({ key: "rotationX", to: -longitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
-      chartInstanceRef.current.animate({ key: "rotationY", to: -latitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
-      chartInstanceRef.current.zoomToGeoPoint({ latitude, longitude }, 3.5);
-      if (rotationAnimationRef.current) {
-        rotationAnimationRef.current.stop();
-      }
-    }
-  };
+  // const handleCountryZoom = (latitude: number, longitude: number, countryName: string) => {
+  //   if (chartInstanceRef.current) {
+  //     chartInstanceRef.current.animate({ key: "rotationX", to: -longitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
+  //     chartInstanceRef.current.animate({ key: "rotationY", to: -latitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
+  //     chartInstanceRef.current.zoomToGeoPoint({ latitude, longitude }, 3.5);
+  //     if (rotationAnimationRef.current) {
+  //       rotationAnimationRef.current.stop();
+  //     }
+  //   }
+  // };
 
   const fetchWikipediaContent = async (countryName: string) => {
     try {
@@ -287,7 +310,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
     const content = await fetchWikipediaContent(locationName);
     setArticleContent(content);
     onLocationClick(locationName);
-    handleCountryZoom(latitude, longitude, locationName);
+    // handleCountryZoom(latitude, longitude, locationName);
     
     const legislativeDataUrl = `/api/v1/locations/legislation/${locationName}`;
     try {

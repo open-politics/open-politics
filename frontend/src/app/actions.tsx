@@ -13,6 +13,7 @@ import { Progress } from '@/components/ui/progress';
 import { createStreamableUI } from 'ai/rsc';
 import { createStreamableValue } from 'ai/rsc';
 import { streamText } from 'ai';
+import { ArticleCardProps } from '@/components/ArticleCard';
 
 export interface ServerMessage {
   role: 'user' | 'assistant';
@@ -25,22 +26,52 @@ export interface ClientMessage {
   display: ReactNode;
 }
 
-export async function generateSummaryFromArticles(articles: { content: string }[]) {
+export async function generateSummaryFromArticles(
+  articles: { content: string }[], 
+  ssareArticles: ArticleCardProps[], 
+  analysisType: string
+) {
   const stream = createStreamableValue('');
 
-  const combinedDescriptions = articles.map(article => article.content).join('\n\n');
+  const combinedDescriptions = [
+    ...articles.map(article => article.content.slice(0, 650)),
+    ...ssareArticles.map(article => article.paragraphs.slice(0, 650))
+  ].join('\n\n');
 
   (async () => {
     const { textStream } = await streamText({
       model: openai('gpt-4o'),
-      prompt: `You are an political intelligence analyst. 
-      Provide a distillation of the information of the articles.
-      ${combinedDescriptions}\n\n.
+      prompt: `As a geopolitical analyst specializing in ${analysisType}, create a concise yet comprehensive report on recent global developments based on the following information:
 
-      If the search is in German please return the analysis in the respective language. You start directly with a well structured text and no intro section.
-      Your result:
-      `
-      ,
+${combinedDescriptions}
+
+Your report should follow this structure:
+
+# [Headline: Max 10 words]
+
+**Key Takeaway:** [1-2 sentences]
+
+⚠️ [Immediate concern related to ${analysisType}]
+🌍 [Global impact from a ${analysisType} perspective]
+🔮 [Future implication considering ${analysisType}]
+
+## [Topic 1 relevant to ${analysisType}]
+- Key points
+- Balanced perspective
+- Relevant data/statistics
+
+## [Topic 2 relevant to ${analysisType}]
+- Key points
+- Balanced perspective
+- Relevant data/statistics
+
+## [Topic 3 relevant to ${analysisType}]
+- Key points
+- Balanced perspective
+- Relevant data/statistics
+
+Use professional language and Markdown for clean formatting. Focus on aspects most relevant to ${analysisType}. Begin immediately with the headline, omitting any introductory phrases.
+`
     });
 
     for await (const delta of textStream) {
