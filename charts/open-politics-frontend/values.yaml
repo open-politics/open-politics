@@ -7,3 +7,4 @@ general:
 application:
   frontendDomain: "open-politics.org"
   backendDomain: "api.open-politics.org"
+  ssareApiUrl: "https://ssare-api.open-politics.org"

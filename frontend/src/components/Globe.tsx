@@ -207,7 +207,14 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
         const centroid = target.geoCentroid();
         if (centroid) {
           const currentZoom = chart.get("zoomLevel");
-          const targetZoom = Math.min(currentZoom, 4); // Limit zoom level
+          const targetZoom = Math.min(currentZoom, 2); // Limit zoom level
+
+          chart.animate({ 
+            key: "zoomLevel", 
+            to: 0, 
+            duration: 1500, 
+            easing: am5.ease.inOut(am5.ease.cubic) 
+          });
 
           chart.animate({ 
             key: "rotationX", 

@@ -89,7 +89,7 @@ const LeaderInfo: React.FC<LeaderInfoProps> = ({ leaderInfo, entities }) => {
           {entities
             .filter(entity => selectedEntityTypes.includes(entity.type))
             .map((entity, index) => (
-              <div key={index} className="bg-white p-4 rounded-lg shadow">
+              <div key={index} className="">
                 <h3 className="font-bold">{entity.name}</h3>
                 <p className="text-sm text-gray-600">Type: {entity.type}</p>
                 <p className="text-sm">Article Count: {entity.article_count}</p>
