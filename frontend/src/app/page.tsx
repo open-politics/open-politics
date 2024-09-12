@@ -79,7 +79,7 @@ const HomePage: React.FC<HiProps> = () => {
       </div>
 
       <div className="mt-2 text-center">
-      <p className="text-blue-500 font-bold mb-3">Making political information accessible for everyone.</p>
+      <p className="text-blue-500 font-bold mb-3">Open Source Political Intelligence.</p>
         {/* <p className="mb-3 font-bold">Navigate news with next-gen tools.</p> */}
 
         <div className="space-x-2">
