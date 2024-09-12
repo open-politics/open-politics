@@ -24,9 +24,9 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
             <BlurredDots />
             <div className="flex flex-col min-h-screen relative z-30">
               <Header />
-              <main className="flex-grow relative z-20">
+              <main className="flex-grow relative z-20 overflow-y-auto">
                 <ToastProvider>
-                  <div style={{ overflowX: 'hidden' }}>
+                  <div className="min-h-screen">
                     {children}
                     <ToastViewport />
                   </div>

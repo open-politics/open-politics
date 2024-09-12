@@ -138,7 +138,7 @@ const Desk: React.FC = () => {
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      <div className="relative w-full h-screen overflow-hidden overflow-x-hidden">
+      <div className="relative w-full min-h-screen overflow-x-hidden">
         <div className="absolute top-2 left-8 z-50">
           <h1 suppressHydrationWarning className="text-sm text-gray-400">{currentTime}</h1>
         </div>

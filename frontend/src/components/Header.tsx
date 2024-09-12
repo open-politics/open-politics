@@ -50,7 +50,7 @@ const Header = () => {
 	};
 
 	return (
-		<nav className="sticky top-0 z-50 text-gray-900 dark:text-white">
+		<nav className="sticky top-0 z-50 text-gray-900 dark:text-white bg-opacity-20 backdrop-blur-lg">
 			<div className="max-w-full mx-auto px-4">
 				<div className="flex items-center justify-between">
 					<div className="flex space-x-4 items-center">
