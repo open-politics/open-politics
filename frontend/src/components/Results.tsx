@@ -81,19 +81,19 @@ const Results: React.FC<ResultsProps> = ({ results, summary }) => {
               <TabsTrigger value="ssare">SSARE Results</TabsTrigger>
             </TabsList>
             <TabsContent value="all">
-              <div className="flex-grow overflow-auto max-h-[400px] overflow-y-auto max-w-full rounded-md [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              <div className="flex-grow overflow-auto max-h-[600px] overflow-y-auto max-w-full rounded-md [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {/* Render all results here */}
                 {renderAllResults(tavilyResults, ssareResults)}
               </div>
             </TabsContent>
             <TabsContent value="tavily">
-              <div className="flex-grow overflow-auto max-h-[400px] overflow-y-auto max-w-full rounded-md p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              <div className="flex-grow overflow-auto max-h-[600px] overflow-y-auto max-w-full rounded-md p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {/* Render Tavily results here */}
                 {renderTavilyResults(tavilyResults)}
               </div>
             </TabsContent>
             <TabsContent value="ssare">
-              <div className="flex-grow overflow-auto max-h-[400px] overflow-y-auto max-w-full rounded-md p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              <div className="flex-grow overflow-auto max-h-[600px] overflow-y-auto max-w-full rounded-md p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {/* Render SSARE results here */}
                 {renderSsareResults(ssareResults)}
               </div>
