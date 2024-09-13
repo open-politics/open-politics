@@ -64,22 +64,22 @@ const Header = () => {
                     </div>
 
                     <div className="hidden md:flex items-center space-x-1">
-                        <Link href="/blog/about" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">About</Link>
-                        <Link href="/documentation" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Docs</Link>
-                        <a href="mailto:engage@open-politics.org" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Contact</a>
+                        <Link href="/blog/about" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">About</Link>
+                        <Link href="/documentation" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">Docs</Link>
+                        <a href="mailto:engage@open-politics.org" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">Contact</a>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <a className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground flex items-center cursor-pointer">
+                                <a className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground flex items-center cursor-pointer relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">
                                     <FaGithub className="h-6 w-6" style={{ margin: '0 auto' }} />
                                 </a>
                             </PopoverTrigger>
                             <PopoverContent className="w-40">
                                 <div className="flex flex-col space-y-2">
-                                    <a href="https://github.com/open-politics/open-politics" className="flex items-center space-x-2">
+                                    <a href="https://github.com/open-politics/open-politics" className="flex items-center space-x-2 py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">
                                         <Code className="h-4 w-4" />
                                         <span>Webapp</span>
                                     </a>
-                                    <a href="https://github.com/open-politics/ssare" className="flex items-center space-x-2">
+                                    <a href="https://github.com/open-politics/ssare" className="flex items-center space-x-2 py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">
                                         <Database className="h-4 w-4" />
                                         <span>Data Engine</span>
                                     </a>
@@ -90,18 +90,18 @@ const Header = () => {
                             <>
                                 {user ? (
                                     <>
-                                        <Link href="/desk" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Desk</Link>
-                                        <button onClick={handleLogout} className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Logout</button>
+                                        <Link href="/desk" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">Desk</Link>
+                                        <button onClick={handleLogout} className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">Logout</button>
                                         {user.is_superuser && (
-                                            <Link href="/admin/users" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Admin</Link>
+                                            <Link href="/admin/users" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">Admin</Link>
                                         )}
                                     </>
                                 ) : (
-                                    <Link href="/login" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Login</Link>
+                                    <Link href="/login" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">Login</Link>
                                 )}
                             </>
                         )}
-                        <div className="flex items-center py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground dark:text-white">
+                        <div className="flex items-center py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">
                             {mounted && (
                                 <Switch
                                     checked={theme === 'dark'}
@@ -132,28 +132,28 @@ const Header = () => {
                             </button>
                         </div>
                         <nav className="px-4 pt-4 pb-8">
-                            <Link href="/blog/about" className="block py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">About</Link>
-                            <Link href="/documentation" className="block py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Docs</Link>
-                            <a href="mailto:engage@open-politics.org" className="block py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Contact</a>
-                            <a href="https://github.com/JimVincentW/open-politics" className="flex items-center py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">
+                            <Link href="/blog/about" className="block py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">About</Link>
+                            <Link href="/documentation" className="block py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">Docs</Link>
+                            <a href="mailto:engage@open-politics.org" className="block py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">Contact</a>
+                            <a href="https://github.com/JimVincentW/open-politics" className="flex items-center py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">
                                 <FaGithub className="h-6 w-6 mr-2" />
                             </a>
                             {isClient && !isLoading && (
                                 <>
                                     {user ? (
                                         <>
-                                            <Link href="/desk_synthese" className="block py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Desk</Link>
-                                            <button onClick={handleLogout} className="block w-full text-left py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Logout</button>
+                                            <Link href="/desk_synthese" className="block py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">Desk</Link>
+                                            <button onClick={handleLogout} className="block w-full text-left py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">Logout</button>
                                             {user.is_superuser && (
-                                                <Link href="/admin/users" className="block py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Admin</Link>
+                                                <Link href="/admin/users" className="block py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">Admin</Link>
                                             )}
                                         </>
                                     ) : (
-                                        <Link href="/login" className="block py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground text-gray-700 dark:text-white">Login</Link>
+                                        <Link href="/login" className="block py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-accent after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">Login</Link>
                                     )}
                                 </>
                             )}
-                            <div className="flex items-center justify-between py-4 mt-4 border-t border-gray-200 dark:border-gray-700">
+                            <div className="flex items-center justify-between py-4 mt-4 border-t border-gray-200 dark:border-gray-700 relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-accent after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">
                                 <span className="text-sm font-medium text-gray-700 dark:text-white">Dark Mode</span>
                                 {mounted && (
                                     <Switch
