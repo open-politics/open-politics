@@ -31,7 +31,7 @@ const DocsPage = () => {
             </p>
             <ul className="list-disc list-inside space-y-2">
               <li>
-                <Link href="/blog/posts/1" className="text-blue-600 dark:text-blue-400 hover:underline">
+                <Link href="/blog/posts/approach" className="text-blue-600 dark:text-blue-400 hover:underline">
                   Getting Started
                 </Link>
               </li>

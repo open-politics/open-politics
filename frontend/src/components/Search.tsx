@@ -154,7 +154,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
   return (
     <div className="relative w-full px-4">
       <h2 className="text-xl font-bold mb-2">Search News and all things Politics</h2>
-      <Command className="mx-auto">
+      <Command className="mx-auto bg-transparent hover:bg-transparent">
         <div className="relative">
           <CommandInput
             onKeyDown={(e) => e.key === 'Enter' && handleSearch(inputValue)}

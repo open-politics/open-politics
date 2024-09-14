@@ -25,11 +25,11 @@ const dotsConfig = {
     { color: '#FF00FF', size: '40vw' },
   ],
   '/blog': [
-    { color: '#32CD32', size: '35vw' },
+    { color: '#00FFFF', size: '35vw' },
     { color: '#FFD700', size: '30vw' },
   ],
   '/blog/about': [
-    { color: '#76B900', size: '35vw' },
+    { color: '#00FFFF', size: '35vw' },
     { color: '#DDA0DD', size: '30vw' },
   ],
   '/login': [

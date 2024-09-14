@@ -139,13 +139,13 @@ const Desk: React.FC = () => {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       <div className="relative w-full h-screen overflow-hidden overflow-x-hidden">
-        <div className="absolute top-2 left-8 z-50">
+        <div className="absolute top-2 left-8 z-50"> 
           <h1 suppressHydrationWarning className="text-sm text-gray-400">{currentTime}</h1>
         </div>
         
         {hasEverSearched && (
           <Button
-            className="absolute top-8 left-8 z-50 bg-background/75 backdrop-blur supports-[backdrop-filter]:bg-background/60 hover:background/100"
+            className="absolute top-8 left-8 z-50 relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-500 after:to-purple-500 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 bg-transparent hover:bg-transparent border-none"
             onClick={toggleView}
             variant="outline"
           >
