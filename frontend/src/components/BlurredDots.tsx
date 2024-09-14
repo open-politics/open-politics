@@ -40,6 +40,10 @@ const dotsConfig = {
     { color: '#800080', size: '40vw' },
     { color: '#008000', size: '20vw' },
   ],
+  '/desk_synthese': [
+    { color: '#4169E1', size: '40vw' },
+    { color: '#008000', size: '20vw' },
+  ],
 };
 
 const BlurredDots = () => {

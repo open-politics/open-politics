@@ -34,18 +34,20 @@ export type ArticleCardProps = {
     name: string;
   }>;
   classification: {
+    article_id: string;
+    title: string;
     news_category: string;
     secondary_categories: string[];
     keywords: string[];
     geopolitical_relevance: number;
     legislative_influence_score: number;
     international_relevance_score: number;
-    democratic_process_implications_score: number
-    general_interest_score: number
-    spam_score: number
-    clickbait_score: number
-    fake_news_score: number
-    satire_score: number
+    democratic_process_implications_score: number;
+    general_interest_score: number;
+    spam_score: number;
+    clickbait_score: number;
+    fake_news_score: number;
+    satire_score: number;
   } | null;
 };
 
