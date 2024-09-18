@@ -34,66 +34,13 @@ import DotLoader from 'react-spinners/DotLoader';
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-import LeaderInfo from "./LeaderInfo";
+import EntitiesView from "./EntitiesView";
 import WikipediaView from './WikipediaView';
 import ArticlesView from './ArticlesView';
 
 interface IssueAreasProps {
   locationName: string;
 }
-
-const DataTable = ({ columns, data }) => {
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
-
-  return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <tbody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </tbody>
-      </Table>
-    </div>
-  );
-};
 
 export function IssueAreas({ locationName }: IssueAreasProps) {
   const { data, isLoading, error, fetchArticles, resetArticles } = useLocationData(locationName);
@@ -260,139 +207,139 @@ export function IssueAreas({ locationName }: IssueAreasProps) {
               </CardContent>
             </Card>
           </TabsContent>
-        <TabsContent value="legislative">
-          <Card>
-            <CardHeader>
-              <CardTitle>Legislation for {locationName}</CardTitle>
-              <CardDescription>
-                Recent legislative activities and proposals.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex space-x-2">
-                  <Input
-                    placeholder="Search legislation..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="flex-grow"
-                  />
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Filter by status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Statuses</SelectItem>
-                      <SelectItem value="red">Red</SelectItem>
-                      <SelectItem value="yellow">Yellow</SelectItem>
-                      <SelectItem value="green">Green</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select value={dateFilter} onValueChange={setDateFilter}>
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Filter by date" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Time</SelectItem>
-                      <SelectItem value="last30">Last 30 Days</SelectItem>
-                      <SelectItem value="last90">Last 90 Days</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                {isLoading.legislative || isLoading.entities || isLoading.leaderInfo || isLoading.articles ? (
-                   <div className="flex flex-col items-center justify-center h-full">
-                   <DotLoader color="#000" size={50} />
-                   <p className="mt-4">Legislative data is loading...</p>
-                 </div>
-                ) : error.legislative ? (
-                <p>No legislative data available for {locationName}.</p>
-                ) : filteredLegislativeData.length > 0 ? (
-                  <DataTable columns={legislationColumns} data={filteredLegislativeData} />
-                ) : (
+          <TabsContent value="legislative">
+            <Card>
+              <CardHeader>
+                <CardTitle>Legislation for {locationName}</CardTitle>
+                <CardDescription>
+                  Recent legislative activities and proposals.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex space-x-2">
+                    <Input
+                      placeholder="Search legislation..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="flex-grow"
+                    />
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Filter by status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Statuses</SelectItem>
+                        <SelectItem value="red">Red</SelectItem>
+                        <SelectItem value="yellow">Yellow</SelectItem>
+                        <SelectItem value="green">Green</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select value={dateFilter} onValueChange={setDateFilter}>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Filter by date" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Time</SelectItem>
+                        <SelectItem value="last30">Last 30 Days</SelectItem>
+                        <SelectItem value="last90">Last 90 Days</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {isLoading.legislative || isLoading.entities || isLoading.leaderInfo || isLoading.articles ? (
+                     <div className="flex flex-col items-center justify-center h-full">
+                     <DotLoader color="#000" size={50} />
+                     <p className="mt-4">Legislative data is loading...</p>
+                   </div>
+                  ) : error.legislative ? (
                   <p>No legislative data available for {locationName}.</p>
+                  ) : filteredLegislativeData.length > 0 ? (
+                    <DataTable columns={legislationColumns} data={filteredLegislativeData} />
+                  ) : (
+                    <p>No legislative data available for {locationName}.</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="economic-data">
+            <Card>
+              <CardHeader>
+                <CardTitle>Economic Data for {locationName}</CardTitle>
+                <CardDescription>
+                  Key economic indicators and market trends.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {isLoading.economic || isLoading.entities || isLoading.leaderInfo || isLoading.articles ? (
+                  <div className="flex flex-col items-center justify-center h-full">
+                    <DotLoader color="#000" size={50} />
+                    <p className="mt-4">Economic data is loading...</p>
+                  </div>
+                ) : error.economic ? (
+                  <p>Failed to load economic data.</p>
+                ) : data?.economicData && data.economicData.length > 0 ? (
+                  <>
+                    <div className="mb-4">
+                      <div className="flex flex-wrap gap-2">
+                        {availableIndicators.map(indicator => (
+                          <Button 
+                            key={indicator}
+                            variant={selectedIndicators.includes(indicator) ? "default" : "outline"}
+                            onClick={() => toggleIndicator(indicator)}
+                          >
+                            {indicator}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                    <EconomicDataChart data={data.economicData} selectedIndicators={selectedIndicators} />
+                  </>
+                ) : (
+                  <p>No economic data available for {locationName}.</p>
                 )}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="economic-data">
-      <Card>
-        <CardHeader>
-          <CardTitle>Economic Data for {locationName}</CardTitle>
-          <CardDescription>
-            Key economic indicators and market trends.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {isLoading.economic || isLoading.entities || isLoading.leaderInfo || isLoading.articles ? (
-            <div className="flex flex-col items-center justify-center h-full">
-              <DotLoader color="#000" size={50} />
-              <p className="mt-4">Economic data is loading...</p>
-            </div>
-          ) : error.economic ? (
-            <p>Failed to load economic data.</p>
-          ) : data?.economicData && data.economicData.length > 0 ? (
-            <>
-              <div className="mb-4">
-                <div className="flex flex-wrap gap-2">
-                  {availableIndicators.map(indicator => (
-                    <Button 
-                      key={indicator}
-                      variant={selectedIndicators.includes(indicator) ? "default" : "outline"}
-                      onClick={() => toggleIndicator(indicator)}
-                    >
-                      {indicator}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-              <EconomicDataChart data={data.economicData} selectedIndicators={selectedIndicators} />
-            </>
-          ) : (
-            <p>No economic data available for {locationName}.</p>
-          )}
-        </CardContent>
-      </Card>
-    </TabsContent>
-        <TabsContent value="leader-info">
-          <Card>
-            <CardHeader>
-              <CardTitle>Leaders and Entities for {locationName}</CardTitle>
-              <CardDescription>
-                Current leadership, key political figures, and relevant entities.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {isLoading.leaderInfo || isLoading.entities ? (
-                <div className="flex flex-col items-center justify-center h-full">
-                  <DotLoader color="#000" size={50} />
-                  <p className="mt-4">Loading information...</p>
-                </div>
-              ) : error.leaderInfo || error.entities ? (
-                <p>Failed to load information.</p>
-              ) : data?.leaderInfo && data?.entities ? (
-                <LeaderInfo leaderInfo={data.leaderInfo} entities={data.entities} />
-              ) : (
-                <p>No information available for {locationName}.</p>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="wikipedia">
-          <Card>
-            <CardHeader>
-              <CardTitle>Wikipedia Information for {locationName}</CardTitle>
-              <CardDescription>
-                General information from Wikipedia.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <WikipediaView locationName={locationName} />
-            </CardContent>
-          </Card>
-        </TabsContent>
-          </div>
-        </Tabs>
-      </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="leader-info">
+            <Card>
+              <CardHeader>
+                <CardTitle>Leaders and Entities for {locationName}</CardTitle>
+                <CardDescription>
+                  Current leadership, key political figures, and relevant entities.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLoading.leaderInfo || isLoading.entities ? (
+                  <div className="flex flex-col items-center justify-center h-full">
+                    <DotLoader color="#000" size={50} />
+                    <p className="mt-4">Loading information...</p>
+                  </div>
+                ) : error.leaderInfo || error.entities ? (
+                  <p>Failed to load information.</p>
+                ) : data?.leaderInfo && data?.entities ? (
+                  <EntitiesView leaderInfo={data.leaderInfo} entities={data.entities} />
+                ) : (
+                  <p>No information available for {locationName}.</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="wikipedia">
+            <Card>
+              <CardHeader>
+                <CardTitle>Wikipedia Information for {locationName}</CardTitle>
+                <CardDescription>
+                  General information from Wikipedia.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <WikipediaView locationName={locationName} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </div>
+      </Tabs>
+    </div>
   );
 }

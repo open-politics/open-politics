@@ -36,7 +36,8 @@ OpenAPI.BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
 const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onLocationClick, isBrowseMode, toggleMode, setLegislativeData, setEconomicData, onCountryZoom }, ref) => {
   const chartRef = useRef<am5.Root | null>(null);
   const polygonSeriesRef = useRef<am5map.MapPolygonSeries | null>(null);
-  const pointSeriesRef = useRef<am5map.MapPointSeries | null>(null);
+  const normalPointSeriesRef = useRef<am5map.MapPointSeries | null>(null);
+  const eventsPointSeriesRef = useRef<am5map.MapPointSeries | null>(null);
   const [isClient, setIsClient] = useState(false);
   const [isRotating, setIsRotating] = useState(true);
   const rotationAnimationRef = useRef<any>(null);
@@ -110,24 +111,33 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
     );
     polygonSeriesRef.current = polygonSeries;
 
-    const pointSeries = chart.series.push(
+    // Create separate point series for normal and events GeoJSON data
+    const normalPointSeries = chart.series.push(
       am5map.MapPointSeries.new(root, {
         autoScale: true,
       })
     );
-    pointSeriesRef.current = pointSeries;
+    normalPointSeriesRef.current = normalPointSeries;
+
+    const eventsPointSeries = chart.series.push(
+      am5map.MapPointSeries.new(root, {
+        autoScale: true,
+      })
+    );
+    eventsPointSeriesRef.current = eventsPointSeries;
 
     const fetchGeoJSONData = async (retries = 3) => {
       try {
         const data = await CountriesService.geojsonView();
-        pointSeries.data.setAll(data.features.map((feature: any) => ({
+        normalPointSeries.data.setAll(data.features.map((feature: any) => ({
           geometry: {
             type: "Point",
             coordinates: [feature.geometry.coordinates[1], feature.geometry.coordinates[0]] // Swap coordinates here
           },
           title: feature.properties.name,
           articles: feature.properties.articles,
-          articleCount: feature.properties.article_count
+          articleCount: feature.properties.article_count,
+          events: feature.properties.articles.events
         })));
       } catch (error) {
         console.error('Error fetching GeoJSON data:', error);
@@ -136,7 +146,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
             title: "Fetching data failed",
             description: `Retrying... (${retries} attempts left)`,
           });
-          setTimeout(() => fetchGeoJSONData(retries - 1), 2000); // Retry after 2 seconds
+          setTimeout(() => fetchGeoJSONData(retries - 1), 2000); 
         } else {
           toast({
             title: "Error",
@@ -147,12 +157,72 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
       }
     };
 
-    fetchGeoJSONData();
+    const fetchGeoJSONEventsData = async (eventType: string, retries = 3) => {
+      try {
+        const data = await CountriesService.geojsonEventsView(eventType);
+        eventsPointSeries.data.setAll(data.features.map((feature: any) => ({
+          geometry: {
+            type: "Point",
+            coordinates: [feature.geometry.coordinates[1], feature.geometry.coordinates[0]] // Swap coordinates here
+          },
+          title: feature.properties.name,
+          articles: feature.properties.articles,
+          articleCount: feature.properties.article_count,
+          events: feature.properties.articles.events
+        })));
+      } catch (error) {
+        console.error('Error fetching GeoJSON events data:', error);
+        if (retries > 0) {
+          toast({
+            title: "Fetching data failed",
+            description: `Retrying... (${retries} attempts left)`,
+          });
+          setTimeout(() => fetchGeoJSONEventsData(eventType, retries - 1), 2000); 
+        } else {
+          toast({
+            title: "Error",
+            description: "Failed to fetch GeoJSON events data. Please try refreshing the page.",
+            variant: "destructive",
+          });
+        }
+      }
+    };
 
-    pointSeries.bullets.push(function() {
+    fetchGeoJSONData();
+    fetchGeoJSONEventsData("Elections"); // Example event type
+
+    normalPointSeries.bullets.push(function() {
       const circle = am5.Circle.new(root, {
         radius: 1.5,
-        fill: am5.color(0xcc0000),
+        fill: am5.color(0xcc0000), // Default color for normal GeoJSON
+        fillOpacity: 0.5,
+        tooltipText: "{title}\n{articles[0].headline}",
+      });
+
+      circle.events.on("click", function(ev) {
+        const dataItem = ev.target.dataItem as am5.DataItem<DataContext>;
+        const articles = dataItem.dataContext.articles;
+        const articleContent = articles.map((article: any) => `<a href="${article.url}" target="_blank">${article.headline}</a>`).join('<hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">');
+        const content = `<div>Articles for location: <strong>${dataItem.dataContext.title}</strong><br/>${articleContent}</div>`;
+        setArticleContent(content);
+        onLocationClick(dataItem.dataContext.title);
+      });
+
+      circle.states.create("hover", {
+        fill: am5.color(0x0000ff),
+        fillOpacity: 1,
+        tooltipText: "{title}\n{articles[0].headline}",
+      });
+
+      return am5.Bullet.new(root, {
+        sprite: circle
+      });
+    });
+
+    eventsPointSeries.bullets.push(function() {
+      const circle = am5.Circle.new(root, {
+        radius: 1.5,
+        fill: am5.color(0x00cc00), // Color for events GeoJSON
         fillOpacity: 0.5,
         tooltipText: "{title}\n{articles[0].headline}",
       });
@@ -257,35 +327,10 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
 
   useImperativeHandle(ref, () => ({
     loadGeoJSON: () => {
-      const fetchGeoJSONData = async (retries = 3) => {
-        try {
-          const data = await CountriesService.geojsonView();
-          pointSeriesRef.current.data.setAll(data.features.map((feature) => ({
-            geometry: {
-              type: "Point",
-              coordinates: [feature.geometry.coordinates[1], feature.geometry.coordinates[0]] // Swap coordinates because amcharts is a b
-            },
-            title: feature.properties.location,
-            articles: feature.properties.articles
-          })));
-        } catch (error) {
-          console.error('Error fetching GeoJSON data:', error);
-          if (retries > 0) {
-            toast({
-              title: "Fetching data failed",
-              description: `Retrying... (${retries} attempts left)`,
-            });
-            setTimeout(() => fetchGeoJSONData(retries - 1), 2000); 
-          } else {
-            toast({
-              title: "Error",
-              description: "Failed to fetch GeoJSON data. Please try refreshing the page.",
-              variant: "destructive",
-            });
-          }
-        }
-      };
       fetchGeoJSONData();
+    },
+    loadGeoJSONEvents: (eventType: string) => {
+      fetchGeoJSONEventsData(eventType);
     },
     zoomToCountry: (latitude: number, longitude: number, countryName: string) => {
       handleCountryZoom(latitude, longitude, countryName);
@@ -392,6 +437,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
   };
 
   if (!isClient) return null;
+
 
   return (
     <div className="relative flex flex-col items-center">

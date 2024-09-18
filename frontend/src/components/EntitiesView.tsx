@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from "@/components/ui/button";
 import {
@@ -9,6 +9,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useEntityData } from '@/hooks/useEntity';
+import DotLoader from 'react-spinners/DotLoader';
 
 interface Entity {
   name: string;
@@ -18,7 +20,7 @@ interface Entity {
   relevance_score: number;
 }
 
-interface LeaderInfoProps {
+interface EntitiesViewProps {
   leaderInfo: {
     state: string;
     headOfState: string;
@@ -29,16 +31,23 @@ interface LeaderInfoProps {
   entities: Entity[];
 }
 
-const LeaderInfo: React.FC<LeaderInfoProps> = ({ leaderInfo, entities }) => {
-  const [selectedEntityTypes, setSelectedEntityTypes] = useState<string[]>([
-    'PERSON',
-  ]);
+const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities }) => {
+  const [selectedEntityTypes, setSelectedEntityTypes] = useState<string[]>(['PERSON']);
+  const [selectedEntity, setSelectedEntity] = useState<string | null>(null);
+  const { data, isLoading, error, fetchArticles, resetArticles } = useEntityData(selectedEntity);
 
   const toggleEntityType = (type: string) => {
     setSelectedEntityTypes(prev => 
       prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
     );
   };
+
+  useEffect(() => {
+    if (selectedEntity) {
+      resetArticles();
+      fetchArticles(0, 20);
+    }
+  }, [selectedEntity, fetchArticles, resetArticles]);
 
   return (
     <div className="space-y-8">
@@ -89,7 +98,7 @@ const LeaderInfo: React.FC<LeaderInfoProps> = ({ leaderInfo, entities }) => {
           {entities
             .filter(entity => selectedEntityTypes.includes(entity.type))
             .map((entity, index) => (
-              <div key={index} className="">
+              <div key={index} className="cursor-pointer" onClick={() => setSelectedEntity(entity.name)}>
                 <h3 className="font-bold">{entity.name}</h3>
                 <p className="text-sm text-gray-600">Type: {entity.type}</p>
                 <p className="text-sm">Article Count: {entity.article_count}</p>
@@ -99,8 +108,33 @@ const LeaderInfo: React.FC<LeaderInfoProps> = ({ leaderInfo, entities }) => {
             ))}
         </div>
       </div>
+      {selectedEntity && (
+        <div className="articles-info">
+          <h2 className="text-center text-xl font-bold mb-4">Articles for {selectedEntity}</h2>
+          {isLoading.articles ? (
+            <div className="flex flex-col items-center justify-center h-full">
+              <DotLoader color="#000" size={50} />
+              <p className="mt-4">Loading articles...</p>
+            </div>
+          ) : data.articles.length > 0 ? (
+            <div className="space-y-2">
+              {data.articles.map((article) => (
+                <div key={article.id} className="border p-2 rounded">
+                  <a href={article.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                    {article.headline}
+                  </a>
+                  <p>{article.source}</p>
+                  <p>{new Date(article.insertion_date).toLocaleDateString()}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p>No articles found for {selectedEntity}.</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };
 
-export default LeaderInfo;
+export default EntitiesView;

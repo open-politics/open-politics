@@ -32,7 +32,7 @@ export interface DocLink {
         {
           label: "Our Approach",
           href: "/blog/posts/approach",
-          isPublished: true,
+          isPublished: false,
         },
       ],
     },
@@ -54,7 +54,7 @@ export interface DocLink {
         {
           label: "Web Application",
           href: "/docs/tech-stack/web-app",
-          isPublished: true,
+          isPublished: false,
         },
       ],
     },

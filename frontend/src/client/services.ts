@@ -575,6 +575,24 @@ query,
 		});
 	}
 
+	
+	/**  
+	 * geojson_eventsView
+	 * 
+	 */
+
+	public static geojsonEventsView(eventType: string): CancelablePromise<unknown> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/locations/geojson_events/',
+            query: {
+                event_type: eventType
+            },
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
 	/**
 	 * Get Leader Info
 	 * @returns unknown Successful Response

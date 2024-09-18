@@ -48,6 +48,7 @@ export type ArticleCardProps = {
     clickbait_score: number;
     fake_news_score: number;
     satire_score: number;
+    event_type: string;
   } | null;
 };
 
@@ -81,6 +82,7 @@ export function ArticleCard({ id, headline, paragraphs, url, source, insertion_d
                 <p>🎣 Clickbait Score: <span className={`font-bold ${getColorClass(classification.clickbait_score, true)}`}>{classification.clickbait_score.toFixed(2)}</span></p>
                 <p>🛑 Fake News Score: <span className={`font-bold ${getColorClass(classification.fake_news_score, true)}`}>{classification.fake_news_score.toFixed(2)}</span></p>
                 <p>😂 Satire Score: <span className={`font-bold ${getColorClass(classification.satire_score, true)}`}>{classification.satire_score.toFixed(2)}</span></p>
+                <p>🔍 Event Type: {classification.event_type}</p>
               </div>
             )}
             <div className="flex justify-between text-xs text-muted-foreground">
@@ -116,6 +118,7 @@ export function ArticleCard({ id, headline, paragraphs, url, source, insertion_d
               <p>🎣 Clickbait Score: <span className={`font-bold ${getColorClass(classification.clickbait_score, true)}`}>{classification.clickbait_score.toFixed(2)}</span></p>
               <p>🛑 Fake News Score: <span className={`font-bold ${getColorClass(classification.fake_news_score, true)}`}>{classification.fake_news_score.toFixed(2)}</span></p>
               <p>😂 Satire Score: <span className={`font-bold ${getColorClass(classification.satire_score, true)}`}>{classification.satire_score.toFixed(2)}</span></p>
+              <p>🔍 Event Type: {classification.event_type}</p>
             </div>
           )}
           <p className="text-sm mb-4">{paragraphs}</p>

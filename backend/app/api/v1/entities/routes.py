@@ -69,14 +69,6 @@ async def geojson_view():
     request = requests.get("http://geo_service:3690/geojson", verify=False)
     return request.json()
 
-@router.get("/geojson_events/")
-async def geojson_events_view(event_type: str = Query(...)):
-    request = requests.get(f"http://geo_service:3690/geojson_events/{event_type}", verify=False)
-    if request.status_code == 200:
-        return request.json()
-    else:
-        raise HTTPException(status_code=request.status_code, detail="Unable to fetch events GeoJSON data")
-
 @router.get("/entities/{state}", response_model=None)
 async def get_location_entities(state: str, skip: int = 0, limit: int = 50):
     try:
