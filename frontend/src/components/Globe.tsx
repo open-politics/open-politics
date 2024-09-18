@@ -44,6 +44,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
   const chartInstanceRef = useRef<am5map.MapChart | null>(null);
   const [zoomLevel, setZoomLevel] = useState(0.1);
   const { toast } = useToast(); 
+  const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
 
   const initialRotationX = 0;
   const initialRotationY = 0;
@@ -66,19 +67,52 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
     }
   };
 
+  const fetchGeoJSONEventsData = async (eventTypes: string[], retries = 3) => {
+    try {
+      const promises = eventTypes.map(eventType => CountriesService.geojsonEventsView(eventType));
+      const results = await Promise.all(promises);
+      const allFeatures = results.flatMap(result => result.features);
+      eventsPointSeriesRef.current?.data.setAll(allFeatures.map((feature: any) => ({
+        geometry: {
+          type: "Point",
+          coordinates: [feature.geometry.coordinates[1], feature.geometry.coordinates[0]] // Swap coordinates here
+        },
+        title: feature.properties.name,
+        articles: feature.properties.articles,
+        articleCount: feature.properties.article_count,
+        events: feature.properties.articles.events
+      })));
+    } catch (error) {
+      console.error('Error fetching GeoJSON events data:', error);
+      if (retries > 0) {
+        toast({
+          title: "Fetching data failed",
+          description: `Retrying... (${retries} attempts left)`,
+        });
+        setTimeout(() => fetchGeoJSONEventsData(eventTypes, retries - 1), 2000); 
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to fetch GeoJSON events data. Please try refreshing the page.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   useLayoutEffect(() => {
     if (!isClient) return;
-
+  
     const root = am5.Root.new("chartdiv", {
       useSafeResolution: false
     });
-
+  
     chartRef.current = root;
-
+  
     root.setThemes([
       am5themes_Animated.new(root)
     ]);
-
+  
     const chart = root.container.children.push(
       am5map.MapChart.new(root, {
         panX: "rotateX",
@@ -90,7 +124,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
       })
     );
     chartInstanceRef.current = chart;
-
+  
     const backgroundSeries = chart.series.push(
       am5map.MapPolygonSeries.new(root, {})
     );
@@ -103,14 +137,14 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
     backgroundSeries.data.push({
       geometry: am5map.getGeoRectangle(90, 180, -90, -180),
     });
-
+  
     const polygonSeries = chart.series.push(
       am5map.MapPolygonSeries.new(root, {
         geoJSON: am5geodata_worldLow,
       })
     );
     polygonSeriesRef.current = polygonSeries;
-
+  
     // Create separate point series for normal and events GeoJSON data
     const normalPointSeries = chart.series.push(
       am5map.MapPointSeries.new(root, {
@@ -118,14 +152,94 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
       })
     );
     normalPointSeriesRef.current = normalPointSeries;
+  
+    const event_types = [
+      { type: "Elections", emoji: "🗳️", color: 0xFF0000 }, // Red
+      { type: "Protests", emoji: "✊", color: 0x00FF00 }, // Green
+      { type: "Economic", emoji: "💰", color: 0x0000FF }, // Blue
+      { type: "Legal", emoji: "⚖️", color: 0xFFFF00 }, // Yellow
+      { type: "Social", emoji: "👥", color: 0xFF00FF }, // Magenta
+      { type: "Crisis", emoji: "🚨", color: 0x00FFFF }, // Cyan
+      { type: "War", emoji: "⚔️", color: 0xFFA500 }, // Orange
+      { type: "Peace", emoji: "☮️", color: 0x800080 }, // Purple
+      { type: "Diplomacy", emoji: "🤝", color: 0x008000 }, // Dark Green
+      { type: "Technology", emoji: "💻", color: 0xFFC0CB }, // Pink
+      { type: "Science", emoji: "🔬", color: 0xA52A2A }, // Brown
+      { type: "Culture", emoji: "🎨", color: 0xFFD700 }, // Gold
+      { type: "Sports", emoji: "⚽", color: 0x000000 }  // Black
+    ];
+  
+    const eventSeriesMap = new Map<string, am5map.MapPointSeries>();
+  
+    event_types.forEach(event => {
+      const eventSeries = chart.series.push(
+        am5map.MapPointSeries.new(root, {
+          autoScale: true,
+        })
+      );
+    
+      // eventSeries.bullets.push(function() {
+      //   const picture = am5.Picture.new(root, {
+      //     width: 10,
+      //     height: 10,
+      //     centerX: am5.p50,
+      //     centerY: am5.p50,
+      //     src: `data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><text x="0" y="15" font-size="10">${encodeURIComponent(event.emoji)}</text></svg>`,
+      //   });
 
-    const eventsPointSeries = chart.series.push(
-      am5map.MapPointSeries.new(root, {
-        autoScale: true,
-      })
-    );
-    eventsPointSeriesRef.current = eventsPointSeries;
+      eventSeries.bullets.push(function() {
+        const circle = am5.Circle.new(root, {
+          radius: 1.5,
+          fill: am5.color(event.color), // Use the specific color for each event
+          fillOpacity: 0.8,
+          tooltipText: "{title}\n{articles[0].headline}",
+        });
+  
+    
+        // picture.events.on("click", function(ev) {
+        //   const dataItem = ev.target.dataItem as am5.DataItem<DataContext>;
+        //   const articles = dataItem.dataContext.articles;
+        //   const articleContent = articles.map((article: any) => `<a href="${article.url}" target="_blank">${article.headline}</a>`).join('<hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">');
+        //   const content = `<div>Articles for location: <strong>${dataItem.dataContext.title}</strong><br/>${articleContent}</div>`;
+        //   setArticleContent(content);
+        //   onLocationClick(dataItem.dataContext.title);
+        // });
 
+        circle.events.on("click", function(ev) {
+          const dataItem = ev.target.dataItem as am5.DataItem<DataContext>;
+          const articles = dataItem.dataContext.articles;
+          const articleContent = articles.map((article: any) => `<a href="${article.url}" target="_blank">${article.headline}</a>`).join('<hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">');
+          const content = `<div>Articles for location: <strong>${dataItem.dataContext.title}</strong><br/>${articleContent}</div>`;
+          setArticleContent(content);
+          onLocationClick(dataItem.dataContext.title);
+        });
+
+        // on hover display tooltip with event type
+    
+        // picture.states.create("hover", {
+        //   scale: 1.2
+        // });
+
+        
+    
+        // return am5.Bullet.new(root, {
+        //   sprite: picture
+        // });
+
+          circle.states.create("hover", {
+          fill: am5.color(0x0000ff),
+          fillOpacity: 1,
+          tooltipText: "{title}\n{articles[0].headline}",
+        });
+  
+        return am5.Bullet.new(root, {
+          sprite: circle
+        });
+      });
+    
+      eventSeriesMap.set(event.type, eventSeries);
+    });
+  
     const fetchGeoJSONData = async (retries = 3) => {
       try {
         const data = await CountriesService.geojsonView();
@@ -156,20 +270,27 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
         }
       }
     };
-
-    const fetchGeoJSONEventsData = async (eventType: string, retries = 3) => {
+  
+    const fetchGeoJSONEventsData = async (eventTypes: string[], retries = 3) => {
       try {
-        const data = await CountriesService.geojsonEventsView(eventType);
-        eventsPointSeries.data.setAll(data.features.map((feature: any) => ({
-          geometry: {
-            type: "Point",
-            coordinates: [feature.geometry.coordinates[1], feature.geometry.coordinates[0]] // Swap coordinates here
-          },
-          title: feature.properties.name,
-          articles: feature.properties.articles,
-          articleCount: feature.properties.article_count,
-          events: feature.properties.articles.events
-        })));
+        const promises = eventTypes.map(eventType => CountriesService.geojsonEventsView(eventType));
+        const results = await Promise.all(promises);
+        results.forEach((result, index) => {
+          const eventType = eventTypes[index];
+          const eventSeries = eventSeriesMap.get(eventType);
+          if (eventSeries) {
+            eventSeries.data.setAll(result.features.map((feature: any) => ({
+              geometry: {
+                type: "Point",
+                coordinates: [feature.geometry.coordinates[1], feature.geometry.coordinates[0]] // Swap coordinates here
+              },
+              title: feature.properties.name,
+              articles: feature.properties.articles,
+              articleCount: feature.properties.article_count,
+              events: feature.properties.articles.events
+            })));
+          }
+        });
       } catch (error) {
         console.error('Error fetching GeoJSON events data:', error);
         if (retries > 0) {
@@ -177,7 +298,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
             title: "Fetching data failed",
             description: `Retrying... (${retries} attempts left)`,
           });
-          setTimeout(() => fetchGeoJSONEventsData(eventType, retries - 1), 2000); 
+          setTimeout(() => fetchGeoJSONEventsData(eventTypes, retries - 1), 2000); 
         } else {
           toast({
             title: "Error",
@@ -187,18 +308,18 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
         }
       }
     };
-
+  
     fetchGeoJSONData();
-    fetchGeoJSONEventsData("Elections"); // Example event type
-
+    fetchGeoJSONEventsData(event_types.map(event => event.type));
+  
     normalPointSeries.bullets.push(function() {
       const circle = am5.Circle.new(root, {
         radius: 1.5,
         fill: am5.color(0xcc0000), // Default color for normal GeoJSON
-        fillOpacity: 0.5,
+        fillOpacity: 1,
         tooltipText: "{title}\n{articles[0].headline}",
       });
-
+  
       circle.events.on("click", function(ev) {
         const dataItem = ev.target.dataItem as am5.DataItem<DataContext>;
         const articles = dataItem.dataContext.articles;
@@ -207,46 +328,18 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
         setArticleContent(content);
         onLocationClick(dataItem.dataContext.title);
       });
-
+  
       circle.states.create("hover", {
         fill: am5.color(0x0000ff),
         fillOpacity: 1,
         tooltipText: "{title}\n{articles[0].headline}",
       });
-
+  
       return am5.Bullet.new(root, {
         sprite: circle
       });
     });
-
-    eventsPointSeries.bullets.push(function() {
-      const circle = am5.Circle.new(root, {
-        radius: 1.5,
-        fill: am5.color(0x00cc00), // Color for events GeoJSON
-        fillOpacity: 0.5,
-        tooltipText: "{title}\n{articles[0].headline}",
-      });
-
-      circle.events.on("click", function(ev) {
-        const dataItem = ev.target.dataItem as am5.DataItem<DataContext>;
-        const articles = dataItem.dataContext.articles;
-        const articleContent = articles.map((article: any) => `<a href="${article.url}" target="_blank">${article.headline}</a>`).join('<hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">');
-        const content = `<div>Articles for location: <strong>${dataItem.dataContext.title}</strong><br/>${articleContent}</div>`;
-        setArticleContent(content);
-        onLocationClick(dataItem.dataContext.title);
-      });
-
-      circle.states.create("hover", {
-        fill: am5.color(0x0000ff),
-        fillOpacity: 1,
-        tooltipText: "{title}\n{articles[0].headline}",
-      });
-
-      return am5.Bullet.new(root, {
-        sprite: circle
-      });
-    });
-
+  
     polygonSeries.mapPolygons.template.setAll({
       tooltipText: "{name}",
       toggleKey: "active",
@@ -256,20 +349,20 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
       stroke: am5.color(0x0e1a36), 
       strokeWidth: 0.45,
     });
-
+  
     polygonSeries.mapPolygons.template.states.create("hover", {
       fill: am5.color(0x1E40AF),
     });
-
+  
     polygonSeries.mapPolygons.template.states.create("active", {
       fill: am5.color(0x38BDF8),
     });
-
+  
     let previousPolygon: am5map.MapPolygon | null = null;
-
+  
     polygonSeries.mapPolygons.template.on("active", async (active, target) => {
       if (!target) return;
-
+  
       if (previousPolygon && previousPolygon !== target) {
         previousPolygon.set("active", false);
       }
@@ -277,15 +370,15 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
         const centroid = target.geoCentroid();
         if (centroid) {
           const currentZoom = chart.get("zoomLevel");
-          const targetZoom = Math.min(currentZoom, 2); // Limit zoom level
-
+          const targetZoom = Math.min(currentZoom, 4); // Limit zoom level
+  
           chart.animate({ 
             key: "zoomLevel", 
             to: 0, 
             duration: 1500, 
             easing: am5.ease.inOut(am5.ease.cubic) 
           });
-
+  
           chart.animate({ 
             key: "rotationX", 
             to: -centroid.longitude, 
@@ -305,7 +398,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
             easing: am5.ease.inOut(am5.ease.cubic) 
           });
         }
-
+  
         const locationName = target.dataItem?.dataContext?.name;
         if (centroid && locationName) {
           await handleLocationSelection(centroid.latitude, centroid.longitude, locationName);
@@ -313,30 +406,27 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
       }
       previousPolygon = target;
     });
-
+  
     polygonSeries.events.on("datavalidated", function() {
       chart.goHome();
     });
-
+  
     startRotationAnimation();
-
+  
     return () => {
       root.dispose();
     };
-  }, [geojsonUrl, isClient]);
+  }, [isClient]);
 
   useImperativeHandle(ref, () => ({
-    loadGeoJSON: () => {
-      fetchGeoJSONData();
-    },
     loadGeoJSONEvents: (eventType: string) => {
-      fetchGeoJSONEventsData(eventType);
+      fetchGeoJSONEventsData([eventType]);
     },
     zoomToCountry: (latitude: number, longitude: number, countryName: string) => {
       handleCountryZoom(latitude, longitude, countryName);
     }
   }));
-  
+
   const handleCountryZoom = (latitude: number, longitude: number, countryName: string) => {
     if (chartInstanceRef.current) {
       chartInstanceRef.current.animate({ key: "rotationX", to: -longitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
@@ -391,6 +481,19 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
     }
   };
 
+  useEffect(() => {
+    if (selectedEvents.length > 0) {
+      fetchGeoJSONEventsData(selectedEvents);
+    }
+  }, [selectedEvents]);
+
+  const handleEventChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, checked } = event.target;
+    setSelectedEvents(prev =>
+      checked ? [...prev, value] : prev.filter(eventType => eventType !== value)
+    );
+  };
+
   const handleHome = () => {
     if (chartInstanceRef.current) {
       if (rotationAnimationRef.current) {
@@ -438,7 +541,6 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
 
   if (!isClient) return null;
 
-
   return (
     <div className="relative flex flex-col items-center">
       <div id="chartdiv" className="w-full h-96 sm:h-128 mt-16 relative z-0">
@@ -470,6 +572,27 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
                 className="w-full"
               />
               <span className="text-white bg-transparent ml-2">-  +</span>
+            </div>
+            <div className="flex flex-col items-start mt-2 w-full">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  value="Elections"
+                  onChange={handleEventChange}
+                  className="mr-2"
+                />
+                Elections
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  value="Protests"
+                  onChange={handleEventChange}
+                  className="mr-2"
+                />
+                Protests
+              </label>
+              {/* Add more checkboxes as needed */}
             </div>
           </PopoverContent>
         </Popover>

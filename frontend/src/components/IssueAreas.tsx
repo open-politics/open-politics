@@ -37,6 +37,7 @@ import { useToast } from "@/components/ui/use-toast";
 import EntitiesView from "./EntitiesView";
 import WikipediaView from './WikipediaView';
 import ArticlesView from './ArticlesView';
+import DataTable from "./DataTable";
 
 interface IssueAreasProps {
   locationName: string;
