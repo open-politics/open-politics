@@ -133,8 +133,9 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
     );
     backgroundSeries.mapPolygons.template.setAll({
       fill: am5.color(0xDCDCDC),
-      fillOpacity: .05,
+      fillOpacity: 0.05,
       stroke: am5.color(0x1e90ff),
+      strokeWidth: 0.2,
       blur: 0.5,
     });
     backgroundSeries.data.push({
@@ -157,20 +158,20 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
     normalPointSeriesRef.current = normalPointSeries;
   
     const event_types = [
-      { type: "Elections", emoji: "🗳️", color: 0x39FF14 }, // Neon Green
-      { type: "Protests", emoji: "✊", color: 0x00FF00 }, // Green
-      { type: "Economic", emoji: "💰", color: 0x0000FF }, // Blue
-      // { type: "Legal", emoji: "⚖️", color: 0xFFFF00 }, // Yellow
-      { type: "Social", emoji: "👥", color: 0xFF00FF }, // Magenta
-      { type: "Crisis", emoji: "🚨", color: 0x000000 }, // Black
-      { type: "War", emoji: "⚔️", color: 0xFFA500 }, // Orange
-      { type: "Peace", emoji: "☮️", color: 0x800080 }, // Purple
-      // { type: "Diplomacy", emoji: "🤝", color: 0x008000 }, // Dark Green
-      // { type: "Technology", emoji: "💻", color: 0xFFC0CB }, // Pink
-      // { type: "Science", emoji: "🔬", color: 0xA52A2A }, // Brown
-      // { type: "Culture", emoji: "🎨", color: 0xFFD700 }, // Gold
-      // { type: "Sports", emoji: "⚽", color: 0x000000 }  // Black
-    ];
+      { type: "Elections", emoji: "🗳️", color: "#4CAF50" }, // Darker Green
+      { type: "Protests", emoji: "✊", color: "#2196F3" }, // Darker Blue
+      { type: "Economic", emoji: "💰", color: "#FF9800" }, // Darker Orange
+      // { type: "Legal", emoji: "⚖️", color: "#FFFF00" }, // Yellow
+      { type: "Social", emoji: "👥", color: "#E91E63" }, // Darker Pink
+      { type: "Crisis", emoji: "🚨", color: "#F44336" }, // Darker Red
+      { type: "War", emoji: "⚔️", color: "#FF5722" }, // Darker Orange-Red
+      { type: "Peace", emoji: "☮️", color: "#9C27B0" }, // Darker Purple
+      // { type: "Diplomacy", emoji: "🤝", color: "#008000" }, // Dark Green
+      // { type: "Technology", emoji: "💻", color: "#FFC0CB" }, // Pink
+      // { type: "Science", emoji: "🔬", color: "#A52A2A" }, // Brown
+      // { type: "Culture", emoji: "🎨", color: "#FFD700" }, // Gold
+      // { type: "Sports", emoji: "⚽", color: "#000000" }  // Black
+  ];
   
     const eventSeriesMap = new Map<string, am5map.MapPointSeries>();
   
@@ -192,11 +193,10 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
 
       eventSeries.bullets.push(function() {
         const circle = am5.Circle.new(root, {
-          radius: 1.2,
+          radius: 1.5,
+          dx: 4.5,
           fill: am5.color(event.color), // Use the specific color for each event
           fillOpacity: 1,
-          stroke: am5.color(0x000000), // Black stroke
-          strokeWidth: 0.5,
           tooltipText: "Location: {title}\nEvent: " + event.type
         });
   
@@ -318,12 +318,12 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
     fetchGeoJSONEventsData(event_types.map(event => event.type));
   
     normalPointSeries.bullets.push(function() {
-      const circle = am5.Circle.new(root, {
-        radius: 1.5,
-        fill: am5.color(0x00ffff), // Default color for normal GeoJSON
+      const circle = am5.Rectangle.new(root, {
+        width: 2,
+        height: 0.8,
+        dx: -4,
+        fill: am5.color(0x000000), // Standard color for normal articles (Black)
         fillOpacity: 1,
-        stroke: am5.color(0x000000), // Black stroke
-        strokeWidth: 0.5,
         tooltipText: "{title}\n{articles[0].headline}",
       });
   
@@ -352,7 +352,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
       toggleKey: "active",
       interactive: true,
       fill: am5.color(0xfcfcfc),
-      fillOpacity: 1,
+      fillOpacity: 0.85,
       stroke: am5.color(0x0e1a36), 
       strokeWidth: 0.45,
     });
