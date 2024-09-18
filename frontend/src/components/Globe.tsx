@@ -14,6 +14,8 @@ import { Animations } from "@amcharts/amcharts5/.internal/core/util/Animation";
 import { CountriesService } from 'src/client'; // Import the CountriesService
 import { useToast } from "@/components/ui/use-toast"; // Import useToast
 import { OpenAPI } from 'src/client';
+import MapLeged from './MapLeged';
+import { Locate } from 'lucide-react';
 
 interface GlobeProps {
   geojsonUrl: string;
@@ -45,6 +47,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
   const [zoomLevel, setZoomLevel] = useState(0.1);
   const { toast } = useToast(); 
   const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
+  const [isLegendVisible, setLegendVisible] = useState(true);
 
   const initialRotationX = 0;
   const initialRotationY = 0;
@@ -154,19 +157,19 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
     normalPointSeriesRef.current = normalPointSeries;
   
     const event_types = [
-      { type: "Elections", emoji: "🗳️", color: 0xFF0000 }, // Red
+      { type: "Elections", emoji: "🗳️", color: 0x39FF14 }, // Neon Green
       { type: "Protests", emoji: "✊", color: 0x00FF00 }, // Green
       { type: "Economic", emoji: "💰", color: 0x0000FF }, // Blue
-      { type: "Legal", emoji: "⚖️", color: 0xFFFF00 }, // Yellow
+      // { type: "Legal", emoji: "⚖️", color: 0xFFFF00 }, // Yellow
       { type: "Social", emoji: "👥", color: 0xFF00FF }, // Magenta
-      { type: "Crisis", emoji: "🚨", color: 0x00FFFF }, // Cyan
+      { type: "Crisis", emoji: "🚨", color: 0x000000 }, // Black
       { type: "War", emoji: "⚔️", color: 0xFFA500 }, // Orange
       { type: "Peace", emoji: "☮️", color: 0x800080 }, // Purple
-      { type: "Diplomacy", emoji: "🤝", color: 0x008000 }, // Dark Green
-      { type: "Technology", emoji: "💻", color: 0xFFC0CB }, // Pink
-      { type: "Science", emoji: "🔬", color: 0xA52A2A }, // Brown
-      { type: "Culture", emoji: "🎨", color: 0xFFD700 }, // Gold
-      { type: "Sports", emoji: "⚽", color: 0x000000 }  // Black
+      // { type: "Diplomacy", emoji: "🤝", color: 0x008000 }, // Dark Green
+      // { type: "Technology", emoji: "💻", color: 0xFFC0CB }, // Pink
+      // { type: "Science", emoji: "🔬", color: 0xA52A2A }, // Brown
+      // { type: "Culture", emoji: "🎨", color: 0xFFD700 }, // Gold
+      // { type: "Sports", emoji: "⚽", color: 0x000000 }  // Black
     ];
   
     const eventSeriesMap = new Map<string, am5map.MapPointSeries>();
@@ -189,9 +192,11 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
 
       eventSeries.bullets.push(function() {
         const circle = am5.Circle.new(root, {
-          radius: 1.5,
+          radius: 1.2,
           fill: am5.color(event.color), // Use the specific color for each event
-          fillOpacity: 0.8,
+          fillOpacity: 1,
+          stroke: am5.color(0x000000), // Black stroke
+          strokeWidth: 0.5,
           tooltipText: "Location: {title}\nEvent: " + event.type
         });
   
@@ -315,8 +320,10 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
     normalPointSeries.bullets.push(function() {
       const circle = am5.Circle.new(root, {
         radius: 1.5,
-        fill: am5.color(0xcc0000), // Default color for normal GeoJSON
+        fill: am5.color(0x00ffff), // Default color for normal GeoJSON
         fillOpacity: 1,
+        stroke: am5.color(0x000000), // Black stroke
+        strokeWidth: 0.5,
         tooltipText: "{title}\n{articles[0].headline}",
       });
   
@@ -545,6 +552,24 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
   return (
     <div className="relative flex flex-col items-center">
       <div id="chartdiv" className="w-full h-96 sm:h-128 mt-16 relative z-0">
+          <div className="absolute bottom-36 left-24 z-20">
+            <Button 
+              className="text-pink-400 w-14 h-12" 
+              variant="outline" 
+              onClick={() => setLegendVisible(prev => !prev)}
+            >
+              <div className="relative">
+                <Locate className="w-6 h-6" />
+              </div>
+            </Button>
+            {isLegendVisible && (
+              <div className="absolute left-0 mt-2 shadow-lg rounded-lg p-4 bg-transparent backdrop-blur-lg">
+                <MapLeged />
+              </div>
+            )}
+          </div>
+
+
         <Popover>
           <PopoverTrigger asChild>
             <Button className="bg-background absolute bottom-0 left-0 w-14 h-12 z-20 rounded-tl-none rounded-bl-none rounded-tr-md rounded-br-md" variant="outline">

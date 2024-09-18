@@ -8,6 +8,7 @@ import { AI } from './actions';
 import { ReactNode } from 'react';
 import Footer from '@/components/Footer';
 import BlurredDots from '@/components/BlurredDots';
+import { SelectedArticlesView } from '@/components/SelectedArticlesView';
 
 const fontSans = FontSans({
   subsets: ["latin"],

@@ -15,6 +15,7 @@ import withAuth from '@/hooks/withAuth';
 import LocationDetailPanel from '@/components/LocationDetailPanel';
 import { SSAREDashboard } from '../hq/page';
 import { ChevronUp, ChevronDown } from 'lucide-react';
+import { ChatWithContext } from '@/components/ChatWithContext';
 
 const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
