@@ -192,7 +192,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
           radius: 1.5,
           fill: am5.color(event.color), // Use the specific color for each event
           fillOpacity: 0.8,
-          tooltipText: "{title}\n{articles[0].headline}",
+          tooltipText: "Location: {title}\nEvent: " + event.type
         });
   
     
@@ -229,7 +229,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
           circle.states.create("hover", {
           fill: am5.color(0x0000ff),
           fillOpacity: 1,
-          tooltipText: "{title}\n{articles[0].headline}",
+          tooltipText: "Location: {title}\nEvent: " + event.type
         });
   
         return am5.Bullet.new(root, {
@@ -374,29 +374,30 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
   
           chart.animate({ 
             key: "zoomLevel", 
-            to: 0, 
+            to: -4, 
             duration: 1500, 
             easing: am5.ease.inOut(am5.ease.cubic) 
           });
+
   
-          chart.animate({ 
-            key: "rotationX", 
-            to: -centroid.longitude, 
-            duration: 1500, 
-            easing: am5.ease.inOut(am5.ease.cubic) 
-          });
-          chart.animate({ 
-            key: "rotationY", 
-            to: -centroid.latitude, 
-            duration: 1500, 
-            easing: am5.ease.inOut(am5.ease.cubic) 
-          });
-          chart.animate({ 
-            key: "zoomLevel", 
-            to: targetZoom, 
-            duration: 1500, 
-            easing: am5.ease.inOut(am5.ease.cubic) 
-          });
+          // chart.animate({ 
+          //   key: "rotationX", 
+          //   to: -centroid.longitude, 
+          //   duration: 1500, 
+          //   easing: am5.ease.inOut(am5.ease.cubic) 
+          // });
+          // chart.animate({ 
+          //   key: "rotationY", 
+          //   to: -centroid.latitude, 
+          //   duration: 1500, 
+          //   easing: am5.ease.inOut(am5.ease.cubic) 
+          // });
+          // chart.animate({ 
+          //   key: "zoomLevel", 
+          //   to: targetZoom, 
+          //   duration: 1500, 
+          //   easing: am5.ease.inOut(am5.ease.cubic) 
+          // });
         }
   
         const locationName = target.dataItem?.dataContext?.name;
@@ -431,7 +432,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
     if (chartInstanceRef.current) {
       chartInstanceRef.current.animate({ key: "rotationX", to: -longitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
       chartInstanceRef.current.animate({ key: "rotationY", to: -latitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
-      chartInstanceRef.current.zoomToGeoPoint({ latitude, longitude }, 3.5);
+      chartInstanceRef.current.zoomToGeoPoint({ latitude, longitude }, 1.5);
       if (rotationAnimationRef.current) {
         rotationAnimationRef.current.stop();
       }
