@@ -59,7 +59,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
       setResults(combinedResults);
   
       const tavilyArticles = tavilyResults.results.map((result: any) => ({ content: result.content }));
-      const { output } = await generateSummaryFromArticles(tavilyArticles, ssareResults);
+      const { output } = await generateSummaryFromArticles(tavilyArticles, ssareResults, analysisType);
       let fullSummary = '';
       for await (const delta of readStreamableValue(output)) {
         fullSummary += delta;
@@ -88,7 +88,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
       include_answer: false,
       include_images: true,
       include_raw_content: false,
-      max_results: 4,
+      max_results: 5,
       include_domains: [],
       exclude_domains: []
     };
@@ -109,7 +109,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
           search_query: query,
           limit: 8,
           skip: 0,
-          search_type: 'semantic'  // Add this line
+          search_type: 'semantic'  
         }
       });
       return response.data;

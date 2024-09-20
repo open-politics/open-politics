@@ -154,7 +154,6 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
     const normalPointSeries = chart.series.push(
       am5map.MapPointSeries.new(root, {
         autoScale: true,
-        adjustRotation: true,
       })
     );
     normalPointSeriesRef.current = normalPointSeries;
@@ -181,84 +180,94 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
       const eventSeries = chart.series.push(
         am5map.MapPointSeries.new(root, {
           autoScale: true,
-          adjustRotation: true,
+          // adjustRotation: true,
         })
       );
     
-      // eventSeries.bullets.push(function() {
-      //   const picture = am5.Picture.new(root, {
-      //     width: 10,
-      //     height: 10,
-      //     centerX: am5.p50,
-      //     centerY: am5.p50,
-      //     src: `data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><text x="0" y="15" font-size="10">${encodeURIComponent(event.emoji)}</text></svg>`,
-      //   });
-
-      // Circle bullets
-      // eventSeries.bullets.push(function() {
-      //   const circle = am5.Circle.new(root, {
-      //     radius: 1,
-      //     dx: 4.5,
-      //     fill: am5.color(event.color), // Use the specific color for each event
-      //     fillOpacity: 1,
-      //     tooltipText: "Location: {title}\nEvent: " + event.type
-      //   });
-
-      // Text bullets
       eventSeries.bullets.push(function() {
-        const bullets = am5.Label.new(root, {
+        // Create a container to hold the label and background
+        const container = am5.Container.new(root, {
+          interactive: true,
+          setStateOnChildren: true,
+          width: 5, // Adjust as needed
+          height: 5, // Adjust as needed
+        });
+
+        // Add a transparent background to capture pointer events
+        const background = container.children.push(am5.Rectangle.new(root, {
+          width: 1,
+          height: 2,
+          fill: am5.color(0xffffff),
+          fillOpacity: 0, 
+          strokeOpacity: 0, 
+          shadowBlur: 0.2,
+          tooltipText: "Location: {title}\nEvent: " + event.type,
+          centerX: am5.p50,
+          centerY: am5.p50,
+          dx: event.type === "Elections" ? 2 :
+              event.type === "Protests" ? 3 :
+              event.type === "Economic" ? 4 :
+              event.type === "Social" ? 5 :
+              event.type === "Crisis" ? 6 :
+              event.type === "War" ? 7 : 1, // Different dx values for each event type
+        }));
+
+        // Add the label
+        const label = container.children.push(am5.Label.new(root, {
           text: event.type === "Elections" ? "X" :
-                event.type === "Protests" ? "“”" :
+                event.type === "Protests" ? "\/" :
                 event.type === "Economic" ? "$" :
                 event.type === "Social" ? "O" :
                 event.type === "Crisis" ? "!!" :
-                event.type === "War" ? "<>" : "Article […]",
-          fontSize: 2,
-          // fill: am5.color(event.color), // Use the specific color for each event
-          fillOpacity: 1,
-          tooltipText: "Location: {title}\nEvent: " + event.type,
-          interactive: true,
-        });
-  
-    
-        // bullets.events.on("click", function(ev) {
-        //   const dataItem = ev.target.dataItem as am5.DataItem<DataContext>;
-        //   const articles = dataItem.dataContext.articles;
-        //   const articleContent = articles.map((article: any) => `<a href="${article.url}" target="_blank">${article.headline}</a>`).join('<hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">');
-        //   const content = `<div>Articles for location: <strong>${dataItem.dataContext.title}</strong><br/>${articleContent}</div>`;
-        //   setArticleContent(content);
-        //   onLocationClick(dataItem.dataContext.title);
-        // });
+                event.type === "War" ? "<>" : "[…]",
+          fontSize: 2, // Increased font size for better visibility
+          fill: am5.color(event.color), // Use specific color for each event
+          centerX: am5.p50,
+          centerY: am5.p50,
+          textAlign: "center",
+          dx: event.type === "Elections" ? 2 :
+              event.type === "Protests" ? 3 :
+              event.type === "Economic" ? 4 :
+              event.type === "Social" ? 5 :
+              event.type === "Crisis" ? 6 :
+              event.type === "War" ? 7 : 1, // Different dx values for each event type
+        }));
 
-        bullets.events.on("click", function(ev) {
+        // Set populateText to true if using data placeholders
+        label.set("populateText", true);
+
+        // Create and configure the tooltip
+        const tooltip = am5.Tooltip.new(root, {
+          pointerOrientation: "down", // Adjust as needed (e.g., "left", "right", "up")
+          position: "relative", // Adjust as needed (e.g., "absolute", "relative")
+          getFillFromSprite: false,
+          getStrokeFromSprite: true,
+          autoTextColor: true,
+        });
+
+        // Event handling for click
+        container.events.on("click", function(ev) {
           const dataItem = ev.target.dataItem as am5.DataItem<DataContext>;
           const articles = dataItem.dataContext.articles;
-          const articleContent = articles.map((article: any) => `<a href="${article.url}" target="_blank">${article.headline}</a>`).join('<hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">');
+          const articleContent = articles.map((article: any) => 
+            `<a href="${article.url}" target="_blank">${article.headline}</a>`
+          ).join('<hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">');
           const content = `<div>Articles for location: <strong>${dataItem.dataContext.title}</strong><br/>${articleContent}</div>`;
           setArticleContent(content);
           onLocationClick(dataItem.dataContext.title);
         });
 
-        // on hover display tooltip with event type
-    
-        // picture.states.create("hover", {
-        //   scale: 1.2
-        // });
-
-        
-    
-        // return am5.Bullet.new(root, {
-        //   sprite: picture
-        // });
-
-          bullets.states.create("hover", {
-          fill: am5.color(0x0000ff),
-          fillOpacity: 1,
-          tooltipText: "Location: {title}\nEvent: " + event.type
+        // Event handling for hover
+        container.events.on("pointerover", function() {
+          label.set("fill", am5.color(0x0000ff));
         });
-  
+
+        container.events.on("pointerout", function() {
+          label.set("fill", am5.color(event.color));
+        });
+
         return am5.Bullet.new(root, {
-          sprite: bullets
+          sprite: container,
         });
       });
     
@@ -341,8 +350,10 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
       const circle = am5.Circle.new(root, { // Changed from am5.Label to am5.Circle
         radius: 1.2, // Set a radius for the circle
         fill: am5.color(0xff0000), // Red color
-        fillOpacity: 0.75, // 0.75 opacity
+        fillOpacity: 0.65, // 0.75 opacity
         tooltipText: "{title}\n{articles[0].headline}",
+        centerX: am5.p50,
+        centerY: am5.p50,
       });
   
       circle.events.on("click", function(ev) {
@@ -394,15 +405,9 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
       if (target.get("active")) {
         const centroid = target.geoCentroid();
         if (centroid) {
-          const currentZoom = chart.get("zoomLevel");
-          const targetZoom = Math.min(currentZoom, 4); // Limit zoom level
-  
-          chart.animate({ 
-            key: "zoomLevel", 
-            to: -4, 
-            duration: 1500, 
-            easing: am5.ease.inOut(am5.ease.cubic) 
-          });
+          chart.animate({ key: "rotationX", to: -centroid.longitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
+          chart.animate({ key: "rotationY", to: -centroid.latitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
+        }
 
   
           // chart.animate({ 
@@ -423,7 +428,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
           //   duration: 1500, 
           //   easing: am5.ease.inOut(am5.ease.cubic) 
           // });
-        }
+        // }
   
         const locationName = target.dataItem?.dataContext?.name;
         if (centroid && locationName) {
@@ -457,7 +462,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
     if (chartInstanceRef.current) {
       chartInstanceRef.current.animate({ key: "rotationX", to: -longitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
       chartInstanceRef.current.animate({ key: "rotationY", to: -latitude, duration: 1500, easing: am5.ease.inOut(am5.ease.cubic) });
-      chartInstanceRef.current.zoomToGeoPoint({ latitude, longitude }, 1.5);
+      // chartInstanceRef.current.zoomToGeoPoint({ latitude, longitude }, 1.5);
       if (rotationAnimationRef.current) {
         rotationAnimationRef.current.stop();
       }

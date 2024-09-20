@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import Search from '@/components/Search';
 import Results from '@/components/Results';
 import { OpenAPI } from 'src/client';
-import { Map, FileSearch2, Globe as GlobeIcon, Search as SearchIcon } from 'lucide-react';
+import { Map, FileSearch2, Globe as GlobeIcon, Search as SearchIcon, RefreshCcw } from 'lucide-react'; // Added RefreshCcw icon
 import { Settings, HelpCircle } from 'lucide-react';
 import withAuth from '@/hooks/withAuth';
 import LocationDetailPanel from '@/components/LocationDetailPanel';
@@ -135,6 +135,10 @@ const Desk: React.FC = () => {
       setHasSearched(true);
       setResults(lastSearchResults);
     }
+  };
+
+  const handleReload = () => {
+    window.location.reload(); // Reload the page
   };
 
   return (
@@ -278,6 +282,16 @@ const Desk: React.FC = () => {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Reload Button */}
+        <motion.button
+          onClick={handleReload}
+          className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white p-2 rounded-full shadow-lg"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <RefreshCcw size={24} />
+        </motion.button>
       </div>
       <AnimatePresence>
         {isDashboardVisible && (
