@@ -27,15 +27,15 @@ export interface ClientMessage {
 }
 
 export async function generateSummaryFromArticles(
-  articles: ArticleCardProps[], 
+  articles: { content: string }[], 
   ssareArticles: ArticleCardProps[], 
   analysisType: string
 ) {
   const stream = createStreamableValue('');
 
   const combinedDescriptions = [
-    ...articles.map(article => article.paragraphs.join(' ').slice(0, 650)),
-    ...ssareArticles.map(article => article.paragraphs.join(' ').slice(0, 650)),
+    ...articles.map(article => article.content.slice(0, 650)),
+    ...ssareArticles.map(article => article.paragraphs.slice(0, 650))
   ].join('\n\n');
 
   (async () => {
@@ -202,4 +202,3 @@ export const AI = createAI<ServerMessage[], ClientMessage[]>({
   initialAIState: [],
   initialUIState: [],
 });
-

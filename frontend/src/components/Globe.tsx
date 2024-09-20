@@ -16,6 +16,7 @@ import { useToast } from "@/components/ui/use-toast"; // Import useToast
 import { OpenAPI } from 'src/client';
 import MapLeged from './MapLeged';
 import { Locate } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 
 interface GlobeProps {
   geojsonUrl: string;
@@ -136,11 +137,11 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
       fillOpacity: 0.05,
       stroke: am5.color(0x1e90ff),
       strokeWidth: 0.2,
-      blur: 0.5,
+      blur: 0.2,
     });
-    backgroundSeries.data.push({
-      geometry: am5map.getGeoRectangle(90, 180, -90, -180),
-    });
+    // backgroundSeries.data.push({
+    //   geometry: am5map.getGeoRectangle(90, 180, -90, -180),
+    // });
   
     const polygonSeries = chart.series.push(
       am5map.MapPolygonSeries.new(root, {
@@ -153,6 +154,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
     const normalPointSeries = chart.series.push(
       am5map.MapPointSeries.new(root, {
         autoScale: true,
+        adjustRotation: true,
       })
     );
     normalPointSeriesRef.current = normalPointSeries;
@@ -179,6 +181,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
       const eventSeries = chart.series.push(
         am5map.MapPointSeries.new(root, {
           autoScale: true,
+          adjustRotation: true,
         })
       );
     
@@ -191,17 +194,34 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
       //     src: `data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><text x="0" y="15" font-size="10">${encodeURIComponent(event.emoji)}</text></svg>`,
       //   });
 
+      // Circle bullets
+      // eventSeries.bullets.push(function() {
+      //   const circle = am5.Circle.new(root, {
+      //     radius: 1,
+      //     dx: 4.5,
+      //     fill: am5.color(event.color), // Use the specific color for each event
+      //     fillOpacity: 1,
+      //     tooltipText: "Location: {title}\nEvent: " + event.type
+      //   });
+
+      // Text bullets
       eventSeries.bullets.push(function() {
-        const circle = am5.Circle.new(root, {
-          radius: 1.5,
-          dx: 4.5,
-          fill: am5.color(event.color), // Use the specific color for each event
+        const bullets = am5.Label.new(root, {
+          text: event.type === "Elections" ? "X" :
+                event.type === "Protests" ? "“”" :
+                event.type === "Economic" ? "$" :
+                event.type === "Social" ? "O" :
+                event.type === "Crisis" ? "!!" :
+                event.type === "War" ? "<>" : "Article […]",
+          fontSize: 2,
+          // fill: am5.color(event.color), // Use the specific color for each event
           fillOpacity: 1,
-          tooltipText: "Location: {title}\nEvent: " + event.type
+          tooltipText: "Location: {title}\nEvent: " + event.type,
+          interactive: true,
         });
   
     
-        // picture.events.on("click", function(ev) {
+        // bullets.events.on("click", function(ev) {
         //   const dataItem = ev.target.dataItem as am5.DataItem<DataContext>;
         //   const articles = dataItem.dataContext.articles;
         //   const articleContent = articles.map((article: any) => `<a href="${article.url}" target="_blank">${article.headline}</a>`).join('<hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">');
@@ -210,7 +230,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
         //   onLocationClick(dataItem.dataContext.title);
         // });
 
-        circle.events.on("click", function(ev) {
+        bullets.events.on("click", function(ev) {
           const dataItem = ev.target.dataItem as am5.DataItem<DataContext>;
           const articles = dataItem.dataContext.articles;
           const articleContent = articles.map((article: any) => `<a href="${article.url}" target="_blank">${article.headline}</a>`).join('<hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">');
@@ -231,14 +251,14 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
         //   sprite: picture
         // });
 
-          circle.states.create("hover", {
+          bullets.states.create("hover", {
           fill: am5.color(0x0000ff),
           fillOpacity: 1,
           tooltipText: "Location: {title}\nEvent: " + event.type
         });
   
         return am5.Bullet.new(root, {
-          sprite: circle
+          sprite: bullets
         });
       });
     
@@ -318,12 +338,10 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
     fetchGeoJSONEventsData(event_types.map(event => event.type));
   
     normalPointSeries.bullets.push(function() {
-      const circle = am5.Rectangle.new(root, {
-        width: 2,
-        height: 0.8,
-        dx: -4,
-        fill: am5.color(0x000000), // Standard color for normal articles (Black)
-        fillOpacity: 1,
+      const circle = am5.Circle.new(root, { // Changed from am5.Label to am5.Circle
+        radius: 1.2, // Set a radius for the circle
+        fill: am5.color(0xff0000), // Red color
+        fillOpacity: 0.75, // 0.75 opacity
         tooltipText: "{title}\n{articles[0].headline}",
       });
   
@@ -552,14 +570,14 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
   return (
     <div className="relative flex flex-col items-center">
       <div id="chartdiv" className="w-full h-96 sm:h-128 mt-16 relative z-0">
-          <div className="absolute bottom-36 left-24 z-20">
+          <div className="absolute top-0 left-24 z-20 w-full">
             <Button 
               className="text-pink-400 w-14 h-12" 
               variant="outline" 
               onClick={() => setLegendVisible(prev => !prev)}
             >
               <div className="relative">
-                <Locate className="w-6 h-6" />
+                <MapPin className="w-6 h-6" />
               </div>
             </Button>
             {isLegendVisible && (
