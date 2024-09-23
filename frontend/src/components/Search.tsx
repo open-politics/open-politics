@@ -193,6 +193,26 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
         </div>
         <CommandList className="hidden md:block">
           <div className="hidden md:block">
+            <CommandSeparator />
+            <CommandGroup heading="Method Focus">
+            <RadioGroup 
+              defaultValue="Conflict Analysis" 
+              onValueChange={(value) => setAnalysisType(value)}
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="Conflict Analysis" id="conflict-analysis" />
+                <Label htmlFor="conflict-analysis">Conflict Analysis</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="News Analysis" id="news-analysis" />
+                <Label htmlFor="news-analysis">News Analysis</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="Economic Analysis" id="economic-analysis" />
+                <Label htmlFor="economic-analysis">Economic Analysis</Label>
+              </div>
+            </RadioGroup>
+            </CommandGroup>
             <CommandGroup heading="Suggestions">
               <CommandItem onSelect={() => handleSuggestionSelect('The economic situation of South Africa')}>
                 The economic situation of South Africa
@@ -209,25 +229,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
             </CommandGroup>
           </div>
           <CommandSeparator />
-          <CommandGroup heading="Method Focus">
-          <RadioGroup 
-            defaultValue="Conflict Analysis" 
-            onValueChange={(value) => setAnalysisType(value)}
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="Conflict Analysis" id="conflict-analysis" />
-              <Label htmlFor="conflict-analysis">Conflict Analysis</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="News Analysis" id="news-analysis" />
-              <Label htmlFor="news-analysis">News Analysis</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="Economic Analysis" id="economic-analysis" />
-              <Label htmlFor="economic-analysis">Economic Analysis</Label>
-            </div>
-          </RadioGroup>
-        </CommandGroup>
+          
         </CommandList>
       </Command>
       <CommandDialog open={dialogOpen} onOpenChange={(open) => setDialogOpen(open)}>

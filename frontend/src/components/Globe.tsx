@@ -204,20 +204,20 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
           tooltipText: "Location: {title}\nEvent: " + event.type,
           centerX: am5.p50,
           centerY: am5.p50,
-          dx: event.type === "Elections" ? 2 :
-              event.type === "Protests" ? 3 :
-              event.type === "Economic" ? 4 :
-              event.type === "Social" ? 5 :
-              event.type === "Crisis" ? 6 :
-              event.type === "War" ? 7 : 1, // Different dx values for each event type
+          dx: event.type === "Elections" ? 0.8 :
+              event.type === "Economic" ? 3.4 :
+              event.type === "Social" ? 4.6 :
+              event.type === "Protests" ? 2.2 :
+              event.type === "Crisis" ? 5.8 :
+              event.type === "War" ? 7.0 : 1.0, // Different dx values for each event type
         }));
 
         // Add the label
         const label = container.children.push(am5.Label.new(root, {
           text: event.type === "Elections" ? "X" :
-                event.type === "Protests" ? "\/" :
                 event.type === "Economic" ? "$" :
                 event.type === "Social" ? "O" :
+                event.type === "Protests" ? "\\/" :
                 event.type === "Crisis" ? "!!" :
                 event.type === "War" ? "<>" : "[…]",
           fontSize: 2, // Increased font size for better visibility
@@ -225,12 +225,12 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
           centerX: am5.p50,
           centerY: am5.p50,
           textAlign: "center",
-          dx: event.type === "Elections" ? 2 :
-              event.type === "Protests" ? 3 :
-              event.type === "Economic" ? 4 :
-              event.type === "Social" ? 5 :
-              event.type === "Crisis" ? 6 :
-              event.type === "War" ? 7 : 1, // Different dx values for each event type
+          dx: event.type === "Elections" ? 0.8 :
+              event.type === "Economic" ? 3.4 :
+              event.type === "Social" ? 4.6 :
+              event.type === "Protests" ? 2.2 :
+              event.type === "Crisis" ? 5.8 :
+              event.type === "War" ? 7.0 : 1.0, // Different dx values for each event type
         }));
 
         // Set populateText to true if using data placeholders
@@ -590,6 +590,9 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
                 <MapLeged />
               </div>
             )}
+          </div>
+          <div className="absolute left-0 mt-2 shadow-lg rounded-lg p-4 bg-transparent backdrop-blur-lg hidden">
+            <MapLeged />
           </div>
 
 
