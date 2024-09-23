@@ -46,8 +46,6 @@ async def get_location_articles(
         logger.error(f"Error fetching articles: {str(e)}")
         return JSONResponse(content={'error': 'Failed to fetch articles'}, status_code=500)
 
-
-
 @router.get("/country_from_query/")
 async def country_from_query(query: str):
     country_name = marvin.cast(query, target=str, instructions="Return the country name most relevant to the query.")
@@ -55,7 +53,6 @@ async def country_from_query(query: str):
     response = requests.get(f"http://geo_service:3690/call_pelias_api?location={country_name}", verify=False)
     print(response)
     try:
-        # return {"country_name": country_name}
         if response.status_code == 200:
             coordinates = response.json()
             return {"country_name": country_name, "latitude": coordinates[0], "longitude": coordinates[1]}
@@ -67,7 +64,10 @@ async def country_from_query(query: str):
 @router.get("/geojson/")
 async def geojson_view():
     request = requests.get("http://geo_service:3690/geojson", verify=False)
-    return request.json()
+    if request.status_code == 200:
+        return request.json()
+    else:
+        raise HTTPException(status_code=request.status_code, detail="Unable to fetch GeoJSON data")
 
 @router.get("/geojson_events/")
 async def geojson_events_view(event_type: str = Query(...)):
@@ -126,5 +126,4 @@ async def update_leaders():
 @router.get("/get_articles", response_model=None)
 async def get_tavily_data():
     result = tavily.get_tavily_data()
-    
-
+    return JSONResponse(content=result, status_code=200)

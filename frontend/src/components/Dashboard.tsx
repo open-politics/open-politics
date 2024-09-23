@@ -106,6 +106,23 @@ const Dashboard: React.FC = () => {
     }
   }, [filters, sortBy, sortOrder, formatFilters]);
 
+  const testGeojsonFetch = async () => {
+    try {
+      const response = await fetch('/geojson', {
+        method: 'GET',
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error(`GeoJSON Fetch error! status: ${response.status}, message: ${errorData.detail}`);
+      } else {
+        const result = await response.json();
+        console.log('GeoJSON API Response:', result);
+      }
+    } catch (err) {
+      console.error('GeoJSON Fetch error:', err);
+    }
+  };
+
   useEffect(() => {
     fetchArticles();
   }, []); // Empty dependency array
@@ -128,6 +145,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="w-full max-w-4xl mx-auto p-6 space-y-6 bg-gray-900 text-white rounded-lg shadow-lg">
       <h1 className="text-2xl font-bold">Article Dashboard</h1>
+      <Button onClick={testGeojsonFetch} className="bg-blue-600 hover:bg-blue-700">Test GeoJSON API</Button>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {scoreFields.map((field) => (
           <div key={field} className="space-y-2 flex flex-col items-center">

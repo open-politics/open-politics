@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
 import createMDX from '@next/mdx';
-import remarkGfm from 'remark-gfm'
+import remarkGfm from 'remark-gfm';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -39,15 +39,11 @@ const nextConfig = {
     return [
       { 
         source: "/api/:path*",
-        destination: `http://backend:8080/api/:path*`,
+        destination: `http://backend:8000/api/:path*`,
       },
       {
         source: "/docs/:path*",
-        destination: `http://backend:8080/docs/:path*`
-      },
-      {
-        source: "/geojson",
-        destination: `http://geo_service:3690/geojson`
+        destination: `http://backend:8000/docs/:path*`
       }
     ];
   },

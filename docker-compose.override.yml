@@ -1,5 +1,4 @@
 services:
-
   db:
     restart: "no"
     ports:
@@ -19,9 +18,26 @@ services:
     build:
       context: ./backend
       args:
-        INSTALL_DEV: ${INSTALL_DEV-true}
-    # command: sleep infinity  # Infinite loop to keep container alive doing nothing
+        INSTALL_DEV: ${INSTALL_DEV-false}
     command: /start-reload.sh
+    networks:
+      - traefik-public
+      - app_network
+      - ssare-opp-network
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.http.services.${STACK_NAME?Variable not set}-backend.loadbalancer.server.port=80
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.rule=Host(`${DOMAIN?Variable not set}`, `www.${DOMAIN?Variable not set}`) && PathPrefix(`/api`, `/docs`, `/redoc`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.entrypoints=http
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.rule=Host(`${DOMAIN?Variable not set}`, `www.${DOMAIN?Variable not set}`) && PathPrefix(`/api`, `/docs`, `/redoc`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.entrypoints=https
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.tls=true
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.tls.certresolver=le
+      - traefik.http.middlewares.${STACK_NAME?Variable not set}-www-redirect.redirectregex.regex=^http(s)?://www.(${DOMAIN?Variable not set})/(.*)
+      - traefik.http.middlewares.${STACK_NAME?Variable not set}-www-redirect.redirectregex.replacement=http$${1}://${DOMAIN?Variable not set}/$${3}
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.middlewares=${STACK_NAME?Variable not set}-www-redirect
 
   frontend:
     restart: "no"
@@ -30,11 +46,14 @@ services:
       dockerfile: Dockerfile.dev
       args:
         - NODE_ENV=development
-        - NEXT_PUBLIC_API_URL=http://localhost:8080
+        - NEXT_PUBLIC_API_URL=http://backend:8000
+    networks:
+      - traefik-public
+      - app_network
+      - ssare-opp-network
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik-public
-      - traefik.constraint-label=traefik-public
       - traefik.http.services.${STACK_NAME?Variable not set}-frontend.loadbalancer.server.port=3000
       - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.rule=Host(`${DOMAIN?Variable not set}`, `www.${DOMAIN?Variable not set}`)
       - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.entrypoints=http
@@ -47,5 +66,8 @@ services:
 
 networks:
   traefik-public:
-    # For local dev, don't expect an external Traefik network
+    external: true
+  app_network:
+    external: true
+  ssare-opp-network:
     external: true
