@@ -34,7 +34,7 @@ interface DataContext {
   title: string;
 }
 
-OpenAPI.BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://backend:8000';
+OpenAPI.BASE = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 
 const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent, onLocationClick, isBrowseMode, toggleMode, setLegislativeData, setEconomicData, onCountryZoom }, ref) => {
   const chartRef = useRef<am5.Root | null>(null);

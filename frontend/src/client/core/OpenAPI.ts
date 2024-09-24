@@ -45,7 +45,7 @@ export type OpenAPIConfig = {
   };
   
   export const OpenAPI: OpenAPIConfig = {
-	BASE: 'http://backend:8000',
+	BASE: '',
 	CREDENTIALS: 'include',
 	ENCODE_PATH: undefined,
 	HEADERS: undefined,
