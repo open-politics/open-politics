@@ -73,19 +73,33 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
 
   const fetchGeoJSONEventsData = async (eventTypes: string[], retries = 3) => {
     try {
-      const promises = eventTypes.map(eventType => CountriesService.geojsonEventsView(eventType));
+      const promises = eventTypes.map(eventType => {
+        console.log(`Requesting GeoJSON data for event type: ${eventType}`);
+        return axios.get(`/api/v1/locations/geojson_events`, {
+          params: {
+            event_type: eventType
+          },
+          validateStatus: (status) => status < 500 // Accept only 2xx responses
+        });
+      });
       const results = await Promise.all(promises);
-      const allFeatures = results.flatMap(result => result.features);
-      eventsPointSeriesRef.current?.data.setAll(allFeatures.map((feature: any) => ({
-        geometry: {
-          type: "Point",
-          coordinates: [feature.geometry.coordinates[1], feature.geometry.coordinates[0]] // Swap coordinates here
-        },
-        title: feature.properties.name,
-        articles: feature.properties.articles,
-        articleCount: feature.properties.article_count,
-        events: feature.properties.articles.events
-      })));
+      console.log('Received results:', results);
+      results.forEach((result, index) => {
+        const eventType = eventTypes[index];
+        const eventSeries = eventSeriesMap.get(eventType);
+        if (eventSeries) {
+          eventSeries.data.setAll(result.data.features.map((feature: any) => ({
+            geometry: {
+              type: "Point",
+              coordinates: [feature.geometry.coordinates[1], feature.geometry.coordinates[0]] // Swap coordinates here
+            },
+            title: feature.properties.name,
+            articles: feature.properties.articles,
+            articleCount: feature.properties.article_count,
+            events: feature.properties.articles.events
+          })));
+        }
+      });
     } catch (error) {
       console.error('Error fetching GeoJSON events data:', error);
       if (retries > 0) {
@@ -103,6 +117,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
       }
     }
   };
+  
 
   useLayoutEffect(() => {
     if (!isClient) return;
@@ -320,17 +335,22 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
         });
         const results = await Promise.all(promises);
         console.log('Received results:', results);
-        const allFeatures = results.flatMap(result => result.data.features);
-        eventsPointSeriesRef.current?.data.setAll(allFeatures.map((feature: any) => ({
-          geometry: {
-            type: "Point",
-            coordinates: [feature.geometry.coordinates[1], feature.geometry.coordinates[0]] // Swap coordinates here
-          },
-          title: feature.properties.name,
-          articles: feature.properties.articles,
-          articleCount: feature.properties.article_count,
-          events: feature.properties.articles.events
-        })));
+        results.forEach((result, index) => {
+          const eventType = eventTypes[index];
+          const eventSeries = eventSeriesMap.get(eventType);
+          if (eventSeries) {
+            eventSeries.data.setAll(result.data.features.map((feature: any) => ({
+              geometry: {
+                type: "Point",
+                coordinates: [feature.geometry.coordinates[1], feature.geometry.coordinates[0]] // Swap coordinates here
+              },
+              title: feature.properties.name,
+              articles: feature.properties.articles,
+              articleCount: feature.properties.article_count,
+              events: feature.properties.articles.events
+            })));
+          }
+        });
       } catch (error) {
         console.error('Error fetching GeoJSON events data:', error);
         if (retries > 0) {
@@ -348,6 +368,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
         }
       }
     };
+    
   
     fetchGeoJSONData();
     fetchGeoJSONEventsData(event_types.map(event => event.type));
