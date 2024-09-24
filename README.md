@@ -27,7 +27,7 @@ The mission is to create an open-source data science and AI toolkit to analyse, 
 
 As a quick pitch element to get you interested; this is where we are going:
 
-![Open Politics Vision](assets/images/globe_1.png)
+![Open Politics Vision](assets/images/opp_recent.png)
 
 # Why Open Politics Exists
 - All things regarding politics, be they news, conflicts or legislative procedures, are hard to keep track of. It's hard to find the time to read through all the documents and news articles necessary to gain a broad and well-informed understanding of political situations. Technology offers great possibilities to make such processes more accessible. Recently, the advent of Large Language Models has extended the capabilities of textual analysis and understanding. Especially the ability to formulate tasks in natural language opens up new possibilities for analysing text data. Potentially revolutionising the way qualitative and quantitative research can be combined.

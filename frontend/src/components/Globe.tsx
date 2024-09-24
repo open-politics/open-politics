@@ -198,7 +198,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
       const eventSeries = chart.series.push(
         am5map.MapPointSeries.new(root, {
           autoScale: true,
-          // adjustRotation: true,
+          adjustRotation: true,
         })
       );
     
@@ -410,8 +410,8 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
       tooltipText: "{name}",
       toggleKey: "active",
       interactive: true,
-      fill: am5.color(0xfcfcfc),
-      fillOpacity: 0.85,
+      fill: am5.color(0xADD8E6), // Changed to light blue
+      fillOpacity: 0.95, // Adjusted opacity for a techy effect
       stroke: am5.color(0x0e1a36), 
       strokeWidth: 0.45,
     });
