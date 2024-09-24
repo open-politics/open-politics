@@ -69,7 +69,7 @@ async def geojson_view():
     else:
         raise HTTPException(status_code=request.status_code, detail="Unable to fetch GeoJSON data")
 
-@router.get("/geojson_events/")
+@router.get("/geojson_events")
 async def geojson_events_view(event_type: str = Query(...)):
     request = requests.get(f"http://geo_service:3690/geojson_events/{event_type}", verify=False)
     if request.status_code == 200:

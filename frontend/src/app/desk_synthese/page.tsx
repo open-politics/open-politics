@@ -198,7 +198,7 @@ const Desk: React.FC = () => {
               <AnimatePresence>
                 {hasClicked && (
                   <motion.div
-                    className={`absolute top-0 right-0 h-full ${isMobile ? 'w-3/4' : 'w-1/2'}`}
+                    className={`absolute top-0 right-0 h-full ${isMobile ? 'w-full' : 'w-1/2'}`}
                     initial={{ x: '100%' }}
                     animate={{ x: 0 }}
                     exit={{ x: '100%' }}
@@ -300,7 +300,7 @@ const Desk: React.FC = () => {
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ duration: 0.5 }}
-            className="fixed bottom-0 left-0 right-0 h-3/4 bg-white dark:bg-gray-800 shadow-lg"
+            className="fixed bottom-0 left-0 right-0 h-5/6 bg-white dark:bg-gray-800 shadow-lg"
           >
             <SSAREDashboard />
           </motion.div>
