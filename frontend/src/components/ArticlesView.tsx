@@ -28,15 +28,6 @@ export function ArticlesView({ locationName, articles, isLoading, error, fetchAr
 
   return (
     <div className="space-y-4 flex flex-col h-full">
-      <div className="flex space-x-2">
-         <Input
-          placeholder="Search articles..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="flex-grow"
-        />
-        <Button onClick={handleSearch}>Search</Button>
-      </div>
       {isLoading && articles.length === 0 ? (
         <div className="flex flex-col items-center justify-center flex-grow">
           <DotLoader color="#000" size={50} />

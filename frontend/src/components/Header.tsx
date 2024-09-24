@@ -7,7 +7,7 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import Image from 'next/image';
-import useAuth, { isLoggedIn } from '@/hooks/useAuth';
+import useAuth from '@/hooks/useAuth';
 import { useQueryClient } from "@tanstack/react-query"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Code, Database } from "lucide-react"; 
@@ -17,7 +17,7 @@ const Header = () => {
 	const [mounted, setMounted] = useState(false);
 	const [menuOpen, setMenuOpen] = useState(false);
 	const queryClient = useQueryClient();
-	const { logout, user, isLoading } = useAuth();
+	const { logout, user, isLoading, isLoggedIn } = useAuth();
 	const [isClient, setIsClient] = useState(false);
 
 	useEffect(() => {
@@ -88,13 +88,11 @@ const Header = () => {
                         </Popover>
                         {isClient && (
                             <>
-                                {user ? (
+                                {isLoggedIn ? (
                                     <>
-                                        <Link href="/desk" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">Desk</Link>
+                                        <Link href="/desk_synthese" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">Desk</Link>
                                         <button onClick={handleLogout} className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">Logout</button>
-                                        {user.is_superuser && (
-                                            <Link href="/admin/users" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">Admin</Link>
-                                        )}
+                                        <Link href="/admin/users" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">Admin</Link>
                                     </>
                                 ) : (
                                     <Link href="/login" className="py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">Login</Link>
@@ -140,11 +138,11 @@ const Header = () => {
                             </a>
                             {isClient && !isLoading && (
                                 <>
-                                    {user ? (
+                                    {isLoggedIn ? (
                                         <>
                                             <Link href="/desk_synthese" className="block py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">Desk</Link>
                                             <button onClick={handleLogout} className="block w-full text-left py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">Logout</button>
-                                            {user.is_superuser && (
+                                            {user?.is_superuser && (
                                                 <Link href="/admin/users" className="block py-2 px-3 rounded-md text-sm transition-colors hover:bg-accent/10 hover:text-accent-foreground text-gray-700 dark:text-white relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300">Admin</Link>
                                             )}
                                         </>

@@ -4,7 +4,7 @@ import useAuth from '@/hooks/useAuth';
 
 const withAuth = (WrappedComponent: React.ComponentType) => {
   return (props: any) => {
-    const { user, isLoading } = useAuth();
+    const { isLoggedIn, isLoading } = useAuth();
     const router = useRouter();
     const [isClient, setIsClient] = useState(false);
 
@@ -13,10 +13,10 @@ const withAuth = (WrappedComponent: React.ComponentType) => {
     }, []);
 
     useEffect(() => {
-      if (!isLoading && !user) {
+      if (!isLoading && !isLoggedIn()) {
         router.push('/login');
       }
-    }, [user, isLoading, router]);
+    }, [isLoading, isLoggedIn, router]);
 
     if (!isClient) {
       return null; // Return null on server-side
@@ -26,7 +26,7 @@ const withAuth = (WrappedComponent: React.ComponentType) => {
       return <div>Loading...</div>;
     }
 
-    if (!user) {
+    if (!isLoggedIn()) {
       return null;
     }
 

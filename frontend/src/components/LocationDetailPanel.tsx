@@ -20,7 +20,7 @@ const LocationDetailPanel: React.FC<LocationDetailPanelProps> = ({
         {isVisible ? <CircleX size={24} /> : <ListCollapse size={24} />}
       </Button> 
       {isVisible && location && ( 
-        <div className="flex-grow overflow-y-auto rounded-md p-0">
+        <div className="flex-grow overflow-y-auto rounded-md p-2">
           <IssueAreas locationName={location}/>
         </div>
       )}

@@ -12,7 +12,7 @@ const event_types = [
   
 const MapLeged = () => {
   return (
-    <div className="p-4 bg-transparent backdrop-blur-lg rounded-lg shadow-lg">
+    <div className="p-4 bg-white dark:bg-black bg-opacity-20 dark:bg-opacity-30 backdrop-blur-lg rounded-lg shadow-lg">
       <h4 className="text-xl font-bold text-black dark:text-gray-200">Events on the Globe</h4>
       <div className="grid grid-cols-2 gap-4 mt-2">
         {event_types.map((event) => (

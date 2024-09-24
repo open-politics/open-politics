@@ -238,7 +238,7 @@ const Desk: React.FC = () => {
                     isBrowseMode={isBrowseMode}
                     toggleMode={toggleMode}
                     setLegislativeData={setLegislativeData}
-                    setEconomicData={setEconomicData}
+                    // setEconomicData={setEconomicData}
                     onCountryZoom={handleLocationZoom}
                   />
                 </motion.div>
@@ -287,8 +287,6 @@ const Desk: React.FC = () => {
         <motion.button
           onClick={handleReload}
           className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white p-2 rounded-full shadow-lg"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
         >
           <RefreshCcw size={24} />
         </motion.button>

@@ -50,9 +50,9 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
   const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
   const [isLegendVisible, setLegendVisible] = useState(true);
 
-  const initialRotationX = 0;
-  const initialRotationY = 0;
-  const initialZoomLevel = 1;
+  const initialRotationX = 15;
+  const initialRotationY = 52.5; // Set to Berlin's latitude
+  const initialZoomLevel = 1.4; 
 
   useEffect(() => {
     setIsClient(true);
@@ -123,7 +123,9 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
     if (!isClient) return;
   
     const root = am5.Root.new("chartdiv", {
-      useSafeResolution: false
+      useSafeResolution: false,
+      tapToActivate: true,
+      tapToActivateTimeout: 3000,
     });
   
     chartRef.current = root;
@@ -154,9 +156,10 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
       strokeWidth: 0.2,
       blur: 0.2,
     });
-    // backgroundSeries.data.push({
-    //   geometry: am5map.getGeoRectangle(90, 180, -90, -180),
-    // });
+    backgroundSeries.data.push({
+      geometry: am5map.getGeoRectangle(90, 180, -90, -180),
+  
+    });
   
     const polygonSeries = chart.series.push(
       am5map.MapPolygonSeries.new(root, {
@@ -219,12 +222,12 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
           tooltipText: "Location: {title}\nEvent: " + event.type,
           centerX: am5.p50,
           centerY: am5.p50,
-          dx: event.type === "Elections" ? 2 :
-              event.type === "Protests" ? 3 :
-              event.type === "Economic" ? 4 :
-              event.type === "Social" ? 5 :
-              event.type === "Crisis" ? 6 :
-              event.type === "War" ? 7 : 1, // Different dx values for each event type
+          dx: event.type === "Elections" ? 1.9:
+              event.type === "Protests" ? 2.8 :
+              event.type === "Economic" ? 3.6 :
+              event.type === "Social" ? 4.8 :
+              event.type === "Crisis" ? 6.1 :
+              event.type === "War" ? 8.1 : 1, // Different dx values for each event type
         }));
 
         // Add the label
@@ -240,12 +243,12 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
           centerX: am5.p50,
           centerY: am5.p50,
           textAlign: "center",
-          dx: event.type === "Elections" ? 2 :
-              event.type === "Protests" ? 3 :
-              event.type === "Economic" ? 4 :
-              event.type === "Social" ? 5 :
-              event.type === "Crisis" ? 6 :
-              event.type === "War" ? 7 : 1, // Different dx values for each event type
+          dx: event.type === "Elections" ? 1.9 :
+              event.type === "Protests" ? 2.8 :
+              event.type === "Economic" ? 3.6 :
+              event.type === "Social" ? 4.8 :
+              event.type === "Crisis" ? 6.1 :
+              event.type === "War" ? 8.1 : 1, // Different dx values for each event type
         }));
 
         // Set populateText to true if using data placeholders
@@ -375,7 +378,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
   
     normalPointSeries.bullets.push(function() {
       const circle = am5.Circle.new(root, { // Changed from am5.Label to am5.Circle
-        radius: 1.2, // Set a radius for the circle
+        radius: 0.8, // Set a radius for the circle
         fill: am5.color(0xff0000), // Red color
         fillOpacity: 0.65, // 0.75 opacity
         tooltipText: "{title}\n{articles[0].headline}",
@@ -518,11 +521,11 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
       setLegislativeData(legislativeResponse.data);
     } catch (error) {}
 
-    const economicDataUrl = `/api/v1/locations/econ_data/${locationName}`;
-    try {
-      const economicResponse = await axios.get(economicDataUrl);
-      setEconomicData(economicResponse.data);
-    } catch (error) {}
+    // const economicDataUrl = `/api/v1/locations/econ_data/${locationName}`;
+    // try {
+    //   const economicResponse = await axios.get(economicDataUrl);
+    //   setEconomicData(economicResponse.data);
+    // } catch (error) {}
   };
 
   const handlePlayPause = () => {

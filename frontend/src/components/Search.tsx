@@ -152,9 +152,9 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
   };
 
   return (
-    <div className="relative w-full px-4">
-      <h2 className="text-xl font-bold mb-2">Search News and all things Politics</h2>
-      <Command className="mx-auto bg-transparent hover:bg-transparent">
+    <div className="relative w-full bg-white dark:bg-black bg-opacity-20 dark:bg-opacity-20 backdrop-blur-lg rounded-lg p-2 px-4">
+      <h2 className="text-xl font-bold text-blue-500 dark:text-green-200 mb-2">Search News and all things Politics</h2>
+      <Command className="mx-auto bg-transparent">
         <div className="relative">
           <CommandInput
             onKeyDown={(e) => e.key === 'Enter' && handleSearch(inputValue)}
@@ -184,7 +184,6 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuLabel>Analysis Type</DropdownMenuLabel>
-              <DropdownMenuSeparator />
               <DropdownMenuItem onSelect={() => console.log('Conflict Analysis')}>Conflict Analysis</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => console.log('News Analysis')}>News Analysis</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => console.log('Economic Analysis')}>Economic Analysis</DropdownMenuItem>
@@ -193,7 +192,6 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
         </div>
         <CommandList className="hidden md:block">
           <div className="hidden md:block">
-            <CommandSeparator />
             <CommandGroup heading="Method Focus">
             <RadioGroup 
               defaultValue="Conflict Analysis" 
@@ -213,6 +211,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
               </div>
             </RadioGroup>
             </CommandGroup>
+          <CommandSeparator className="mt-2" />
             <CommandGroup heading="Suggestions">
               <CommandItem onSelect={() => handleSuggestionSelect('The economic situation of South Africa')}>
                 The economic situation of South Africa
@@ -228,7 +227,6 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
               </CommandItem>
             </CommandGroup>
           </div>
-          <CommandSeparator />
           
         </CommandList>
       </Command>

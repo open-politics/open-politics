@@ -4,20 +4,20 @@ import useAuth from '@/hooks/useAuth';
 
 const withAdminAuth = (WrappedComponent: React.ComponentType) => {
   return (props: any) => {
-    const { user, isLoading } = useAuth();
+    const { user, isLoading, isLoggedIn } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
-      if (!isLoading && (!user || !user.is_superuser)) {
+      if (!isLoading && !isLoggedIn) {
         router.push('/');
       }
-    }, [user, isLoading, router]);
+    }, [isLoading, isLoggedIn, router]);
 
     if (isLoading) {
       return <div>Loading...</div>;
     }
 
-    if (!user || !user.is_superuser) {
+    if (!isLoggedIn) {
       return null;
     }
 

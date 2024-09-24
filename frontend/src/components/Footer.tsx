@@ -28,7 +28,7 @@ const Footer = () => {
               <Link href="https://discord.gg/vnaarBdV" className="text-sm hover:underline">Discord</Link>
             </div>
             <div className="mt-4">
-              <Link href="about/imprint" className="text-sm hover:underline">Imprint</Link>
+              <Link href="/blog/about/imprint" className="text-sm hover:underline">Imprint</Link>
             </div>
           </div>
         </div>
