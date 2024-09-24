@@ -198,7 +198,7 @@ const Desk: React.FC = () => {
               <AnimatePresence>
                 {hasClicked && (
                   <motion.div
-                    className={`absolute top-0 right-0 h-full ${isMobile ? 'w-full' : 'w-1/2'}`}
+                    className={`absolute top-0 right-0 h-full ${isMobile ? 'max-w-full' : 'w-1/2'}`}
                     initial={{ x: '100%' }}
                     animate={{ x: 0 }}
                     exit={{ x: '100%' }}

@@ -1,5 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse
+from fastapi.responses import StreamingResponse
 from .services import update_leaders
 from .schemas import CountryRequest, CountryResponse, Law
 import logging
@@ -76,6 +78,19 @@ async def geojson_events_view(event_type: str = Query(...)):
         return request.json()
     else:
         raise HTTPException(status_code=request.status_code, detail="Unable to fetch events GeoJSON data")
+
+@router.get("/dashboard", response_class=HTMLResponse)
+async def dashboard_view():
+    try:
+        # Update the URL to point to the correct service name or IP address
+        request = requests.get("http://main_core_app:8089/", verify=False)
+        request.raise_for_status()  # Raise an exception for HTTP errors
+        
+        # Return the raw HTML content
+        return HTMLResponse(content=request.text, status_code=200)
+    except requests.RequestException as e:
+        logger.error(f"Error fetching dashboard data: {str(e)}")
+        raise HTTPException(status_code=request.status_code, detail="Unable to fetch dashboard data")
 
 @router.get("/entities/{state}", response_model=None)
 async def get_location_entities(state: str, skip: int = 0, limit: int = 50):
