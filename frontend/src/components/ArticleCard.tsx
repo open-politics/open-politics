@@ -101,7 +101,7 @@ export function ArticleCard({ id, headline, paragraphs, url, source, insertion_d
           </div>
         </Card>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] flex flex-col">
+      <DialogContent className="max-h-[90vh] max-w-[100vw] md:max-w-[70vw] flex flex-col">
         <DialogHeader>
           <DialogTitle>{headline}</DialogTitle>
           <DialogDescription>{source} - {insertion_date && new Date(insertion_date).toLocaleDateString()}</DialogDescription>

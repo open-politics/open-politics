@@ -66,7 +66,7 @@ const Desk: React.FC = () => {
         setIsVisible(false);
         setHasClicked(false);
       }
-      if ((event.key === 'b' || event.key === 'B') && event.ctrlKey) {
+      if (event.key === 'b' || event.key === 'B') {
         setIsVisible(true);
         setHasClicked(true);
       }

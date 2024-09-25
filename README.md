@@ -114,19 +114,8 @@ Run `docker compose -f docker-compose.yml up` to start the backend and frontend.
 You can also go into the frontendfolder and run npm run dev. You need to plugin the backend url into the .env file inside of frontent( which you have to create).
 We recommend at least booting up the backend as a docker container. It has configurations set to rebuild on code changes.
 
-### Vision
-The "Open Globe" Interface is set out to display articles and events interactively on a globe.
-It should enable to browse global news exploratively.
-Heatmap events, timeseries/ timeline scrolling and filter for issue areas are also on the roadmap.
 
-### Current UI
-![Open Politics Vision](assets/images/globe_2.png)
 
-This interface enables you to formulate two questions in natural language and retrieve relevant articles. The globe serves as an interaction component for country-related information.
-
-The frontend is currently capable of rendering GDP, Wikipedia Description, Heads of State for each country on click & Legislative Data for Germany. 
-
-Some showcase articles are encoded to locations on the map. This is to show the future of event & article mapping this project aims to achieve.
 
 ## Backend
 ### FastAPI
