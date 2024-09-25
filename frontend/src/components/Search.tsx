@@ -28,21 +28,27 @@ import LottieLoader from './LottieLoader';
 
 interface SearchProps {
   setResults: (results: any) => void;
-  setCountry: (country: string | null) => void;
+  setCountry?: (country: string | null) => void;
   setSummary: (summary: string) => void;
   globeRef: React.RefObject<any>;
 }
 import { ArticleCardProps } from '@/components/ArticleCard';
 
-
 const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, globeRef }) => {
-
   const [inputValue, setInputValue] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [analysisType, setAnalysisType] = useState('Conflict Analysis');
-
+  const [searchType, setSearchType] = useState('semantic');
+  const [includeSummary, setIncludeSummary] = useState(false);
+  const [entities, setEntities] = useState('');
+  const [locations, setLocations] = useState('');
+  const [classificationScores, setClassificationScores] = useState('');
+  const [topics, setTopics] = useState('');
+  const [keywords, setKeywords] = useState('');
+  const [keywordWeights, setKeywordWeights] = useState<{ [key: string]: number }>({});
+  const [excludeKeywords, setExcludeKeywords] = useState<string[]>([]);
 
   const handleSearch = async (query: string) => {
     setLoading(true);
@@ -51,24 +57,26 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
         fetchTavilySearchResults(query),
         fetchSSAREArticles(query)
       ]);
-  
+
       const combinedResults = {
         tavilyResults,
         ssareResults
       };
       setResults(combinedResults);
-  
-      const tavilyArticles = tavilyResults.results.map((result: any) => ({ content: result.content }));
-      const { output } = await generateSummaryFromArticles(tavilyArticles, ssareResults, analysisType);
-      let fullSummary = '';
-      for await (const delta of readStreamableValue(output)) {
-        fullSummary += delta;
-        setSummary(fullSummary);
+
+      if (includeSummary) {
+        const tavilyArticles = tavilyResults.results.map((result: any) => ({ content: result.content }));
+        const { output } = await generateSummaryFromArticles(tavilyArticles, ssareResults, analysisType);
+        let fullSummary = '';
+        for await (const delta of readStreamableValue(output)) {
+          fullSummary += delta;
+          setSummary(fullSummary);
+        }
       }
-      setLoading(false);
+
       const country = await fetchCountryFromQuery(query);
       setCountry(country?.country_name);
-  
+
       if (country && globeRef.current) {
         globeRef.current.zoomToCountry(country.latitude, country.longitude, country.country_name);
       }
@@ -109,7 +117,12 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
           search_query: query,
           limit: 8,
           skip: 0,
-          search_type: 'semantic'  
+          search_type: searchType,
+          entities: entities,
+          locations: locations,
+          classification_scores: classificationScores,
+          topics: topics,
+          keyword: keywords
         }
       });
       return response.data;
@@ -190,28 +203,48 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <CommandList className="hidden md:block">
-          <div className="hidden md:block">
+        <CommandList className="md:block">
+          <div className="md:block">
             <CommandGroup heading="Method Focus">
-            <RadioGroup 
-              defaultValue="Conflict Analysis" 
-              onValueChange={(value) => setAnalysisType(value)}
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="Conflict Analysis" id="conflict-analysis" />
-                <Label htmlFor="conflict-analysis">Conflict Analysis</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="News Analysis" id="news-analysis" />
-                <Label htmlFor="news-analysis">News Analysis</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="Economic Analysis" id="economic-analysis" />
-                <Label htmlFor="economic-analysis">Economic Analysis</Label>
-              </div>
-            </RadioGroup>
+              <RadioGroup 
+                defaultValue="Conflict Analysis" 
+                onValueChange={(value) => setAnalysisType(value)}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="Conflict Analysis" id="conflict-analysis" />
+                  <Label htmlFor="conflict-analysis">Conflict Analysis</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="News Analysis" id="news-analysis" />
+                  <Label htmlFor="news-analysis">News Analysis</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="Economic Analysis" id="economic-analysis" />
+                  <Label htmlFor="economic-analysis">Economic Analysis</Label>
+                </div>
+              </RadioGroup>
             </CommandGroup>
-          <CommandSeparator className="mt-2" />
+            <CommandSeparator className="mt-2" />
+            <CommandGroup heading="Search Type">
+              <RadioGroup 
+                defaultValue="semantic" 
+                onValueChange={(value) => setSearchType(value)}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="semantic" id="semantic" />
+                  <Label htmlFor="semantic">Semantic</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="text" id="text" />
+                  <Label htmlFor="text">Text</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="structured" id="structured" />
+                  <Label htmlFor="structured">Structured</Label>
+                </div>
+              </RadioGroup>
+            </CommandGroup>
+            <CommandSeparator className="mt-2" />
             <CommandGroup heading="Suggestions">
               <CommandItem onSelect={() => handleSuggestionSelect('The economic situation of South Africa')}>
                 The economic situation of South Africa
@@ -227,7 +260,6 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
               </CommandItem>
             </CommandGroup>
           </div>
-          
         </CommandList>
       </Command>
       <CommandDialog open={dialogOpen} onOpenChange={(open) => setDialogOpen(open)}>
@@ -242,13 +274,13 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
           <Button onClick={() => handleSearch(inputValue)} className="absolute right-2 top-1/2 transform -translate-y-1/2" size="sm">Search</Button>
         </div>
         <CommandList>
-          <div className="hidden md:block">
+          <div className="md:block">
             <CommandGroup heading="Suggestions">
               <CommandItem onSelect={() => handleSuggestionSelect('The economic situation of South Africa')}>
                 The economic situation of South Africa
               </CommandItem>
               <CommandItem onSelect={() => handleSuggestionSelect('How has Iran positioned itself towards Ukraine?')}>
-                How has Iran positioned itself towards Ukraine?
+                How has Iran positioned itself towards Ukraine
               </CommandItem>
               <CommandItem onSelect={() => handleSuggestionSelect('News from Singapore')}>
                 News from Singapore
@@ -263,6 +295,92 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
           </CommandGroup>
         </CommandList>
       </CommandDialog>
+      <div className="mt-4 flex items-center space-x-2">
+        <input
+          type="checkbox"
+          id="include-summary"
+          checked={includeSummary}
+          onChange={(e) => setIncludeSummary(e.target.checked)}
+        />
+        <Label htmlFor="include-summary">Include AI Summary</Label>
+      </div>
+      <div className="mt-4 flex items-center space-x-2">
+        <input
+          type="text"
+          id="entities"
+          value={entities}
+          onChange={(e) => setEntities(e.target.value)}
+          placeholder="Filter by entities (comma-separated)"
+        />
+        <Label htmlFor="entities">Entities</Label>
+      </div>
+      <div className="mt-4 flex items-center space-x-2">
+        <input
+          type="text"
+          id="locations"
+          value={locations}
+          onChange={(e) => setLocations(e.target.value)}
+          placeholder="Filter by locations (comma-separated)"
+        />
+        <Label htmlFor="locations">Locations</Label>
+      </div>
+      <div className="mt-4 flex items-center space-x-2">
+        <input
+          type="text"
+          id="classification-scores"
+          value={classificationScores}
+          onChange={(e) => setClassificationScores(e.target.value)}
+          placeholder="Filter by classification scores (JSON)"
+        />
+        <Label htmlFor="classification-scores">Classification Scores</Label>
+      </div>
+      <div className="mt-4 flex items-center space-x-2">
+        <input
+          type="text"
+          id="topics"
+          value={topics}
+          onChange={(e) => setTopics(e.target.value)}
+          placeholder="Filter by topics (comma-separated)"
+        />
+        <Label htmlFor="topics">Topics</Label>
+      </div>
+      <div className="mt-4 flex items-center space-x-2">
+        <input
+          type="text"
+          id="keywords"
+          value={keywords}
+          onChange={(e) => setKeywords(e.target.value)}
+          placeholder="Filter by keywords"
+        />
+        <Label htmlFor="keywords">Keywords</Label>
+      </div>
+      <div className="mt-4 flex items-center space-x-2">
+        <input
+          type="text"
+          id="keyword-weights"
+          value={Object.entries(keywordWeights).map(([key, value]) => `${key}:${value}`).join(', ')}
+          onChange={(e) => {
+            const weights = e.target.value.split(',').reduce((acc, pair) => {
+              const [key, value] = pair.split(':');
+              acc[key.trim()] = parseFloat(value.trim());
+              return acc;
+            }, {} as { [key: string]: number });
+            setKeywordWeights(weights);
+          }}
+          placeholder="Keyword weights (e.g. Berlin:2, Economy:1.5)"
+        />
+        <Label htmlFor="keyword-weights">Keyword Weights</Label>
+      </div>
+      <div className="mt-4 flex items-center space-x-2">
+        <input
+          type="text"
+          id="exclude-keywords"
+          value={excludeKeywords.join(', ')}
+          onChange={(e) => setExcludeKeywords(e.target.value.split(',').map(k => k.trim()))}
+          placeholder="Exclude keywords (comma-separated)"
+        />
+        <Label htmlFor="exclude-keywords">Exclude Keywords</Label>
+      </div>
     </div>
   );
 };

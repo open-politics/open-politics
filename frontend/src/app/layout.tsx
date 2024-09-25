@@ -27,7 +27,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
               <Header />
               <main className="flex-grow relative z-20 overflow-y-auto">
                 <ToastProvider>
-                  <div className="min-h-screen">
+                  <div className="min-h-screen flex flex-col">
                     {children}
                     <ToastViewport />
                   </div>

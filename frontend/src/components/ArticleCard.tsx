@@ -66,10 +66,15 @@ export function ArticleCard({ id, headline, paragraphs, url, source, insertion_d
       removeBookmark(url);
     } else {
       addBookmark({
-        url,
+        id,
         headline,
+        paragraphs,
+        url,
         source,
-        snippet: paragraphs.slice(0, 350)
+        insertion_date,
+        entities,
+        tags,
+        classification
       });
     }
   };

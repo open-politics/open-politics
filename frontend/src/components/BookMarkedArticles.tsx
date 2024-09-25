@@ -8,6 +8,39 @@ export function BookmarkedArticles() {
   const { getBookmarks, removeBookmark } = useBookMarkStore();
   const bookmarks = getBookmarks();
   const [isOpen, setIsOpen] = useState(false);
+  const [fileName, setFileName] = useState('bookmarks');
+
+  const escapeForCSV = (text: string) => {
+    if (!text) return '';
+    return `"${text.replace(/"/g, '""')}"`;
+  };
+
+  const downloadCSV = () => {
+    const csvContent = [
+      ['ID', 'Headline', 'Paragraphs', 'URL', 'Source', 'Insertion Date', 'Entities', 'Tags', 'Classification'],
+      ...bookmarks.map(bookmark => [
+        escapeForCSV(bookmark.id),
+        escapeForCSV(bookmark.headline),
+        escapeForCSV(bookmark.paragraphs),
+        escapeForCSV(bookmark.url),
+        escapeForCSV(bookmark.source),
+        escapeForCSV(bookmark.insertion_date),
+        escapeForCSV(JSON.stringify(bookmark.entities)),
+        escapeForCSV(JSON.stringify(bookmark.tags)),
+        escapeForCSV(JSON.stringify(bookmark.classification))
+      ])
+    ].map(e => e.join(",")).join("\n");
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `${fileName}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div>
@@ -22,6 +55,14 @@ export function BookmarkedArticles() {
           <DialogHeader>
             <DialogTitle>Bookmarked Articles</DialogTitle>
           </DialogHeader>
+          <input
+            type="text"
+            value={fileName}
+            onChange={(e) => setFileName(e.target.value)}
+            placeholder="Enter file name"
+            className="mb-4 p-2 border rounded"
+          />
+          <Button onClick={downloadCSV} className="mb-4">Download as CSV</Button>
           {bookmarks.length === 0 ? (
             <p>No bookmarks yet.</p>
           ) : (
@@ -34,7 +75,7 @@ export function BookmarkedArticles() {
                   {bookmark.headline}
                 </a>
                 <p>{bookmark.source}</p>
-                <p>{bookmark.snippet}...</p>
+                <p>{bookmark.paragraphs ? bookmark.paragraphs.slice(0, 350) : ''}...</p>
               </div>
             ))
           )}

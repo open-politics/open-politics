@@ -10,20 +10,23 @@ import { Button } from "@/components/ui/button";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useBookMarkStore } from '@/hooks/useBookMarkStore'; // Import the bookmark store
 
 interface ResultsProps {
   results: {
-    tavilyResults: {
+    tavilyResults?: {
       images?: string[];
       results: any[];
     };
     ssareResults: ArticleCardProps[];
   };
   summary?: string;
+  includeSummary: boolean; // New prop for including summary
 }
 
-const Results: React.FC<ResultsProps> = ({ results, summary }) => {
+const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) => {
   const [showArticles, setShowArticles] = React.useState(true);
+  const { addBookmark } = useBookMarkStore(); // Use the bookmark store
 
   if (!results) {
     return null;
@@ -50,10 +53,26 @@ const Results: React.FC<ResultsProps> = ({ results, summary }) => {
     li: (props: any) => <li className="mb-1">{props.children}</li>,
   };
 
+  const handleBookmarkAll = (articles: ArticleCardProps[]) => {
+    articles.forEach(article => {
+      addBookmark({
+        id: article.id,
+        headline: article.headline,
+        paragraphs: article.paragraphs,
+        url: article.url,
+        source: article.source,
+        insertion_date: article.insertion_date,
+        entities: article.entities,
+        tags: article.tags,
+        classification: article.classification
+      });
+    });
+  };
+
   return (
-    <div className="flex flex-col h-full bg-opacity-20 backdrop-blur-lg w-full rounded-lg p-4 overflow-hidden">
+    <div className={`flex flex-col h-full bg-opacity-20 backdrop-blur-lg w-full rounded-lg p-4 overflow-hidden ${!includeSummary ? 'grid-cols-1' : ''}`}>
       <div className="flex justify-between items-center mb-2">
-        <h2 className="text-xl">Articles & Summary</h2>
+        {includeSummary ? <h2 className="text-xl">Articles & Summary</h2> : <h2>Articles</h2>}
         <Button 
           className="px-2 py-1 text-xs" 
           variant="outline" 
@@ -63,7 +82,7 @@ const Results: React.FC<ResultsProps> = ({ results, summary }) => {
         </Button>
       </div>
       <div className="flex-1 overflow-hidden">
-        {showArticles && summary && (
+        {showArticles && includeSummary && summary && (
           <div className="flex-none mb-4 overflow-auto max-h-96 prose prose-invert max-w-none rounded-md p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <ReactMarkdown 
               components={MarkdownComponents}
@@ -74,27 +93,30 @@ const Results: React.FC<ResultsProps> = ({ results, summary }) => {
           </div>
         )}
         {showArticles && (
-          <Tabs defaultValue="all" className="w-full">
+          <Tabs defaultValue="ssare" className="w-full h-full">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="all">All Results</TabsTrigger>
               <TabsTrigger value="tavily">Tavily Results</TabsTrigger>
               <TabsTrigger value="ssare">SSARE Results</TabsTrigger>
             </TabsList>
-            <TabsContent value="all">
-              <div className="flex-grow overflow-auto max-h-[600px] overflow-y-auto max-w-full rounded-md [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <TabsContent value="all" className="h-full overflow-y-auto">
+              <div className="flex-grow overflow-auto max-h-full overflow-y-auto max-w-full rounded-md [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {/* Render all results here */}
+                <Button onClick={() => handleBookmarkAll([...tavilyResults.results, ...ssareResults])} className="mt-4 mb-12">Bookmark All Tavily & SSARE Articles</Button>
                 {renderAllResults(tavilyResults, ssareResults)}
               </div>
             </TabsContent>
-            <TabsContent value="tavily">
-              <div className="flex-grow overflow-auto max-h-[600px] overflow-y-auto max-w-full rounded-md p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <TabsContent value="tavily" className="h-full overflow-y-auto">
+              <div className="flex-grow overflow-auto max-h-full overflow-y-auto max-w-full rounded-md p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {/* Render Tavily results here */}
+                <Button onClick={() => handleBookmarkAll(tavilyResults.results)} className="mt-4 mb-12">Bookmark All Tavily Articles</Button>
                 {renderTavilyResults(tavilyResults)}
               </div>
             </TabsContent>
-            <TabsContent value="ssare">
-              <div className="flex-grow overflow-auto max-h-[600px] overflow-y-auto max-w-full rounded-md p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <TabsContent value="ssare" className="h-full overflow-y-auto">
+              <div className="flex-grow overflow-auto max-h-full overflow-y-auto max-w-full rounded-md p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {/* Render SSARE results here */}
+                <Button onClick={() => handleBookmarkAll(ssareResults)} className="mt-4 mb-12">Bookmark All SSARE Articles</Button>
                 {renderSsareResults(ssareResults)}
               </div>
             </TabsContent>
@@ -115,13 +137,13 @@ const renderAllResults = (tavilyResults: any, ssareResults: ArticleCardProps[]) 
 
 const renderTavilyResults = (tavilyResults: any) => (
   <>
-    {tavilyResults.images && tavilyResults.images.length > 0 && (
+    {tavilyResults && tavilyResults.images && tavilyResults.images.length > 0 && (
       <div className="flex overflow-x-auto space-x-4 mb-4 pb-2">
         {/* ... existing image rendering code ... */}
       </div>
     )}
     <h3 className="text-lg font-semibold mb-2">Tavily Results</h3>
-    {tavilyResults.results && tavilyResults.results.map((result: any, index: number) => (
+    {tavilyResults && tavilyResults.results && tavilyResults.results.map((result: any, index: number) => (
       <ArticleCard
         className={index === 0 ? 'first-article' : ''}
         key={`tavily-${index}`}
