@@ -16,6 +16,9 @@ import LocationDetailPanel from '@/components/LocationDetailPanel';
 import { SSAREDashboard } from '../hq/page';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { ChatWithContext } from '@/components/ChatWithContext';
+import { BookmarkedArticles } from '@/components/BookMarkedArticles';
+
+
 
 const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
@@ -290,6 +293,10 @@ const Desk: React.FC = () => {
         >
           <RefreshCcw size={24} />
         </motion.button>
+        <motion.div className="fixed bottom-4 left-3/4 transform -translate-x-1/2">
+          <BookmarkedArticles />
+        </motion.div>
+
       </div>
       <AnimatePresence>
         {isDashboardVisible && (

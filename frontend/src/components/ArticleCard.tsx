@@ -1,9 +1,10 @@
 'use client'
-import React, { useState } from 'react';
+import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Bookmark, BookMarked } from 'lucide-react'; // Import bookmark icons
 import {
   Dialog,
   DialogContent,
@@ -12,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useBookMarkStore } from '@/hooks/useBookMarkStore';
 
 export type ArticleCardProps = {
   id: string;
@@ -54,13 +56,32 @@ export type ArticleCardProps = {
 };
 
 export function ArticleCard({ id, headline, paragraphs, url, source, insertion_date, entities = [], tags = [], classification, className, ...props }: ArticleCardProps & React.ComponentProps<typeof Card>) {
-  const [isOpen, setIsOpen] = useState(false);
+  const { bookmarks, addBookmark, removeBookmark } = useBookMarkStore(); // Use the bookmark store
+
+  const isBookmarked = bookmarks.some(bookmark => bookmark.url === url);
+
+  const handleBookmark = (event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent the click from triggering the Dialog
+    if (isBookmarked) {
+      removeBookmark(url);
+    } else {
+      addBookmark({
+        url,
+        headline,
+        source,
+        snippet: paragraphs.slice(0, 350)
+      });
+    }
+  };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog>
       <DialogTrigger asChild>
-        <Card className={cn("rounded-lg overflow-y-auto cursor-pointer", className)} {...props}>
+        <Card className={cn("rounded-lg overflow-y-auto cursor-pointer relative", className)} {...props}>
           <div className="p-4">
+            <div className="absolute top-2 right-2" onClick={handleBookmark}>
+              {isBookmarked ? <BookMarked className="text-blue-500" /> : <Bookmark className="text-gray-500" />}
+            </div>
             <h4 className="mb-2 text-lg font-semibold">{headline}</h4>
             <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{paragraphs}</p>
             <div className="flex flex-wrap gap-1 mb-2">

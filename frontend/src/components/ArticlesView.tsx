@@ -3,6 +3,7 @@ import { ArticleCard } from './ArticleCard';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import DotLoader from 'react-spinners/DotLoader';
+import { useBookMarkStore } from '@/hooks/useBookMarkStore'; // Import the bookmark store
 
 interface ArticlesViewProps {
   locationName: string;
@@ -16,11 +17,35 @@ interface ArticlesViewProps {
 
 export function ArticlesView({ locationName, articles, isLoading, error, fetchArticles, loadMore, resetArticles }: ArticlesViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const { bookmarks, addBookmark, removeBookmark } = useBookMarkStore(); // Use the bookmark store
 
   const handleSearch = () => {
     resetArticles();
     fetchArticles(searchQuery);
   };
+
+  const handleBookmarkAll = () => {
+    articles.forEach(article => {
+      addBookmark({
+        url: article.url,
+        headline: article.headline,
+        source: article.source,
+        snippet: article.paragraphs.slice(0, 350)
+      });
+    });
+  };
+
+  const handleUnbookmarkAll = () => {
+    articles.forEach(article => {
+      removeBookmark(article.url);
+    });
+  };
+
+  const allBookmarked = articles.every(article => bookmarks.some(bookmark => bookmark.url === article.url));
+
+  const filteredArticles = articles.filter(article =>
+    article.headline.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   if (error) {
     return <div className="text-red-500">{error.message}</div>;
@@ -28,6 +53,17 @@ export function ArticlesView({ locationName, articles, isLoading, error, fetchAr
 
   return (
     <div className="space-y-4 flex flex-col h-full">
+      <div className="flex items-center space-x-2">
+        <Input
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder={`Search ${locationName}'s articles`}
+        />
+        <Button onClick={handleSearch}>Search</Button>
+        <Button onClick={allBookmarked ? handleUnbookmarkAll : handleBookmarkAll}>
+          {allBookmarked ? 'Unbookmark All' : 'Bookmark All'}
+        </Button> {/* Toggle button */}
+      </div>
       {isLoading && articles.length === 0 ? (
         <div className="flex flex-col items-center justify-center flex-grow">
           <DotLoader color="#000" size={50} />
@@ -36,8 +72,8 @@ export function ArticlesView({ locationName, articles, isLoading, error, fetchAr
       ) : (
         <div className="overflow-y-auto flex-grow">
           <div className="space-y-2">
-            {articles.length > 0 ? (
-              articles.map((article) => (
+            {filteredArticles.length > 0 ? (
+              filteredArticles.map((article) => (
                 <ArticleCard
                   key={article.url}
                   {...article}

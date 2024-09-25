@@ -142,7 +142,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
         homeZoomLevel: initialZoomLevel,
         wheelY: "zoom",
         centerMapOnZoomOut: true,
-        maxPanOut: 0
+        // maxPanOut: 0
       })
     );
     chartInstanceRef.current = chart;
