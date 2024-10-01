@@ -41,9 +41,13 @@ const nextConfig = {
         source: "/api/:path*",
         destination: `http://backend:8000/api/:path*`,
       },
+      // {
+      //   source: "/docs/:path*",
+      //   destination: `http://backend:8000/docs/:path*`
+      // },
       {
-        source: "/docs/:path*",
-        destination: `http://backend:8000/docs/:path*`
+        source: "/api/v1/editor/mdx/:folder/:filename",
+        destination: `http://backend:8000/api/v1/editor/mdx/:folder/:filename`
       }
     ];
   },

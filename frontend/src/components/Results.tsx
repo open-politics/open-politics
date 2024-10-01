@@ -70,7 +70,7 @@ const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) =
   };
 
   return (
-    <div className={`flex flex-col h-full bg-opacity-20 backdrop-blur-lg w-full rounded-lg p-4 overflow-hidden ${!includeSummary ? 'grid-cols-1' : ''}`}>
+    <div className={`flex flex-col h-full bg-opacity-20 backdrop-blur-lg w-full rounded-lg p-4 overflow-y-auto ${!includeSummary ? 'grid-cols-1' : ''}`}>
       <div className="flex justify-between items-center mb-2">
         {includeSummary ? <h2 className="text-xl">Articles & Summary</h2> : <h2>Articles</h2>}
         <Button 
@@ -81,7 +81,7 @@ const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) =
           {showArticles ? 'Hide' : 'Show'}
         </Button>
       </div>
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-y-auto">
         {showArticles && includeSummary && summary && (
           <div className="flex-none mb-4 overflow-auto max-h-96 prose prose-invert max-w-none rounded-md p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <ReactMarkdown 

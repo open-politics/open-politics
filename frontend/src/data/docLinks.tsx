@@ -37,7 +37,7 @@ export interface DocLink {
       ],
     },
     {
-      label: "Technology Stack",
+      label: "Technology - Home",
       href: "/docs/tech-stack",
       isPublished: true,
       topics: [

@@ -115,7 +115,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
       const response = await axios.get(`/api/v1/search/articles`, {
         params: {
           search_query: query,
-          limit: 8,
+          limit: 20,
           skip: 0,
           search_type: searchType,
           entities: entities,
@@ -203,28 +203,28 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <CommandList className="md:block">
-          <div className="md:block">
+        <CommandList className="hidden md:block">
+          <div className="hidden md:block">
             <CommandGroup heading="Method Focus">
-              <RadioGroup 
-                defaultValue="Conflict Analysis" 
-                onValueChange={(value) => setAnalysisType(value)}
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="Conflict Analysis" id="conflict-analysis" />
-                  <Label htmlFor="conflict-analysis">Conflict Analysis</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="News Analysis" id="news-analysis" />
-                  <Label htmlFor="news-analysis">News Analysis</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="Economic Analysis" id="economic-analysis" />
-                  <Label htmlFor="economic-analysis">Economic Analysis</Label>
-                </div>
-              </RadioGroup>
+            <RadioGroup 
+              defaultValue="Conflict Analysis" 
+              onValueChange={(value) => setAnalysisType(value)}
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="Conflict Analysis" id="conflict-analysis" />
+                <Label htmlFor="conflict-analysis">Conflict Analysis</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="News Analysis" id="news-analysis" />
+                <Label htmlFor="news-analysis">News Analysis</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="Economic Analysis" id="economic-analysis" />
+                <Label htmlFor="economic-analysis">Economic Analysis</Label>
+              </div>
+            </RadioGroup>
             </CommandGroup>
-            <CommandSeparator className="mt-2" />
+          <CommandSeparator className="mt-2" />
             <CommandGroup heading="Search Type">
               <RadioGroup 
                 defaultValue="semantic" 
@@ -260,6 +260,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
               </CommandItem>
             </CommandGroup>
           </div>
+          
         </CommandList>
       </Command>
       <CommandDialog open={dialogOpen} onOpenChange={(open) => setDialogOpen(open)}>
@@ -274,7 +275,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
           <Button onClick={() => handleSearch(inputValue)} className="absolute right-2 top-1/2 transform -translate-y-1/2" size="sm">Search</Button>
         </div>
         <CommandList>
-          <div className="md:block">
+          <div className="hidden md:block">
             <CommandGroup heading="Suggestions">
               <CommandItem onSelect={() => handleSuggestionSelect('The economic situation of South Africa')}>
                 The economic situation of South Africa

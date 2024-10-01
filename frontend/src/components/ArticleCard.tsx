@@ -107,16 +107,16 @@ export function ArticleCard({ id, headline, paragraphs, url, source, insertion_d
                   <p>📊 General Interest: <span className={`font-bold ${getColorClass(classification.general_interest_score, false)}`}>{classification.general_interest_score.toFixed(2)}</span></p>
                 </div>
                 <div>
-                  <p>🌍 Geopolitical Relevance: <span className={`font-bold ${getColorClass(classification.geopolitical_relevance, false)}`}>{classification.geopolitical_relevance.toFixed(2)}</span></p>
-                  <p>📜 Legislative Influence: <span className={`font-bold ${getColorClass(classification.legislative_influence_score, false)}`}>{classification.legislative_influence_score.toFixed(2)}</span></p>
-                  <p>🌐 International Relevance: <span className={`font-bold ${getColorClass(classification.international_relevance_score, false)}`}>{classification.international_relevance_score.toFixed(2)}</span></p>
-                  <p>🗳️ Democratic Process Implications: <span className={`font-bold ${getColorClass(classification.democratic_process_implications_score, false)}`}>{classification.democratic_process_implications_score.toFixed(2)}</span></p>
-                </div>
-                <div>
                   <p>🚫 Spam Score: <span className={`font-bold ${getColorClass(classification.spam_score, true)}`}>{classification.spam_score.toFixed(2)}</span></p>
                   <p>🎣 Clickbait Score: <span className={`font-bold ${getColorClass(classification.clickbait_score, true)}`}>{classification.clickbait_score.toFixed(2)}</span></p>
                   <p>🛑 Fake News Score: <span className={`font-bold ${getColorClass(classification.fake_news_score, true)}`}>{classification.fake_news_score.toFixed(2)}</span></p>
                   <p>😂 Satire Score: <span className={`font-bold ${getColorClass(classification.satire_score, true)}`}>{classification.satire_score.toFixed(2)}</span></p>
+                </div>
+                <div>
+                  <p>🌍 Geopolitical Relevance: <span className={`font-bold ${getColorClass(classification.geopolitical_relevance, false)}`}>{classification.geopolitical_relevance.toFixed(2)}</span></p>
+                  <p>📜 Legislative Influence: <span className={`font-bold ${getColorClass(classification.legislative_influence_score, false)}`}>{classification.legislative_influence_score.toFixed(2)}</span></p>
+                  <p>🌐 International Relevance: <span className={`font-bold ${getColorClass(classification.international_relevance_score, false)}`}>{classification.international_relevance_score.toFixed(2)}</span></p>
+                  <p>🗳️ Democratic Process Implications: <span className={`font-bold ${getColorClass(classification.democratic_process_implications_score, false)}`}>{classification.democratic_process_implications_score.toFixed(2)}</span></p>
                 </div>
               </div>
             )}

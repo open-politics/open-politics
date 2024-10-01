@@ -1,0 +1,36 @@
+{
+  "docs": {
+    "tech": {
+      "title": "Tech Documentation",
+      "type": "folder",
+      "children": [
+        {
+          "file": "overview.mdx",
+          "title": "Overview",
+          "tags": ["tech", "intro"]
+        },
+        {
+          "file": "deployment.mdx",
+          "title": "Deployment Guide",
+          "tags": ["tech", "deployment"]
+        }
+      ]
+    },
+    "business": {
+      "title": "Business Documentation",
+      "type": "folder",
+      "children": [
+        {
+          "file": "strategy.mdx",
+          "title": "Business Strategy",
+          "tags": ["business", "strategy"]
+        },
+        {
+          "file": "pricing.mdx",
+          "title": "Pricing Model",
+          "tags": ["business", "pricing"]
+        }
+      ]
+    }
+  }
+}

@@ -146,7 +146,7 @@ const Desk: React.FC = () => {
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      <div className="relative w-full h-screen overflow-hidden overflow-x-hidden">
+      <div className="relative w-full h-screen max-h-screen">
         <div className="absolute top-2 left-8 z-50"> 
           <h1 suppressHydrationWarning className="text-sm text-gray-400">{currentTime}</h1>
         </div>
@@ -191,7 +191,7 @@ const Desk: React.FC = () => {
                 />
               </motion.div>
               <motion.div
-                className={`absolute ${isMobile ? 'top-[calc(50%+100px)] transform -translate-x-1/2 w-full' : `${hasClicked && isVisible ? 'top-1/2 left-32 transform -translate-x-1/2 -translate-y-1/2 w-1/3' : 'top-1/2 left-1/4 transform -translate-x-1/2 -translate-y-1/2 w-1/2'}`} px-0`}
+                className={`absolute ${isMobile ? 'top-[calc(50%+100px)] transform -translate-x-1/2 w-full' : `${hasClicked && isVisible ? 'top-[calc(50%-200px)]  left-32 transform -translate-x-1/2 -translate-y-1/2 w-1/3' : 'top-[calc(50%-100px)]  left-1/4 transform -translate-x-1/2 -translate-y-1/2 w-1/2'}`} px-0`}
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
@@ -260,8 +260,8 @@ const Desk: React.FC = () => {
                 animate={{ opacity: 1 }}  
                 transition={{ duration: 0.5 }}
               >
-                <div className="flex-1 relative min-h-screen overflow-y-auto max-w-screen overflow-x-hidden">
-                  <Results results={results} summary={summary} />
+                <div className="flex-1 relative max-h-screen overflow-y-auto max-w-screen overflow-x-hidden">
+                  <Results results={results} summary={summary} isVisible={isVisible} toggleVisibility={toggleVisibility} />
                 </div>
               </motion.div>
               {hasClicked && isVisible && (
