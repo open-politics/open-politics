@@ -1,14 +1,14 @@
 import React from 'react';
 import Image from 'next/image';
-import DocsSidebar from '@/components/DocsSidebar';
+// import DocsSidebar from '@/components/DocsSidebar';
 import { Button } from "@/components/ui/button";
 
 export default function AboutPage() {
   return (
     <div className="flex relative z-20">
-      <div className="">
+      {/* <div className="">
         <DocsSidebar />
-      </div>
+      </div> */}
       <div className="
         flex-1
         xl:ml-64
