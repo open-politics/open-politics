@@ -16,7 +16,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li><Link href="/blog/about" className="text-sm hover:underline">About Us</Link></li>
               <li><Link href="/blog/user_guide" className="text-sm hover:underline">User Guide</Link></li>
-              <li><Link href="/documentation" className="text-sm hover:underline">Documentation</Link></li>
+              <li><Link href="https://docs.open-politics.org" className="text-sm hover:underline">Documentation</Link></li>
               <li><Link href="https://github.com/JimVincentW/open-politics" className="text-sm hover:underline">GitHub</Link></li>
             </ul>
           </div>
