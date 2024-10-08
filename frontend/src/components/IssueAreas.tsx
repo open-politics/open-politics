@@ -180,7 +180,7 @@ export function IssueAreas({ locationName }: IssueAreasProps) {
   return (
     <div className="space-y-4">
       <Tabs defaultValue="articles" className="w-full">
-        <TabsList className="flex w-full overflow-x-auto">
+        <TabsList className="max-w-full overflow-x-auto">
           <TabsTrigger value="articles">Articles</TabsTrigger>
           <TabsTrigger value="economic-data">Economic Data</TabsTrigger>
           <TabsTrigger value="leader-info">Entites</TabsTrigger>

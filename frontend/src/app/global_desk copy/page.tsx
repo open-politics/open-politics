@@ -17,15 +17,16 @@ import { SSAREDashboard } from '../hq/page';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { ChatWithContext } from '@/components/ChatWithContext';
 import { BookmarkedArticles } from '@/components/BookMarkedArticles';
+import Globe from '@/components/gGlobe';
 
 
 
-const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
+// const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
 console.log(process.env.NEXT_PUBLIC_API_URL);
 
 const Desk: React.FC = () => {
-    const geojsonUrl = '/geojson';
+    const geojsonUrl = '/api/v1/locations/geojson/';
     const [results, setResults] = useState(null);
     const [summary, setSummary] = useState<string>('');
     const [articleContent, setArticleContent] = useState<string>('');
@@ -191,7 +192,7 @@ const Desk: React.FC = () => {
                 />
               </motion.div>
               <motion.div
-                className={`absolute ${isMobile ? 'top-1/2 transform -translate-x-1/2 w-full' : `${hasClicked && isVisible ? 'top-[calc(50%-75px)] left-2 transform -translate-x-1/2 -translate-y-1/2 w-full' : 'top-[calc(50%-100px)]  left-1/4 transform -translate-x-1/2 -translate-y-1/2 w-1/2'}`} px-0`}
+                className={`absolute ${isMobile ? 'top-[calc(50%+100px)] transform -translate-x-1/2 w-full' : `${hasClicked && isVisible ? 'top-[calc(50%-200px)]  left-32 transform -translate-x-1/2 -translate-y-1/2 w-1/3' : 'top-[calc(50%-100px)]  left-1/4 transform -translate-x-1/2 -translate-y-1/2 w-1/2'}`} px-0`}
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
