@@ -7,7 +7,6 @@ import { useToast } from '@/components/ui/use-toast';
 import { ThemeProvider } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import Search from '@/components/Search';
-import Results from '@/components/Results';
 import { OpenAPI } from 'src/client';
 import { Map, FileSearch2, Globe as GlobeIcon, Search as SearchIcon, RefreshCcw } from 'lucide-react'; // Added RefreshCcw icon
 import { Settings, HelpCircle } from 'lucide-react';
@@ -17,15 +16,14 @@ import { SSAREDashboard } from '../hq/page';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { ChatWithContext } from '@/components/ChatWithContext';
 import { BookmarkedArticles } from '@/components/BookMarkedArticles';
+import Globe from '@/components/gGlobe';
 
-
-
-const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
+// const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
 console.log(process.env.NEXT_PUBLIC_API_URL);
 
 const Desk: React.FC = () => {
-    const geojsonUrl = '/geojson';
+    const geojsonUrl = '/api/v1/locations/geojson/';
     const [results, setResults] = useState(null);
     const [summary, setSummary] = useState<string>('');
     const [articleContent, setArticleContent] = useState<string>('');
@@ -82,15 +80,11 @@ const Desk: React.FC = () => {
     };
   }, []);
 
-  const handleLocationClick = (locationName: string) => {
+  const handleLocationClick = async (locationName: string) => {
     setLocation(locationName);
     setIsVisible(true);
     setHasClicked(true);
-  };
-
-  const toggleVisibility = () => {
-    setIsVisible(!isVisible);
-    setHasClicked(!isVisible); 
+    setLocationKey(prevKey => prevKey + 1);
   };
 
   const handleSearch = (searchResults: any) => {
@@ -177,7 +171,7 @@ const Desk: React.FC = () => {
               transition={{ duration: 0.5 }}
             >
               <motion.div
-                className={`absolute inset-0 ${hasClicked && isVisible ? 'w-1/2' : 'w-full'}`}
+                className={`absolute inset-0 ${hasClicked || isVisible ? 'w-1/2' : 'w-full'}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
@@ -195,7 +189,7 @@ const Desk: React.FC = () => {
                 />
               </motion.div>
               <motion.div
-                className={`absolute ${isMobile ? 'top-1/2 transform -translate-x-1/2 w-full' : `${hasClicked && isVisible ? 'top-[calc(50%-75px)] left-2 transform -translate-x-1/2 -translate-y-1/2 w-full' : 'top-[calc(50%-100px)]  left-1/4 transform -translate-x-1/2 -translate-y-1/2 w-1/2'}`} px-0`}
+                className={`absolute ${isMobile ? 'top-[calc(50%+100px)] transform -translate-x-1/2 w-full' : `${hasClicked && isVisible ? 'top-1/2  left-2 transform -translate-x-1/2 -translate-y-1/2 w-1/2' : 'top-1/2  left-1/4 transform -translate-x-1/2 -translate-y-1/2 w-1/2'}`} px-0`}
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
@@ -216,6 +210,8 @@ const Desk: React.FC = () => {
                       location={location}
                       isVisible={isVisible}
                       toggleVisibility={toggleVisibility}
+                      results={results} // Pass results
+                      summary={summary} // Pass summary
                     />
                   </motion.div>
                 )}
@@ -264,9 +260,8 @@ const Desk: React.FC = () => {
                 animate={{ opacity: 1 }}  
                 transition={{ duration: 0.5 }}
               >
-                <div className="flex-1 relative max-h-screen overflow-y-auto max-w-screen overflow-x-hidden">
-                  <Results results={results} summary={summary} isVisible={isVisible} toggleVisibility={toggleVisibility} />
-                </div>
+                {/* Removed separate Results component */}
+                {/* You can add additional content here if needed */}
               </motion.div>
               {hasClicked && isVisible && (
                 <motion.div
@@ -282,6 +277,8 @@ const Desk: React.FC = () => {
                       location={location}
                       isVisible={isVisible}
                       toggleVisibility={toggleVisibility}
+                      results={results} // Pass results
+                      summary={summary} // Pass summary
                     />
                   </div>
                 </motion.div>
