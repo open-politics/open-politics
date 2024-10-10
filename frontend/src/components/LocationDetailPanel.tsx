@@ -7,12 +7,16 @@ interface LocationDetailPanelProps {
   location: string | null;
   isVisible: boolean;
   toggleVisibility: () => void;
+  results: any; // Add appropriate type based on your data structure
+  summary: string;
 }
 
 const LocationDetailPanel: React.FC<LocationDetailPanelProps> = ({
   location,
   isVisible,
-  toggleVisibility
+  toggleVisibility,
+  results,
+  summary,
 }) => {
   return (
     <div className="flex flex-col h-full p-2 bg-background/75 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -21,7 +25,11 @@ const LocationDetailPanel: React.FC<LocationDetailPanelProps> = ({
       </Button> 
       {isVisible && location && ( 
         <div className="flex-grow overflow-y-auto rounded-md p-2">
-          <IssueAreas locationName={location}/>
+          <IssueAreas 
+            locationName={location}
+            results={results}
+            summary={summary}
+          />
         </div>
       )}
     </div>

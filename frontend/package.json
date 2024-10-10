@@ -23,6 +23,7 @@
     "@hey-api/openapi-ts": "^0.34.1",
     "@hookform/resolvers": "^3.4.2",
     "@imbios/next-pwa": "^1.1.1",
+    "@mapbox/maki": "^8.0.1",
     "@mdx-js/loader": "^3.0.1",
     "@mdx-js/react": "^3.0.1",
     "@mui/material": "^6.0.2",

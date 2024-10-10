@@ -10,7 +10,7 @@ const event_types = [
     { type: "War", emoji: "⚔️", color: "#FF5722", text: "<>" },
 ];
   
-const MapLeged = () => {
+const MapLegend = () => {
   return (
     <div className="p-4 bg-white dark:bg-black bg-opacity-20 dark:bg-opacity-30 backdrop-blur-lg rounded-lg shadow-lg">
       <h4 className="text-xl font-bold text-black dark:text-gray-200">Events on the Globe</h4>
@@ -32,4 +32,4 @@ const MapLeged = () => {
   );
 };
 
-export default MapLeged;
+export default MapLegend;

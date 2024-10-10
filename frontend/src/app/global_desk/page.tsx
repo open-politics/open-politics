@@ -7,7 +7,6 @@ import { useToast } from '@/components/ui/use-toast';
 import { ThemeProvider } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import Search from '@/components/Search';
-import Results from '@/components/Results';
 import { OpenAPI } from 'src/client';
 import { Map, FileSearch2, Globe as GlobeIcon, Search as SearchIcon, RefreshCcw } from 'lucide-react'; // Added RefreshCcw icon
 import { Settings, HelpCircle } from 'lucide-react';
@@ -18,8 +17,6 @@ import { ChevronUp, ChevronDown } from 'lucide-react';
 import { ChatWithContext } from '@/components/ChatWithContext';
 import { BookmarkedArticles } from '@/components/BookMarkedArticles';
 import Globe from '@/components/gGlobe';
-
-
 
 // const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
@@ -213,6 +210,8 @@ const Desk: React.FC = () => {
                       location={location}
                       isVisible={isVisible}
                       toggleVisibility={toggleVisibility}
+                      results={results} // Pass results
+                      summary={summary} // Pass summary
                     />
                   </motion.div>
                 )}
@@ -261,9 +260,8 @@ const Desk: React.FC = () => {
                 animate={{ opacity: 1 }}  
                 transition={{ duration: 0.5 }}
               >
-                <div className="flex-1 relative max-h-screen overflow-y-auto max-w-screen overflow-x-hidden">
-                  <Results results={results} summary={summary} isVisible={isVisible} toggleVisibility={toggleVisibility} />
-                </div>
+                {/* Removed separate Results component */}
+                {/* You can add additional content here if needed */}
               </motion.div>
               {hasClicked && isVisible && (
                 <motion.div
@@ -279,6 +277,8 @@ const Desk: React.FC = () => {
                       location={location}
                       isVisible={isVisible}
                       toggleVisibility={toggleVisibility}
+                      results={results} // Pass results
+                      summary={summary} // Pass summary
                     />
                   </div>
                 </motion.div>

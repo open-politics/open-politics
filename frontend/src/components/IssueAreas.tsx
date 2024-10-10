@@ -38,12 +38,15 @@ import EntitiesView from "./EntitiesView";
 import WikipediaView from './WikipediaView';
 import ArticlesView from './ArticlesView';
 import DataTable from "./DataTable";
+import Results from '@/components/Results'; // Import Results component
 
 interface IssueAreasProps {
   locationName: string;
+  results: any; // Add appropriate type based on your data structure
+  summary: string;
 }
 
-export function IssueAreas({ locationName }: IssueAreasProps) {
+export function IssueAreas({ locationName, results, summary }: IssueAreasProps) {
   const { data, isLoading, error, fetchArticles, resetArticles } = useLocationData(locationName);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -180,12 +183,13 @@ export function IssueAreas({ locationName }: IssueAreasProps) {
   return (
     <div className="space-y-4">
       <Tabs defaultValue="articles" className="w-full">
-        <TabsList className="max-w-full overflow-x-auto">
-          <TabsTrigger value="articles">Articles</TabsTrigger>
-          <TabsTrigger value="economic-data">Economic Data</TabsTrigger>
-          <TabsTrigger value="leader-info">Entites</TabsTrigger>
-          <TabsTrigger value="legislative">Legislative</TabsTrigger>
-          <TabsTrigger value="wikipedia">Wikipedia</TabsTrigger>
+        <TabsList className="max-w-full overflow-x-auto flex justify-start scroll-snap-type-x mandatory">
+          <TabsTrigger value="articles" className="scroll-snap-align-start">Articles</TabsTrigger>
+          <TabsTrigger value="economic-data" className="scroll-snap-align-start">Economic Data</TabsTrigger>
+          <TabsTrigger value="leader-info" className="scroll-snap-align-start">Entities</TabsTrigger>
+          <TabsTrigger value="legislative" className="scroll-snap-align-start">Legislative</TabsTrigger>
+          <TabsTrigger value="wikipedia" className="scroll-snap-align-start">Wikipedia</TabsTrigger>
+          <TabsTrigger value="search-results" className="scroll-snap-align-start">Search Results</TabsTrigger> {/* New Tab */}
         </TabsList>
         <div className="flex-grow overflow-hidden">
           <TabsContent value="articles" className="h-full">
@@ -249,11 +253,11 @@ export function IssueAreas({ locationName }: IssueAreasProps) {
                   </div>
                   {isLoading.legislative || isLoading.entities || isLoading.leaderInfo || isLoading.articles ? (
                      <div className="flex flex-col items-center justify-center h-full">
-                     <DotLoader color="#000" size={50} />
-                     <p className="mt-4">Legislative data is loading...</p>
-                   </div>
+                       <DotLoader color="#000" size={50} />
+                       <p className="mt-4">Legislative data is loading...</p>
+                     </div>
                   ) : error.legislative ? (
-                  <p>No legislative data available for {locationName}.</p>
+                    <p>No legislative data available for {locationName}.</p>
                   ) : filteredLegislativeData.length > 0 ? (
                     <DataTable columns={legislationColumns} data={filteredLegislativeData} />
                   ) : (
@@ -336,6 +340,23 @@ export function IssueAreas({ locationName }: IssueAreasProps) {
               </CardHeader>
               <CardContent>
                 <WikipediaView locationName={locationName} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="search-results"> {/* New Tab Content */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Search Results</CardTitle>
+                <CardDescription>
+                  Results from your recent search.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {results ? (
+                  <Results results={results} summary={summary} />
+                ) : (
+                  <p>No search results available.</p>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

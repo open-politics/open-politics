@@ -51,7 +51,7 @@ export function BookmarkedArticles() {
             <span>{bookmarks.length}</span>
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-h-[90vh] max-w-[40vw] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] max-w-[90vw] md:max-w-[50vw] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Bookmarked Articles</DialogTitle>
           </DialogHeader>
