@@ -30,4 +30,4 @@ if settings.BACKEND_CORS_ORIGINS:
     )
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
-app.mount("/static/docs", StaticFiles(directory="app/docs"), name="static-docs")
+# app.mount("/static/docs", StaticFiles(directory="app/docs"), name="static-docs")

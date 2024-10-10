@@ -82,11 +82,15 @@ const Desk: React.FC = () => {
     };
   }, []);
 
-  const handleLocationClick = async (locationName: string) => {
+  const handleLocationClick = (locationName: string) => {
     setLocation(locationName);
     setIsVisible(true);
     setHasClicked(true);
-    setLocationKey(prevKey => prevKey + 1);
+  };
+
+  const toggleVisibility = () => {
+    setIsVisible(!isVisible);
+    setHasClicked(!isVisible); 
   };
 
   const handleSearch = (searchResults: any) => {

@@ -1,23 +1,25 @@
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
+import axios from 'axios';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface GlobeProps {
   geojsonUrl: string;
-  setArticleContent: (content: string) => void;
-  onLocationClick: (location: string) => void;
-  isBrowseMode: boolean;
-  toggleMode: () => void;
-  setLegislativeData: (data: any) => void;
-  setEconomicData: (data: any) => void;
-  onCountryZoom: (latitude: number, longitude: number, countryName: string) => void;
+  onLocationClick: (countryName: string) => void;
 }
 
-const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, onCountryZoom }) => {
+const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+
+  const eventTypes = [
+    { type: "Elections", color: "#4CAF50" },
+    { type: "Protests", color: "#2196F3" },
+    { type: "Economic", color: "#FF9800" },
+    { type: "War", color: "#FF6347" },
+  ];
 
   useEffect(() => {
     if (!mapboxgl.accessToken) {
@@ -27,16 +29,32 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, onCountryZoo
     if (!mapRef.current && mapContainerRef.current) {
       mapRef.current = new mapboxgl.Map({
         container: mapContainerRef.current,
-        style: 'mapbox://styles/mapbox/streets-v11',
+        style: 'mapbox://styles/jimvw/cm237n93v000601qp9tts27w9', 
         projection: 'globe',
-        center: [0, 0],
+        center: [13.4, 52.5],
         zoom: 2
       });
 
       mapRef.current.on('load', () => {
         setMapLoaded(true);
+
+        mapRef.current?.setFog({
+          color: 'rgb(186, 210, 235)', // Lower atmosphere
+          'high-color': 'rgb(36, 92, 223)', // Upper atmosphere
+          'horizon-blend': 0.02, // Atmosphere thickness (default 0.2 at low zooms)
+          'space-color': 'rgb(11, 11, 25)', // Background color
+          'star-intensity': 0.6 // Background star brightness (default 0.35 at low zooms)
+        });
+
+        mapRef.current.addControl(new mapboxgl.NavigationControl());
       });
-      mapRef.current.addControl(new mapboxgl.NavigationControl()); 
+    }
+    const resizeObserver = new ResizeObserver(() => {
+      mapRef.current?.resize();
+    });
+
+    if (mapContainerRef.current) {
+      resizeObserver.observe(mapContainerRef.current);
     }
 
     return () => {
@@ -44,151 +62,257 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, onCountryZoo
         mapRef.current.remove();
         mapRef.current = null;
       }
+      resizeObserver.disconnect();
     };
   }, []);
 
   useEffect(() => {
-    if (mapLoaded && mapRef.current) {
-      if (!mapRef.current.getSource('geojson-data')) {
-        mapRef.current.addSource('geojson-data', {
-          type: 'geojson',
-          data: geojsonUrl
-        });
+    const loadGeoJSONData = async () => {
+      try {
+        const response = await axios.get('/api/v1/locations/geojson/');
+        const data = response.data;
+        // console.log('GeoJSON data:', data);
 
-        // Fetch and process GeoJSON data to list prominent locations
-        fetch(geojsonUrl)
-          .then(response => response.json())
-          .then(data => {
-            const features = data.features;
-            const prominentLocations = features
-              .map(feature => ({
-                name: feature.properties.name,
-                articleCount: feature.properties.article_count
-              }))
-              .sort((a, b) => b.articleCount - a.articleCount)
-              .slice(0, 10); // Get top 10 locations
+        if (mapRef.current) {
+          const adjustedData = {
+            ...data,
+            features: data.features.map((feature: any) => {
+              const [lat, lon] = feature.geometry.coordinates;
+              return {
+                ...feature,
+                geometry: {
+                  ...feature.geometry,
+                  coordinates: [lon - 0.05, lat] // Subtract 0.1 from the horizontal axis
+                }
+              };
+            })
+          };
 
-            console.log('Prominent Locations:', prominentLocations);
+          mapRef.current.addSource('geojson', {
+            'type': 'geojson',
+            'data': adjustedData
+          });
 
-            // Add dynamic image markers
-            for (const feature of features) {
-              const el = document.createElement('div');
-              const width = 50; // Example size, adjust as needed
-              const height = 50;
-              el.className = 'marker';
-              el.style.backgroundImage = `url(https://picsum.photos/id/${feature.properties.imageId}/${width}/${height})`;
-              el.style.width = `${width}px`;
-              el.style.height = `${height}px`;
-              el.style.backgroundSize = '100%';
-              el.style.borderRadius = '50%';
-              el.style.cursor = 'pointer';
+          mapRef.current.addLayer({
+            'id': 'geojson-layer',
+            'type': 'circle',
+            'source': 'geojson',
+            'paint': {
+              'circle-radius': {
+                  base: 1.5, // Adjust the base to control scaling rate
+                  stops: [
+                    [5, 6],   // Larger radius at lower zoom levels
+                    [12, 10], // Moderate radius at mid zoom levels
+                    [22, 50]  // Larger maximum radius at high zoom levels
+                  ]
+                },
+              'circle-color': "#00abff",
+              'circle-opacity': 0.8
+            },
+            'layout': {
+              'circle-sort-key': ['get', 'article_count'] // Use article_count to sort
+            }
+          });
 
-              el.addEventListener('click', () => {
-                window.alert(feature.properties.name);
-              });
+          mapRef.current.on('click', 'geojson-layer', (e) => {
+            const features = mapRef.current?.queryRenderedFeatures(e.point, {
+              layers: ['geojson-layer']
+            });
 
-              new mapboxgl.Marker(el)
+            if (features && features.length > 0) {
+              const feature = features[0];
+              const countryName = feature.properties?.name;
+              const articles = Array.isArray(feature.properties?.articles) ? feature.properties.articles : [];
+
+              onLocationClick(countryName);
+
+              const articleContent = articles.map((article: any) => 
+                `<a href="${article.url}" target="_blank">${article.headline}</a>`
+              ).join('<hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">');
+
+              const popupContent = `
+                <div class="custom-popup">
+                  <strong>${countryName}</strong><br>
+                  ${articleContent}
+                </div>
+              `;
+
+              new mapboxgl.Popup({ closeButton: false })
                 .setLngLat(feature.geometry.coordinates)
+                .setHTML(popupContent)
                 .addTo(mapRef.current);
             }
-          })
-          .catch(error => console.error('Error fetching GeoJSON:', error));
+          });
 
-        // Load a custom marker image
-        mapRef.current.loadImage(
-          'https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png',
-          (error, image) => {
-            if (error) throw error;
-            mapRef.current.addImage('custom-marker', image);
+          mapRef.current.on('mouseenter', 'geojson-layer', (e) => {
+            if (mapRef.current) {
+              mapRef.current.getCanvas().style.cursor = 'pointer';
 
-            // Add a symbol layer for point features
-            mapRef.current.addLayer({
-              id: 'geojson-layer',
-              type: 'symbol',
-              source: 'geojson-data',
-              layout: {
-                'icon-image': 'custom-marker',
-                'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-                'text-offset': [0, 1.25],
-                'text-anchor': 'top'
+              const features = mapRef.current.queryRenderedFeatures(e.point, {
+                layers: ['geojson-layer']
+              });
+
+              if (features && features.length > 0) {
+                const feature = features[0];
+                const countryName = feature.properties?.name;
+
+                new mapboxgl.Popup({ closeButton: false })
+                  .setLngLat(feature.geometry.coordinates)
+                  .setHTML(`<strong>${countryName}</strong>`)
+                  .addTo(mapRef.current);
               }
-            });
-          }
-        );
-
-        mapRef.current.on('click', 'geojson-layer', (e) => {
-          if (e.features && e.features[0].properties) {
-            const { name, latitude, longitude } = e.features[0].properties;
-            onLocationClick(name);
-            onCountryZoom(latitude, longitude, name);
-          }
-        });
-
-        const secondsPerRevolution = 120;
-        const maxSpinZoom = 5;
-        const slowSpinZoom = 3;
-
-        let userInteracting = true;
-        let spinEnabled = false;
-
-        const spinGlobe = () => {
-          if (mapRef.current) {
-            const zoom = mapRef.current.getZoom();
-            if (spinEnabled && !userInteracting && zoom < maxSpinZoom) {
-              let distancePerSecond = 360 / secondsPerRevolution;
-              if (zoom > slowSpinZoom) {
-                const zoomDif =
-                  (maxSpinZoom - zoom) / (maxSpinZoom - slowSpinZoom);
-                distancePerSecond *= zoomDif;
-              }
-              const center = mapRef.current.getCenter();
-              center.lng -= distancePerSecond;
-              mapRef.current.easeTo({ center, duration: 1000, easing: (n) => n });
             }
-          }
-        };
+          });
 
-        mapRef.current.on('mousedown', () => {
-          userInteracting = true;
-        });
-
-        mapRef.current.on('dragend', () => {
-          userInteracting = false;
-          spinGlobe();
-        });
-        mapRef.current.on('pitchend', () => {
-          userInteracting = false;
-          spinGlobe();
-        });
-        mapRef.current.on('rotateend', () => {
-          userInteracting = false;
-          spinGlobe();
-        });
-
-        const btnSpin = document.getElementById('btn-spin');
-        if (btnSpin) {
-          btnSpin.addEventListener('click', (e) => {
-            spinEnabled = !spinEnabled;
-            if (spinEnabled) {
-              spinGlobe();
-              if (e.target instanceof HTMLElement) {
-                e.target.innerHTML = 'Pause rotation';
-              }
-            } else {
-              mapRef.current?.stop();
-              if (e.target instanceof HTMLElement) {
-                e.target.innerHTML = 'Start rotation';
+          mapRef.current.on('mouseleave', 'geojson-layer', () => {
+            if (mapRef.current) {
+              mapRef.current.getCanvas().style.cursor = '';
+              const popups = document.getElementsByClassName('mapboxgl-popup');
+              while (popups.length > 0) {
+                popups[0].remove();
               }
             }
           });
         }
+      } catch (error) {
+        console.error('Error fetching GeoJSON:', error);
       }
+    };
+
+    const loadGeoJSONEventsData = async () => {
+      try {
+        const promises = eventTypes.map(eventType => {
+          return axios.get(`/api/v1/locations/geojson_events`, {
+            params: { event_type: eventType.type }
+          });
+        });
+
+        const results = await Promise.all(promises);
+        results.forEach((result, index) => {
+          const eventType = eventTypes[index];
+          const data = result.data;
+
+          if (mapRef.current) {
+            const adjustedData = {
+              ...data,
+              features: data.features.map((feature: any) => {
+                const [lat, lon] = feature.geometry.coordinates;
+                return {
+                  ...feature,
+                  geometry: {
+                    ...feature.geometry,
+                    coordinates: [lon, lat] // Swap to [longitude, latitude]
+                  }
+                };
+              })
+            };
+
+            mapRef.current.addSource(`geojson-events-${eventType.type}`, {
+              'type': 'geojson',
+              'data': adjustedData
+            });
+
+            mapRef.current.addLayer({
+              'id': `geojson-events-layer-${eventType.type}`,
+              'type': 'circle',
+              'source': `geojson-events-${eventType.type}`,
+              'layout': {
+                'text-field': ['get', 'name'],
+                'text-variable-anchor': ['top', 'bottom', 'left', 'right'],
+                'text-radial-offset': 0.5,
+                'text-justify': 'auto',
+                'icon-allow-overlap': false,
+                'text-allow-overlap': false,
+                'icon-ignore-placement': false,
+                'text-ignore-placement': false,
+                'circle-sort-key': ['get', 'article_count'] // Use article_count to sort
+              },
+              'paint': {
+                'circle-color': eventType.color,
+                'circle-radius': {
+                    base: 2, // Adjust the base to control scaling rate
+                    stops: [
+                      [5, 3],  // Increase the radius at lower zoom levels
+                      [12, 6], // Adjust the radius at mid zoom levels
+                      [22, 100] // Decrease the maximum radius at high zoom levels
+                    ]
+                },
+                'circle-opacity': 1
+              }
+            });
+
+            mapRef.current.on('click', `geojson-events-layer-${eventType.type}`, (e) => {
+              const features = mapRef.current?.queryRenderedFeatures(e.point, {
+                layers: [`geojson-events-layer-${eventType.type}`]
+              });
+
+              if (features && features.length > 0) {
+                const feature = features[0];
+                const countryName = feature.properties?.name;
+                const eventTypeName = eventType.type;
+
+                onLocationClick(countryName);
+
+                const popupContent = `
+                  <div class="custom-popup">
+                    <strong>${countryName}</strong><br>
+                    <strong>Event Type:</strong> ${eventTypeName}
+                  </div>
+                `;
+
+                new mapboxgl.Popup({ closeButton: false })
+                  .setLngLat(feature.geometry.coordinates)
+                  .setHTML(popupContent)
+                  .addTo(mapRef.current);
+              }
+            });
+
+            mapRef.current.on('mouseenter', `geojson-events-layer-${eventType.type}`, (e) => {
+              if (mapRef.current) {
+                mapRef.current.getCanvas().style.cursor = 'pointer';
+
+                const features = mapRef.current.queryRenderedFeatures(e.point, {
+                  layers: [`geojson-events-layer-${eventType.type}`]
+                });
+
+                if (features && features.length > 0) {
+                  const feature = features[0];
+                  const countryName = feature.properties?.name;
+                  const eventTypeName = eventType.type;
+
+                  new mapboxgl.Popup({ closeButton: false })
+                    .setLngLat(feature.geometry.coordinates)
+                    .setHTML(`<strong>${eventTypeName} @ ${countryName}</strong>`)
+                    .addTo(mapRef.current);
+                }
+              }
+            });
+
+            mapRef.current.on('mouseleave', `geojson-events-layer-${eventType.type}`, () => {
+              if (mapRef.current) {
+                mapRef.current.getCanvas().style.cursor = '';
+                const popups = document.getElementsByClassName('mapboxgl-popup');
+                while (popups.length > 0) {
+                  popups[0].remove();
+                }
+              }
+            });
+          }
+        });
+      } catch (error) {
+        console.error('Error fetching GeoJSON events data:', error);
+      }
+    };
+
+    if (mapLoaded) {
+      loadGeoJSONData();
+      loadGeoJSONEventsData();
     }
-  }, [mapLoaded, geojsonUrl, onLocationClick, onCountryZoom]);
+  }, [mapLoaded]);
 
   return (
     <div
-      style={{ height: '50vh', width: '100%' }}
+      style={{ height: '50%', width: '100%' }}
       ref={mapContainerRef}
       className="map-container"
     ></div>

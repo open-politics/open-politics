@@ -66,6 +66,7 @@
     "lodash": "^4.17.21",
     "lottie-react": "^2.4.0",
     "lucide-react": "^0.378.0",
+    "maki": "^2.1.0",
     "mapbox-gl": "^3.7.0",
     "mui": "^0.0.1",
     "nanoid": "^5.0.7",
