@@ -6,8 +6,10 @@ import useGeocode from '@/hooks/useGeocder';
 import { Input } from "@/components/ui/input"
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-
+import { MapPin } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import MapLegend from './MapLegend'; 
+
 
 interface GlobeProps {
   geojsonUrl: string;
@@ -21,6 +23,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick }) => {
   const [isMobile, setIsMobile] = useState(false);
   const { geocodeLocation, loading, error } = useGeocode();
   const [inputLocation, setInputLocation] = useState('');
+  const [showLegend, setShowLegend] = useState(false);
 
   const eventTypes = [
     { type: "Elections", color: "#4CAF50", icon: "building" },
@@ -277,42 +280,45 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick }) => {
   return (
     <div style={{ position: 'relative', height: '100%', width: '100%' }}>
       <div ref={mapContainerRef} className="map-container" style={{ height: '100%' }}></div>
-      <div className="absolute bottom-0 left-1 z-10 flex max-w-screen overflow-x-auto space-x-4">
-          <div className="flex w-full min-w-8 max-w-sm items-center space-x-2">
-            <Input
-              className='min-w-8 bg-white dark:bg-black'
-              type="text"
-              value={inputLocation}
-              onChange={(e) => setInputLocation(e.target.value)}
-              placeholder="Enter location"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleFlyToInputLocation();
-                  // Removed the incorrect onLocationClick call
-                }
-              }}
-            />
-            <Button variant="destructive" onClick={handleFlyToInputLocation} disabled={loading}>
-              {loading ? 'Loading...' : 'Fly to..'}
-            </Button>
-          </div>
-          <Button onClick={() => flyToLocation(13.4050, 52.5200, 6)}>Fly to Berlin</Button>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline">Places</Button>
-            </PopoverTrigger>
-            <PopoverContent>
-              <div className="flex flex-col space-y-2">
-                <Button onClick={() => flyToLocation(-77.0369, 38.9072, 6)}>Fly to Washington</Button>
-                <Button onClick={() => flyToLocation(34.7661, 31.0461, 6)}>Fly to Israel</Button>
-                <Button onClick={() => flyToLocation(30.5238, 50.4500, 6)}>Fly to Kiev</Button>
-                <Button onClick={() => flyToLocation(31.3069, 7.7778, 6)}>Fly to South Sudan</Button>
-                <Button onClick={() => flyToLocation(121.5319, 25.0478, 6)}>Fly to Taiwan</Button>
-              </div>
-            </PopoverContent>
-          </Popover>
-          {error && <div className="text-red-500">{error}</div>}
+      <div className="absolute bottom-1 left-1 z-10 flex max-w-screen overflow-x-auto space-x-4">
+        <div className="flex w-full min-w-8 max-w-sm items-center space-x-2">
+          <Input
+            className='min-w-8 bg-white dark:bg-black'
+            type="text"
+            value={inputLocation}
+            onChange={(e) => setInputLocation(e.target.value)}
+            placeholder="Enter location"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleFlyToInputLocation();
+              }
+            }}
+          />
+          <Button variant="destructive" onClick={handleFlyToInputLocation} disabled={loading}>
+            {loading ? 'Loading...' : 'Fly to..'}
+          </Button>
+        </div>
+        <Button onClick={() => flyToLocation(13.4050, 52.5200, 6)}>Fly to Berlin</Button>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline"><MapPin /></Button>
+          </PopoverTrigger>
+          <PopoverContent>
+            <div className="flex flex-col space-y-2">
+              <Button onClick={() => flyToLocation(-77.0369, 38.9072, 6)}>Fly to Washington</Button>
+              <Button onClick={() => flyToLocation(34.7661, 31.0461, 6)}>Fly to Israel</Button>
+              <Button onClick={() => flyToLocation(30.5238, 50.4500, 6)}>Fly to Kiev</Button>
+              <Button onClick={() => flyToLocation(31.3069, 7.7778, 6)}>Fly to South Sudan</Button>
+              <Button onClick={() => flyToLocation(121.5319, 25.0478, 6)}>Fly to Taiwan</Button>
+            </div>
+          </PopoverContent>
+        </Popover>
+        <Button onClick={() => setShowLegend(!showLegend)}>
+          {showLegend ? 'Hide Legend' : 'Show Legend'}
+        </Button>
+        {error && <div className="text-red-500">{error}</div>}
       </div>
+      {showLegend && <MapLegend />} {/* Conditionally render the MapLegend */}
     </div>
   );
 };

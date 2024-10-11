@@ -276,7 +276,7 @@ const Desk: React.FC = () => {
               </div>
               {hasSearched && isVisible && (
                 <motion.div
-                  className={`${isMobile ? 'fixed top-0 right-0 w-5/6 h-screen overflow-y-auto z-50' : 'max-h-screen flex flex-col col-span-1'}`}
+                  className={`absolute top-0 right-0 max-h-screen ${isMobile ? 'max-w-full' : 'w-1/2'}`}
                   initial={{ opacity: 0, x: '100%' }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: '100%' }}
