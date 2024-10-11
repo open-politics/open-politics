@@ -21,12 +21,12 @@ services:
         INSTALL_DEV: ${INSTALL_DEV-false}
     command: /start-reload.sh
     networks:
+      - default
       - traefik-public
-      - app_network
-      - global_network
+      - ssare-network
     labels:
       - traefik.enable=true
-      - traefik.docker.network=global_network
+      - traefik.docker.network=ssare-network
       - traefik.http.services.${STACK_NAME?Variable not set}-backend.loadbalancer.server.port=80
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.rule=Host(`${DOMAIN?Variable not set}`, `www.${DOMAIN?Variable not set}`) && PathPrefix(`/api`, `/docs`, `/redoc`)
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.entrypoints=http
@@ -48,12 +48,12 @@ services:
         - NODE_ENV=development
         - NEXT_PUBLIC_API_URL=http://backend:8000
     networks:
+      - default
       - traefik-public
-      - app_network
-      - global_network
+      - ssare-network
     labels:
       - traefik.enable=true
-      - traefik.docker.network=global_network
+      - traefik.docker.network=ssare-network
       - traefik.http.services.${STACK_NAME?Variable not set}-frontend.loadbalancer.server.port=3000
       - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.rule=Host(`${DOMAIN?Variable not set}`, `www.${DOMAIN?Variable not set}`)
       - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.entrypoints=http
@@ -65,10 +65,9 @@ services:
       - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect
 
 networks:
+  default:
+    external: false
   traefik-public:
     external: true
-  app_network:
+  ssare-network:
     external: true
-  global_network:
-    external: true
-
