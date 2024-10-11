@@ -17,6 +17,7 @@ import { ChevronUp, ChevronDown } from 'lucide-react';
 import { ChatWithContext } from '@/components/ChatWithContext';
 import { BookmarkedArticles } from '@/components/BookMarkedArticles';
 import Globe from '@/components/gGlobe';
+import { useLayoutStore } from '@/store/useLayoutStore'; // Import Zustand store
 
 // const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
@@ -44,6 +45,9 @@ const Desk: React.FC = () => {
     const [lastSearchResults, setLastSearchResults] = useState(null);
     const [hasEverSearched, setHasEverSearched] = useState(false);
 
+    // Access Zustand store
+    const setActiveTab = useLayoutStore((state) => state.setActiveTab);
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date().toLocaleString());
@@ -66,6 +70,7 @@ const Desk: React.FC = () => {
       if (event.key === 'Escape') {
         setIsVisible(false);
         setHasClicked(false);
+        setHasSearched(false); // Reset hasSearched when pressing Escape
       }
         if ((event.key === 'b' || event.key === 'B') && event.ctrlKey) {
         setIsVisible(true);
@@ -85,6 +90,8 @@ const Desk: React.FC = () => {
     setIsVisible(true);
     setHasClicked(true);
     setLocationKey(prevKey => prevKey + 1);
+    setActiveTab('articles'); // Set to default tab when clicking a location
+    console.log('Location clicked:', locationName);
   };
 
   const handleSearch = (searchResults: any) => {
@@ -93,6 +100,9 @@ const Desk: React.FC = () => {
     setIsBrowseMode(false);
     setHasSearched(true);
     setHasEverSearched(true);
+    setIsVisible(true); // Ensure the panel is set to visible
+    setHasClicked(true); // Ensure the panel is set to clicked
+    setActiveTab('search-results'); // Set active tab to search results
     toast({
       title: "Search Completed",
       description: "Your search results are now available.",
@@ -103,7 +113,8 @@ const Desk: React.FC = () => {
         window.scrollTo({ top: 100, behavior: 'smooth' });
       }, 100);
     }
-  };
+    console.log('Search performed:', searchResults);
+};
 
   const handleLocationZoom = (latitude: number, longitude: number, locationName: string) => {
     if (globeRef.current) {
@@ -124,17 +135,22 @@ const Desk: React.FC = () => {
   };
 
   const toggleVisibility = () => {
-    setIsVisible(!isVisible);
-    setHasClicked(false);
+    setIsVisible(false); // Hide the panel
+    setHasClicked(false); // Reset the clicked state
+    setLocation(null); // Optionally reset the location if needed
+    setActiveTab(''); // Reset active tab if necessary
+    setHasSearched(false); // Reset hasSearched to revert layout to single column
   };
 
   const toggleView = () => {
     if (hasSearched) {
       setHasSearched(false);
       setResults(null);
+      setActiveTab('articles'); // Reset to default tab when toggling view
     } else {
       setHasSearched(true);
       setResults(lastSearchResults);
+      setActiveTab('search-results'); // Set to search results tab when toggling view
     }
   };
 
@@ -149,6 +165,7 @@ const Desk: React.FC = () => {
           <h1 suppressHydrationWarning className="text-sm text-gray-400">{currentTime}</h1>
         </div>
         
+        {/* // If never searches don't show the back to globe button */}
         {hasEverSearched && (
           <Button
             className="absolute top-8 left-8 z-50 relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-500 after:to-purple-500 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 bg-transparent hover:bg-transparent border-none"
@@ -161,6 +178,7 @@ const Desk: React.FC = () => {
         )}
 
         <AnimatePresence mode="wait">
+          {/* // When never searched */}
           {!hasSearched ? (
             <motion.div
               key="globe-view"
@@ -171,7 +189,7 @@ const Desk: React.FC = () => {
               transition={{ duration: 0.5 }}
             >
               <motion.div
-                className={`absolute inset-0 ${hasClicked || isVisible ? 'w-1/2' : 'w-full'}`}
+                className={`absolute h-1/2 inset-0 ${hasClicked || isVisible ? 'w-1/2' : 'w-full'}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
@@ -189,7 +207,7 @@ const Desk: React.FC = () => {
                 />
               </motion.div>
               <motion.div
-                className={`absolute ${isMobile ? 'top-[calc(50%+100px)] transform -translate-x-1/2 w-full' : `${hasClicked && isVisible ? 'top-1/2  left-2 transform -translate-x-1/2 -translate-y-1/2 w-1/2' : 'top-1/2  left-1/4 transform -translate-x-1/2 -translate-y-1/2 w-1/2'}`} px-0`}
+                className={`absolute ${isMobile ? 'top-1/2 transform -translate-x-1/2 w-full' : `${hasClicked && isVisible ? 'top-1/2  left-2 transform -translate-x-1/2 -translate-y-1/2 w-1/2' : 'top-1/2  left-1/4 transform -translate-x-1/2 -translate-y-1/2 w-1/2'}`} px-0`}
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
@@ -197,9 +215,10 @@ const Desk: React.FC = () => {
                 <Search setResults={handleSearch} globeRef={globeRef} setSummary={handleSummary} />
               </motion.div>
               <AnimatePresence>
+                {/* // When clicked --> LocationDetailPanel */}
                 {hasClicked && (
                   <motion.div
-                    className={`absolute top-0 right-0 h-full ${isMobile ? 'max-w-full' : 'w-1/2'}`}
+                    className={`absolute top-0 right-0 max-h-screen ${isMobile ? 'max-w-full' : 'w-1/2'}`}
                     initial={{ x: '100%' }}
                     animate={{ x: 0 }}
                     exit={{ x: '100%' }}
@@ -218,15 +237,16 @@ const Desk: React.FC = () => {
               </AnimatePresence>
             </motion.div>
           ) : (
+            // When has searched
             <motion.div
               key="search-results-view"
-              className={`${isMobile ? 'flex flex-col h-screen overflow-y-auto' : 'grid grid-cols-1 md:grid-cols-3 gap-2 h-full'}`}
+              className={`${isMobile ? 'flex flex-col h-screen overflow-y-auto' : 'grid grid-cols-1 md:grid-cols-2 gap-2 h-full'}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <div className={`${isMobile ? 'h-2/3 flex flex-col' : 'col-span-1'}`}>
+              <div className={`${isMobile ? 'h-full flex flex-col' : 'h-full flex flex-col col-span-1'}`}>
                 <motion.div
                   className="flex-1 relative"
                   initial={{ opacity: 0 }}
@@ -246,26 +266,17 @@ const Desk: React.FC = () => {
                   />
                 </motion.div>
                 <motion.div
-                  className={`${isMobile ? 'w-full ml-4 mt-[-20px]' : 'max-h-5/6 overflow-y-auto w-full'}`}
+                  className={`${isMobile ? 'w-full' : 'max-h-5/6 overflow-y-auto w-full'}`}
                   initial={{ opacity: 0, y: 50 }}
-                  animate={{ opacity: 1 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
                 >
                   <Search setResults={handleSearch} globeRef={globeRef} setSummary={handleSummary} />
                 </motion.div>
               </div>
-              <motion.div
-                className={`${isMobile ? 'min-h-screen flex flex-col mt-20' : 'col-span-2 flex flex-col'} ${!hasClicked || !isVisible ? 'md:col-span-2' : 'md:col-span-1'}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}  
-                transition={{ duration: 0.5 }}
-              >
-                {/* Removed separate Results component */}
-                {/* You can add additional content here if needed */}
-              </motion.div>
-              {hasClicked && isVisible && (
+              {hasSearched && isVisible && (
                 <motion.div
-                  className={`${isMobile ? 'fixed top-0 right-0 w-5/6 h-screen overflow-y-auto z-50' : 'col-span-1 flex flex-col'}`}
+                  className={`${isMobile ? 'fixed top-0 right-0 w-5/6 h-screen overflow-y-auto z-50' : 'max-h-screen flex flex-col col-span-1'}`}
                   initial={{ opacity: 0, x: '100%' }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: '100%' }}
@@ -276,7 +287,7 @@ const Desk: React.FC = () => {
                       key={locationKey}
                       location={location}
                       isVisible={isVisible}
-                      toggleVisibility={toggleVisibility}
+                      toggleVisibility={toggleVisibility} // Ensure this is passed
                       results={results} // Pass results
                       summary={summary} // Pass summary
                     />
@@ -286,6 +297,7 @@ const Desk: React.FC = () => {
             </motion.div>
           )}
         </AnimatePresence>
+        
 
         {/* Reload Button */}
         <motion.button

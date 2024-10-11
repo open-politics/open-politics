@@ -1,5 +1,5 @@
-'use client'
 import React, { useState, useMemo, useCallback, useEffect } from "react";
+import { useLayoutStore } from '@/store/useLayoutStore'; // Import Zustand store
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -38,21 +38,23 @@ import EntitiesView from "./EntitiesView";
 import WikipediaView from './WikipediaView';
 import ArticlesView from './ArticlesView';
 import DataTable from "./DataTable";
-import Results from '@/components/Results'; // Import Results component
+import Results from '@/components/Results';
 
 interface IssueAreasProps {
   locationName: string;
-  results: any; // Add appropriate type based on your data structure
+  results: any;
   summary: string;
+  includeSummary: boolean;
 }
 
-export function IssueAreas({ locationName, results, summary }: IssueAreasProps) {
+export function IssueAreas({ locationName, results, summary, includeSummary }: IssueAreasProps) {
   const { data, isLoading, error, fetchArticles, resetArticles } = useLocationData(locationName);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
   const [selectedIndicators, setSelectedIndicators] = useState(['GDP', 'GDP_GROWTH']);
   const { toast } = useToast();
+  const { activeTab, setActiveTab } = useLayoutStore(); // Use Zustand store
 
   const filteredLegislativeData = useMemo(() => {
     if (!data?.legislativeData) return [];
@@ -182,14 +184,14 @@ export function IssueAreas({ locationName, results, summary }: IssueAreasProps) 
 
   return (
     <div className="space-y-4">
-      <Tabs defaultValue="articles" className="w-full">
+      <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full"> {/* Use Zustand for active tab */}
         <TabsList className="max-w-full overflow-x-auto flex justify-start scroll-snap-type-x mandatory">
           <TabsTrigger value="articles" className="scroll-snap-align-start">Articles</TabsTrigger>
           <TabsTrigger value="economic-data" className="scroll-snap-align-start">Economic Data</TabsTrigger>
           <TabsTrigger value="leader-info" className="scroll-snap-align-start">Entities</TabsTrigger>
           <TabsTrigger value="legislative" className="scroll-snap-align-start">Legislative</TabsTrigger>
           <TabsTrigger value="wikipedia" className="scroll-snap-align-start">Wikipedia</TabsTrigger>
-          <TabsTrigger value="search-results" className="scroll-snap-align-start">Search Results</TabsTrigger> {/* New Tab */}
+          <TabsTrigger value="search-results" className="scroll-snap-align-start">Search Results</TabsTrigger>
         </TabsList>
         <div className="flex-grow overflow-hidden">
           <TabsContent value="articles" className="h-full">
@@ -343,7 +345,7 @@ export function IssueAreas({ locationName, results, summary }: IssueAreasProps) 
               </CardContent>
             </Card>
           </TabsContent>
-          <TabsContent value="search-results"> {/* New Tab Content */}
+          <TabsContent value="search-results">
             <Card>
               <CardHeader>
                 <CardTitle>Search Results</CardTitle>

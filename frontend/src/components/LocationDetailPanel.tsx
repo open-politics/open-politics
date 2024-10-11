@@ -1,7 +1,7 @@
 import React from 'react';
 import { IssueAreas } from './IssueAreas';
 import { Button } from '@/components/ui/button';
-import { CircleX, ListCollapse } from 'lucide-react';
+import { CircleX } from 'lucide-react';
 
 interface LocationDetailPanelProps {
   location: string | null;
@@ -19,16 +19,17 @@ const LocationDetailPanel: React.FC<LocationDetailPanelProps> = ({
   summary,
 }) => {
   return (
-    <div className="flex flex-col h-full p-2 bg-background/75 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className={`flex flex-col h-full p-2 bg-background/75 backdrop-blur supports-[backdrop-filter]:bg-background/60 ${isVisible ? 'block' : 'hidden'}`}>
       <Button onClick={toggleVisibility} className="w-14 h-8 p-2 border-none self-end mb-3">
-        {isVisible ? <CircleX size={24} /> : <ListCollapse size={24} />}
+        <CircleX size={24} />
       </Button> 
-      {isVisible && location && ( 
+      {isVisible && (location || results) && ( 
         <div className="flex-grow overflow-y-auto rounded-md p-2">
           <IssueAreas 
-            locationName={location}
+            locationName={location || 'Search'}
             results={results}
             summary={summary}
+            includeSummary={true}
           />
         </div>
       )}

@@ -275,7 +275,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick }) => {
   }, [mapLoaded]);
 
   return (
-    <div style={{ position: 'relative', height: '50%', width: '100%' }}>
+    <div style={{ position: 'relative', height: '100%', width: '100%' }}>
       <div ref={mapContainerRef} className="map-container" style={{ height: '100%' }}></div>
       <div className="absolute bottom-0 left-1 z-10 flex max-w-screen overflow-x-auto space-x-4">
           <div className="flex w-full min-w-8 max-w-sm items-center space-x-2">
