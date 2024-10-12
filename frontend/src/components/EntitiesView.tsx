@@ -113,7 +113,7 @@ const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities }) => 
                   {loading ? (
                     <p>Loading image...</p>
                   ) : imageUrl ? (
-                    <img src={imageUrl} alt={entity.name} className="rounded-full w-16 h-16" />
+                    <img src={imageUrl} alt={entity.name} className="rounded-full w-24 h-24 object-cover" />
                   ) : (
                     <p>No image available</p>
                   )}

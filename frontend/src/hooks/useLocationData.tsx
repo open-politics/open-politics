@@ -133,7 +133,7 @@ export function useLocationData(locationName: string | null) {
     if (locationName) {
       fetchArticles('', 0);
       fetchData('legislativeData', `/api/v1/locations/legislation/${locationName}`);
-      // fetchData('economicData', `/api/v1/locations/econ_data/${locationName}`);
+      fetchData('economicData', `/api/v1/locations/econ_data/${locationName}`);
       fetchData('leaderInfo', `/api/v1/locations/leaders/${locationName}`);
       fetchEntities(0, 50);
     }

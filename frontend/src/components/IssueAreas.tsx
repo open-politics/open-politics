@@ -274,7 +274,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
               <CardHeader>
                 <CardTitle>Economic Data for {locationName}</CardTitle>
                 <CardDescription>
-                  Key economic indicators and market trends.
+                  Key economic indicators and market trends. (Only OECD Data)
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
