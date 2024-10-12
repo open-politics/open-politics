@@ -92,10 +92,10 @@ async def dashboard_view():
         logger.error(f"Error fetching dashboard data: {str(e)}")
         raise HTTPException(status_code=request.status_code, detail="Unable to fetch dashboard data")
 
-@router.get("/entities/{state}", response_model=None)
-async def get_location_entities(state: str, skip: int = 0, limit: int = 50):
+@router.get("/{location_name}/entities", response_model=None)
+async def get_location_entities(location_name: str, skip: int = 0, limit: int = 50):
     try:
-        response = requests.get(f"http://postgres_service:5434/location_entities/{state}?skip={skip}&limit={limit}")
+        response = requests.get(f"http://postgres_service:5434/location_entities/{location_name}?skip={skip}&limit={limit}")
         response.raise_for_status()
         return JSONResponse(content=response.json(), status_code=200)
     except requests.RequestException as e:

@@ -73,7 +73,7 @@ export function useEntityData(entityName: string | null) {
     if (!entityName) return;
     setIsLoading((prev) => ({ ...prev, articles: true }));
     try {
-      const response = await fetch(`/articles_by_entity/${entityName}?skip=${skip}&limit=${limit}`);
+      const response = await fetch(`/api/v1/locations/${entityName}/articles?skip=${skip}&limit=${limit}`);
       if (!response.ok) {
         throw new Error('Failed to fetch articles');
       }
@@ -96,7 +96,7 @@ export function useEntityData(entityName: string | null) {
   useEffect(() => {
     if (entityName) {
       fetchArticles(0, 20);
-      fetchData('details', `/api/v1/entities/${entityName}`);
+      fetchData('details', `/api/v1/locations/${entityName}/articles`);
     }
   }, [entityName, fetchArticles, fetchData]);
 

@@ -20,7 +20,7 @@ const LocationDetailPanel: React.FC<LocationDetailPanelProps> = ({
 }) => {
   return (
     <div className={`flex flex-col h-full p-2 bg-background/75 backdrop-blur supports-[backdrop-filter]:bg-background/60 ${isVisible ? 'block' : 'hidden'}`}>
-      <Button onClick={toggleVisibility} className="w-14 h-8 p-2 border-none self-end mb-3">
+      <Button onClick={toggleVisibility} className="w-14 h-8 p-2 border-none self-end">
         <CircleX size={24} />
       </Button> 
       {isVisible && (location || results) && ( 

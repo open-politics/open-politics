@@ -194,7 +194,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
           <TabsTrigger value="search-results" className="scroll-snap-align-start">Search Results</TabsTrigger>
         </TabsList>
         <div className="flex-grow overflow-hidden">
-          <TabsContent value="articles" className="h-full">
+          <TabsContent value="articles" className="h-full max-h-screen overflow-y-auto">
             <Card className="h-full flex flex-col">
               <CardHeader>
                 <CardTitle>Articles for {locationName}</CardTitle>

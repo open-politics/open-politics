@@ -24,6 +24,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick }) => {
   const { geocodeLocation, loading, error } = useGeocode();
   const [inputLocation, setInputLocation] = useState('');
   const [showLegend, setShowLegend] = useState(false);
+  const [hoveredFeature, setHoveredFeature] = useState<any>(null);
 
   const eventTypes = [
     { type: "Elections", color: "#4CAF50", icon: "building" },
@@ -101,7 +102,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick }) => {
         style: 'mapbox://styles/jimvw/cm237n93v000601qp9tts27w9', 
         projection: 'globe',
         center: [13.4, 52.5],
-        zoom: isMobile ? 0 : 3
+        zoom: isMobile ? 0 : 1
       });
 
       mapRef.current.on('styleimagemissing', (e) => {
@@ -277,6 +278,23 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick }) => {
     }
   }, [mapLoaded]);
 
+  useEffect(() => {
+    if (mapRef.current) {
+      mapRef.current.on('mousemove', (e) => {
+        const features = mapRef.current?.queryRenderedFeatures(e.point, {
+          layers: ['country-boundaries-layer']
+        });
+
+        if (features && features.length > 0) {
+          const feature = features[0];
+          setHoveredFeature(feature.properties);
+        } else {
+          setHoveredFeature(null);
+        }
+      });
+    }
+  }, [mapLoaded]);
+
   return (
     <div style={{ position: 'relative', height: '100%', width: '100%' }}>
       <div ref={mapContainerRef} className="map-container" style={{ height: '100%' }}></div>
@@ -307,7 +325,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick }) => {
             <div className="flex flex-col space-y-2">
               <Button onClick={() => flyToLocation(-77.0369, 38.9072, 6)}>Fly to Washington</Button>
               <Button onClick={() => flyToLocation(34.7661, 31.0461, 6)}>Fly to Israel</Button>
-              <Button onClick={() => flyToLocation(30.5238, 50.4500, 6)}>Fly to Kiev</Button>
+              <Button onClick={() => flyToLocation(30.5238, 50.4500, 6)}>Fly to Kyiv</Button>
               <Button onClick={() => flyToLocation(31.3069, 7.7778, 6)}>Fly to South Sudan</Button>
               <Button onClick={() => flyToLocation(121.5319, 25.0478, 6)}>Fly to Taiwan</Button>
             </div>
@@ -319,6 +337,21 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick }) => {
         {error && <div className="text-red-500">{error}</div>}
       </div>
       {showLegend && <MapLegend />} {/* Conditionally render the MapLegend */}
+      {hoveredFeature && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            background: 'rgba(255, 255, 255, 0.8)',
+            padding: '10px',
+            borderRadius: '5px',
+            zIndex: 1000
+          }}
+        >
+          <pre>{JSON.stringify(hoveredFeature, null, 2)}</pre>
+        </div>
+      )}
     </div>
   );
 };

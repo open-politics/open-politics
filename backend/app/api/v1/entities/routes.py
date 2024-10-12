@@ -69,10 +69,10 @@ async def geojson_view():
     request = requests.get("http://geo_service:3690/geojson", verify=False)
     return request.json()
 
-@router.get("/entities/{state}", response_model=None)
-async def get_location_entities(state: str, skip: int = 0, limit: int = 50):
+@router.get("/{entity_name}/articles", response_model=None)
+async def get_entity_articles(entity_name: str, skip: int = 0, limit: int = 50):
     try:
-        response = requests.get(f"http://postgres_service:5434/location_entities/{state}?skip={skip}&limit={limit}")
+        response = requests.get(f"http://postgres_service:5434/articles_by_entity/{entity_name}?skip={skip}&limit={limit}")
         response.raise_for_status()
         return JSONResponse(content=response.json(), status_code=200)
     except requests.RequestException as e:

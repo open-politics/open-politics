@@ -11,6 +11,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useEntityData } from '@/hooks/useEntity';
 import DotLoader from 'react-spinners/DotLoader';
+import ArticlesView from './ArticlesView'; 
+import ArticleCard from './ArticleCard'; 
+import useEntityImage from '@/hooks/useEntityImage';
 
 interface Entity {
   name: string;
@@ -94,18 +97,33 @@ const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities }) => 
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+        <div className="h-1/2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
           {entities
+            .filter((entity, index, self) => 
+              index === self.findIndex((t) => (
+                t.name === entity.name && t.type === entity.type
+              ))
+            )
             .filter(entity => selectedEntityTypes.includes(entity.type))
-            .map((entity, index) => (
-              <div key={index} className="cursor-pointer" onClick={() => setSelectedEntity(entity.name)}>
-                <h3 className="font-bold">{entity.name}</h3>
-                <p className="text-sm text-gray-600">Type: {entity.type}</p>
-                <p className="text-sm">Article Count: {entity.article_count}</p>
-                <p className="text-sm">Total Frequency: {entity.total_frequency}</p>
-                <p className="text-sm">Relevance Score: {entity.relevance_score.toFixed(2)}</p>
-              </div>
-            ))}
+            .map((entity, index) => {
+              const { imageUrl, loading } = useEntityImage(entity.name);
+              return (
+                <div key={index} className="cursor-pointer" onClick={() => setSelectedEntity(entity.name)}>
+                  <h3 className="font-bold">{entity.name}</h3>
+                  {loading ? (
+                    <p>Loading image...</p>
+                  ) : imageUrl ? (
+                    <img src={imageUrl} alt={entity.name} className="rounded-full w-16 h-16" />
+                  ) : (
+                    <p>No image available</p>
+                  )}
+                  <p className="text-sm text-gray-600">Type: {entity.type}</p>
+                  <p className="text-sm">Article Count: {entity.article_count}</p>
+                  <p className="text-sm">Total Frequency: {entity.total_frequency}</p>
+                  <p className="text-sm">Relevance Score: {entity.relevance_score.toFixed(2)}</p>
+                </div>
+              );
+            })}
         </div>
       </div>
       {selectedEntity && (
@@ -119,13 +137,18 @@ const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities }) => 
           ) : data.articles.length > 0 ? (
             <div className="space-y-2">
               {data.articles.map((article) => (
-                <div key={article.id} className="border p-2 rounded">
-                  <a href={article.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                    {article.headline}
-                  </a>
-                  <p>{article.source}</p>
-                  <p>{new Date(article.insertion_date).toLocaleDateString()}</p>
-                </div>
+                <ArticleCard
+                  key={article.id}
+                  id={article.id}
+                  headline={article.headline}
+                  paragraphs={article.paragraphs}
+                  url={article.url}
+                  source={article.source}
+                  insertion_date={article.insertion_date}
+                  entities={article.entities}
+                  tags={article.tags}
+                  classification={article.classification}
+                />
               ))}
             </div>
           ) : (

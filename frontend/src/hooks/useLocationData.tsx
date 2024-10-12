@@ -112,7 +112,8 @@ export function useLocationData(locationName: string | null) {
     if (!locationName) return;
     setIsLoading((prev) => ({ ...prev, entities: true }));
     try {
-      const response = await fetch(`/api/v1/locations/entities/${locationName}?skip=${skip}&limit=${limit}`);
+      const response = await fetch(`/api/v1/locations/${locationName}/entities?skip=${skip}&limit=${limit}`);
+      console.log(response);
       if (!response.ok) {
         throw new Error('Failed to fetch entities');
       }
