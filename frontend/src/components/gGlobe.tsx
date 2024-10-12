@@ -56,7 +56,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick }) => {
           if (center) {
             const features = mapRef.current?.queryRenderedFeatures(
               [mapRef.current.getContainer().clientWidth / 2, mapRef.current.getContainer().clientHeight / 2],
-              { layers: ['country-boundaries-layer'] } // Ensure this layer exists in your style
+              { layers: ['country-boundaries'] } // Ensure this layer exists in your style
             );
 
             if (features && features.length > 0) {
@@ -125,7 +125,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick }) => {
         // Add a click event listener for the map
         mapRef.current?.on('click', (e) => {
           const features = mapRef.current?.queryRenderedFeatures(e.point, {
-            layers: ['country-boundaries-layer'] // Ensure this layer exists in your style
+            layers: ['country-boundaries'] // Ensure this layer exists in your style
           });
 
           if (features && features.length > 0) {
@@ -275,14 +275,14 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick }) => {
 
     if (mapLoaded) {
       loadGeoJSONEventsData();
-    }
+    }r
   }, [mapLoaded]);
 
   useEffect(() => {
     if (mapRef.current) {
       mapRef.current.on('mousemove', (e) => {
         const features = mapRef.current?.queryRenderedFeatures(e.point, {
-          layers: ['country-boundaries-layer']
+          layers: ['country-boundaries']
         });
 
         if (features && features.length > 0) {
