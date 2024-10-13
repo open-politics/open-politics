@@ -11,19 +11,21 @@ interface Entity {
   relevance_score: number;
 }
 
+interface LeaderInfo {
+  state?: string;
+  headOfState?: string;
+  headOfStateImage?: string | null;
+  headOfGovernment?: string;
+  headOfGovernmentImage?: string | null;
+}
+
 interface EntitiesViewProps {
-  leaderInfo: {
-    state?: string;
-    headOfState?: string;
-    headOfStateImage?: string | null;
-    headOfGovernment?: string;
-    headOfGovernmentImage?: string | null;
-  } | null;
+  leaderInfo: LeaderInfo | null;
   entities: Entity[];
 }
 
 const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities }) => {
-  const [selectedEntityTypes, setSelectedEntityTypes] = useState<string[]>(['PERSON', 'ORG', 'GPE']);
+  const [selectedEntityTypes, setSelectedEntityTypes] = useState<string[]>(['PERSON']);
   const [selectedEntity, setSelectedEntity] = useState<string | null>(null);
 
   const toggleEntityType = (type: string) => {
@@ -34,33 +36,39 @@ const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities }) => 
 
   return (
     <div className="space-y-8 max-h-[80vh] overflow-y-auto">
+      
       {/* Display leader information if available */}
-      {leaderInfo && (leaderInfo.headOfState || leaderInfo.headOfGovernment) && (
-        <div className="leader-info md:pb-4 shadow-sm overflow-hidden">
-          <h2 className="text-center text-xl font-bold mb-4">Head(s) of State</h2>
-          <div className="flex justify-center space-x-4">
-            {leaderInfo.headOfStateImage && (
-              <div className="flex flex-col items-center space-y-2">
-                <Avatar className="w-24 h-24">
-                  <AvatarImage src={leaderInfo.headOfStateImage} alt={leaderInfo.headOfState || 'Head of State'} style={{ objectFit: 'cover', objectPosition: 'center' }} />
-                  <AvatarFallback>{leaderInfo.headOfState?.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <p className="text-sm font-medium">{leaderInfo.headOfState}</p>
+      {leaderInfo && (
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          {leaderInfo.headOfState && (
+            <div className="flex items-center space-x-2">
+              <Badge variant="outline" className="text-green-600 font-bold rounded-full w-18">
+                National State
+              </Badge>
+              <Avatar className="w-12 h-12">
+                <AvatarImage src={leaderInfo.headOfStateImage || undefined} alt={leaderInfo.headOfState} style={{ objectFit: 'cover' }} />
+                <AvatarFallback>{leaderInfo.headOfState.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="text-sm font-medium">Head of State</p>
+                <p className="text-xs">{leaderInfo.headOfState}</p>
               </div>
-            )}
-            {leaderInfo.headOfGovernmentImage && (
-              <div className="flex flex-col items-center space-y-2">
-                <Avatar className="w-24 h-24">
-                  <AvatarImage src={leaderInfo.headOfGovernmentImage} alt={leaderInfo.headOfGovernment || 'Head of Government'} style={{ objectFit: 'cover', objectPosition: 'center' }} />
-                  <AvatarFallback>{leaderInfo.headOfGovernment?.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <p className="text-sm font-medium">{leaderInfo.headOfGovernment}</p>
+            </div>
+          )}
+          {leaderInfo.headOfGovernment && (
+            <div className="flex items-center space-x-2">
+              <Avatar className="w-12 h-12">
+                <AvatarImage src={leaderInfo.headOfGovernmentImage || undefined} alt={leaderInfo.headOfGovernment} style={{ objectFit: 'cover' }} />
+                <AvatarFallback>{leaderInfo.headOfGovernment.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="text-sm font-medium">Head of Government</p>
+                <p className="text-xs">{leaderInfo.headOfGovernment}</p>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       )}
-      
       {/* Display entities regardless of leader information */}
       <div className="entities-info">
         <h2 className="text-center text-xl font-bold mb-2">Relevant Entities</h2>

@@ -182,6 +182,9 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
     }
   }, [error, toast]);
 
+  console.log('Leader Info in IssueAreas:', data.leaderInfo);
+  console.log('Entities in IssueAreas:', data.entities);
+
   return (
     <div className="space-y-4">
       <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full"> {/* Use Zustand for active tab */}
@@ -356,7 +359,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
               </CardHeader>
               <CardContent>
                 {results ? (
-                  <Results results={results} summary={summary} />
+                  <Results results={results} summary={summary} includeSummary={includeSummary} />
                 ) : (
                   <p>No search results available.</p>
                 )}

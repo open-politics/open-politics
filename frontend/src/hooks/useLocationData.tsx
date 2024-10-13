@@ -4,9 +4,17 @@ import axios from 'axios';
 interface LocationData {
   legislativeData: any[];
   economicData: any[];
-  leaderInfo: any;
+  leaderInfo: LeaderInfo | null;
   articles: Article[];
   entities: Entity[];
+}
+
+interface LeaderInfo {
+  state?: string;
+  headOfState?: string;
+  headOfStateImage?: string | null;
+  headOfGovernment?: string;
+  headOfGovernmentImage?: string | null;
 }
 
 interface Entity {
@@ -70,13 +78,26 @@ export function useLocationData(locationName: string | null) {
     entities: null,
   });
 
+  const mapLeaderInfo = (rawData: any): LeaderInfo => ({
+    state: rawData.State,
+    headOfState: rawData['Head of State'],
+    headOfStateImage: rawData['Head of State Image'],
+    headOfGovernment: rawData['Head of Government'],
+    headOfGovernmentImage: rawData['Head of Government Image'],
+  });
+
   const fetchData = useCallback(async (dataType: keyof LocationData, url: string) => {
     if (!locationName) return;
   
     setIsLoading(prev => ({ ...prev, [dataType]: true }));
     try {
       const response = await axios.get(url);
-      setData(prev => ({ ...prev, [dataType]: response.data }));
+      if (dataType === 'leaderInfo') {
+        const mappedLeaderInfo = mapLeaderInfo(response.data);
+        setData(prev => ({ ...prev, leaderInfo: mappedLeaderInfo }));
+      } else {
+        setData(prev => ({ ...prev, [dataType]: response.data }));
+      }
     } catch (err) {
       setError(prev => ({ ...prev, [dataType]: err instanceof Error ? err : new Error(`An error occurred fetching ${dataType}`) }));
     } finally {
