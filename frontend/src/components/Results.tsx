@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import ArticleCard, { ArticleCardProps } from './ArticleCard';
+import EntitiesView from './EntitiesView'; // Import EntitiesView
 import {
   Popover,
   PopoverContent,
@@ -11,6 +12,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useBookMarkStore } from '@/hooks/useBookMarkStore'; // Import the bookmark store
+import axios from 'axios'; // Import axios for API calls
 
 interface ResultsProps {
   results: {
@@ -24,9 +26,35 @@ interface ResultsProps {
   includeSummary: boolean; // New prop for including summary
 }
 
+interface Entity {
+  name: string;
+  type: string;
+  article_count: number;
+  total_frequency: number;
+  relevance_score: number;
+}
+
 const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) => {
-  const [showArticles, setShowArticles] = React.useState(true);
+  const [showArticles, setShowArticles] = useState(true);
   const { addBookmark } = useBookMarkStore(); // Use the bookmark store
+  const [entities, setEntities] = useState<Entity[]>([]); // State for entities
+
+  useEffect(() => {
+    // Fetch entities related to the articles
+    const fetchEntities = async () => {
+      try {
+        const articleIds = results.ssareResults.map(article => article.id);
+        const response = await axios.post('/api/v1/search/most_relevant_entities', { article_ids: articleIds });
+        setEntities(response.data);
+      } catch (error) {
+        console.error('Error fetching entities:', error);
+      }
+    };
+
+    if (results.ssareResults.length > 0) {
+      fetchEntities();
+    }
+  }, [results.ssareResults]);
 
   if (!results) {
     return null;
@@ -81,7 +109,10 @@ const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) =
           {showArticles ? 'Hide' : 'Show'}
         </Button>
       </div>
-      <div className="flex-1 overflow-y-auto">
+      <div className="mb-4 max-h-[40vh] overflow-y-auto">
+        <EntitiesView entities={entities} leaderInfo={null} />
+      </div>
+      <div className="flex-1 max-h-[50vh] overflow-y-auto">
         {showArticles && includeSummary && summary && (
           <div className="flex-none mb-4 overflow-auto max-h-96 prose prose-invert max-w-none rounded-md p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <ReactMarkdown 
@@ -123,6 +154,7 @@ const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) =
           </Tabs>
         )}
       </div>
+      {/* Render EntitiesView */}
     </div>
   );
 };
@@ -139,7 +171,7 @@ const renderTavilyResults = (tavilyResults: any) => (
   <>
     {tavilyResults && tavilyResults.images && tavilyResults.images.length > 0 && (
       <div className="flex overflow-x-auto space-x-4 mb-4 pb-2">
-        {/* ... existing image rendering code ... */}
+        {/* ... removed image rendering code ... */}
       </div>
     )}
     <h3 className="text-lg font-semibold mb-2">Tavily Results</h3>

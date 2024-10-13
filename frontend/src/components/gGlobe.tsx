@@ -9,14 +9,16 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { MapPin } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapLegend from './MapLegend'; 
+import { useCoordinatesStore } from '@/store/useCoordinatesStore'; // Import the store
 
 
 interface GlobeProps {
   geojsonUrl: string;
   onLocationClick: (countryName: string) => void;
+  coordinates?: { latitude: number; longitude: number }; // Add this prop
 }
 
-const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick }) => {
+const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -25,6 +27,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick }) => {
   const [inputLocation, setInputLocation] = useState('');
   const [showLegend, setShowLegend] = useState(false);
   const [hoveredFeature, setHoveredFeature] = useState<any>(null);
+  const { latitude, longitude } = useCoordinatesStore();
 
   const eventTypes = [
     { type: "Elections", color: "#4CAF50", icon: "building" },
@@ -61,10 +64,11 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick }) => {
 
             if (features && features.length > 0) {
               const feature = features[0];
-              const countryName = feature.properties?.name; // Adjust property name as needed
+              const countryName = feature.properties?.name_en; // Adjust property name as needed
 
               if (countryName) {
                 onLocationClick(countryName);
+
               }
             }
           }
@@ -99,7 +103,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick }) => {
     if (!mapRef.current && mapContainerRef.current) {
       mapRef.current = new mapboxgl.Map({
         container: mapContainerRef.current,
-        style: 'mapbox://styles/jimvw/cm237n93v000601qp9tts27w9', 
+        style: 'mapbox://styles/jimvw/cm27kipx600fw01pbg59k9w97', 
         projection: 'globe',
         center: [13.4, 52.5],
         zoom: isMobile ? 0 : 1
@@ -122,15 +126,22 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick }) => {
       mapRef.current.on('load', () => {
         setMapLoaded(true);
 
-        // Add a click event listener for the map
+        
         mapRef.current?.on('click', (e) => {
-          const features = mapRef.current?.queryRenderedFeatures(e.point, {
+          const point = e.point;
+          const buffer = 5; // Adjust this value as needed
+          const bbox: [mapboxgl.PointLike, mapboxgl.PointLike] = [
+            [point.x - buffer, point.y - buffer],
+            [point.x + buffer, point.y + buffer]
+          ];
+
+          const features = mapRef.current?.queryRenderedFeatures(bbox, {
             layers: ['country-boundaries'] // Ensure this layer exists in your style
           });
 
           if (features && features.length > 0) {
             const feature = features[0];
-            const countryName = feature.properties?.name; // Adjust property name as needed
+            const countryName = feature.properties?.name_en; // Adjust property name as needed
 
             if (countryName) {
               onLocationClick(countryName);
@@ -275,7 +286,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick }) => {
 
     if (mapLoaded) {
       loadGeoJSONEventsData();
-    }r
+    }
   }, [mapLoaded]);
 
   useEffect(() => {
@@ -295,10 +306,16 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick }) => {
     }
   }, [mapLoaded]);
 
+  useEffect(() => {
+    if (latitude !== null && longitude !== null) {
+      flyToLocation(longitude, latitude, 6); // Use the coordinates from the store
+    }
+  }, [longitude, latitude]);
+
   return (
     <div style={{ position: 'relative', height: '100%', width: '100%' }}>
       <div ref={mapContainerRef} className="map-container" style={{ height: '100%' }}></div>
-      <div className="absolute bottom-1 left-1 z-10 flex max-w-screen overflow-x-auto space-x-4">
+      <div className="absolute top-8 left-1 z-10 flex max-w-screen overflow-x-auto space-x-4">
         <div className="flex w-full min-w-8 max-w-sm items-center space-x-2">
           <Input
             className='min-w-8 bg-white dark:bg-black'
@@ -339,17 +356,9 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick }) => {
       {showLegend && <MapLegend />} {/* Conditionally render the MapLegend */}
       {hoveredFeature && (
         <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            background: 'rgba(255, 255, 255, 0.8)',
-            padding: '10px',
-            borderRadius: '5px',
-            zIndex: 1000
-          }}
+          className="absolute bottom-12 left-2 bg-white dark:bg-black bg-opacity-40 p-2 rounded z-10 backdrop-filter backdrop-blur-lg"
         >
-          <pre>{JSON.stringify(hoveredFeature, null, 2)}</pre>
+          <pre>{JSON.stringify(hoveredFeature.name_en, null, 2).replace(/"/g, '')}</pre>
         </div>
       )}
     </div>

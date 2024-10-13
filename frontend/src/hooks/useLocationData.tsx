@@ -129,6 +129,22 @@ export function useLocationData(locationName: string | null) {
     }
   }, [locationName]);
 
+  const fetchCoordinates = useCallback(async (query: string) => {
+    try {
+      const response = await axios.get(`/api/v1/locations/location_from_query?query=${query}`);
+      if (response.data.error) {
+        return null;
+      }
+      return {
+        longitude: response.data.longitude,
+        latitude: response.data.latitude
+      };
+    } catch (error) {
+      console.error('Error fetching coordinates:', error);
+      return null;
+    }
+  }, []);
+
   useEffect(() => {
     if (locationName) {
       fetchArticles('', 0);
@@ -146,6 +162,7 @@ export function useLocationData(locationName: string | null) {
     fetchArticles,
     resetArticles,
     fetchEntities,
+    fetchCoordinates,
   };
 }
 

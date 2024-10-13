@@ -33,31 +33,28 @@ async def get_location_articles(
     limit: int = Query(20, ge=1, le=100),
     search_query: Optional[str] = None,
     search_type: SearchType = SearchType.TEXT,
-    has_geocoding: Optional[bool] = Query(None),
-    has_entities: Optional[bool] = Query(None),
-    has_classification: Optional[bool] = Query(None),
-    has_embeddings: Optional[bool] = Query(None),
 ):
     try:
         result = await articles.get_articles(
-            location, skip, limit, search_query, search_type.value,
-            has_geocoding, has_entities, has_classification, has_embeddings
+            location, skip, limit, search_query, search_type.value
         )
         return JSONResponse(content=result, status_code=200)
     except Exception as e:
         logger.error(f"Error fetching articles: {str(e)}")
         return JSONResponse(content={'error': 'Failed to fetch articles'}, status_code=500)
 
-@router.get("/country_from_query/")
-async def country_from_query(query: str):
-    country_name = marvin.cast(query, target=str, instructions="Return the country name most relevant to the query.")
+@router.get("/location_from_query")
+async def location_from_query(query: str):
+    location = requests.get(f"http://classification_service:5688/location_from_query?query={query}", verify=False)
+    location = location.json()
+    print(location)
 
-    response = requests.get(f"http://geo_service:3690/call_pelias_api?location={country_name}", verify=False)
-    print(response)
+    response = requests.get(f"http://geo_service:3690/geocode_location?location={location}", verify=False)
+    print(response.json())
     try:
         if response.status_code == 200:
-            coordinates = response.json()
-            return {"country_name": country_name, "latitude": coordinates[0], "longitude": coordinates[1]}
+            coordinates = response.json()['coordinates']
+            return {"location": location, "longitude": coordinates[0], "latitude": coordinates[1]}
         else:
             raise HTTPException(status_code=response.status_code, detail="Unable to fetch geocoding data")
     except json.JSONDecodeError:

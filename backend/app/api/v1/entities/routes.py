@@ -31,10 +31,6 @@ async def get_location_articles(
     limit: int = Query(20, ge=1, le=100),
     search_query: Optional[str] = None,
     search_type: SearchType = SearchType.TEXT,
-    has_geocoding: Optional[bool] = Query(None),
-    has_entities: Optional[bool] = Query(None),
-    has_classification: Optional[bool] = Query(None),
-    has_embeddings: Optional[bool] = Query(None),
 ):
     try:
         result = await articles.get_articles(
@@ -72,6 +68,7 @@ async def geojson_view():
 @router.get("/{entity_name}/articles", response_model=None)
 async def get_entity_articles(entity_name: str, skip: int = 0, limit: int = 50):
     try:
+        logger.info(f"Fetching articles for entity: {entity_name}")
         response = requests.get(f"http://postgres_service:5434/articles_by_entity/{entity_name}?skip={skip}&limit={limit}")
         response.raise_for_status()
         return JSONResponse(content=response.json(), status_code=200)

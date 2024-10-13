@@ -43,7 +43,7 @@ const WikipediaView: React.FC<WikipediaViewProps> = ({ locationName }) => {
   }, []);
 
   return (
-    <div id="articleWindow" className={cn("h-80 md:max-h-128 rounded-lg p-0 pt-2 shadow-sm min-h-36 overflow-hidden")}>
+    <div id="articleWindow" className={cn("max-h-80 md:max-h-128 rounded-lg p-0 pt-2 shadow-sm min-h-36 overflow-hidden")}>
       <div ref={contentRef} className={cn("inner-content h-full overflow-auto")}>
         {isLoading ? (
           <div className="flex justify-center items-center h-full">Loading...</div>

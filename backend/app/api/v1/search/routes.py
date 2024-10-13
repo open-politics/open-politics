@@ -3,6 +3,8 @@ from fastapi.responses import JSONResponse
 import logging
 from enum import Enum
 from typing import Optional, Dict, List
+from pydantic import BaseModel
+
 import httpx
 import json
 
@@ -58,3 +60,83 @@ async def get_articles(
     except Exception as e:
         logger.error(f"Unexpected error occurred while fetching articles: {e}")
         raise HTTPException(status_code=500, detail="An unexpected error occurred")
+
+from pydantic import BaseModel
+from typing import List
+
+class MostRelevantEntitiesRequest(BaseModel):
+    article_ids: List[str]
+
+@router.post("/most_relevant_entities")
+async def get_most_relevant_entities(
+    request: MostRelevantEntitiesRequest,
+):
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post("http://postgres_service:5434/most_relevant_entities", json=request.dict())
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"HTTP error occurred while fetching most relevant entities: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch most relevant entities")
+    except Exception as e:
+        logger.error(f"Unexpected error occurred while fetching most relevant entities: {e}")
+        raise HTTPException(status_code=500, detail="An unexpected error occurred")
+
+
+## Create Search Routing
+## We will create a list of
+## --> Main Location, Relevant Countries, Relevant Entities, Relevant Articles, Relevant Topics
+
+@router.get("/search_synthesizer")
+async def search_synthesizer(search_query: str):
+   async def get_articles():
+    search_query: Optional[str] = None,
+
+    class QueryType(str, Enum):
+        TEXT = "text"
+        SEMANTIC = "semantic"
+        STRUCTURED = "structured"
+
+    class MainLocation(str, Enum):
+        CITY = Optional[str] = None
+        REGION = Optional[str] = None
+        CONTINENT = Optional[str] = None
+
+    class QueryContext(BaseModel):
+        context: str
+
+    class Query(BaseModel):
+        query: str
+        query_type: QueryType
+        query_context: Optional[QueryContext] = None
+
+    class QueryList(BaseModel):
+        queries: List[Query]
+
+    class Response(BaseModel):
+        Articles: List[Article]
+        Entities: List[Entity]
+        Locations: List[Location]
+        Topics: List[Topic]
+        Score: List[Dict[str, float]]
+        MainLocation: Optional[MainLocation] = None
+
+    class QueryListResponse(BaseModel):
+        response: List[Response]
+
+
+    ## 1 Convert one query to multples
+    ### 1.1 List[Queries]
+    ## 2 Retrieve Articles for queries
+    ## 3 Deduplicate
+    ## 4 Rank
+    ## 5 Return
+    ## Output Scheme    
+    class MultiQuery(BaseModel):
+        "List of queries that expands the search"
+        queries: List[str]
+
+    class MainLocation(BaseModel):
+        "String of main location. Either City, Region or Continent"
+        query: str

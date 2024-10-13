@@ -20,7 +20,7 @@ interface Article {
   headline: string;
   source: string;
   insertion_date: string | null;
-  paragraphs: string[];
+  paragraphs: string;
   entities: Array<{
     id: string;
     name: string;
@@ -38,7 +38,7 @@ interface Article {
   classification: any | null;
 }
 
-export function useEntityData(entityName: string | null) {
+export function useEntityData(entityName: string | null, isSelected: boolean) {
   const [data, setData] = useState<EntityData>({
     articles: [],
     details: null,
@@ -55,22 +55,8 @@ export function useEntityData(entityName: string | null) {
     details: null,
   });
 
-  const fetchData = useCallback(async (dataType: keyof EntityData, url: string) => {
-    if (!entityName) return;
-  
-    setIsLoading(prev => ({ ...prev, [dataType]: true }));
-    try {
-      const response = await axios.get(url);
-      setData(prev => ({ ...prev, [dataType]: response.data }));
-    } catch (err) {
-      setError(prev => ({ ...prev, [dataType]: err instanceof Error ? err : new Error(`An error occurred fetching ${dataType}`) }));
-    } finally {
-      setIsLoading(prev => ({ ...prev, [dataType]: false }));
-    }
-  }, [entityName]);
-
   const fetchArticles = useCallback(async (skip: number, limit: number) => {
-    if (!entityName) return;
+    if (!entityName || !isSelected) return; // Fetch only if an entity is selected
     setIsLoading((prev) => ({ ...prev, articles: true }));
     try {
       const response = await fetch(`/api/v1/locations/${entityName}/articles?skip=${skip}&limit=${limit}`);
@@ -85,20 +71,13 @@ export function useEntityData(entityName: string | null) {
     } catch (error) {
       setError((prev) => ({ ...prev, articles: error as Error }));
     } finally {
-      setIsLoading((prev) => ({ ...prev, articles: false }));
+      setIsLoading((prev) => ({ ...prev, articles: false })); 
     }
-  }, [entityName]);
+  }, [entityName, isSelected]);
 
   const resetArticles = useCallback(() => {
     setData((prev) => ({ ...prev, articles: [] }));
   }, []);
-
-  useEffect(() => {
-    if (entityName) {
-      fetchArticles(0, 20);
-      fetchData('details', `/api/v1/locations/${entityName}/articles`);
-    }
-  }, [entityName, fetchArticles, fetchData]);
 
   return {
     data,

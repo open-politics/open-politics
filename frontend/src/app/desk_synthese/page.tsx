@@ -44,6 +44,7 @@ const Desk: React.FC = () => {
     const [isMobile, setIsMobile] = useState(false);
     const [lastSearchResults, setLastSearchResults] = useState(null);
     const [hasEverSearched, setHasEverSearched] = useState(false);
+    const [country, setCountry] = useState<string | null>(null);
 
     // Access Zustand store
     const setActiveTab = useLayoutStore((state) => state.setActiveTab);
@@ -87,6 +88,7 @@ const Desk: React.FC = () => {
 
   const handleLocationClick = async (locationName: string) => {
     setLocation(locationName);
+    setCountry(locationName); // Set country when location is clicked
     setIsVisible(true);
     setHasClicked(true);
     setLocationKey(prevKey => prevKey + 1);
@@ -212,7 +214,12 @@ const Desk: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <Search setResults={handleSearch} globeRef={globeRef} setSummary={handleSummary} />
+                <Search
+                  setResults={handleSearch}
+                  setCountry={setCountry} // Pass setCountry to Search
+                  setSummary={handleSummary}
+                  globeRef={globeRef}
+                />
               </motion.div>
               <AnimatePresence>
                 {/* // When clicked --> LocationDetailPanel */}
@@ -271,7 +278,12 @@ const Desk: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
                 >
-                  <Search setResults={handleSearch} globeRef={globeRef} setSummary={handleSummary} />
+                  <Search
+                    setResults={handleSearch}
+                    setCountry={setCountry} // Pass setCountry to Search
+                    setSummary={handleSummary}
+                    globeRef={globeRef}
+                  />
                 </motion.div>
               </div>
               {hasSearched && isVisible && (

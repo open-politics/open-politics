@@ -25,6 +25,8 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from "@/components/ui/button"
 import SpinningBrainLoader from './SpinningImageLoader';
 import LottieLoader from './LottieLoader';
+import { useLocationData } from '@/hooks/useLocationData';
+import { useCoordinatesStore } from '@/store/useCoordinatesStore'; // Import the store
 
 interface SearchProps {
   setResults: (results: any) => void;
@@ -50,6 +52,9 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
   const [keywordWeights, setKeywordWeights] = useState<{ [key: string]: number }>({});
   const [excludeKeywords, setExcludeKeywords] = useState<string[]>([]);
 
+  const { fetchCoordinates } = useLocationData(null); // Use the hook to get the function
+  const setCoordinates = useCoordinatesStore((state) => state.setCoordinates);
+
   const handleSearch = async (query: string) => {
     setLoading(true);
     try {
@@ -74,11 +79,17 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
         }
       }
 
-      const country = await fetchCountryFromQuery(query);
-      setCountry(country?.country_name);
+      const country = await fetchLocationFromNLQuery(query);
+      if (country) {
+        setCountry(country.country_name);
+      }
 
       if (country && globeRef.current) {
-        globeRef.current.zoomToCountry(country.latitude, country.longitude, country.country_name);
+        const coordinates = await fetchCoordinates(query);
+        if (coordinates) {
+          setCoordinates(coordinates.longitude, coordinates.latitude); // Set coordinates in the store
+          globeRef.current.zoomToCountry(coordinates.latitude, coordinates.longitude, country.country_name);
+        }
       }
     } catch (error) {
       console.error('Error in handleSearch:', error);
@@ -132,7 +143,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
     }
   };
 
-  const fetchCountryFromQuery = async (query: string) => {
+  const fetchLocationFromNLQuery = async (query: string) => {
     try {
       const response = await axios.get(`/api/v1/locations/location_from_query?query=${query}`);
       if (response.data.error) {
@@ -140,8 +151,8 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
       }
       return {
         country_name: response.data.country_name,
-        latitude: response.data.latitude,
-        longitude: response.data.longitude
+        longitude: response.data.longitude,
+        latitude: response.data.latitude
       };
     } catch (error) {
       return null;

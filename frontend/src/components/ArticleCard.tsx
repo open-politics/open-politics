@@ -79,10 +79,14 @@ export function ArticleCard({ id, headline, paragraphs, url, source, insertion_d
     }
   };
 
+  const handleCardClick = (event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent the click from affecting the EntityCard selection
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Card className={cn("rounded-lg overflow-y-auto cursor-pointer relative", className)} {...props}>
+        <Card className={cn("rounded-lg overflow-y-auto cursor-pointer relative", className)} {...props} onClick={handleCardClick}>
           <div className="p-4">
             <div className="absolute top-2 right-2" onClick={handleBookmark}>
               {isBookmarked ? <BookMarked className="text-blue-500" /> : <Bookmark className="text-gray-500" />}

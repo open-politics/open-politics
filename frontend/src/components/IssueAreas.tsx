@@ -322,12 +322,13 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
                     <DotLoader color="#000" size={50} />
                     <p className="mt-4">Loading information...</p>
                   </div>
-                ) : error.leaderInfo || error.entities ? (
-                  <p>Failed to load information.</p>
-                ) : data?.leaderInfo && data?.entities ? (
-                  <EntitiesView leaderInfo={data.leaderInfo} entities={data.entities} />
+                ) : error.entities ? ( // Only show error if there's an issue with entities
+                  <p>Failed to load entity information.</p>
                 ) : (
-                  <p>No information available for {locationName}.</p>
+                  <EntitiesView 
+                    leaderInfo={error.leaderInfo ? null : data.leaderInfo} // Pass null if there's an error with leaderInfo
+                    entities={data.entities} 
+                  />
                 )}
               </CardContent>
             </Card>
