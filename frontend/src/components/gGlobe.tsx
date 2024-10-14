@@ -44,6 +44,31 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
         zoom: zoom,
         essential: true // this animation is considered essential with respect to prefers-reduced-motion
       });
+
+      const handleMoveEnd = () => {
+        // Query the map for the country feature at the center
+        const center = mapRef.current?.getCenter();
+        if (center) {
+          const features = mapRef.current?.queryRenderedFeatures(
+            [mapRef.current.getContainer().clientWidth / 2, mapRef.current.getContainer().clientHeight / 2],
+            { layers: ['country-boundaries'] } // Ensure this layer exists in your style
+          );
+
+          if (features && features.length > 0) {
+            const feature = features[0];
+            const countryName = feature.properties?.name_en; // Adjust property name as needed
+
+            if (countryName) {
+              onLocationClick(countryName);
+            }
+          }
+        }
+        // Remove the event listener after handling
+        mapRef.current?.off('moveend', handleMoveEnd);
+      };
+
+      // Add the moveend listener
+      mapRef.current.on('moveend', handleMoveEnd);
     }
   };
 
@@ -158,7 +183,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
           'star-intensity': 0.44 // Background star brightness (default 0.35 at low zooms)
         });
 
-        mapRef.current.addControl(new mapboxgl.NavigationControl());
+        // mapRef.current.addControl(new mapboxgl.NavigationControl());
       });
     }
     const resizeObserver = new ResizeObserver(() => {
@@ -313,13 +338,30 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
     }
   }, [longitude, latitude]);
 
+  useEffect(() => {
+    const inputElement = document.querySelector('.location-input');
+    if (inputElement) {
+      inputElement.addEventListener('focus', (e) => {
+        e.preventDefault(); // Prevent default focus behavior
+      });
+    }
+
+    return () => {
+      if (inputElement) {
+        inputElement.removeEventListener('focus', (e) => {
+          e.preventDefault();
+        });
+      }
+    };
+  }, []);
+
   return (
     <div style={{ position: 'relative', height: '100%', width: '100%' }}>
-      <div ref={mapContainerRef} className="map-container" style={{ height: '100%', padding: '10px', borderRadius: '15px' }}></div>
+      <div ref={mapContainerRef} className="map-container" style={{ height: '100%', padding: '10px', borderRadius: '12px' }}></div>
       <div className="absolute top-8 left-2 z-10 flex max-w-1/2 md:max-w-full overflow-x-auto space-x-4">
         <div className="flex w-full min-w-8 max-w-sm items-center space-x-2">
           <Input
-            className='min-w-12 bg-white dark:bg-black'
+            className='location-input min-w-12 bg-white dark:bg-black'
             type="text"
             value={inputLocation}
             onChange={(e) => setInputLocation(e.target.value)}
@@ -368,15 +410,15 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
       )}
       {/* Mobile Menu Button */}
       {isMobile && (
-        <div className="fixed bottom-4 right-4 md:hidden">
+        <div className="fixed top-36 left-6 md:hidden">
           <Button onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? 'Close Menu' : 'Open Menu'}
+            {menuOpen ? 'Close Menu' : <><MapPin /><List /></>}
           </Button>
         </div>
       )}
       {/* Mobile Menu */}
       {isMobile && menuOpen && (
-        <div className="fixed bottom-16 right-4 bg-white dark:bg-black p-4 rounded shadow-lg space-y-2">
+        <div className="fixed top-64 z-[52] left-4 bg-white dark:bg-black p-4 rounded shadow-lg space-y-2">
           <Button onClick={() => flyToLocation(13.4050, 52.5200, 6)}>Fly to Berlin</Button>
           <Button onClick={() => flyToLocation(-77.0369, 38.9072, 6)}>Fly to Washington</Button>
           <Button onClick={() => flyToLocation(34.7661, 31.0461, 6)}>Fly to Israel</Button>

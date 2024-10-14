@@ -196,7 +196,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
   return (
     <div className="space-y-4 p-2">
       <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full"> 
-        <TabsList className="max-w-[90%] overflow-x-auto flex justify-start scroll-snap-type-x mandatory">
+        <TabsList className="max-w-[70%] overflow-x-auto flex justify-start scroll-snap-type-x mandatory">
           <TabsTrigger value="articles" className="scroll-snap-align-start">Articles</TabsTrigger>
           <TabsTrigger value="economic-data" className="scroll-snap-align-start" onClick={handleFetchEconomicData}>Economic Data</TabsTrigger>
           <TabsTrigger value="leader-info" className="scroll-snap-align-start">Entities</TabsTrigger>
@@ -270,11 +270,11 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
                        <p className="mt-4">Legislative data is loading...</p>
                      </div>
                   ) : error.legislative ? (
-                    <p>No legislative data available for {locationName}.</p>
+                    <p>No legislative data available for {locationName}. Currently only available for Germany.</p>
                   ) : filteredLegislativeData.length > 0 ? (
                     <DataTable columns={legislationColumns} data={filteredLegislativeData} />
                   ) : (
-                    <p>No legislative data available for {locationName}.</p>
+                    <p>No legislative data available for {locationName}. Currently only available for Germany.</p>
                   )}
                 </div>
               </CardContent>
@@ -369,7 +369,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
                 {results ? (
                   <Results results={results} summary={summary} includeSummary={includeSummary} />
                 ) : (
-                  <p>No search results available.</p>
+                  <p>No search results available. They will show up if you use the main search bar.</p>
                 )}
               </CardContent>
             </Card>

@@ -109,9 +109,27 @@ const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) =
           {showArticles ? 'Hide' : 'Show'}
         </Button>
       </div>
+
+      {/* Display Tavily Images */}
+      {tavilyResults && tavilyResults.images && tavilyResults.images.length > 0 && (
+        <div className="flex overflow-x-auto space-x-4 mb-4 pb-2">
+          {tavilyResults.images.map((imageSrc: string, index: number) => (
+            <Image
+              key={`tavily-image-${index}`}
+              src={imageSrc}
+              alt={`Tavily Image ${index}`}
+              width={200}
+              height={150}
+              className="rounded-md"
+            />
+          ))}
+        </div>
+      )}
+
       <div className="mb-4 max-h-[40vh] overflow-y-auto">
         <EntitiesView entities={entities} leaderInfo={null} />
       </div>
+
       <div className="flex-1 max-h-[50vh] overflow-y-auto">
         {showArticles && includeSummary && summary && (
           <div className="flex-none mb-4 overflow-auto max-h-96 prose prose-invert max-w-none rounded-md p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -131,30 +149,29 @@ const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) =
               <TabsTrigger value="ssare">SSARE Results</TabsTrigger>
             </TabsList>
             <TabsContent value="all" className="h-full overflow-y-auto">
-              <div className="flex-grow overflow-auto max-h-full overflow-y-auto max-w-full rounded-md [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              <div className="flex-grow overflow-auto max-h-full overflow-y-auto max-w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {/* Render all results here */}
-                <Button onClick={() => handleBookmarkAll([...tavilyResults.results, ...ssareResults])} className="mt-4 mb-12">Bookmark All Tavily & SSARE Articles</Button>
+                <Button onClick={() => handleBookmarkAll([...tavilyResults.results, ...ssareResults])} className="mt-4">Bookmark All Tavily & SSARE Articles</Button>
                 {renderAllResults(tavilyResults, ssareResults)}
               </div>
             </TabsContent>
             <TabsContent value="tavily" className="h-full overflow-y-auto">
-              <div className="flex-grow overflow-auto max-h-full overflow-y-auto max-w-full rounded-md p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              <div className="flex-grow overflow-auto max-h-full overflow-y-auto max-w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {/* Render Tavily results here */}
-                <Button onClick={() => handleBookmarkAll(tavilyResults.results)} className="mt-4 mb-12">Bookmark All Tavily Articles</Button>
+                <Button onClick={() => handleBookmarkAll(tavilyResults.results)} className="mt-4">Bookmark All Tavily Articles</Button>
                 {renderTavilyResults(tavilyResults)}
               </div>
             </TabsContent>
             <TabsContent value="ssare" className="h-full overflow-y-auto">
-              <div className="flex-grow overflow-auto max-h-full overflow-y-auto max-w-full rounded-md p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              <div className="flex-grow overflow-auto max-h-full overflow-y-auto max-w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {/* Render SSARE results here */}
-                <Button onClick={() => handleBookmarkAll(ssareResults)} className="mt-4 mb-12">Bookmark All SSARE Articles</Button>
+                <Button onClick={() => handleBookmarkAll(ssareResults)} className="mt-4">Bookmark All SSARE Articles</Button>
                 {renderSsareResults(ssareResults)}
               </div>
             </TabsContent>
           </Tabs>
         )}
       </div>
-      {/* Render EntitiesView */}
     </div>
   );
 };
@@ -171,7 +188,16 @@ const renderTavilyResults = (tavilyResults: any) => (
   <>
     {tavilyResults && tavilyResults.images && tavilyResults.images.length > 0 && (
       <div className="flex overflow-x-auto space-x-4 mb-4 pb-2">
-        {/* ... removed image rendering code ... */}
+        {tavilyResults.images.map((imageSrc: string, index: number) => (
+          <Image
+            key={`tavily-image-${index}`}
+            src={imageSrc}
+            alt={`Tavily Image ${index}`}
+            width={200}
+            height={150}
+            className="rounded-md"
+          />
+        ))}
       </div>
     )}
     <h3 className="text-lg font-semibold mb-2">Tavily Results</h3>
@@ -195,7 +221,7 @@ const renderTavilyResults = (tavilyResults: any) => (
 
 const renderSsareResults = (ssareResults: ArticleCardProps[]) => (
   <>
-    <h3 className="text-lg font-semibold mt-4 mb-2">SSARE Results</h3>
+    <h2 className="">SSARE Results</h2>
     {ssareResults && ssareResults.map((result: ArticleCardProps) => (
       <ArticleCard
         key={`ssare-${result.id}`}

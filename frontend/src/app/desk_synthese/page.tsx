@@ -163,13 +163,13 @@ const Desk: React.FC = () => {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       <div className="relative w-full h-screen max-h-screen">
-        <div className="absolute top-6 left-8 z-[10]"> 
+        <div className={`absolute ${isMobile ? 'top-1' : 'top-6'} left-8 z-[10]`}> 
           <h1 suppressHydrationWarning className="text-sm text-gray-400">{currentTime}</h1>
         </div>
         
         {hasEverSearched && (
           <Button
-            className="absolute top-8 left-8 z-50 relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-500 after:to-purple-500 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 bg-transparent hover:bg-transparent border-none"
+            className="absolute top-12 left-4 z-50 relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-500 after:to-purple-500 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 bg-transparent hover:bg-transparent border-none"
             onClick={toggleView}
             variant="outline"
           >
@@ -189,7 +189,7 @@ const Desk: React.FC = () => {
               transition={{ duration: 0.5 }}
             >
               <motion.div
-                className={`absolute h-1/2 p-4 inset-0 ${hasClicked || isVisible ? 'w-1/2' : 'w-full'}`}
+                className={`absolute h-1/2 p-4 ${hasClicked || isVisible ? 'w-1/2' : 'w-full'}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
@@ -249,7 +249,7 @@ const Desk: React.FC = () => {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <div className={`${isMobile ? 'h-full flex flex-col' : 'h-2/3 flex flex-col col-span-1'}`}>
+              <div className={`p-4 ${isMobile ? 'h-full flex flex-col' : 'h-2/3 flex flex-col col-span-1'}`}>
                 <motion.div
                   className="flex-1 relative"
                   initial={{ opacity: 0 }}
