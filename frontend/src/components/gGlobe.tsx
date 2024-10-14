@@ -358,7 +358,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
   return (
     <div style={{ position: 'relative', height: '100%', width: '100%' }}>
       <div ref={mapContainerRef} className="map-container" style={{ height: '100%', padding: '10px', borderRadius: '12px' }}></div>
-      <div className="absolute top-8 left-2 z-10 flex max-w-1/2 md:max-w-full overflow-x-auto space-x-4">
+      <div className={`absolute ${isMobile ? 'top-4 left-2 space-x-2' : 'top-8 left-2 space-x-4'} z-10 flex max-w-[90%] md:max-w-full overflow-x-auto`}>
         <div className="flex w-full min-w-8 max-w-sm items-center space-x-2">
           <Input
             className='location-input min-w-12 bg-white dark:bg-black'
@@ -371,6 +371,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
                 handleFlyToInputLocation();
               }
             }}
+            onFocus={(e) => e.preventDefault()} // to prevent default focus behavior
           />
           <Button variant="destructive" onClick={handleFlyToInputLocation} disabled={loading}>
             {loading ? 'Loading...' : <Locate size={24} />}
@@ -388,7 +389,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
                   <Button onClick={() => flyToLocation(-77.0369, 38.9072, 6)}>Fly to Washington</Button>
                   <Button onClick={() => flyToLocation(34.7661, 31.0461, 6)}>Fly to Israel</Button>
                   <Button onClick={() => flyToLocation(30.5238, 50.4500, 6)}>Fly to Kyiv</Button>
-                  <Button onClick={() => flyToLocation(31.3069, 7.7778, 6)}>Fly to South Sudan</Button>
+                  <Button onClick={() => flyToLocation(139.767125, 35.681236, 6)}>Fly to Tokyo</Button>
                   <Button onClick={() => flyToLocation(121.5319, 25.0478, 6)}>Fly to Taiwan</Button>
                 </div>
               </PopoverContent>
@@ -396,7 +397,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
           </>
         )}
         <Button onClick={() => setShowLegend(!showLegend)}>
-          {showLegend ? 'Hide Legend' : 'Show Legend'}
+          {showLegend ? 'Hide Legend' : 'Legend'}
         </Button>
         {error && <div className="text-red-500">{error}</div>}
       </div>
@@ -410,7 +411,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
       )}
       {/* Mobile Menu Button */}
       {isMobile && (
-        <div className="fixed top-36 left-6 md:hidden">
+        <div className="absolute top-16 left-2 md:hidden">
           <Button onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? 'Close Menu' : <><MapPin /><List /></>}
           </Button>
@@ -418,12 +419,12 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
       )}
       {/* Mobile Menu */}
       {isMobile && menuOpen && (
-        <div className="fixed top-64 z-[52] left-4 bg-white dark:bg-black p-4 rounded shadow-lg space-y-2">
+        <div className="absolute top-32 z-[52] left-4 bg-white dark:bg-black p-4 rounded shadow-lg space-y-2">
           <Button onClick={() => flyToLocation(13.4050, 52.5200, 6)}>Fly to Berlin</Button>
           <Button onClick={() => flyToLocation(-77.0369, 38.9072, 6)}>Fly to Washington</Button>
           <Button onClick={() => flyToLocation(34.7661, 31.0461, 6)}>Fly to Israel</Button>
           <Button onClick={() => flyToLocation(30.5238, 50.4500, 6)}>Fly to Kyiv</Button>
-          <Button onClick={() => flyToLocation(31.3069, 7.7778, 6)}>Fly to South Sudan</Button>
+          <Button onClick={() => flyToLocation(139.767125, 35.681236, 6)}>Fly to Tokyo</Button>
           <Button onClick={() => flyToLocation(121.5319, 25.0478, 6)}>Fly to Taiwan</Button>
         </div>
       )}

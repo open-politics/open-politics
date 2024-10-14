@@ -163,7 +163,7 @@ const Desk: React.FC = () => {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       <div className="relative w-full h-screen max-h-screen">
-        <div className={`absolute ${isMobile ? 'top-1' : 'top-6'} left-8 z-[10]`}> 
+        <div className={`absolute ${isMobile ? 'top-0 hidden' : 'top-6 block'} left-8 z-[10]`}> 
           <h1 suppressHydrationWarning className="text-sm text-gray-400">{currentTime}</h1>
         </div>
         
@@ -222,7 +222,7 @@ const Desk: React.FC = () => {
               <AnimatePresence>
                 {hasClicked && (
                   <motion.div
-                    className={`absolute ${isMobile ? 'top-2' : 'top-0'} right-0 max-h-screen ${isMobile ? 'max-w-full' : 'w-1/2'}`}
+                    className={`absolute ${isMobile ? 'top-0' : 'top-0'} right-0 max-h-screen ${isMobile ? 'max-w-full' : 'w-1/2'}`}
                     initial={{ x: '100%' }}
                     animate={{ x: 0 }}
                     exit={{ x: '100%' }}
@@ -283,7 +283,7 @@ const Desk: React.FC = () => {
               </div>
               {hasSearched && isVisible && (
                 <motion.div
-                  className={`absolute top-0 right-0 max-h-screen ${isMobile ? 'max-w-full' : 'w-1/2'}`}
+                  className={`absolute top-4 right-0 max-h-screen ${isMobile ? 'max-w-full' : 'w-1/2'}`}
                   initial={{ opacity: 0, x: '100%' }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: '100%' }}

@@ -196,7 +196,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
   return (
     <div className="space-y-4 p-2">
       <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full"> 
-        <TabsList className="max-w-[70%] overflow-x-auto flex justify-start scroll-snap-type-x mandatory">
+        <TabsList className="max-w-[80%] md:max-w-[70%] overflow-x-auto flex justify-start scroll-snap-type-x mandatory">
           <TabsTrigger value="articles" className="scroll-snap-align-start">Articles</TabsTrigger>
           <TabsTrigger value="economic-data" className="scroll-snap-align-start" onClick={handleFetchEconomicData}>Economic Data</TabsTrigger>
           <TabsTrigger value="leader-info" className="scroll-snap-align-start">Entities</TabsTrigger>
