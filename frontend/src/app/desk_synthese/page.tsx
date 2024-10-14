@@ -59,7 +59,7 @@ const Desk: React.FC = () => {
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
-      setIsMobile(window.innerWidth < 768); s
+      setIsMobile(window.innerWidth < 768);
     };
     window.addEventListener('resize', handleResize);
     handleResize();

@@ -4,18 +4,18 @@ import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import useGeocode from '@/hooks/useGeocder';
 import { Input } from "@/components/ui/input"
-import { ChevronUp, ChevronDown } from 'lucide-react';
+import { ChevronUp, ChevronDown, Locate, List } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { MapPin } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapLegend from './MapLegend'; 
-import { useCoordinatesStore } from '@/store/useCoordinatesStore'; // Import the store
+import { useCoordinatesStore } from '@/store/useCoordinatesStore'; 
 
 
 interface GlobeProps {
   geojsonUrl: string;
   onLocationClick: (countryName: string) => void;
-  coordinates?: { latitude: number; longitude: number }; // Add this prop
+  coordinates?: { latitude: number; longitude: number }; 
 }
 
 const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates }) => {
@@ -28,7 +28,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
   const [showLegend, setShowLegend] = useState(false);
   const [hoveredFeature, setHoveredFeature] = useState<any>(null);
   const { latitude, longitude } = useCoordinatesStore();
-  const [menuOpen, setMenuOpen] = useState(false); // State to manage menu visibility
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const eventTypes = [
     { type: "Elections", color: "#4CAF50", icon: "building" },
@@ -331,7 +331,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
             }}
           />
           <Button variant="destructive" onClick={handleFlyToInputLocation} disabled={loading}>
-            {loading ? 'Loading...' : 'Fly to..'}
+            {loading ? 'Loading...' : <Locate size={24} />}
           </Button>
         </div>
         {!isMobile && (
@@ -339,7 +339,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
             <Button onClick={() => flyToLocation(13.4050, 52.5200, 6)}>Fly to Berlin</Button>
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline"><MapPin /></Button>
+                <Button variant="outline"><MapPin /><List /></Button>
               </PopoverTrigger>
               <PopoverContent>
                 <div className="flex flex-col space-y-2">
