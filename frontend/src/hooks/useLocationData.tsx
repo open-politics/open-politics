@@ -166,11 +166,24 @@ export function useLocationData(locationName: string | null) {
     }
   }, []);
 
+  const fetchEconomicData = useCallback(async () => {
+    if (!locationName) return;
+  
+    setIsLoading(prev => ({ ...prev, economic: true }));
+    try {
+      const response = await axios.get(`/api/v1/locations/econ_data/${locationName}`);
+      setData(prev => ({ ...prev, economicData: response.data }));
+    } catch (err) {
+      setError(prev => ({ ...prev, economic: err instanceof Error ? err : new Error('An error occurred fetching economic data') }));
+    } finally {
+      setIsLoading(prev => ({ ...prev, economic: false }));
+    }
+  }, [locationName]);
+
   useEffect(() => {
     if (locationName) {
       fetchArticles('', 0);
       fetchData('legislativeData', `/api/v1/locations/legislation/${locationName}`);
-      fetchData('economicData', `/api/v1/locations/econ_data/${locationName}`);
       fetchData('leaderInfo', `/api/v1/locations/leaders/${locationName}`);
       fetchEntities(0, 50);
     }
@@ -184,6 +197,7 @@ export function useLocationData(locationName: string | null) {
     resetArticles,
     fetchEntities,
     fetchCoordinates,
+    fetchEconomicData,
   };
 }
 

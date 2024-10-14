@@ -71,7 +71,7 @@ const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities }) => 
       )}
       {/* Display entities regardless of leader information */}
       <div className="entities-info">
-        <h2 className="text-center text-xl font-bold mb-2">Relevant Entities</h2>
+        <h2 className="p-4 pl-0">Relevant Entities</h2>
         
         {/* Badge List for Entity Types */}
         <div className="flex overflow-x-auto space-x-2 rounded-full">

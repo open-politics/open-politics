@@ -28,6 +28,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
   const [showLegend, setShowLegend] = useState(false);
   const [hoveredFeature, setHoveredFeature] = useState<any>(null);
   const { latitude, longitude } = useCoordinatesStore();
+  const [menuOpen, setMenuOpen] = useState(false); // State to manage menu visibility
 
   const eventTypes = [
     { type: "Elections", color: "#4CAF50", icon: "building" },
@@ -314,11 +315,11 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
 
   return (
     <div style={{ position: 'relative', height: '100%', width: '100%' }}>
-      <div ref={mapContainerRef} className="map-container" style={{ height: '100%' }}></div>
-      <div className="absolute top-8 left-1 z-10 flex max-w-screen overflow-x-auto space-x-4">
+      <div ref={mapContainerRef} className="map-container" style={{ height: '100%', padding: '10px', borderRadius: '15px' }}></div>
+      <div className="absolute top-8 left-2 z-10 flex max-w-1/2 md:max-w-full overflow-x-auto space-x-4">
         <div className="flex w-full min-w-8 max-w-sm items-center space-x-2">
           <Input
-            className='min-w-8 bg-white dark:bg-black'
+            className='min-w-12 bg-white dark:bg-black'
             type="text"
             value={inputLocation}
             onChange={(e) => setInputLocation(e.target.value)}
@@ -333,21 +334,25 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
             {loading ? 'Loading...' : 'Fly to..'}
           </Button>
         </div>
-        <Button onClick={() => flyToLocation(13.4050, 52.5200, 6)}>Fly to Berlin</Button>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline"><MapPin /></Button>
-          </PopoverTrigger>
-          <PopoverContent>
-            <div className="flex flex-col space-y-2">
-              <Button onClick={() => flyToLocation(-77.0369, 38.9072, 6)}>Fly to Washington</Button>
-              <Button onClick={() => flyToLocation(34.7661, 31.0461, 6)}>Fly to Israel</Button>
-              <Button onClick={() => flyToLocation(30.5238, 50.4500, 6)}>Fly to Kyiv</Button>
-              <Button onClick={() => flyToLocation(31.3069, 7.7778, 6)}>Fly to South Sudan</Button>
-              <Button onClick={() => flyToLocation(121.5319, 25.0478, 6)}>Fly to Taiwan</Button>
-            </div>
-          </PopoverContent>
-        </Popover>
+        {!isMobile && (
+          <>
+            <Button onClick={() => flyToLocation(13.4050, 52.5200, 6)}>Fly to Berlin</Button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline"><MapPin /></Button>
+              </PopoverTrigger>
+              <PopoverContent>
+                <div className="flex flex-col space-y-2">
+                  <Button onClick={() => flyToLocation(-77.0369, 38.9072, 6)}>Fly to Washington</Button>
+                  <Button onClick={() => flyToLocation(34.7661, 31.0461, 6)}>Fly to Israel</Button>
+                  <Button onClick={() => flyToLocation(30.5238, 50.4500, 6)}>Fly to Kyiv</Button>
+                  <Button onClick={() => flyToLocation(31.3069, 7.7778, 6)}>Fly to South Sudan</Button>
+                  <Button onClick={() => flyToLocation(121.5319, 25.0478, 6)}>Fly to Taiwan</Button>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </>
+        )}
         <Button onClick={() => setShowLegend(!showLegend)}>
           {showLegend ? 'Hide Legend' : 'Show Legend'}
         </Button>
@@ -359,6 +364,25 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
           className="absolute bottom-12 left-2 bg-white dark:bg-black bg-opacity-40 p-2 rounded z-10 backdrop-filter backdrop-blur-lg"
         >
           <pre>{JSON.stringify(hoveredFeature.name_en, null, 2).replace(/"/g, '')}</pre>
+        </div>
+      )}
+      {/* Mobile Menu Button */}
+      {isMobile && (
+        <div className="fixed bottom-4 right-4 md:hidden">
+          <Button onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? 'Close Menu' : 'Open Menu'}
+          </Button>
+        </div>
+      )}
+      {/* Mobile Menu */}
+      {isMobile && menuOpen && (
+        <div className="fixed bottom-16 right-4 bg-white dark:bg-black p-4 rounded shadow-lg space-y-2">
+          <Button onClick={() => flyToLocation(13.4050, 52.5200, 6)}>Fly to Berlin</Button>
+          <Button onClick={() => flyToLocation(-77.0369, 38.9072, 6)}>Fly to Washington</Button>
+          <Button onClick={() => flyToLocation(34.7661, 31.0461, 6)}>Fly to Israel</Button>
+          <Button onClick={() => flyToLocation(30.5238, 50.4500, 6)}>Fly to Kyiv</Button>
+          <Button onClick={() => flyToLocation(31.3069, 7.7778, 6)}>Fly to South Sudan</Button>
+          <Button onClick={() => flyToLocation(121.5319, 25.0478, 6)}>Fly to Taiwan</Button>
         </div>
       )}
     </div>

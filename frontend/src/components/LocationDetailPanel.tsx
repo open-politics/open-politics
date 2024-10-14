@@ -19,20 +19,20 @@ const LocationDetailPanel: React.FC<LocationDetailPanelProps> = ({
   summary,
 }) => {
   return (
-    <div className={`flex flex-col h-full p-2 bg-background/75 backdrop-blur supports-[backdrop-filter]:bg-background/60 ${isVisible ? 'block' : 'hidden'}`}>
-      <Button onClick={toggleVisibility} className="w-14 h-8 p-2 border-none self-end">
-        <CircleX size={24} />
+    <div className="relative z-50 bg-white dark:bg-black bg-opacity-20 dark:bg-opacity-20 backdrop-blur-lg rounded-lg p-2 ">
+      <div className={`flex flex-col h-full ${isVisible ? 'block' : 'hidden'}`}>
+        <Button onClick={toggleVisibility} className="fixed top-4 right-4 w-10 h-9 p-2">
+        <CircleX size={18} />
       </Button> 
       {isVisible && (location || results) && ( 
-        <div className="flex-grow overflow-y-auto rounded-md p-2">
           <IssueAreas 
             locationName={location || 'Search'}
             results={results}
             summary={summary}
-            includeSummary={true}
+          includeSummary={true}
           />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

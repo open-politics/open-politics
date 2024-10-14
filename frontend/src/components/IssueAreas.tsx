@@ -48,13 +48,15 @@ interface IssueAreasProps {
 }
 
 export function IssueAreas({ locationName, results, summary, includeSummary }: IssueAreasProps) {
-  const { data, isLoading, error, fetchArticles, resetArticles } = useLocationData(locationName);
+  const { data, isLoading, error, fetchArticles, resetArticles, fetchEconomicData } = useLocationData(locationName);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
   const [selectedIndicators, setSelectedIndicators] = useState(['GDP', 'GDP_GROWTH']);
   const { toast } = useToast();
   const { activeTab, setActiveTab } = useLayoutStore(); // Use Zustand store
+  const [isMobile, setIsMobile] = useState(false);
+
 
   const filteredLegislativeData = useMemo(() => {
     if (!data?.legislativeData) return [];
@@ -182,15 +184,21 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
     }
   }, [error, toast]);
 
-  console.log('Leader Info in IssueAreas:', data.leaderInfo);
-  console.log('Entities in IssueAreas:', data.entities);
+
+  const handleFetchEconomicData = useCallback(() => {
+    if (!data.economicData || data.economicData.length === 0) {
+      fetchEconomicData();
+    }
+  }, [data.economicData, fetchEconomicData]);
+
+  
 
   return (
-    <div className="space-y-4">
-      <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full"> {/* Use Zustand for active tab */}
-        <TabsList className="max-w-full overflow-x-auto flex justify-start scroll-snap-type-x mandatory">
+    <div className="space-y-4 p-2">
+      <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full"> 
+        <TabsList className="max-w-[90%] overflow-x-auto flex justify-start scroll-snap-type-x mandatory">
           <TabsTrigger value="articles" className="scroll-snap-align-start">Articles</TabsTrigger>
-          <TabsTrigger value="economic-data" className="scroll-snap-align-start">Economic Data</TabsTrigger>
+          <TabsTrigger value="economic-data" className="scroll-snap-align-start" onClick={handleFetchEconomicData}>Economic Data</TabsTrigger>
           <TabsTrigger value="leader-info" className="scroll-snap-align-start">Entities</TabsTrigger>
           <TabsTrigger value="legislative" className="scroll-snap-align-start">Legislative</TabsTrigger>
           <TabsTrigger value="wikipedia" className="scroll-snap-align-start">Wikipedia</TabsTrigger>
@@ -281,7 +289,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
-                {isLoading.economic || isLoading.entities || isLoading.leaderInfo || isLoading.articles ? (
+                {isLoading.economic ? (
                   <div className="flex flex-col items-center justify-center h-full">
                     <DotLoader color="#000" size={50} />
                     <p className="mt-4">Economic data is loading...</p>
@@ -306,7 +314,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
                     <EconomicDataChart data={data.economicData} selectedIndicators={selectedIndicators} />
                   </>
                 ) : (
-                  <p>No economic data available for {locationName}.</p>
+                  <Button onClick={handleFetchEconomicData}>Load Economic Data</Button>
                 )}
               </CardContent>
             </Card>

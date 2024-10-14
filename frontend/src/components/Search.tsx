@@ -176,9 +176,9 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
   };
 
   return (
-    <div className="relative w-full bg-white dark:bg-black bg-opacity-20 dark:bg-opacity-20 backdrop-blur-lg rounded-lg p-2 px-4">
-      <h2 className="text-xl font-bold text-blue-500 dark:text-green-200 mb-2">Search News and all things Politics</h2>
-      <Command className="mx-auto bg-transparent">
+    <div className="relative w-full bg-white dark:bg-black bg-opacity-20 dark:bg-opacity-20 backdrop-blur-lg rounded-lg p-4 px-4">
+      <h2 className="text-xl font-bold text-blue-500 dark:text-green-200 mb-2 text-left ml-1">Search News and all things Politics</h2>
+      <Command className="mx-auto bg-transparent border border-blue-200 p-4">
         <div className="relative">
           <CommandInput
             onKeyDown={(e) => e.key === 'Enter' && handleSearch(inputValue)}
@@ -229,13 +229,9 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
                 <RadioGroupItem value="News Analysis" id="news-analysis" />
                 <Label htmlFor="news-analysis">News Analysis</Label>
               </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="Economic Analysis" id="economic-analysis" />
-                <Label htmlFor="economic-analysis">Economic Analysis</Label>
-              </div>
             </RadioGroup>
             </CommandGroup>
-          <CommandSeparator className="mt-2" />
+          {/* <CommandSeparator className="mt-2" />
             <CommandGroup heading="Search Type">
               <RadioGroup 
                 defaultValue="semantic" 
@@ -248,10 +244,6 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="text" id="text" />
                   <Label htmlFor="text">Text</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="structured" id="structured" />
-                  <Label htmlFor="structured">Structured</Label>
                 </div>
               </RadioGroup>
             </CommandGroup>
@@ -269,7 +261,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
               <CommandItem onSelect={() => handleSuggestionSelect('Political climate in Brazil')}>
                 Political climate in Brazil
               </CommandItem>
-            </CommandGroup>
+            </CommandGroup> */}
           </div>
           
         </CommandList>
@@ -307,7 +299,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
           </CommandGroup>
         </CommandList>
       </CommandDialog>
-      <div className="mt-4 flex items-center space-x-2">
+      {/* <div className="mt-4 flex items-center space-x-2">
         <input
           type="checkbox"
           id="include-summary"
@@ -392,7 +384,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
           placeholder="Exclude keywords (comma-separated)"
         />
         <Label htmlFor="exclude-keywords">Exclude Keywords</Label>
-      </div>
+      </div> */}
     </div>
   );
 };

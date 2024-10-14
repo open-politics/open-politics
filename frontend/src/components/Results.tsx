@@ -100,7 +100,7 @@ const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) =
   return (
     <div className={`flex flex-col h-full bg-opacity-20 backdrop-blur-lg w-full rounded-lg p-4 overflow-y-auto ${!includeSummary ? 'grid-cols-1' : ''}`}>
       <div className="flex justify-between items-center mb-2">
-        {includeSummary ? <h2 className="text-xl">Articles & Summary</h2> : <h2>Articles</h2>}
+        {includeSummary ? <h2 className="p-4 pl-0">Articles & Summary</h2> : <h2 className="p-4 pl-0">Articles</h2>}
         <Button 
           className="px-2 py-1 text-xs" 
           variant="outline" 

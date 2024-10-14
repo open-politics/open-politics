@@ -59,7 +59,7 @@ const Desk: React.FC = () => {
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 768); s
     };
     window.addEventListener('resize', handleResize);
     handleResize();
@@ -163,11 +163,10 @@ const Desk: React.FC = () => {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       <div className="relative w-full h-screen max-h-screen">
-        <div className="absolute top-2 left-8 z-50"> 
+        <div className="absolute top-6 left-8 z-[10]"> 
           <h1 suppressHydrationWarning className="text-sm text-gray-400">{currentTime}</h1>
         </div>
         
-        {/* // If never searches don't show the back to globe button */}
         {hasEverSearched && (
           <Button
             className="absolute top-8 left-8 z-50 relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-500 after:to-purple-500 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 bg-transparent hover:bg-transparent border-none"
@@ -180,7 +179,6 @@ const Desk: React.FC = () => {
         )}
 
         <AnimatePresence mode="wait">
-          {/* // When never searched */}
           {!hasSearched ? (
             <motion.div
               key="globe-view"
@@ -191,7 +189,7 @@ const Desk: React.FC = () => {
               transition={{ duration: 0.5 }}
             >
               <motion.div
-                className={`absolute h-1/2 inset-0 ${hasClicked || isVisible ? 'w-1/2' : 'w-full'}`}
+                className={`absolute h-1/2 p-4 inset-0 ${hasClicked || isVisible ? 'w-1/2' : 'w-full'}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
@@ -216,16 +214,15 @@ const Desk: React.FC = () => {
               >
                 <Search
                   setResults={handleSearch}
-                  setCountry={setCountry} // Pass setCountry to Search
+                  setCountry={setCountry}
                   setSummary={handleSummary}
                   globeRef={globeRef}
                 />
               </motion.div>
               <AnimatePresence>
-                {/* // When clicked --> LocationDetailPanel */}
                 {hasClicked && (
                   <motion.div
-                    className={`absolute top-0 right-0 max-h-screen ${isMobile ? 'max-w-full' : 'w-1/2'}`}
+                    className={`absolute ${isMobile ? 'top-2' : 'top-0'} right-0 max-h-screen ${isMobile ? 'max-w-full' : 'w-1/2'}`}
                     initial={{ x: '100%' }}
                     animate={{ x: 0 }}
                     exit={{ x: '100%' }}
@@ -236,15 +233,14 @@ const Desk: React.FC = () => {
                       location={location}
                       isVisible={isVisible}
                       toggleVisibility={toggleVisibility}
-                      results={results} // Pass results
-                      summary={summary} // Pass summary
+                      results={results}
+                      summary={summary}
                     />
                   </motion.div>
                 )}
               </AnimatePresence>
             </motion.div>
           ) : (
-            // When has searched
             <motion.div
               key="search-results-view"
               className={`${isMobile ? 'flex flex-col h-screen overflow-y-auto' : 'grid grid-cols-1 md:grid-cols-2 gap-2 h-full'}`}
@@ -253,7 +249,7 @@ const Desk: React.FC = () => {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <div className={`${isMobile ? 'h-full flex flex-col' : 'h-full flex flex-col col-span-1'}`}>
+              <div className={`${isMobile ? 'h-full flex flex-col' : 'h-2/3 flex flex-col col-span-1'}`}>
                 <motion.div
                   className="flex-1 relative"
                   initial={{ opacity: 0 }}
@@ -268,7 +264,6 @@ const Desk: React.FC = () => {
                     isBrowseMode={isBrowseMode}
                     toggleMode={toggleMode}
                     setLegislativeData={setLegislativeData}
-                    // setEconomicData={setEconomicData}
                     onCountryZoom={handleLocationZoom}
                   />
                 </motion.div>
@@ -280,7 +275,7 @@ const Desk: React.FC = () => {
                 >
                   <Search
                     setResults={handleSearch}
-                    setCountry={setCountry} // Pass setCountry to Search
+                    setCountry={setCountry}
                     setSummary={handleSummary}
                     globeRef={globeRef}
                   />
@@ -299,9 +294,9 @@ const Desk: React.FC = () => {
                       key={locationKey}
                       location={location}
                       isVisible={isVisible}
-                      toggleVisibility={toggleVisibility} // Ensure this is passed
-                      results={results} // Pass results
-                      summary={summary} // Pass summary
+                      toggleVisibility={toggleVisibility}
+                      results={results}
+                      summary={summary}
                     />
                   </div>
                 </motion.div>
@@ -309,9 +304,7 @@ const Desk: React.FC = () => {
             </motion.div>
           )}
         </AnimatePresence>
-        
 
-        {/* Reload Button */}
         <motion.button
           onClick={handleReload}
           className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white p-2 rounded-full shadow-lg"
@@ -321,29 +314,7 @@ const Desk: React.FC = () => {
         <motion.div className="fixed bottom-4 left-3/4 transform -translate-x-1/2">
           <BookmarkedArticles />
         </motion.div>
-
       </div>
-      <AnimatePresence>
-        {isDashboardVisible && (
-          <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ duration: 0.5 }}
-            className="fixed bottom-0 left-0 right-0 h-5/6 bg-white dark:bg-gray-800 shadow-lg"
-          >
-            <SSAREDashboard />
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <motion.button
-        onClick={toggleDashboard}
-        className="fixed bottom-4 right-4 bg-blue-500 text-white p-2 rounded-full shadow-lg"
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-      >
-        {isDashboardVisible ? <ChevronDown size={24} /> : <ChevronUp size={24} />}
-      </motion.button>
     </ThemeProvider>
   );
 };
