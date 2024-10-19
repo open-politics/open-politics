@@ -27,10 +27,15 @@ export function ArticlesView({ locationName, articles, isLoading, error, fetchAr
   const handleBookmarkAll = () => {
     articles.forEach(article => {
       addBookmark({
-        url: article.url,
+        id: article.url, // Assuming URL is unique
         headline: article.headline,
+        paragraphs: article.paragraphs.slice(0, 350),
+        url: article.url,
         source: article.source,
-        snippet: article.paragraphs.slice(0, 350)
+        insertion_date: new Date().toISOString(),
+        entities: [], // Add logic to extract entities if needed
+        tags: [], // Add logic to extract tags if needed
+        classification: null, // Add logic to classify if needed
       });
     });
   };

@@ -15,27 +15,15 @@ async def get_articles(
     skip: int = 0,
     limit: int = 20,
     search_query: Optional[str] = None,
-    search_type: str = "text",
-    has_geocoding: Optional[bool] = None,
-    has_entities: Optional[bool] = None,
-    has_classification: Optional[bool] = None,
-    has_embeddings: Optional[bool] = None,
+    search_type: SearchType = SearchType.TEXT,
 ):
     try:
         params = {
             "search_query": f"{location} {search_query}" if search_query else location,
             "skip": skip,
             "limit": limit,
-            "search_type": search_type,
+            "search_type": search_type.value,
         }
-        if has_geocoding is not None:
-            params["has_geocoding"] = has_geocoding
-        if has_entities is not None:
-            params["has_entities"] = has_entities
-        if has_classification is not None:
-            params["has_classification"] = has_classification
-        if has_embeddings is not None:
-            params["has_embeddings"] = has_embeddings
 
         async with httpx.AsyncClient() as client:
             response = await client.get("http://postgres_service:5434/articles", params=params)

@@ -196,13 +196,13 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
   return (
     <div className="space-y-4 p-2">
       <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full"> 
-        <TabsList className="max-w-[80%] md:max-w-[70%] overflow-x-auto flex justify-start scroll-snap-type-x mandatory">
+        <TabsList className="max-w-[80%] md:max-w-[calc(100%-60px)] overflow-x-auto flex justify-start scroll-snap-type-x mandatory">
           <TabsTrigger value="articles" className="scroll-snap-align-start">Articles</TabsTrigger>
           <TabsTrigger value="economic-data" className="scroll-snap-align-start" onClick={handleFetchEconomicData}>Economic Data</TabsTrigger>
           <TabsTrigger value="leader-info" className="scroll-snap-align-start">Entities</TabsTrigger>
           <TabsTrigger value="legislative" className="scroll-snap-align-start">Legislative</TabsTrigger>
           <TabsTrigger value="wikipedia" className="scroll-snap-align-start">Wikipedia</TabsTrigger>
-          <TabsTrigger value="search-results" className="scroll-snap-align-start">Search Results</TabsTrigger>
+          <TabsTrigger value="search-results" className="scroll-snap-align-start">Summary</TabsTrigger>
         </TabsList>
         <div className="flex-grow overflow-hidden">
           <TabsContent value="articles" className="h-full max-h-screen overflow-y-auto">
@@ -360,9 +360,9 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
           <TabsContent value="search-results">
             <Card>
               <CardHeader>
-                <CardTitle>Search Results</CardTitle>
+                <CardTitle>Summary</CardTitle>
                 <CardDescription>
-                  Results from your recent search.
+                  Data Fragments & A Summary
                 </CardDescription>
               </CardHeader>
               <CardContent>

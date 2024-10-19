@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { IssueAreas } from './IssueAreas';
 import { Button } from '@/components/ui/button';
 import { CircleX } from 'lucide-react';
@@ -18,18 +18,20 @@ const LocationDetailPanel: React.FC<LocationDetailPanelProps> = ({
   results,
   summary,
 }) => {
+  const [searchTerm, setSearchTerm] = useState(location || ''); // Initialize with location
+
   return (
     <div className="relative z-50 bg-white dark:bg-black bg-opacity-20 dark:bg-opacity-20 backdrop-blur-lg rounded-lg p-2 ">
       <div className={`flex flex-col h-full ${isVisible ? 'block' : 'hidden'}`}>
         <Button onClick={toggleVisibility} className="fixed top-4 right-6 w-12 h-9 p-2">
-        <CircleX size={18} />
-      </Button> 
-      {isVisible && (location || results) && ( 
+          <CircleX size={18} />
+        </Button> 
+        {isVisible && (searchTerm || results) && ( 
           <IssueAreas 
-            locationName={location || 'Search'}
+            locationName={searchTerm} // Use searchTerm instead of location
             results={results}
             summary={summary}
-          includeSummary={true}
+            includeSummary={true}
           />
         )}
       </div>

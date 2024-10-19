@@ -166,17 +166,6 @@ const Desk: React.FC = () => {
         <div className={`absolute ${isMobile ? 'top-0 hidden' : 'top-6 block'} left-8 z-[10]`}> 
           <h1 suppressHydrationWarning className="text-sm text-gray-400">{currentTime}</h1>
         </div>
-        
-        {hasEverSearched && (
-          <Button
-            className="absolute top-12 left-4 z-50 relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-500 after:to-purple-500 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 bg-transparent hover:bg-transparent border-none"
-            onClick={toggleView}
-            variant="outline"
-          >
-            {hasSearched ? <GlobeIcon className="w-4 h-4 mr-2" /> : <SearchIcon className="w-4 h-4 mr-2" />}
-            {hasSearched ? "Back to the Globe" : "View Last Search"}
-          </Button>
-        )}
 
         <AnimatePresence mode="wait">
           {!hasSearched ? (

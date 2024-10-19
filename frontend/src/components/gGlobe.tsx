@@ -91,9 +91,10 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
             if (features && features.length > 0) {
               const feature = features[0];
               const countryName = feature.properties?.name_en; // Adjust property name as needed
+              const locationName = feature.properties?.name;
 
               if (countryName) {
-                onLocationClick(countryName);
+                onLocationClick(locationName);
 
               }
             }
@@ -132,7 +133,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
         style: 'mapbox://styles/jimvw/cm27kipx600fw01pbg59k9w97', 
         projection: 'globe',
         center: [13.4, 52.5],
-        zoom: isMobile ? 0 : 1
+        zoom: isMobile ? 0 : 3
       });
 
       mapRef.current.on('styleimagemissing', (e) => {
@@ -266,6 +267,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
                 });
                 onLocationClick(countryName);
                 // resize
+                mapRef.current?.resize();
               }
             });
 

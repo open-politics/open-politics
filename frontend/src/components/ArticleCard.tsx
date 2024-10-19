@@ -131,13 +131,13 @@ export function ArticleCard({ id, headline, paragraphs, url, source, insertion_d
           </div>
         </Card>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] max-w-[100vw] md:max-w-[70vw] flex flex-col">
+      <DialogContent className="max-h-[90vh] max-w-[100vw] md:max-w-[50vw] flex flex-col">
         <DialogHeader>
           <DialogTitle>{headline}</DialogTitle>
           <DialogDescription>{source} - {insertion_date && new Date(insertion_date).toLocaleDateString()}</DialogDescription>
         </DialogHeader>
         <div className="mt-4 overflow-y-auto flex-grow">
-          <div className="flex flex-wrap gap-2 mb-4 max-h-[20vh] overflow-y-auto">
+          <div className="flex flex-wrap flex-row gap-2 mb-4 max-h-[20vh] overflow-y-auto">
             {entities.map((entity) => (
               <Badge key={entity.id} variant="secondary">{entity.name}</Badge>
             ))}

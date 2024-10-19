@@ -158,3 +158,25 @@ async def get_coordinates(location: str, language: str = "en"):
     except Exception as e:
         logger.error(f"Error fetching coordinates for location {location}: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
+
+@router.post("/get_geojson_for_article_ids")
+async def get_geojson_for_article_ids(article_ids: List[str]):
+    # Ensure article_ids are strings
+    article_ids = [str(article_id) for article_id in article_ids]
+    
+    # Log the payload for debugging
+    logger.debug(f"Sending article_ids: {article_ids}")
+
+    # Send the request with the correct headers
+    geojson_data = requests.post(
+        "http://geo_service:3690/geojson_by_article_ids",
+        json=article_ids, 
+        headers={"Content-Type": "application/json"},
+        verify=False
+    )
+    
+    if geojson_data.status_code == 200:
+        return JSONResponse(content=geojson_data.json(), status_code=200)
+    else:
+        logger.error(f"Failed to fetch GeoJSON data: {geojson_data.text}")
+        raise HTTPException(status_code=geojson_data.status_code, detail="Unable to fetch GeoJSON data")

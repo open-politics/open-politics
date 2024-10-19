@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
+import Image from 'next/image'; // Import Image from next/image
 import ArticleCard, { ArticleCardProps } from './ArticleCard';
 import EntitiesView from './EntitiesView'; // Import EntitiesView
 import {
@@ -114,14 +114,16 @@ const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) =
       {tavilyResults && tavilyResults.images && tavilyResults.images.length > 0 && (
         <div className="flex overflow-x-auto space-x-4 mb-4 pb-2">
           {tavilyResults.images.map((imageSrc: string, index: number) => (
-            <Image
-              key={`tavily-image-${index}`}
-              src={imageSrc}
-              alt={`Tavily Image ${index}`}
-              width={200}
-              height={150}
-              className="rounded-md"
-            />
+            <a href={imageSrc} target="_blank" rel="noopener noreferrer" key={`tavily-image-link-${index}`}>
+              <Image
+                key={`tavily-image-${index}`}
+                src={imageSrc}
+                alt={`Tavily Image ${index}`}
+                width={200}
+                height={150}
+                className="rounded-md"
+              />
+            </a>
           ))}
         </div>
       )}
