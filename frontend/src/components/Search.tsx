@@ -34,7 +34,7 @@ interface SearchProps {
   setSummary: (summary: string) => void;
   globeRef: React.RefObject<any>;
 }
-import { ArticleCardProps } from '@/components/ArticleCard';
+import { ArticleCardProps } from '@/components/ContentCard';
 
 const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, globeRef }) => {
   const [inputValue, setInputValue] = useState('');

@@ -13,7 +13,7 @@ import { Progress } from '@/components/ui/progress';
 import { createStreamableUI } from 'ai/rsc';
 import { createStreamableValue } from 'ai/rsc';
 import { streamText } from 'ai';
-import { ArticleCardProps } from '@/components/ArticleCard';
+import { ArticleCardProps } from '@/components/ContentCard';
 
 export interface ServerMessage {
   role: 'user' | 'assistant';

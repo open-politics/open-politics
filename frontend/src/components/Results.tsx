@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image'; // Import Image from next/image
-import ArticleCard, { ArticleCardProps } from './ArticleCard';
+import ArticleCard, { ArticleCardProps } from './ContentCard';
 import EntitiesView from './EntitiesView'; // Import EntitiesView
 import {
   Popover,

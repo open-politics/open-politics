@@ -2,7 +2,7 @@
 'use client'
 
 import React, { createContext, useState } from 'react';
-import { ArticleCardProps } from '@/components/ArticleCard';
+import { ArticleCardProps } from '@/components/ContentCard';
 
 interface ArticleSelectionContextType {
   selectedArticles: ArticleCardProps[];

@@ -2,19 +2,49 @@ import { create } from 'zustand'
 
 type Bookmark = {
   id: string;
-  headline: string;
-  paragraphs: string;
   url: string;
-  source: string;
-  insertion_date: string | null;
+  title: string | null;
+  content_type: string;
+  source: string | null;
+  insertion_date: string;
+  content_language: string | null;
+  author: string | null;
+  publication_date: string | null;
+  version: number;
+  is_active: boolean;
+  text_content: string | null;
+  embeddings: number[] | null;
+  media_details: {
+    id: string;
+    content_id: string;
+    duration: number | null;
+    transcribed_text: string | null;
+    captions: string | null;
+    video_frames: Array<{
+      media_details_id: string;
+      frame_number: number;
+      frame_url: string;
+      timestamp: number;
+      embeddings: number[] | null;
+    }> | null;
+    images: Array<{
+      id: string;
+      media_details_id: string;
+      image_url: string;
+      caption: string | null;
+      embeddings: number[] | null;
+    }> | null;
+  } | null;
   entities: Array<{
     id: string;
     name: string;
     entity_type: string;
     locations: Array<{
+      id: string;
       name: string;
-      type: string;
+      location_type: string;
       coordinates: number[] | null;
+      weight: number;
     }>;
   }>;
   tags: Array<{
@@ -22,11 +52,10 @@ type Bookmark = {
     name: string;
   }>;
   classification: {
-    article_id: string;
-    title: string;
-    news_category: string;
-    secondary_categories: string[];
-    keywords: string[];
+    content_id: string;
+    category: string;
+    secondary_categories: string[] | null;
+    keywords: string[] | null;
     geopolitical_relevance: number;
     legislative_influence_score: number;
     international_relevance_score: number;
@@ -38,6 +67,7 @@ type Bookmark = {
     satire_score: number;
     event_type: string;
   } | null;
+
 };
 
 type BookmarkState = {

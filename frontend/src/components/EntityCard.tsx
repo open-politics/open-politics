@@ -3,14 +3,14 @@ import { motion } from 'framer-motion';
 import useEntityImage from '@/hooks/useEntityImage';
 import { useEntityData } from '@/hooks/useEntity';
 import DotLoader from 'react-spinners/DotLoader';
-import ArticleCard from './ArticleCard';
+import ContentCard from './ContentCard';
 import WikipediaView from './WikipediaView';
 import { Image as LucideImage } from 'lucide-react';
 
 interface Entity {
   name: string;
   type: string;
-  article_count: number;
+  content_count: number;
   total_frequency: number;
   relevance_score: number;
 }
@@ -23,18 +23,18 @@ interface EntityCardProps {
 
 const EntityCard: React.FC<EntityCardProps> = ({ entity, isSelected, onSelect }) => {
   const { imageUrl, loading: imageLoading } = useEntityImage(entity.name);
-  const { data, isLoading, error, fetchArticles, resetArticles } = useEntityData(entity.name, isSelected);
+  const { data, isLoading, error, fetchContents, resetContents } = useEntityData(entity.name, isSelected);
 
   useEffect(() => {
     if (isSelected) {
-      resetArticles();
-      fetchArticles(0, 20).then(() => {
-        console.log(`Fetched articles for ${entity.name}`);
+      resetContents();
+      fetchContents(0, 20).then(() => {
+        console.log(`Fetched contents for ${entity.name}`);
       }).catch((error) => {
-        console.error(`Error fetching articles for ${entity.name}: ${error}`);
+        console.error(`Error fetching contents for ${entity.name}: ${error}`);
       });
     }
-  }, [isSelected, fetchArticles, resetArticles]);
+  }, [isSelected, fetchContents, resetContents]);
 
   const handleCardClick = () => {
     onSelect(isSelected ? null : entity.name);
@@ -58,7 +58,7 @@ const EntityCard: React.FC<EntityCardProps> = ({ entity, isSelected, onSelect })
         </div>
       )}
       <p className="text-sm text-gray-600">Type: {entity.type}</p>
-      <p className="text-sm">Article Count: {entity.article_count}</p>
+      <p className="text-sm">Content Count: {entity.content_count}</p>
       <p className="text-sm">Total Frequency: {entity.total_frequency}</p>
       <p className="text-sm">Relevance Score: {entity.relevance_score.toFixed(2)}</p>
 
@@ -71,16 +71,16 @@ const EntityCard: React.FC<EntityCardProps> = ({ entity, isSelected, onSelect })
       {isSelected && (
         <div className="articles-section max-h-[500px] overflow-y-auto">
           <h4 className="text-center text-lg font-bold mb-2">Articles</h4>
-          {isLoading.articles ? (
+          {isLoading.contents ? (
             <DotLoader size={50} />
-          ) : error.articles ? (
+          ) : error.contents ? (
             <p className="text-red-500">Error loading articles</p>
           ) : (
-            data.articles.map((article) => (
-              <ArticleCard
-                key={article.url}
-                {...article}
-                paragraphs={article.paragraphs}
+            data.contents.map((content) => (
+              <ContentCard
+                key={content.url}
+                {...content}
+                text_content={content.text_content}
               />
             ))
           )}

@@ -35,6 +35,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
     { type: "Protests", color: "#2196F3", icon: "marker" },
     { type: "Economic", color: "#FF9800", icon: "bank" },
     { type: "War", color: "#FF6347", icon: "danger" },
+    { type: "News", color: "#FF6347", icon: "newspaper" }
   ];
 
   const flyToLocation = (longitude: number, latitude: number, zoom: number) => {
@@ -209,7 +210,9 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
       try {
         const promises = eventTypes.map(eventType => {
           return axios.get(`/api/v1/locations/geojson_events`, {
-            params: { event_type: eventType.type }
+            params: {
+              event_type: eventType.type
+            }
           });
         });
 

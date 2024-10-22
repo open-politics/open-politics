@@ -30,8 +30,8 @@ interface GlobeProps {
 }
 
 interface DataContext {
-  articles: { headline: string; url: string }[];
-  title: string;
+  contents: { title: string; url: string }[];
+  name: string;
 }
 
 OpenAPI.BASE = process.env.NEXT_PUBLIC_API_BASE_URL || '';
@@ -93,10 +93,10 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
               type: "Point",
               coordinates: [feature.geometry.coordinates[1], feature.geometry.coordinates[0]] // Swap coordinates here
             },
-            title: feature.properties.name,
-            articles: feature.properties.articles,
-            articleCount: feature.properties.article_count,
-            events: feature.properties.articles.events
+            name: feature.properties.name,
+            contents: feature.properties.contents,
+            contentCount: feature.properties.content_count,
+            events: feature.properties.contents.events
           })));
         }
       });
@@ -220,7 +220,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
           fillOpacity: 0, 
           strokeOpacity: 0, 
           shadowBlur: 0.2,
-          tooltipText: "Location: {title}\nEvent: " + event.type,
+          tooltipText: "Location: {name}\nEvent: " + event.type,
           centerX: am5.p50,
           centerY: am5.p50,
           dx: event.type === "Elections" ? 1.9:
@@ -267,13 +267,13 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
         // Event handling for click
         container.events.on("click", function(ev) {
           const dataItem = ev.target.dataItem as am5.DataItem<DataContext>;
-          const articles = dataItem.dataContext.articles;
-          const articleContent = articles.map((article: any) => 
-            `<a href="${article.url}" target="_blank">${article.headline}</a>`
+          const contents = dataItem.dataContext.contents;
+          const contentDetails = contents.map((content: any) => 
+            `<a href="${content.url}" target="_blank">${content.title}</a>`
           ).join('<hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">');
-          const content = `<div>Articles for location: <strong>${dataItem.dataContext.title}</strong><br/>${articleContent}</div>`;
+          const content = `<div>Contents for location: <strong>${dataItem.dataContext.name}</strong><br/>${contentDetails}</div>`;
           setArticleContent(content);
-          onLocationClick(dataItem.dataContext.title);
+          onLocationClick(dataItem.dataContext.name);
         });
 
         // Event handling for hover
@@ -303,10 +303,10 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
             type: "Point",
             coordinates: [feature.geometry.coordinates[1], feature.geometry.coordinates[0]] // Swap coordinates here
           },
-          title: feature.properties.name,
-          articles: feature.properties.articles,
-          articleCount: feature.properties.article_count,
-          events: feature.properties.articles.events
+          name: feature.properties.name,
+          contents: feature.properties.contents,
+          contentCount: feature.properties.content_count,
+          events: feature.properties.contents.events
         })));
       } catch (error) {
         console.error('Error fetching GeoJSON data:', error);
@@ -348,10 +348,10 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
                 type: "Point",
                 coordinates: [feature.geometry.coordinates[1], feature.geometry.coordinates[0]] // Swap coordinates here
               },
-              title: feature.properties.name,
-              articles: feature.properties.articles,
-              articleCount: feature.properties.article_count,
-              events: feature.properties.articles.events
+              name: feature.properties.name,
+              contents: feature.properties.contents,
+              contentCount: feature.properties.content_count,
+              events: feature.properties.contents.events
             })));
           }
         });
@@ -382,24 +382,24 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
         radius: 0.8, // Set a radius for the circle
         fill: am5.color(0xff0000), // Red color
         fillOpacity: 0.65, // 0.75 opacity
-        tooltipText: "{title}\n{articles[0].headline}",
+        tooltipText: "{name}\n{contents[0].title}",
         centerX: am5.p50,
         centerY: am5.p50,
       });
   
       circle.events.on("click", function(ev) {
         const dataItem = ev.target.dataItem as am5.DataItem<DataContext>;
-        const articles = dataItem.dataContext.articles;
-        const articleContent = articles.map((article: any) => `<a href="${article.url}" target="_blank">${article.headline}</a>`).join('<hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">');
-        const content = `<div>Articles for location: <strong>${dataItem.dataContext.title}</strong><br/>${articleContent}</div>`;
+        const contents = dataItem.dataContext.contents;
+        const contentDetails = contents.map((content: any) => `<a href="${content.url}" target="_blank">${content.title}</a>`).join('<hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">');
+        const content = `<div>Contents for location: <strong>${dataItem.dataContext.name}</strong><br/>${contentDetails}</div>`;
         setArticleContent(content);
-        onLocationClick(dataItem.dataContext.title);
+        onLocationClick(dataItem.dataContext.name);
       });
   
       circle.states.create("hover", {
         fill: am5.color(0x0000ff),
         fillOpacity: 1,
-        tooltipText: "{title}\n{articles[0].headline}",
+        tooltipText: "{name}\n{contents[0].title}",
       });
   
       return am5.Bullet.new(root, {

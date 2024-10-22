@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
 interface EntityData {
-  articles: Article[];
+  contents: Content[];
   details: EntityDetails | null;
 }
 
@@ -14,13 +14,13 @@ interface EntityDetails {
   relevance_score: number;
 }
 
-interface Article {
+interface Content {
   id: string;
   url: string;
-  headline: string;
+  title: string;
   source: string;
   insertion_date: string | null;
-  paragraphs: string;
+  text_content: string;
   entities: Array<{
     id: string;
     name: string;
@@ -40,51 +40,51 @@ interface Article {
 
 export function useEntityData(entityName: string | null, isSelected: boolean) {
   const [data, setData] = useState<EntityData>({
-    articles: [],
+    contents: [],
     details: null,
   });
   const [isLoading, setIsLoading] = useState({
-    articles: false,
+    contents: false,
     details: false,
   });
   const [error, setError] = useState<{
-    articles: Error | null;
+    contents: Error | null;
     details: Error | null;
   }>({
-    articles: null,
+    contents: null,
     details: null,
   });
 
-  const fetchArticles = useCallback(async (skip: number, limit: number) => {
+  const fetchContents = useCallback(async (skip: number, limit: number) => {
     if (!entityName || !isSelected) return; // Fetch only if an entity is selected
-    setIsLoading((prev) => ({ ...prev, articles: true }));
+    setIsLoading((prev) => ({ ...prev, contents: true }));
     try {
-      const response = await fetch(`/api/v1/locations/${entityName}/articles?skip=${skip}&limit=${limit}`);
+      const response = await fetch(`/api/v1/locations/${entityName}/contents?skip=${skip}&limit=${limit}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch articles');
+        throw new Error('Failed to fetch contents');
       }
       const data = await response.json();
       setData((prev) => ({
         ...prev,
-        articles: skip === 0 ? data : [...prev.articles, ...data],
+        contents: skip === 0 ? data : [...prev.contents, ...data],
       }));
     } catch (error) {
-      setError((prev) => ({ ...prev, articles: error as Error }));
+      setError((prev) => ({ ...prev, contents: error as Error }));
     } finally {
-      setIsLoading((prev) => ({ ...prev, articles: false })); 
+      setIsLoading((prev) => ({ ...prev, contents: false })); 
     }
   }, [entityName, isSelected]);
 
-  const resetArticles = useCallback(() => {
-    setData((prev) => ({ ...prev, articles: [] }));
+  const resetContents = useCallback(() => {
+    setData((prev) => ({ ...prev, contents: [] }));
   }, []);
 
   return {
     data,
     isLoading,
     error,
-    fetchArticles,
-    resetArticles,
+    fetchContents,
+    resetContents,
   };
 }
 

@@ -1,55 +1,63 @@
 import React, { useState } from 'react';
-import { ArticleCard } from './ArticleCard';
+import { ContentCard } from './ContentCard';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import DotLoader from 'react-spinners/DotLoader';
-import { useBookMarkStore } from '@/hooks/useBookMarkStore'; // Import the bookmark store
+import { useBookMarkStore } from '@/hooks/useBookMarkStore';
 
 interface ArticlesViewProps {
   locationName: string;
-  articles: any[];
+  contents: any[];
   isLoading: boolean;
   error: Error | null;
-  fetchArticles: (searchQuery: string) => void;
+  fetchContents: (searchQuery: string) => void;
   loadMore: () => void;
-  resetArticles: () => void;
+  resetContents: () => void;
 }
 
-export function ArticlesView({ locationName, articles, isLoading, error, fetchArticles, loadMore, resetArticles }: ArticlesViewProps) {
+export function ArticlesView({ locationName, contents = [], isLoading, error, fetchContents, loadMore, resetContents }: ArticlesViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const { bookmarks, addBookmark, removeBookmark } = useBookMarkStore(); // Use the bookmark store
+  const { bookmarks, addBookmark, removeBookmark } = useBookMarkStore();
 
   const handleSearch = () => {
-    resetArticles();
-    fetchArticles(searchQuery);
+    resetContents();
+    fetchContents(searchQuery);
   };
 
   const handleBookmarkAll = () => {
-    articles.forEach(article => {
+    contents.forEach(content => {
       addBookmark({
-        id: article.url, // Assuming URL is unique
-        headline: article.headline,
-        paragraphs: article.paragraphs.slice(0, 350),
-        url: article.url,
-        source: article.source,
-        insertion_date: new Date().toISOString(),
-        entities: [], // Add logic to extract entities if needed
-        tags: [], // Add logic to extract tags if needed
-        classification: null, // Add logic to classify if needed
+        id: content.url,
+        title: content.title,
+        content_type: content.content_type,
+        source: content.source,
+        insertion_date: content.insertion_date,
+        text_content: content.text_content.slice(0, 350),
+        entities: content.entities,
+        tags: content.tags,
+        classification: content.classification,
+        url: content.url,
+        content_language: content.content_language || null,
+        author: content.author || null,
+        publication_date: content.publication_date || null,
+        version: content.version || 1,
+        is_active: content.is_active || true,
+        embeddings: content.embeddings || null,
+        media_details: content.media_details || null,
       });
     });
   };
 
   const handleUnbookmarkAll = () => {
-    articles.forEach(article => {
-      removeBookmark(article.url);
+    contents.forEach(content => {
+      removeBookmark(content.url);
     });
   };
 
-  const allBookmarked = articles.every(article => bookmarks.some(bookmark => bookmark.url === article.url));
+  const allBookmarked = contents.every(content => bookmarks.some(bookmark => bookmark.url === content.url));
 
-  const filteredArticles = articles.filter(article =>
-    article.headline.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredContents = contents.filter(content =>
+    content.title?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (error) {
@@ -69,7 +77,7 @@ export function ArticlesView({ locationName, articles, isLoading, error, fetchAr
           {allBookmarked ? 'Unbookmark All' : 'Bookmark All'}
         </Button> {/* Toggle button */}
       </div>
-      {isLoading && articles.length === 0 ? (
+      {isLoading && contents.length === 0 ? (
         <div className="flex flex-col items-center justify-center flex-grow">
           <DotLoader color="#000" size={50} />
           <p className="mt-4">Loading articles...</p>
@@ -77,21 +85,21 @@ export function ArticlesView({ locationName, articles, isLoading, error, fetchAr
       ) : (
         <div className="overflow-y-auto flex-grow">
           <div className="space-y-2">
-            {filteredArticles.length > 0 ? (
-              filteredArticles.map((article) => (
-                <ArticleCard
-                  key={article.url}
-                  {...article}
+            {filteredContents.length > 0 ? (
+              filteredContents.map((content) => (
+                <ContentCard
+                  key={content.url}
+                  {...content}
                 />
               ))
             ) : (
               <p>No articles found.</p>
             )}
           </div>
-          {!isLoading && articles.length >= 20 && (
+          {!isLoading && contents.length >= 20 && (
             <Button onClick={loadMore} className="w-full mt-4">Load More</Button>
           )}
-          {isLoading && articles.length > 0 && (
+          {isLoading && contents.length > 0 && (
             <div className="flex justify-center mt-4">
               <DotLoader color="#000" size={30} />
             </div>

@@ -26,22 +26,22 @@ class SearchType(str, Enum):
     TEXT = "text"
     SEMANTIC = "semantic"
 
-@router.get("/{location}/articles", response_model=None)
-async def get_location_articles(
+@router.get("/{location}/contents", response_model=None)
+async def get_location_contents(
     location: str,
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
     search_query: Optional[str] = None,
-    search_type: SearchType = SearchType.TEXT,
+    search_type: SearchType = SearchType.SEMANTIC,
 ):
     try:
-        result = await articles.get_articles(
+        result = await articles.get_contents(
             location, skip, limit, search_query, search_type.value
         )
         return JSONResponse(content=result, status_code=200)
     except Exception as e:
-        logger.error(f"Error fetching articles: {str(e)}")
-        return JSONResponse(content={'error': 'Failed to fetch articles'}, status_code=500)
+        logger.error(f"Error fetching contents: {str(e)}")
+        return JSONResponse(content={'error': 'Failed to fetch contents'}, status_code=500)
 
 @router.get("/location_from_query")
 async def location_from_query(query: str):

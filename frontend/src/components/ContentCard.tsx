@@ -15,21 +15,23 @@ import {
 } from "@/components/ui/dialog";
 import { useBookMarkStore } from '@/hooks/useBookMarkStore';
 
-export type ArticleCardProps = {
+export type ContentCardProps = {
   id: string;
-  headline: string;
-  paragraphs: string;
+  title: string;
+  text_content: string;
   url: string;
-  source: string;
-  insertion_date: string | null;
+  source: string | null;
+  insertion_date: string;
   entities: Array<{
     id: string;
     name: string;
     entity_type: string;
     locations: Array<{
+      id: string;
       name: string;
-      type: string;
+      location_type: string;
       coordinates: number[] | null;
+      weight: number;
     }>;
   }>;
   tags: Array<{
@@ -37,11 +39,10 @@ export type ArticleCardProps = {
     name: string;
   }>;
   classification: {
-    article_id: string;
-    title: string;
-    news_category: string;
-    secondary_categories: string[];
-    keywords: string[];
+    content_id: string;
+    category: string;
+    secondary_categories: string[] | null;
+    keywords: string[] | null;
     geopolitical_relevance: number;
     legislative_influence_score: number;
     international_relevance_score: number;
@@ -55,7 +56,7 @@ export type ArticleCardProps = {
   } | null;
 };
 
-export function ArticleCard({ id, headline, paragraphs, url, source, insertion_date, entities = [], tags = [], classification, className, ...props }: ArticleCardProps & React.ComponentProps<typeof Card>) {
+export function ContentCard({ id, title, text_content, url, source, insertion_date, entities = [], tags = [], classification, className, ...props }: ContentCardProps & React.ComponentProps<typeof Card>) {
   const { bookmarks, addBookmark, removeBookmark } = useBookMarkStore(); // Use the bookmark store
 
   const isBookmarked = bookmarks.some(bookmark => bookmark.url === url);
@@ -67,8 +68,8 @@ export function ArticleCard({ id, headline, paragraphs, url, source, insertion_d
     } else {
       addBookmark({
         id,
-        headline,
-        paragraphs,
+        title,
+        text_content,
         url,
         source,
         insertion_date,
@@ -91,13 +92,13 @@ export function ArticleCard({ id, headline, paragraphs, url, source, insertion_d
             <div className="absolute top-2 right-2" onClick={handleBookmark}>
               {isBookmarked ? <BookMarked className="text-blue-500" /> : <Bookmark className="text-gray-500" />}
             </div>
-            <h4 className="mb-2 text-lg font-semibold">{headline}</h4>
-            <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{paragraphs}</p>
+            <h4 className="mb-2 text-lg font-semibold">{title}</h4>
+            <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{text_content}</p>
             <div className="flex flex-wrap gap-1 mb-2">
               {classification && (
                 <>
-                  <Badge variant="secondary">{classification.news_category}</Badge>
-                  {classification.secondary_categories.map((category) => (
+                  <Badge variant="secondary">{classification.category}</Badge>
+                  {classification.secondary_categories?.map((category) => (
                     <Badge key={category} variant="outline">{category}</Badge>
                   ))}
                 </>
@@ -106,7 +107,7 @@ export function ArticleCard({ id, headline, paragraphs, url, source, insertion_d
             {classification && (
               <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground mb-2">
                 <div>
-                  <p>🏛️ Classification: {classification.news_category}</p>
+                  <p>🏛️ Classification: {classification.category}</p>
                   <p>🔍 Event Type: {classification.event_type}</p>
                   <p>📊 General Interest: <span className={`font-bold ${getColorClass(classification.general_interest_score, false)}`}>{classification.general_interest_score.toFixed(2)}</span></p>
                 </div>
@@ -133,7 +134,7 @@ export function ArticleCard({ id, headline, paragraphs, url, source, insertion_d
       </DialogTrigger>
       <DialogContent className="max-h-[90vh] max-w-[100vw] md:max-w-[50vw] flex flex-col">
         <DialogHeader>
-          <DialogTitle>{headline}</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{source} - {insertion_date && new Date(insertion_date).toLocaleDateString()}</DialogDescription>
         </DialogHeader>
         <div className="mt-4 overflow-y-auto flex-grow">
@@ -147,7 +148,7 @@ export function ArticleCard({ id, headline, paragraphs, url, source, insertion_d
           </div>
           {classification && (
             <div className="text-sm mb-4">
-              <p>🏛️ Classification: {classification.news_category}</p>
+              <p>🏛️ Classification: {classification.category}</p>
               <p>🌍 Geopolitical Relevance: <span className={`font-bold ${getColorClass(classification.geopolitical_relevance, false)}`}>{classification.geopolitical_relevance.toFixed(2)}</span></p>
               <p>📜 Legislative Influence: <span className={`font-bold ${getColorClass(classification.legislative_influence_score, false)}`}>{classification.legislative_influence_score.toFixed(2)}</span></p>
               <p>🌐 International Relevance: <span className={`font-bold ${getColorClass(classification.international_relevance_score, false)}`}>{classification.international_relevance_score.toFixed(2)}</span></p>
@@ -160,7 +161,7 @@ export function ArticleCard({ id, headline, paragraphs, url, source, insertion_d
               <p>🔍 Event Type: {classification.event_type}</p>
             </div>
           )}
-          <p className="text-sm mb-4">{paragraphs}</p>
+          <p className="text-sm mb-4">{text_content}</p>
           <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">
             Read full article
           </a>
@@ -182,4 +183,4 @@ function getColorClass(value: number, isNegative: boolean = false): string {
   }
 }
 
-export default ArticleCard;
+export default ContentCard;

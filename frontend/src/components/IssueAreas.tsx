@@ -48,7 +48,7 @@ interface IssueAreasProps {
 }
 
 export function IssueAreas({ locationName, results, summary, includeSummary }: IssueAreasProps) {
-  const { data, isLoading, error, fetchArticles, resetArticles, fetchEconomicData } = useLocationData(locationName);
+  const { data, isLoading, error, fetchContents, resetContents, fetchEconomicData } = useLocationData(locationName);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
@@ -175,7 +175,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
   }, []);
 
   useEffect(() => {
-    if (error.legislative || error.economic || error.leaderInfo || error.articles) {
+    if (error.legislative || error.economic || error.leaderInfo || error.contents) {
       toast({
         title: "Error",
         description: "Failed to fetch some data. Please try again later.",
@@ -216,11 +216,11 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
               <CardContent className="flex-grow overflow-hidden">
                 <ArticlesView 
                   locationName={locationName} 
-                  articles={data.articles}
-                  isLoading={isLoading.articles}
-                  error={error.articles}
-                  fetchArticles={fetchArticles}
-                  resetArticles={resetArticles}
+                  contents={data.contents}
+                  isLoading={isLoading.contents}
+                  error={error.contents}
+                  fetchContents={fetchContents}
+                  resetContents={resetContents}
                 />
               </CardContent>
             </Card>
