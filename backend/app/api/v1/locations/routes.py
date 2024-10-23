@@ -32,7 +32,7 @@ async def get_location_contents(
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
     search_query: Optional[str] = None,
-    search_type: SearchType = SearchType.SEMANTIC,
+    search_type: SearchType = SearchType.TEXT,
 ):
     try:
         result = await articles.get_contents(
@@ -180,3 +180,4 @@ async def get_geojson_for_article_ids(article_ids: List[str]):
     else:
         logger.error(f"Failed to fetch GeoJSON data: {geojson_data.text}")
         raise HTTPException(status_code=geojson_data.status_code, detail="Unable to fetch GeoJSON data")
+
