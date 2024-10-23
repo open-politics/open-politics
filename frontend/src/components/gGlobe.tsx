@@ -43,7 +43,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
   const flyToLocation = (longitude: number, latitude: number, zoom: number) => {
     if (mapRef.current) {
       // Explicitly type the offset as a tuple [number, number]
-      const offset: [number, number] = [0, -(mapRef.current.getContainer().offsetHeight * 0.4)];
+      const offset: [number, number] = [0, -(mapRef.current.getContainer().offsetHeight * 0.2)];
       
       mapRef.current.flyTo({
         center: [longitude, latitude],
