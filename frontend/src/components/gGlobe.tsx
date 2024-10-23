@@ -438,3 +438,5 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
 };
 
 export default Globe;
+
+

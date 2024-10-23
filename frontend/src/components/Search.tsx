@@ -34,7 +34,7 @@ interface SearchProps {
   setSummary: (summary: string) => void;
   globeRef: React.RefObject<any>;
 }
-import { ArticleCardProps } from '@/components/ContentCard';
+import { ContentCardProps } from '@/components/ContentCard';
 
 const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, globeRef }) => {
   const [inputValue, setInputValue] = useState('');
@@ -60,7 +60,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
     try {
       const [tavilyResults, ssareResults] = await Promise.all([
         fetchTavilySearchResults(query),
-        fetchSSAREArticles(query)
+        fetchSSAREContents(query)
       ]);
 
       const combinedResults = {
@@ -121,9 +121,9 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
     }
   };
   
-  const fetchSSAREArticles = async (query: string) => {
+  const fetchSSAREContents = async (query: string) => {
     try {
-      const response = await axios.get(`/api/v1/search/articles`, {
+      const response = await axios.get(`/api/v1/search/contents`, {
         params: {
           search_query: query,
           limit: 20,
