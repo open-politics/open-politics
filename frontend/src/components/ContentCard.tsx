@@ -92,8 +92,11 @@ export function ContentCard({ id, title, text_content, url, source, insertion_da
             <div className="absolute top-2 right-2" onClick={handleBookmark}>
               {isBookmarked ? <BookMarked className="text-blue-500" /> : <Bookmark className="text-gray-500" />}
             </div>
+            <span className="text-xs text-muted-foreground mb-2">Source: {source}</span>
             <h4 className="mb-2 text-lg font-semibold">{title}</h4>
-            <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{text_content}</p>
+            <p className="text-sm text-muted-foreground mb-2 line-clamp-2 leading-relaxed tracking-wide">
+              {text_content}
+            </p>
             <div className="flex flex-wrap gap-1 mb-2">
               {classification && (
                 <>
@@ -105,28 +108,77 @@ export function ContentCard({ id, title, text_content, url, source, insertion_da
               )}
             </div>
             {classification && (
-              <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground mb-2">
-                <div>
-                  <p>🏛️ Classification: {classification.category}</p>
-                  <p>🔍 Event Type: {classification.event_type}</p>
-                  <p>📊 General Interest: <span className={`font-bold ${getColorClass(classification.general_interest_score, false)}`}>{classification.general_interest_score.toFixed(2)}</span></p>
+              <div className="grid grid-cols-1 gap-4 text-xs text-muted-foreground mb-2">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-3 border hover:border-blue-500 transition-colors">
+                    <p className="text-sm font-semibold">🔍 Event Type: {classification.event_type}</p>
+                  </div>
+                  <div className="p-3 border hover:border-blue-500 transition-colors">
+                    <p className="text-sm font-semibold">🏛️ Classification: {classification.category}</p>
+                  </div>
                 </div>
-                <div>
-                  <p>🚫 Spam Score: <span className={`font-bold ${getColorClass(classification.spam_score, true)}`}>{classification.spam_score.toFixed(2)}</span></p>
-                  <p>🎣 Clickbait Score: <span className={`font-bold ${getColorClass(classification.clickbait_score, true)}`}>{classification.clickbait_score.toFixed(2)}</span></p>
-                  <p>🛑 Fake News Score: <span className={`font-bold ${getColorClass(classification.fake_news_score, true)}`}>{classification.fake_news_score.toFixed(2)}</span></p>
-                  <p>😂 Satire Score: <span className={`font-bold ${getColorClass(classification.satire_score, true)}`}>{classification.satire_score.toFixed(2)}</span></p>
-                </div>
-                <div>
-                  <p>🌍 Geopolitical Relevance: <span className={`font-bold ${getColorClass(classification.geopolitical_relevance, false)}`}>{classification.geopolitical_relevance.toFixed(2)}</span></p>
-                  <p>📜 Legislative Influence: <span className={`font-bold ${getColorClass(classification.legislative_influence_score, false)}`}>{classification.legislative_influence_score.toFixed(2)}</span></p>
-                  <p>🌐 International Relevance: <span className={`font-bold ${getColorClass(classification.international_relevance_score, false)}`}>{classification.international_relevance_score.toFixed(2)}</span></p>
-                  <p>🗳️ Democratic Process Implications: <span className={`font-bold ${getColorClass(classification.democratic_process_implications_score, false)}`}>{classification.democratic_process_implications_score.toFixed(2)}</span></p>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Political Impact Metrics */}
+                  <div className="p-3 border hover:border-blue-500 transition-colors">
+                    <p className="font-semibold mb-3">Political Impact</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="p-2">
+                        <p className="text-xs text-gray-500">Geopolitical</p>
+                        <p className="text-lg">🌍 <span className={`font-bold ${getColorClass(classification.geopolitical_relevance, false)}`}>
+                          {classification.geopolitical_relevance.toFixed(2)}
+                        </span></p>
+                      </div>
+                      <div className="p-2">
+                        <p className="text-xs text-gray-500">Legislative</p>
+                        <p className="text-lg">📜 <span className={`font-bold ${getColorClass(classification.legislative_influence_score, false)}`}>
+                          {classification.legislative_influence_score.toFixed(2)}
+                        </span></p>
+                      </div>
+                      <div className="p-2">
+                        <p className="text-xs text-gray-500">International</p>
+                        <p className="text-lg">🌐 <span className={`font-bold ${getColorClass(classification.international_relevance_score, false)}`}>
+                          {classification.international_relevance_score.toFixed(2)}
+                        </span></p>
+                      </div>
+                      <div className="p-2">
+                        <p className="text-xs text-gray-500">Democratic</p>
+                        <p className="text-lg">🗳️ <span className={`font-bold ${getColorClass(classification.democratic_process_implications_score, false)}`}>
+                          {classification.democratic_process_implications_score.toFixed(2)}
+                          </span></p>
+                      </div>
+                      <div className="p-2">
+                        <p className="text-xs text-gray-500">Interest</p>
+                        <p className="text-lg">📊 <span className={`font-bold ${getColorClass(classification.general_interest_score, false)}`}>
+                          {classification.general_interest_score.toFixed(2)}
+                        </span></p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Content Quality Metrics */}
+                  <div className="p-3 border hover:border-blue-500 transition-colors">
+                    <p className="font-semibold mb-3">Content Quality</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      
+                      <div className="p-2">
+                        <p className="text-xs text-gray-500">Spam</p>
+                        <p className="text-lg">🚫 <span className={`font-bold ${getColorClass(classification.spam_score, true)}`}>
+                          {classification.spam_score.toFixed(2)}
+                        </span></p>
+                      </div>
+                      <div className="p-2">
+                        <p className="text-xs text-gray-500">Clickbait</p>
+                        <p className="text-lg">🎣 <span className={`font-bold ${getColorClass(classification.clickbait_score, true)}`}>
+                          {classification.clickbait_score.toFixed(2)}
+                        </span></p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span>{source}</span>
               {insertion_date && <span>{new Date(insertion_date).toLocaleDateString()}</span>}
             </div>
           </div>
@@ -148,20 +200,81 @@ export function ContentCard({ id, title, text_content, url, source, insertion_da
           </div>
           {classification && (
             <div className="text-sm mb-4">
-              <p>🏛️ Classification: {classification.category}</p>
-              <p>🌍 Geopolitical Relevance: <span className={`font-bold ${getColorClass(classification.geopolitical_relevance, false)}`}>{classification.geopolitical_relevance.toFixed(2)}</span></p>
-              <p>📜 Legislative Influence: <span className={`font-bold ${getColorClass(classification.legislative_influence_score, false)}`}>{classification.legislative_influence_score.toFixed(2)}</span></p>
-              <p>🌐 International Relevance: <span className={`font-bold ${getColorClass(classification.international_relevance_score, false)}`}>{classification.international_relevance_score.toFixed(2)}</span></p>
-              <p>🗳️ Democratic Process Implications: <span className={`font-bold ${getColorClass(classification.democratic_process_implications_score, false)}`}>{classification.democratic_process_implications_score.toFixed(2)}</span></p>
-              <p>📊 General Interest: <span className={`font-bold ${getColorClass(classification.general_interest_score, false)}`}>{classification.general_interest_score.toFixed(2)}</span></p>
-              <p>🚫 Spam Score: <span className={`font-bold ${getColorClass(classification.spam_score, true)}`}>{classification.spam_score.toFixed(2)}</span></p>
-              <p>🎣 Clickbait Score: <span className={`font-bold ${getColorClass(classification.clickbait_score, true)}`}>{classification.clickbait_score.toFixed(2)}</span></p>
-              <p>🛑 Fake News Score: <span className={`font-bold ${getColorClass(classification.fake_news_score, true)}`}>{classification.fake_news_score.toFixed(2)}</span></p>
-              <p>😂 Satire Score: <span className={`font-bold ${getColorClass(classification.satire_score, true)}`}>{classification.satire_score.toFixed(2)}</span></p>
-              <p>🔍 Event Type: {classification.event_type}</p>
+              <div className="grid grid-cols-1 gap-4 text-xs text-muted-foreground mb-2">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-3 border hover:border-blue-500 transition-colors">
+                    <p className="text-sm font-semibold">🔍 Event Type: {classification.event_type}</p>
+                  </div>
+                  <div className="p-3 border hover:border-blue-500 transition-colors">
+                    <p className="text-sm font-semibold">🏛️ Classification: {classification.category}</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Political Impact Metrics */}
+                  <div className="p-3 border hover:border-blue-500 transition-colors">
+                    <p className="font-semibold mb-3">Political Impact</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="p-2">
+                        <p className="text-xs text-gray-500">Geopolitical</p>
+                        <p className="text-lg">🌍 <span className={`font-bold ${getColorClass(classification.geopolitical_relevance, false)}`}>
+                          {classification.geopolitical_relevance.toFixed(2)}
+                        </span></p>
+                      </div>
+                      <div className="p-2">
+                        <p className="text-xs text-gray-500">Legislative</p>
+                        <p className="text-lg">📜 <span className={`font-bold ${getColorClass(classification.legislative_influence_score, false)}`}>
+                          {classification.legislative_influence_score.toFixed(2)}
+                        </span></p>
+                      </div>
+                      <div className="p-2">
+                        <p className="text-xs text-gray-500">International</p>
+                        <p className="text-lg">🌐 <span className={`font-bold ${getColorClass(classification.international_relevance_score, false)}`}>
+                          {classification.international_relevance_score.toFixed(2)}
+                        </span></p>
+                      </div>
+                      <div className="p-2">
+                        <p className="text-xs text-gray-500">Democratic</p>
+                        <p className="text-lg">🗳️ <span className={`font-bold ${getColorClass(classification.democratic_process_implications_score, false)}`}>
+                          {classification.democratic_process_implications_score.toFixed(2)}
+                          </span></p>
+                      </div>
+                      <div className="p-2">
+                        <p className="text-xs text-gray-500">Interest</p>
+                        <p className="text-lg">📊 <span className={`font-bold ${getColorClass(classification.general_interest_score, false)}`}>
+                          {classification.general_interest_score.toFixed(2)}
+                        </span></p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Content Quality Metrics */}
+                  <div className="p-3 border hover:border-blue-500 transition-colors">
+                    <p className="font-semibold mb-3">Content Quality</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      
+                      <div className="p-2">
+                        <p className="text-xs text-gray-500">Spam</p>
+                        <p className="text-lg">🚫 <span className={`font-bold ${getColorClass(classification.spam_score, true)}`}>
+                          {classification.spam_score.toFixed(2)}
+                        </span></p>
+                      </div>
+                      <div className="p-2">
+                        <p className="text-xs text-gray-500">Clickbait</p>
+                        <p className="text-lg">🎣 <span className={`font-bold ${getColorClass(classification.clickbait_score, true)}`}>
+                          {classification.clickbait_score.toFixed(2)}
+                        </span></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
-          <p className="text-sm mb-4">{text_content}</p>
+          <p className="text-sm mb-4 leading-relaxed tracking-wide whitespace-pre-line">
+            {text_content.slice(0, 450)}
+            {text_content.length > 450 && '...'}
+          </p>
           <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">
             Read full article
           </a>

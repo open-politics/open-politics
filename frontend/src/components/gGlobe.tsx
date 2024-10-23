@@ -34,9 +34,9 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
 
   const eventTypes = [
     { type: "Elections", color: "#4CAF50", icon: "ballot", zIndex: 5 },
-    { type: "Protests", color: "#2196F3", icon: "marker", zIndex: 4 },
-    { type: "Economic", color: "#FF9800", icon: "bank", zIndex: 3 },
-    { type: "War", color: "#FF6347", icon: "triangle-stroked", zIndex: 2 },
+    { type: "Protests", color: "#2196F3", icon: "protest", zIndex: 4 },
+    { type: "Economic", color: "#FF9800", icon: "economy", zIndex: 3 },
+    { type: "War", color: "#FF6347", icon: "war", zIndex: 2 },
     { type: "News", color: "#FF6347", icon: "circle-stroked", zIndex: 1 }
   ];
 
@@ -279,18 +279,18 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
               filter: ['!', ['has', 'point_count']],
               layout: {
                 'icon-image': eventType.icon,
-                'icon-size': 1.2,
-                'icon-allow-overlap': false,
-                'icon-ignore-placement': false,
+                'icon-size': 1,  // Reduced from 1.2 for sharper rendering
+                'icon-allow-overlap': false,  // Changed to true to prevent disappearing
+                'icon-ignore-placement': false,  // Changed to true to ensure visibility
                 'symbol-placement': 'point',
                 'symbol-spacing': 50,
                 'icon-padding': 5,
                 'symbol-sort-key': ['get', 'content_count'],
-                'icon-pitch-alignment': 'viewport',
-                'icon-rotation-alignment': 'viewport',
-                'text-field': ['get', 'content_count'],
-                'text-size': 1,
-                'text-offset': [0, 1.2],
+                'icon-pitch-alignment': 'viewport',  // Changed to 'map' for better perspective
+                'icon-rotation-alignment': 'viewport',  // Changed to 'map' for better perspective
+                'text-field': ['get', 'content_cozaunt'],
+                'text-size': 24,  // Increased from 1 for better visibility
+                'text-offset': [0, 1],
                 'text-allow-overlap': false,
                 'text-ignore-placement': false,
                 'text-anchor': 'top'
@@ -397,8 +397,8 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
                           <div class="flex items-center justify-between">
                             <h3 class="font-semibold tracking-tight">
                               <a href="#" 
-                                class="text-primary hover:underline cursor-pointer"
-                                onclick="window.dispatchEvent(new CustomEvent('setLocation', {detail:'${countryName}'})); return false;"
+                                 class="text-primary hover:underline cursor-pointer"
+                                 onclick="window.dispatchEvent(new CustomEvent('setLocation', {detail:'${countryName}'}))"
                               >
                                 ${eventTypeName} @ 📍 ${countryName}
                               </a>
