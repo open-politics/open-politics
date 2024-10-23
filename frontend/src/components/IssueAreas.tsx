@@ -200,7 +200,9 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
           <TabsTrigger value="articles" className="scroll-snap-align-start">Articles</TabsTrigger>
           <TabsTrigger value="economic-data" className="scroll-snap-align-start" onClick={handleFetchEconomicData}>Economic Data</TabsTrigger>
           <TabsTrigger value="leader-info" className="scroll-snap-align-start">Entities</TabsTrigger>
-          <TabsTrigger value="legislative" className="scroll-snap-align-start">Legislative</TabsTrigger>
+          {locationName.toLowerCase() === 'germany' && (
+            <TabsTrigger value="legislative" className="scroll-snap-align-start">Legislative</TabsTrigger>
+          )}
           <TabsTrigger value="wikipedia" className="scroll-snap-align-start">Wikipedia</TabsTrigger>
           <TabsTrigger value="search-results" className="scroll-snap-align-start">Summary</TabsTrigger>
         </TabsList>
@@ -225,61 +227,63 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
               </CardContent>
             </Card>
           </TabsContent>
-          <TabsContent value="legislative">
-            <Card>
-              <CardHeader>
-                <CardTitle>Legislation for {locationName}</CardTitle>
-                <CardDescription>
-                  Recent legislative activities and proposals.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex space-x-2">
-                    <Input
-                      placeholder="Search legislation..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="flex-grow"
-                    />
-                    <Select value={statusFilter} onValueChange={setStatusFilter}>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Filter by status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Statuses</SelectItem>
-                        <SelectItem value="red">Red</SelectItem>
-                        <SelectItem value="yellow">Yellow</SelectItem>
-                        <SelectItem value="green">Green</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Select value={dateFilter} onValueChange={setDateFilter}>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Filter by date" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Time</SelectItem>
-                        <SelectItem value="last30">Last 30 Days</SelectItem>
-                        <SelectItem value="last90">Last 90 Days</SelectItem>
-                      </SelectContent>
-                    </Select>
+          {locationName.toLowerCase() === 'germany' && (
+            <TabsContent value="legislative">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Legislation for {locationName}</CardTitle>
+                  <CardDescription>
+                    Recent legislative activities and proposals.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex space-x-2">
+                      <Input
+                        placeholder="Search legislation..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="flex-grow"
+                      />
+                      <Select value={statusFilter} onValueChange={setStatusFilter}>
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="Filter by status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Statuses</SelectItem>
+                          <SelectItem value="red">Red</SelectItem>
+                          <SelectItem value="yellow">Yellow</SelectItem>
+                          <SelectItem value="green">Green</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Select value={dateFilter} onValueChange={setDateFilter}>
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="Filter by date" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Time</SelectItem>
+                          <SelectItem value="last30">Last 30 Days</SelectItem>
+                          <SelectItem value="last90">Last 90 Days</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {isLoading.legislative || isLoading.entities || isLoading.leaderInfo || isLoading.articles ? (
+                       <div className="flex flex-col items-center justify-center h-full">
+                         <DotLoader color="#000" size={50} />
+                         <p className="mt-4">Legislative data is loading...</p>
+                       </div>
+                    ) : error.legislative ? (
+                      <p>No legislative data available for {locationName}. Currently only available for Germany.</p>
+                    ) : filteredLegislativeData.length > 0 ? (
+                      <DataTable columns={legislationColumns} data={filteredLegislativeData} />
+                    ) : (
+                      <p>No legislative data available for {locationName}. Currently only available for Germany.</p>
+                    )}
                   </div>
-                  {isLoading.legislative || isLoading.entities || isLoading.leaderInfo || isLoading.articles ? (
-                     <div className="flex flex-col items-center justify-center h-full">
-                       <DotLoader color="#000" size={50} />
-                       <p className="mt-4">Legislative data is loading...</p>
-                     </div>
-                  ) : error.legislative ? (
-                    <p>No legislative data available for {locationName}. Currently only available for Germany.</p>
-                  ) : filteredLegislativeData.length > 0 ? (
-                    <DataTable columns={legislationColumns} data={filteredLegislativeData} />
-                  ) : (
-                    <p>No legislative data available for {locationName}. Currently only available for Germany.</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
           <TabsContent value="economic-data">
             <Card>
               <CardHeader>

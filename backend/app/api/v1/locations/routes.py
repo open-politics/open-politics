@@ -186,11 +186,11 @@ async def get_coordinates(location: str, language: str = "en"):
         logger.info(f"Result: {result.json()}")
         if result.status_code == 200:
             data = result.json()
-            coordinates = data.get('coordinates')
-            if coordinates:
+            coordinates = data.get('coordinates', {}).get('coordinates')
+            if coordinates and len(coordinates) == 2:
                 return {"location": location, "longitude": coordinates[0], "latitude": coordinates[1]}
-        else:
-            raise HTTPException(status_code=404, detail="Coordinates not found for the given location")
+        
+        raise HTTPException(status_code=404, detail="Coordinates not found for the given location")
     except Exception as e:
         logger.error(f"Error fetching coordinates for location {location}: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")

@@ -178,7 +178,7 @@ const Desk: React.FC = () => {
               transition={{ duration: 0.5 }}
             >
               <motion.div
-                className={`absolute h-1/2 p-4 ${hasClicked || isVisible ? 'w-1/2' : 'w-full'}`}
+                className={`absolute h-2/3 p-4 ${hasClicked || isVisible ? 'w-1/2' : 'w-full'}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
@@ -196,7 +196,7 @@ const Desk: React.FC = () => {
                 />
               </motion.div>
               <motion.div
-                className={`absolute ${isMobile ? 'top-1/2 transform -translate-x-1/2 w-full' : `${hasClicked && isVisible ? 'top-1/2  left-2 transform -translate-x-1/2 -translate-y-1/2 w-1/2' : 'top-1/2  left-1/4 transform -translate-x-1/2 -translate-y-1/2 w-1/2'}`} px-0`}
+                className={`absolute ${isMobile ? 'top-2/3 transform -translate-x-1/2 w-full' : `${hasClicked && isVisible ? 'top-2/3  left-2 transform -translate-x-1/2 -translate-y-1/2 w-1/2' : 'top-2/3  left-1/4 transform -translate-x-1/2 -translate-y-1/2 w-1/2'}`} px-0`}
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}

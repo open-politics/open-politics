@@ -10,6 +10,7 @@ import { MapPin } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapLegend from './MapLegend'; 
 import { useCoordinatesStore } from '@/store/useCoordinatesStore'; 
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 
 interface GlobeProps {
@@ -29,6 +30,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
   const [hoveredFeature, setHoveredFeature] = useState<any>(null);
   const { latitude, longitude } = useCoordinatesStore();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [lastClickedCluster, setLastClickedCluster] = useState<string | null>(null);
 
   const eventTypes = [
     { type: "Elections", color: "#4CAF50", icon: "ballot", zIndex: 5 },
@@ -40,36 +42,15 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
 
   const flyToLocation = (longitude: number, latitude: number, zoom: number) => {
     if (mapRef.current) {
+      // Explicitly type the offset as a tuple [number, number]
+      const offset: [number, number] = [0, -(mapRef.current.getContainer().offsetHeight * 0.4)];
+      
       mapRef.current.flyTo({
         center: [longitude, latitude],
         zoom: zoom,
-        essential: true // this animation is considered essential with respect to prefers-reduced-motion
+        offset: offset,
+        essential: true
       });
-
-      const handleMoveEnd = () => {
-        // Query the map for the country feature at the center
-        const center = mapRef.current?.getCenter();
-        if (center) {
-          const features = mapRef.current?.queryRenderedFeatures(
-            [mapRef.current.getContainer().clientWidth / 2, mapRef.current.getContainer().clientHeight / 2],
-            { layers: ['country-boundaries'] } // Ensure this layer exists in your style
-          );
-
-          if (features && features.length > 0) {
-            const feature = features[0];
-            const countryName = feature.properties?.name_en; // Adjust property name as needed
-
-            if (countryName) {
-              onLocationClick(countryName);
-            }
-          }
-        }
-        // Remove the event listener after handling
-        mapRef.current?.off('moveend', handleMoveEnd);
-      };
-
-      // Add the moveend listener
-      mapRef.current.on('moveend', handleMoveEnd);
     }
   };
 
@@ -77,36 +58,8 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
     const coordinates = await geocodeLocation(inputLocation);
     if (coordinates) {
       const [longitude, latitude] = coordinates;
-      flyToLocation(longitude, latitude, 6);
-
-      if (mapRef.current) {
-        const handleMoveEnd = () => {
-          // Query the map for the country feature at the center
-          const center = mapRef.current?.getCenter();
-          if (center) {
-            const features = mapRef.current?.queryRenderedFeatures(
-              [mapRef.current.getContainer().clientWidth / 2, mapRef.current.getContainer().clientHeight / 2],
-              { layers: ['country-boundaries'] } // Ensure this layer exists in your style
-            );
-
-            if (features && features.length > 0) {
-              const feature = features[0];
-              const countryName = feature.properties?.name_en; // Adjust property name as needed
-              const locationName = feature.properties?.name;
-
-              if (countryName) {
-                onLocationClick(locationName);
-
-              }
-            }
-          }
-          // Remove the event listener after handling
-          mapRef.current?.off('moveend', handleMoveEnd);
-        };
-
-        // Add the moveend listener
-        mapRef.current.on('moveend', handleMoveEnd);
-      }
+      onLocationClick(inputLocation);  // This will set the location to the searched query
+      flyToLocation(longitude, latitude, 6);  // This will just handle the map movement
     }
   };
 
@@ -128,13 +81,18 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
       mapboxgl.accessToken = 'pk.eyJ1IjoiamltdnciLCJhIjoiY20xd2U3Z2pqMGprdDJqczV2OXJtMTBoayJ9.hlSx0Nc19j_Z1NRgyX7HHg';
     }
 
+    // Add styles to head
+    const styleSheet = document.createElement("style");
+    styleSheet.textContent = styles;
+    document.head.appendChild(styleSheet);
+
     if (!mapRef.current && mapContainerRef.current) {
       mapRef.current = new mapboxgl.Map({
         container: mapContainerRef.current,
         style: 'mapbox://styles/jimvw/cm27kipx600fw01pbg59k9w97', 
         projection: 'globe',
         center: [13.4, 52.5],
-        zoom: isMobile ? 0 : 3
+        zoom: 1
       });
 
       mapRef.current.on('styleimagemissing', (e) => {
@@ -153,23 +111,41 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
 
       mapRef.current.on('load', () => {
         setMapLoaded(true);
-
         
         mapRef.current?.on('click', (e) => {
+          // If we just clicked a cluster or point, don't process the country click
+          if (lastClickedCluster) {
+            setLastClickedCluster(null); // Reset for next click
+            return;
+          }
+
+          // Add a check for clicked points/clusters before processing country click
+          const clickedFeatures = mapRef.current?.queryRenderedFeatures(e.point, {
+            layers: [
+              ...eventTypes.map(type => `clusters-${type.type}`),
+              ...eventTypes.map(type => `unclustered-point-${type.type}`)
+            ]
+          });
+
+          // If we clicked a cluster or point, don't process the country click
+          if (clickedFeatures && clickedFeatures.length > 0) {
+            return;
+          }
+
           const point = e.point;
-          const buffer = 5; // Adjust this value as needed
+          const buffer = 5;
           const bbox: [mapboxgl.PointLike, mapboxgl.PointLike] = [
             [point.x - buffer, point.y - buffer],
             [point.x + buffer, point.y + buffer]
           ];
 
           const features = mapRef.current?.queryRenderedFeatures(bbox, {
-            layers: ['country-boundaries'] // Ensure this layer exists in your style
+            layers: ['country-boundaries']
           });
 
           if (features && features.length > 0) {
             const feature = features[0];
-            const countryName = feature.properties?.name_en; // Adjust property name as needed
+            const countryName = feature.properties?.name_en;
 
             if (countryName) {
               onLocationClick(countryName);
@@ -202,6 +178,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
         mapRef.current = null;
       }
       resizeObserver.disconnect();
+      styleSheet.remove(); // Clean up styles on unmount
     };
   }, []);
 
@@ -263,7 +240,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
               clusterRadius: 100
             });
 
-            // Add clusters layer
+            // Modified clusters layer with improved hover area
             mapRef.current.addLayer({
               id: `clusters-${eventType.type}`,
               type: 'circle',
@@ -274,15 +251,95 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
                 'circle-radius': [
                   'step',
                   ['get', 'point_count'],
-                  30,
-                  100,
-                  40,
-                  750,
-                  50
+                  30,  // Base size
+                  100, // At this point count
+                  40,  // Increase size
+                  750, // At this point count
+                  50   // Max size
                 ],
-                'circle-opacity': 0.6,
-                'circle-stroke-width': 2,
+                'circle-opacity': ['case',
+                  ['boolean', ['feature-state', 'hover'], false],
+                  0.8,  // Hover opacity
+                  0.6   // Default opacity
+                ],
+                'circle-stroke-width': ['case',
+                  ['boolean', ['feature-state', 'hover'], false],
+                  3,    // Hover stroke width
+                  2     // Default stroke width
+                ],
                 'circle-stroke-color': '#fff'
+              }
+            });
+
+            // Modified unclustered point layer with better positioning
+            mapRef.current.addLayer({
+              id: `unclustered-point-${eventType.type}`,
+              type: 'symbol',
+              source: `geojson-events-${eventType.type}`,
+              filter: ['!', ['has', 'point_count']],
+              layout: {
+                'icon-image': eventType.icon,
+                'icon-size': ['interpolate', ['linear'], ['zoom'],
+                  3, 0.5,  // Smaller at low zoom
+                  10, 1    // Full size at high zoom
+                ],
+                'icon-allow-overlap': false,
+                'icon-ignore-placement': false,
+                'symbol-placement': 'point',
+                'symbol-spacing': 50,
+                'icon-padding': 5,
+                'symbol-sort-key': ['get', 'content_count'],
+                'icon-pitch-alignment': 'viewport',
+                'icon-rotation-alignment': 'viewport',
+                'text-field': ['get', 'content_count'],
+                'text-size': ['interpolate', ['linear'], ['zoom'],
+                  3, 8,    // Smaller text at low zoom
+                  10, 12   // Larger text at high zoom
+                ],
+                'text-offset': [0, 1.2],
+                'text-allow-overlap': false,
+                'text-ignore-placement': false,
+                'text-anchor': 'top'
+              },
+              paint: {
+                'text-color': eventType.color,
+                'text-halo-color': '#fff',
+                'text-halo-width': 1
+              }
+            });
+
+            // Track hover states
+            let hoveredStateId: string | number | null = null;
+
+            // Improved cluster hover handling
+            mapRef.current.on('mouseenter', `clusters-${eventType.type}`, (e) => {
+              if (mapRef.current && e.features && e.features[0]) {
+                mapRef.current.getCanvas().style.cursor = 'pointer';
+                
+                if (hoveredStateId !== null) {
+                  mapRef.current.setFeatureState(
+                    { source: `geojson-events-${eventType.type}`, id: hoveredStateId },
+                    { hover: false }
+                  );
+                }
+                
+                hoveredStateId = e.features[0].id;
+                
+                mapRef.current.setFeatureState(
+                  { source: `geojson-events-${eventType.type}`, id: hoveredStateId },
+                  { hover: true }
+                );
+              }
+            });
+
+            mapRef.current.on('mouseleave', `clusters-${eventType.type}`, () => {
+              if (mapRef.current && hoveredStateId !== null) {
+                mapRef.current.getCanvas().style.cursor = '';
+                mapRef.current.setFeatureState(
+                  { source: `geojson-events-${eventType.type}`, id: hoveredStateId },
+                  { hover: false }
+                );
+                hoveredStateId = null;
               }
             });
 
@@ -299,39 +356,6 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
               },
               paint: {
                 'text-color': '#ffffff'
-              }
-            });
-
-            // Add unclustered point layer
-            mapRef.current.addLayer({
-              id: `unclustered-point-${eventType.type}`,
-              type: 'symbol',
-              source: `geojson-events-${eventType.type}`,
-              filter: ['!', ['has', 'point_count']],
-              layout: {
-                'icon-image': eventType.icon,
-                'icon-size': 1,
-                'icon-allow-overlap': true,
-                'icon-ignore-placement': false,
-                'symbol-placement': 'point',
-                'symbol-spacing': 10,
-                'icon-padding': 2,
-                // Remove icon-offset as we'll handle positioning differently
-                'symbol-sort-key': ['get', 'content_count'],
-                'icon-pitch-alignment': 'viewport',
-                'icon-rotation-alignment': 'viewport',
-                // Add text field for better identification
-                'text-field': ['get', 'content_count'],
-                'text-size': 10,
-                'text-offset': [0, 1],
-                'text-allow-overlap': false,
-                'text-ignore-placement': false,
-                'text-anchor': 'top'
-              },
-              paint: {
-                'text-color': eventType.color,
-                'text-halo-color': '#fff',
-                'text-halo-width': 1
               }
             });
 
@@ -375,39 +399,60 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
                   let popupContent = '';
                   try {
                     popupContent = `
-                      <div class="custom-popup" style="color: black; background-color: white; padding: 8px; border-radius: 5px;">
-                        <div style="margin-bottom: 8px;">
-                          <strong>${eventTypeName} @ ${countryName}</strong>
-                          <br/>
-                          ${contentCount} items
-                        </div>
-                        <div style="max-height: 200px; overflow-y: auto; font-size: 0.9em;">
-                          ${validContents.length > 0 
-                            ? validContents.map(content => `
-                                <div style="padding: 4px 0; border-bottom: 1px solid #eee;">
-                                  <a href="${content.url}" target="_blank" style="color: #2563eb; text-decoration: none; hover:text-decoration: underline;">
-                                    ${content.title}
-                                  </a>
-                                  <div style="font-size: 0.8em; color: #666;">
-                                    ${new Date(content.insertion_date).toLocaleDateString()}
-                                    ${content.source ? `<span style="margin-left: 4px;">(${content.source})</span>` : ''}
-                                  </div>
-                                </div>
-                              `).join('')
-                            : '<div>No content available</div>'
-                          }
+                      <div class="w-[300px] p-0 bg-transparent">
+                        <div class="rounded-xl border bg-background text-foreground shadow-lg">
+                          <div class="flex flex-col space-y-1.5 p-4">
+                            <div class="flex items-center justify-between">
+                              <h3 class="font-semibold tracking-tight">
+                                ${eventTypeName} @ ${countryName}
+                              </h3>
+                              <span class="text-sm text-muted-foreground">
+                                ${contentCount} items
+                              </span>
+                            </div>
+                          </div>
+                          <div class="p-4 pt-0">
+                            <div class="max-h-[200px] overflow-y-auto custom-scrollbar">
+                              ${validContents.length > 0 
+                                ? validContents.map(content => `
+                                    <div class="mb-3 last:mb-0 border-b border-border pb-2 last:border-0 last:pb-0">
+                                      <a href="${content.url}" 
+                                         target="_blank" 
+                                         class="text-sm text-primary hover:underline block">
+                                        ${content.title}
+                                      </a>
+                                      <div class="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                                        <span>${new Date(content.insertion_date).toLocaleDateString()}</span>
+                                        ${content.source ? `
+                                          <span class="inline-flex items-center">
+                                            <span class="mx-1">•</span>
+                                            ${content.source}
+                                          </span>
+                                        ` : ''}
+                                      </div>
+                                    </div>
+                                  `).join('')
+                                : '<div class="text-sm text-muted-foreground py-2">No content available</div>'
+                              }
+                            </div>
+                          </div>
                         </div>
                       </div>
                     `;
                   } catch (error) {
                     console.error('Error creating popup:', error);
-                    popupContent = '<div>Error loading content</div>';
+                    popupContent = `
+                      <div class="p-4 bg-destructive text-destructive-foreground rounded-lg">
+                        Error loading content
+                      </div>
+                    `;
                   }
 
                   new mapboxgl.Popup({ 
                     closeButton: true,
-                    maxWidth: '300px',
-                    offset: [0, -15 * eventTypes.findIndex(et => et.type === eventType.type)]
+                    maxWidth: 'none',
+                    offset: [0, -15 * eventTypes.findIndex(et => et.type === eventType.type)],
+                    className: 'custom-popup-container'
                   })
                     .setLngLat(feature.geometry.coordinates)
                     .setHTML(popupContent)
@@ -465,9 +510,14 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
                       if (err) return;
 
                       const coordinates = (features[0].geometry as any).coordinates;
+                      // Explicitly type the offset as a tuple
+                      const offset: [number, number] = [0, -(mapRef.current!.getContainer().offsetHeight * 0.2)];
+                      
                       mapRef.current?.flyTo({
                         center: coordinates,
-                        zoom: zoom
+                        zoom: zoom,
+                        offset: offset,
+                        essential: true
                       });
                     }
                   );
@@ -528,39 +578,60 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
                   let popupContent = '';
                   try {
                     popupContent = `
-                      <div class="custom-popup" style="color: black; background-color: white; padding: 8px; border-radius: 5px;">
-                        <div style="margin-bottom: 8px;">
-                          <strong>${eventTypeName} @ ${countryName}</strong>
-                          <br/>
-                          ${contentCount} items
-                        </div>
-                        <div style="max-height: 200px; overflow-y: auto; font-size: 0.9em;">
-                          ${validContents.length > 0 
-                            ? validContents.map(content => `
-                                <div style="padding: 4px 0; border-bottom: 1px solid #eee;">
-                                  <a href="${content.url}" target="_blank" style="color: #2563eb; text-decoration: none; hover:text-decoration: underline;">
-                                    ${content.title}
-                                  </a>
-                                  <div style="font-size: 0.8em; color: #666;">
-                                    ${new Date(content.insertion_date).toLocaleDateString()}
-                                    ${content.source ? `<span style="margin-left: 4px;">(${content.source})</span>` : ''}
-                                  </div>
-                                </div>
-                              `).join('')
-                            : '<div>No content available</div>'
-                          }
+                      <div class="w-[300px] p-0 bg-transparent">
+                        <div class="rounded-xl border bg-background text-foreground shadow-lg">
+                          <div class="flex flex-col space-y-1.5 p-4">
+                            <div class="flex items-center justify-between">
+                              <h3 class="font-semibold tracking-tight">
+                                ${eventTypeName} @ ${countryName}
+                              </h3>
+                              <span class="text-sm text-muted-foreground">
+                                ${contentCount} items
+                              </span>
+                            </div>
+                          </div>
+                          <div class="p-4 pt-0">
+                            <div class="max-h-[200px] overflow-y-auto custom-scrollbar">
+                              ${validContents.length > 0 
+                                ? validContents.map(content => `
+                                    <div class="mb-3 last:mb-0 border-b border-border pb-2 last:border-0 last:pb-0">
+                                      <a href="${content.url}" 
+                                         target="_blank" 
+                                         class="text-sm text-primary hover:underline block">
+                                        ${content.title}
+                                      </a>
+                                      <div class="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                                        <span>${new Date(content.insertion_date).toLocaleDateString()}</span>
+                                        ${content.source ? `
+                                          <span class="inline-flex items-center">
+                                            <span class="mx-1">•</span>
+                                            ${content.source}
+                                          </span>
+                                        ` : ''}
+                                      </div>
+                                    </div>
+                                  `).join('')
+                                : '<div class="text-sm text-muted-foreground py-2">No content available</div>'
+                              }
+                            </div>
+                          </div>
                         </div>
                       </div>
                     `;
                   } catch (error) {
                     console.error('Error creating popup:', error);
-                    popupContent = '<div>Error loading content</div>';
+                    popupContent = `
+                      <div class="p-4 bg-destructive text-destructive-foreground rounded-lg">
+                        Error loading content
+                      </div>
+                    `;
                   }
 
                   new mapboxgl.Popup({ 
                     closeButton: true,
-                    maxWidth: '300px',
-                    offset: [0, -15 * eventTypes.findIndex(et => et.type === eventType.type)]
+                    maxWidth: 'none',
+                    offset: [0, -15 * eventTypes.findIndex(et => et.type === eventType.type)],
+                    className: 'custom-popup-container'
                   })
                     .setLngLat(feature.geometry.coordinates)
                     .setHTML(popupContent)
@@ -576,6 +647,145 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
                 while (popups.length > 0) {
                   popups[0].remove();
                 }
+              }
+            });
+
+            // Add this to the clusters click handler
+            mapRef.current.on('click', `clusters-${eventType.type}`, async (e) => {
+              if (!mapRef.current) return;
+              
+              const features = mapRef.current.queryRenderedFeatures(e.point, {
+                layers: [`clusters-${eventType.type}`]
+              });
+              
+              if (!features.length || !features[0].properties) return;
+
+              const clusterId = features[0].properties.cluster_id;
+              const clusterKey = `${eventType.type}-${clusterId}`;
+              
+              // Remove the second click behavior that was setting the location
+              setLastClickedCluster(clusterKey);
+
+              const source = mapRef.current.getSource(`geojson-events-${eventType.type}`) as mapboxgl.GeoJSONSource;
+              const coordinates = (features[0].geometry as any).coordinates;
+
+              try {
+                const leaves = await new Promise((resolve, reject) => {
+                  (source as any).getClusterLeaves(
+                    clusterId,
+                    10,
+                    0,
+                    (err: any, features: any) => {
+                      if (err) reject(err);
+                      resolve(features);
+                    }
+                  );
+                });
+
+                // Create and show popup content...
+                const clusterCount = features[0].properties.point_count;
+                
+                let popupContent = `
+                  <div class="w-[350px] p-0 bg-transparent">
+                    <div class="rounded-xl border bg-background text-foreground shadow-lg">
+                      <div class="flex flex-col space-y-1.5 p-4">
+                        <div class="flex items-center justify-between">
+                          <h3 class="font-semibold tracking-tight">
+                            ${eventType.type} Cluster
+                          </h3>
+                          <span class="text-sm text-muted-foreground">
+                            ${clusterCount} locations
+                          </span>
+                        </div>
+                        <div class="text-xs text-muted-foreground">
+                          Click location names to view details
+                        </div>
+                      </div>
+                      <div class="p-4 pt-0">
+                        <div class="max-h-[300px] overflow-y-auto custom-scrollbar">
+                          ${(leaves as any[]).map(feature => {
+                            const contents = feature.properties.contents;
+                            const locationName = feature.properties.name;
+                            const contentCount = feature.properties.content_count;
+                            
+                            return `
+                              <div class="mb-4 last:mb-0">
+                                <div class="flex items-center justify-between mb-2">
+                                  <h4 class="font-medium text-sm">
+                                    <a href="#" 
+                                       class="text-primary hover:underline cursor-pointer"
+                                       onclick="(function(e) {
+                                         e.preventDefault();
+                                         window.dispatchEvent(new CustomEvent('setLocation', { 
+                                           detail: '${locationName}'
+                                         }));
+                                       })(event)"
+                                    >
+                                      ${locationName}
+                                    </a>
+                                  </h4>
+                                  <span class="text-xs text-muted-foreground">${contentCount} items</span>
+                                </div>
+                                ${contents.slice(0, 2).map((content: any) => `
+                                  <div class="ml-2 mb-2 last:mb-0 text-sm">
+                                    <a href="${content.url}" 
+                                       target="_blank" 
+                                       class="text-primary hover:underline block">
+                                      ${content.title}
+                                    </a>
+                                    <div class="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                                      <span>${new Date(content.insertion_date).toLocaleDateString()}</span>
+                                      ${content.source ? `
+                                        <span class="inline-flex items-center">
+                                          <span class="mx-1">•</span>
+                                          ${content.source}
+                                        </span>
+                                      ` : ''}
+                                    </div>
+                                  </div>
+                                `).join('')}
+                                ${contents.length > 2 ? `
+                                  <div class="ml-2 text-xs text-muted-foreground">
+                                    And ${contents.length - 2} more...
+                                  </div>
+                                ` : ''}
+                              </div>
+                            `;
+                          }).join('')}
+                        </div>
+                        ${clusterCount > 10 ? `
+                          <div class="mt-4 pt-4 border-t">
+                            <button 
+                              class="text-sm text-primary hover:underline"
+                              onclick="mapRef.current?.flyTo({
+                                center: [${coordinates[0]}, ${coordinates[1]}],
+                                zoom: mapRef.current.getZoom() + 2
+                              })"
+                            >
+                              Zoom in to see more locations
+                            </button>
+                          </div>
+                        ` : ''}
+                      </div>
+                    </div>
+                  </div>
+                `;
+
+                new mapboxgl.Popup({
+                  closeButton: true,
+                  maxWidth: 'none',
+                  className: 'custom-popup-container cluster-popup'
+                })
+                  .setLngLat(coordinates)
+                  .setHTML(popupContent)
+                  .addTo(mapRef.current)
+                  .on('close', () => {
+                    // Reset last clicked cluster when popup is closed
+                    setLastClickedCluster(null);
+                  });
+
+              } catch (error) {
+                console.error('Error getting cluster information:', error);
               }
             });
           }
@@ -629,6 +839,75 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
       }
     };
   }, []);
+
+  // Add this effect to handle the custom event
+  useEffect(() => {
+    const handleSetLocation = (e: CustomEvent) => {
+      onLocationClick(e.detail);
+    };
+
+    window.addEventListener('setLocation', handleSetLocation as EventListener);
+
+    return () => {
+      window.removeEventListener('setLocation', handleSetLocation as EventListener);
+    };
+  }, [onLocationClick]);
+
+  const styles = `
+      .custom-popup-container .mapboxgl-popup-content {
+        padding: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        border-radius: 0.75rem;
+        max-height: 12re;
+      }
+
+      .custom-popup-container .mapboxgl-popup-tip {
+        display: none !important;
+      }
+
+      .custom-popup-container .mapboxgl-popup-close-button {
+        padding: 0.5rem;
+        right: 0.5rem;
+        top: 0.5rem;
+        z-index: 10;
+        color: var(--text-muted);
+        transition: color 0.2s;
+        background: none !important;
+      }
+
+      .custom-popup-container .mapboxgl-popup-close-button:hover {
+        background: none !important;
+        color: var(--text-foreground);
+      }
+
+      .custom-scrollbar {
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) transparent;
+      }
+
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 0.5rem;
+      }
+
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: var(--scrollbar-thumb);
+        border-radius: 9999px;
+      }
+
+      .cluster-popup .mapboxgl-popup-content {
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+
+      .cluster-popup {
+        z-index: 5;
+      }
+  `;
 
   return (
     <div style={{ position: 'relative', height: '100%', width: '100%' }}>
