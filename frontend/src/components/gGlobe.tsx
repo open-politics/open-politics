@@ -538,108 +538,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
               }
             });
 
-            // Add hover effects for unclustered points
-            mapRef.current.on('mouseenter', `unclustered-point-${eventType.type}`, (e) => {
-              if (mapRef.current) {
-                mapRef.current.getCanvas().style.cursor = 'pointer';
-                
-                const features = mapRef.current.queryRenderedFeatures(e.point, {
-                  layers: [`unclustered-point-${eventType.type}`]
-                });
-
-                if (features && features.length > 0) {
-                  const feature = features[0];
-                  console.log('Feature properties:', feature.properties); // Debug log
-                  
-                  const countryName = feature.properties?.name;
-                  const eventTypeName = eventType.type;
-                  const contentCount = feature.properties?.content_count || 0;
-                  
-                  let contents = [];
-                  try {
-                    contents = feature.properties?.contents || [];
-                    if (typeof contents === 'string') {
-                      contents = JSON.parse(contents);
-                    }
-                    console.log('Parsed contents:', contents); // Debug log
-                  } catch (error) {
-                    console.error('Error parsing contents:', error);
-                  }
-
-                  // Filter valid contents
-                  const validContents = Array.isArray(contents) 
-                    ? contents.filter(content => 
-                        content?.url && 
-                        content?.title && 
-                        content?.insertion_date
-                      )
-                    : [];
-
-                  let popupContent = '';
-                  try {
-                    popupContent = `
-                      <div class="w-[300px] p-0 bg-transparent">
-                        <div class="rounded-xl border bg-background text-foreground shadow-lg">
-                          <div class="flex flex-col space-y-1.5 p-4">
-                            <div class="flex items-center justify-between">
-                              <h3 class="font-semibold tracking-tight">
-                                ${eventTypeName} @ ${countryName}
-                              </h3>
-                              <span class="text-sm text-muted-foreground">
-                                ${contentCount} items
-                              </span>
-                            </div>
-                          </div>
-                          <div class="p-4 pt-0">
-                            <div class="max-h-[200px] overflow-y-auto custom-scrollbar">
-                              ${validContents.length > 0 
-                                ? validContents.map(content => `
-                                    <div class="mb-3 last:mb-0 border-b border-border pb-2 last:border-0 last:pb-0">
-                                      <a href="${content.url}" 
-                                         target="_blank" 
-                                         class="text-sm text-primary hover:underline block">
-                                        ${content.title}
-                                      </a>
-                                      <div class="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                                        <span>${new Date(content.insertion_date).toLocaleDateString()}</span>
-                                        ${content.source ? `
-                                          <span class="inline-flex items-center">
-                                            <span class="mx-1">•</span>
-                                            ${content.source}
-                                          </span>
-                                        ` : ''}
-                                      </div>
-                                    </div>
-                                  `).join('')
-                                : '<div class="text-sm text-muted-foreground py-2">No content available</div>'
-                              }
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    `;
-                  } catch (error) {
-                    console.error('Error creating popup:', error);
-                    popupContent = `
-                      <div class="p-4 bg-destructive text-destructive-foreground rounded-lg">
-                        Error loading content
-                      </div>
-                    `;
-                  }
-
-                  new mapboxgl.Popup({ 
-                    closeButton: true,
-                    maxWidth: 'none',
-                    offset: [0, -15 * eventTypes.findIndex(et => et.type === eventType.type)],
-                    className: 'custom-popup-container'
-                  })
-                    .setLngLat(feature.geometry.coordinates)
-                    .setHTML(popupContent)
-                    .addTo(mapRef.current);
-                }
-              }
-            });
-
+      
             mapRef.current.on('mouseleave', `unclustered-point-${eventType.type}`, () => {
               if (mapRef.current) {
                 mapRef.current.getCanvas().style.cursor = '';
@@ -714,19 +613,14 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
                                   <h4 class="font-medium text-sm">
                                     <a href="#" 
                                        class="text-primary hover:underline cursor-pointer"
-                                       onclick="(function(e) {
-                                         e.preventDefault();
-                                         window.dispatchEvent(new CustomEvent('setLocation', { 
-                                           detail: '${locationName}'
-                                         }));
-                                       })(event)"
+                                       onclick="window.dispatchEvent(new CustomEvent('setLocation', {detail:'${locationName}'}))"
                                     >
-                                      ${locationName}
+                                      📍${locationName}
                                     </a>
                                   </h4>
                                   <span class="text-xs text-muted-foreground">${contentCount} items</span>
                                 </div>
-                                ${contents.slice(0, 2).map((content: any) => `
+                                ${Array.isArray(contents) ? contents.slice(0, 2).map(content => `
                                   <div class="ml-2 mb-2 last:mb-0 text-sm">
                                     <a href="${content.url}" 
                                        target="_blank" 
@@ -743,8 +637,8 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
                                       ` : ''}
                                     </div>
                                   </div>
-                                `).join('')}
-                                ${contents.length > 2 ? `
+                                `).join('') : ''}
+                                ${Array.isArray(contents) && contents.length > 2 ? `
                                   <div class="ml-2 text-xs text-muted-foreground">
                                     And ${contents.length - 2} more...
                                   </div>
@@ -753,14 +647,11 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
                             `;
                           }).join('')}
                         </div>
-                        ${clusterCount > 10 ? `
+                        ${clusterCount > 5 ? `
                           <div class="mt-4 pt-4 border-t">
                             <button 
                               class="text-sm text-primary hover:underline"
-                              onclick="mapRef.current?.flyTo({
-                                center: [${coordinates[0]}, ${coordinates[1]}],
-                                zoom: mapRef.current.getZoom() + 2
-                              })"
+                              onclick="window.dispatchEvent(new CustomEvent('zoomToCluster', {detail:{lng:${coordinates[0]},lat:${coordinates[1]},zoom:6}}))"
                             >
                               Zoom in to see more locations
                             </button>
@@ -852,6 +743,25 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
       window.removeEventListener('setLocation', handleSetLocation as EventListener);
     };
   }, [onLocationClick]);
+
+  // Add this effect to handle the zoom event
+  useEffect(() => {
+    const handleZoomToCluster = (e: CustomEvent) => {
+      if (mapRef.current) {
+        const { lng, lat, zoom } = e.detail;
+        mapRef.current.flyTo({
+          center: [lng, lat],
+          zoom: zoom
+        });
+      }
+    };
+
+    window.addEventListener('zoomToCluster', handleZoomToCluster as EventListener);
+
+    return () => {
+      window.removeEventListener('zoomToCluster', handleZoomToCluster as EventListener);
+    };
+  }, []);
 
   const styles = `
       .custom-popup-container .mapboxgl-popup-content {
