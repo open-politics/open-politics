@@ -17,8 +17,8 @@ class SearchType(str, Enum):
     SEMANTIC = "semantic"
     STRUCTURED = "structured"
 
-@router.get("/articles", response_model=None)
-async def get_articles(
+@router.get("/contents", response_model=None)
+async def get_contents(
     search_query: Optional[str] = None,
     search_type: SearchType = SearchType.SEMANTIC,
     skip: int = Query(0, ge=0),
@@ -51,9 +51,17 @@ async def get_articles(
         }
 
         async with httpx.AsyncClient() as client:
-            response = await client.get("http://postgres_service:5434/articles", params=params)
+            response = await client.get("http://postgres_service:5434/contents", params=params)
             response.raise_for_status()
-            return JSONResponse(content=response.json(), status_code=200)
+            data = response.json()
+            
+            # Ensure the response data has the expected structure
+            if not isinstance(data, list):
+                logger.error(f"Unexpected response format: {data}")
+                raise HTTPException(status_code=500, detail="Invalid response format from database service")
+                
+            return JSONResponse(content=data, status_code=200)
+            
     except httpx.HTTPError as e:
         logger.error(f"HTTP error occurred while fetching articles: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch articles")
@@ -140,3 +148,4 @@ async def search_synthesizer(search_query: str):
     class MainLocation(BaseModel):
         "String of main location. Either City, Region or Continent"
         query: str
+

@@ -13,7 +13,7 @@ import { Progress } from '@/components/ui/progress';
 import { createStreamableUI } from 'ai/rsc';
 import { createStreamableValue } from 'ai/rsc';
 import { streamText } from 'ai';
-import { ArticleCardProps } from '@/components/ContentCard';
+import { ContentCardProps } from '@/components/ContentCard';
 
 export interface ServerMessage {
   role: 'user' | 'assistant';
@@ -27,16 +27,20 @@ export interface ClientMessage {
 }
 
 export async function generateSummaryFromArticles(
-  articles: { content: string }[], 
-  ssareArticles: ArticleCardProps[], 
+  articles: ContentCardProps[], 
+  ssareArticles: ContentCardProps[], 
   analysisType: string
 ) {
   const stream = createStreamableValue('');
 
   const combinedDescriptions = [
-    ...articles.map(article => article.content.slice(0, 650)),
-    ...ssareArticles.map(article => article.paragraphs.slice(0, 650))
-  ].join('\n\n');
+    ...articles.map(article => article.content?.slice(0, 650) || ''),
+    ...ssareArticles.map(article => {
+      // Handle different possible content structures
+      const content = article.paragraphs || article.content || '';
+      return typeof content === 'string' ? content.slice(0, 650) : '';
+    })
+  ].filter(Boolean).join('\n\n');  // Filter out empty strings
 
   (async () => {
     const { textStream } = await streamText({
@@ -47,7 +51,7 @@ ${combinedDescriptions}
 
 Your report should follow this structure:
 
-# [Headline: Max 10 words]
+# # [Headline: Max 10 words]
 
 **Key Takeaway:** [1-2 sentences]
 
@@ -71,6 +75,12 @@ Your report should follow this structure:
 - Relevant data/statistics
 
 Use professional language and Markdown for clean formatting. Focus on aspects most relevant to ${analysisType}. Begin immediately with the headline, omitting any introductory phrases.
+
+
+If there is a mismatch between the query intent of the user and the returned data you can use an abbreviated style/ version to tell them what is there in the data but also note your limits to answer there.
+If you can answer the question to a degress that justifies the report style, please do so.
+Be neutral and meta-observant.
+
 `
     });
 

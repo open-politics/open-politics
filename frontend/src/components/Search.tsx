@@ -27,6 +27,7 @@ import SpinningBrainLoader from './SpinningImageLoader';
 import LottieLoader from './LottieLoader';
 import { useLocationData } from '@/hooks/useLocationData';
 import { useCoordinatesStore } from '@/store/useCoordinatesStore'; // Import the store
+import { useSearch } from '@/hooks/useSearch';
 
 interface SearchProps {
   setResults: (results: any) => void;
@@ -40,124 +41,13 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
   const [inputValue, setInputValue] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [analysisType, setAnalysisType] = useState('Conflict Analysis');
-  const [searchType, setSearchType] = useState('semantic');
-  const [includeSummary, setIncludeSummary] = useState(false);
-  const [entities, setEntities] = useState('');
-  const [locations, setLocations] = useState('');
-  const [classificationScores, setClassificationScores] = useState('');
-  const [topics, setTopics] = useState('');
-  const [keywords, setKeywords] = useState('');
-  const [keywordWeights, setKeywordWeights] = useState<{ [key: string]: number }>({});
-  const [excludeKeywords, setExcludeKeywords] = useState<string[]>([]);
 
-  const { fetchCoordinates } = useLocationData(null); // Use the hook to get the function
-  const setCoordinates = useCoordinatesStore((state) => state.setCoordinates);
-
-  const handleSearch = async (query: string) => {
-    setLoading(true);
-    try {
-      const [tavilyResults, ssareResults] = await Promise.all([
-        fetchTavilySearchResults(query),
-        fetchSSAREContents(query)
-      ]);
-
-      const combinedResults = {
-        tavilyResults,
-        ssareResults
-      };
-      setResults(combinedResults);
-
-      if (includeSummary) {
-        const tavilyArticles = tavilyResults.results.map((result: any) => ({ content: result.content }));
-        const { output } = await generateSummaryFromArticles(tavilyArticles, ssareResults, analysisType);
-        let fullSummary = '';
-        for await (const delta of readStreamableValue(output)) {
-          fullSummary += delta;
-          setSummary(fullSummary);
-        }
-      }
-
-      const country = await fetchLocationFromNLQuery(query);
-      if (country) {
-        setCountry(country.country_name);
-      }
-
-      if (country && globeRef.current) {
-        const coordinates = await fetchCoordinates(query);
-        if (coordinates) {
-          setCoordinates(coordinates.longitude, coordinates.latitude); // Set coordinates in the store
-          globeRef.current.zoomToCountry(coordinates.latitude, coordinates.longitude, country.country_name);
-        }
-      }
-    } catch (error) {
-      console.error('Error in handleSearch:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchTavilySearchResults = async (query: string) => {
-    const apiKey = "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";
-    const payload = {
-      api_key: apiKey,
-      query: query,
-      search_depth: "advanced",
-      include_answer: false,
-      include_images: true,
-      include_raw_content: false,
-      max_results: 5,
-      include_domains: [],
-      exclude_domains: []
-    };
-
-    try {
-      const response = await axios.post('https://api.tavily.com/search', payload);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching search results:', error);
-      return null;
-    }
-  };
-  
-  const fetchSSAREContents = async (query: string) => {
-    try {
-      const response = await axios.get(`/api/v1/search/contents`, {
-        params: {
-          search_query: query,
-          limit: 20,
-          skip: 0,
-          search_type: searchType,
-          entities: entities,
-          locations: locations,
-          classification_scores: classificationScores,
-          topics: topics,
-          keyword: keywords
-        }
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching SSARE articles:', error);
-      return [];
-    }
-  };
-
-  const fetchLocationFromNLQuery = async (query: string) => {
-    try {
-      const response = await axios.get(`/api/v1/locations/location_from_query?query=${query}`);
-      if (response.data.error) {
-        return null;
-      }
-      return {
-        country_name: response.data.country_name,
-        longitude: response.data.longitude,
-        latitude: response.data.latitude
-      };
-    } catch (error) {
-      return null;
-    }
-  };
+  const { 
+    search, 
+    loading, 
+    setSearchType, 
+    setAnalysisType 
+  } = useSearch(setResults, setCountry, setSummary, globeRef);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -172,7 +62,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
 
   const handleSuggestionSelect = (query: string) => {
     setInputValue(query);
-    handleSearch(query);
+    search(query);
   };
 
   return (
@@ -181,14 +71,14 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
       <Command className="mx-auto bg-transparent border border-blue-200 p-4 rounded-xl">
         <div className="relative">
           <CommandInput
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch(inputValue)}
+            onKeyDown={(e) => e.key === 'Enter' && search(inputValue)}
             value={inputValue}
             onValueChange={setInputValue}
             placeholder="e.g. Economy of Oman"
             style={{ fontSize: '16px' }}
           />
           <Button 
-            onClick={() => handleSearch(inputValue)} 
+            onClick={() => search(inputValue)} 
             className="absolute bg-[#BED4FF] dark:bg-sky-700 dark:bg-[#D2FFD9] right-2 top-1/4 sm:top-1 h-8 md:h-8 h-6 md:text-base text-xs"
           >
             Search
@@ -269,13 +159,13 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
       <CommandDialog open={dialogOpen} onOpenChange={(open) => setDialogOpen(open)}>
         <div className="relative">
           <CommandInput
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch(inputValue)}
+            onKeyDown={(e) => e.key === 'Enter' && search(inputValue)}
             value={inputValue}
             onValueChange={setInputValue}
             placeholder="e.g. Economy of Oman"
             style={{ fontSize: '16px' }}
           />
-          <Button onClick={() => handleSearch(inputValue)} className="absolute right-2 top-1/2 transform -translate-y-1/2" size="sm">Search</Button>
+          <Button onClick={() => search(inputValue)} className="absolute right-2 top-1/2 transform -translate-y-1/2" size="sm">Search</Button>
         </div>
         <CommandList>
           <div className="hidden md:block">

@@ -22,9 +22,10 @@ interface LeaderInfo {
 interface EntitiesViewProps {
   leaderInfo: LeaderInfo | null;
   entities: Entity[];
+  variant?: 'default' | 'compact';
 }
 
-const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities }) => {
+const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities, variant = 'default' }) => {
   const [selectedEntityTypes, setSelectedEntityTypes] = useState<string[]>(['PERSON']);
   const [selectedEntity, setSelectedEntity] = useState<string | null>(null);
 
@@ -33,6 +34,42 @@ const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities }) => 
       prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
     );
   };
+
+  if (variant === 'compact') {
+    return (
+      <div className="space-y-2">
+        <div className="flex justify-between items-center">
+          <h3 className="text-sm font-medium">Key Entities</h3>
+          <div className="flex space-x-1">
+            {['PERSON', 'ORG', 'GPE'].map((type) => (
+              <Badge
+                key={type}
+                variant={selectedEntityTypes.includes(type) ? 'secondary' : 'outline'}
+                className="cursor-pointer text-xs px-2 py-0.5"
+                onClick={() => toggleEntityType(type)}
+              >
+                {type}
+              </Badge>
+            ))}
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-1">
+          {entities
+            .filter(entity => selectedEntityTypes.includes(entity.type))
+            .slice(0, 10)
+            .map((entity) => (
+              <Badge
+                key={entity.name}
+                variant="outline"
+                className="text-xs"
+              >
+                {entity.name}
+              </Badge>
+            ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 max-h-[80vh] overflow-y-auto">

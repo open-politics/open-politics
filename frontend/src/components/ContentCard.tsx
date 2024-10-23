@@ -15,21 +15,25 @@ import {
 } from "@/components/ui/dialog";
 import { useBookMarkStore } from '@/hooks/useBookMarkStore';
 
-export type ContentCardProps = {
+export interface ContentCardProps {
   id: string;
-  title: string;
-  text_content: string;
+  title: string | null;
+  text_content: string | null;
   url: string;
   source: string | null;
   insertion_date: string;
+  content_type?: string;
+  content_language?: string | null;
+  author?: string | null;
+  publication_date?: string | null;
   entities: Array<{
     id: string;
     name: string;
     entity_type: string;
-    locations: Array<{
+    locations?: Array<{
       id: string;
       name: string;
-      location_type: string;
+      location_type: string | null;
       coordinates: number[] | null;
       weight: number;
     }>;
@@ -54,15 +58,32 @@ export type ContentCardProps = {
     satire_score: number;
     event_type: string;
   } | null;
-};
+  className?: string;
+}
 
-export function ContentCard({ id, title, text_content, url, source, insertion_date, entities = [], tags = [], classification, className, ...props }: ContentCardProps & React.ComponentProps<typeof Card>) {
-  const { bookmarks, addBookmark, removeBookmark } = useBookMarkStore(); // Use the bookmark store
+export function ContentCard({ 
+  id, 
+  title, 
+  text_content, 
+  url, 
+  source, 
+  insertion_date,
+  content_type,
+  content_language,
+  author,
+  publication_date, 
+  entities = [], 
+  tags = [], 
+  classification, 
+  className, 
+  ...props 
+}: ContentCardProps) {
+  const { bookmarks, addBookmark, removeBookmark } = useBookMarkStore();
 
   const isBookmarked = bookmarks.some(bookmark => bookmark.url === url);
 
   const handleBookmark = (event: React.MouseEvent) => {
-    event.stopPropagation(); // Prevent the click from triggering the Dialog
+    event.stopPropagation();
     if (isBookmarked) {
       removeBookmark(url);
     } else {
@@ -81,7 +102,7 @@ export function ContentCard({ id, title, text_content, url, source, insertion_da
   };
 
   const handleCardClick = (event: React.MouseEvent) => {
-    event.stopPropagation(); // Prevent the click from affecting the EntityCard selection
+    event.stopPropagation();
   };
 
   return (
@@ -92,7 +113,10 @@ export function ContentCard({ id, title, text_content, url, source, insertion_da
             <div className="absolute top-2 right-2" onClick={handleBookmark}>
               {isBookmarked ? <BookMarked className="text-blue-500" /> : <Bookmark className="text-gray-500" />}
             </div>
-            <span className="text-xs text-muted-foreground mb-2">Source: {source}</span>
+            <span className="text-xs text-muted-foreground mb-2">
+              {source && `Source: ${source}`}
+              {author && ` • ${author}`}
+            </span>
             <h4 className="mb-2 text-lg font-semibold">{title}</h4>
             <p className="text-sm text-muted-foreground mb-2 line-clamp-2 leading-relaxed tracking-wide">
               {text_content}
@@ -187,7 +211,11 @@ export function ContentCard({ id, title, text_content, url, source, insertion_da
       <DialogContent className="max-h-[90vh] max-w-[100vw] md:max-w-[50vw] flex flex-col">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{source} - {insertion_date && new Date(insertion_date).toLocaleDateString()}</DialogDescription>
+          <DialogDescription>
+            {source} 
+            {author && ` • ${author}`}
+            {insertion_date && ` • ${new Date(insertion_date).toLocaleDateString()}`}
+          </DialogDescription>
         </DialogHeader>
         <div className="mt-4 overflow-y-auto flex-grow">
           <div className="flex flex-wrap flex-row gap-2 mb-4 max-h-[20vh] overflow-y-auto">
@@ -272,8 +300,8 @@ export function ContentCard({ id, title, text_content, url, source, insertion_da
             </div>
           )}
           <p className="text-sm mb-4 leading-relaxed tracking-wide whitespace-pre-line">
-            {text_content.slice(0, 450)}
-            {text_content.length > 450 && '...'}
+            {text_content?.slice(0, 450)}
+            {text_content && text_content.length > 450 && '...'}
           </p>
           <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">
             Read full article
