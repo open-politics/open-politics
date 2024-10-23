@@ -773,7 +773,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
       .custom-popup-container .mapboxgl-popup-close-button {
         padding: 0.5rem;
         right: 0.5rem;
-        top: 0.5rem;
+        top: -0.25rem;
         z-index: 10;
         color: var(--text-muted);
         transition: color 0.2s;
