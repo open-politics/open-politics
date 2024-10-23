@@ -31,11 +31,11 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
   const [menuOpen, setMenuOpen] = useState(false);
 
   const eventTypes = [
-    { type: "Elections", color: "#4CAF50", icon: "building" },
-    { type: "Protests", color: "#2196F3", icon: "marker" },
-    { type: "Economic", color: "#FF9800", icon: "bank" },
-    { type: "War", color: "#FF6347", icon: "danger" },
-    { type: "News", color: "#FF6347", icon: "newspaper" }
+    { type: "Elections", color: "#4CAF50", icon: "ballot", zIndex: 5 },
+    { type: "Protests", color: "#2196F3", icon: "marker", zIndex: 4 },
+    { type: "Economic", color: "#FF9800", icon: "bank", zIndex: 3 },
+    { type: "War", color: "#FF6347", icon: "triangle-stroked", zIndex: 2 },
+    { type: "News", color: "#FF6347", icon: "circle-stroked", zIndex: 1 }
   ];
 
   const flyToLocation = (longitude: number, latitude: number, zoom: number) => {
@@ -141,7 +141,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
         const id = e.id;
         if (eventTypes.some(eventType => eventType.icon === id)) {
           const img = new Image();
-          img.src = `/maki-icons/${id}.svg`;
+          img.src = `animations/maki-icons/${id}.svg`;
           img.onload = () => {
             mapRef.current?.addImage(id, img);
           };
@@ -217,89 +217,359 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
         });
 
         const results = await Promise.all(promises);
-        results.forEach((result, index) => {
-          const eventType = eventTypes[index];
+        
+        const sortedEventTypes = [...eventTypes].sort((a, b) => b.zIndex - a.zIndex);
+
+        sortedEventTypes.forEach((eventType, index) => {
+          const result = results[eventTypes.findIndex(et => et.type === eventType.type)];
           const data = result.data;
 
           if (mapRef.current) {
+            // Transform and validate the data
             const adjustedData = {
               ...data,
               features: data.features.map((feature: any) => {
-                const [lat, lon] = feature.geometry.coordinates;
+                // Ensure contents is properly handled
+                let contents;
+                try {
+                  contents = typeof feature.properties.contents === 'string'
+                    ? JSON.parse(feature.properties.contents)
+                    : feature.properties.contents;
+                } catch (error) {
+                  console.error('Error parsing contents:', error);
+                  contents = [];
+                }
+
                 return {
                   ...feature,
+                  properties: {
+                    ...feature.properties,
+                    contents: contents
+                  },
                   geometry: {
                     ...feature.geometry,
-                    coordinates: [lon, lat] // Swap to [longitude, latitude]
+                    coordinates: [feature.geometry.coordinates[1], feature.geometry.coordinates[0]]
                   }
                 };
               })
             };
 
+            // Add source with adjusted data
             mapRef.current.addSource(`geojson-events-${eventType.type}`, {
-              'type': 'geojson',
-              'data': adjustedData
+              type: 'geojson',
+              data: adjustedData,
+              cluster: true,
+              clusterMaxZoom: 14,
+              clusterRadius: 100
             });
 
+            // Add clusters layer
             mapRef.current.addLayer({
-              'id': `geojson-events-layer-${eventType.type}`,
-              'type': 'circle',
-              'source': `geojson-events-${eventType.type}`,
-              'paint': {
-                'circle-color': eventType.color, // Use the color from eventTypes
-                'circle-radius': 10, // Adjust the radius as needed
-                'circle-opacity': 0.5 // Adjust the opacity as needed
+              id: `clusters-${eventType.type}`,
+              type: 'circle',
+              source: `geojson-events-${eventType.type}`,
+              filter: ['has', 'point_count'],
+              paint: {
+                'circle-color': eventType.color,
+                'circle-radius': [
+                  'step',
+                  ['get', 'point_count'],
+                  30,
+                  100,
+                  40,
+                  750,
+                  50
+                ],
+                'circle-opacity': 0.6,
+                'circle-stroke-width': 2,
+                'circle-stroke-color': '#fff'
               }
             });
 
-            mapRef.current.on('click', `geojson-events-layer-${eventType.type}`, (e) => {
-              const features = mapRef.current?.queryRenderedFeatures(e.point, {
-                layers: [`geojson-events-layer-${eventType.type}`]
-              });
-            
-              if (features && features.length > 0) {
-                const feature = features[0];
-                const countryName = feature.properties?.name;
-                const coordinates = feature.geometry.coordinates;
-            
-                // Center the map on the clicked feature
-                mapRef.current?.flyTo({
-                  center: coordinates,
-                  zoom: 6, // Adjust zoom level as needed
-                  essential: true
-                });
-                onLocationClick(countryName);
-                // resize
-                mapRef.current?.resize();
+            // Add cluster count layer
+            mapRef.current.addLayer({
+              id: `cluster-count-${eventType.type}`,
+              type: 'symbol',
+              source: `geojson-events-${eventType.type}`,
+              filter: ['has', 'point_count'],
+              layout: {
+                'text-field': '{point_count_abbreviated}',
+                'text-size': 14,
+                'text-allow-overlap': true
+              },
+              paint: {
+                'text-color': '#ffffff'
               }
             });
 
-            mapRef.current.on('mouseenter', `geojson-events-layer-${eventType.type}`, (e) => {
+            // Add unclustered point layer
+            mapRef.current.addLayer({
+              id: `unclustered-point-${eventType.type}`,
+              type: 'symbol',
+              source: `geojson-events-${eventType.type}`,
+              filter: ['!', ['has', 'point_count']],
+              layout: {
+                'icon-image': eventType.icon,
+                'icon-size': 1,
+                'icon-allow-overlap': true,
+                'icon-ignore-placement': false,
+                'symbol-placement': 'point',
+                'symbol-spacing': 10,
+                'icon-padding': 2,
+                // Remove icon-offset as we'll handle positioning differently
+                'symbol-sort-key': ['get', 'content_count'],
+                'icon-pitch-alignment': 'viewport',
+                'icon-rotation-alignment': 'viewport',
+                // Add text field for better identification
+                'text-field': ['get', 'content_count'],
+                'text-size': 10,
+                'text-offset': [0, 1],
+                'text-allow-overlap': false,
+                'text-ignore-placement': false,
+                'text-anchor': 'top'
+              },
+              paint: {
+                'text-color': eventType.color,
+                'text-halo-color': '#fff',
+                'text-halo-width': 1
+              }
+            });
+
+            // Add hover effects for unclustered points
+            mapRef.current.on('mouseenter', `unclustered-point-${eventType.type}`, (e) => {
               if (mapRef.current) {
                 mapRef.current.getCanvas().style.cursor = 'pointer';
-            
+                
                 const features = mapRef.current.queryRenderedFeatures(e.point, {
-                  layers: [`geojson-events-layer-${eventType.type}`]
+                  layers: [`unclustered-point-${eventType.type}`]
                 });
-            
+
                 if (features && features.length > 0) {
                   const feature = features[0];
+                  console.log('Feature properties:', feature.properties); // Debug log
+                  
                   const countryName = feature.properties?.name;
                   const eventTypeName = eventType.type;
-            
-                  new mapboxgl.Popup({ closeButton: false })
-                    .setLngLat(feature.geometry.coordinates)
-                    .setHTML(`
-                      <div class="custom-popup" style="color: black; background-color: white; padding: 5px; border-radius: 5px;">
-                        <strong>${eventTypeName} @ ${countryName}</strong>
+                  const contentCount = feature.properties?.content_count || 0;
+                  
+                  let contents = [];
+                  try {
+                    contents = feature.properties?.contents || [];
+                    if (typeof contents === 'string') {
+                      contents = JSON.parse(contents);
+                    }
+                    console.log('Parsed contents:', contents); // Debug log
+                  } catch (error) {
+                    console.error('Error parsing contents:', error);
+                  }
+
+                  // Filter valid contents
+                  const validContents = Array.isArray(contents) 
+                    ? contents.filter(content => 
+                        content?.url && 
+                        content?.title && 
+                        content?.insertion_date
+                      )
+                    : [];
+
+                  let popupContent = '';
+                  try {
+                    popupContent = `
+                      <div class="custom-popup" style="color: black; background-color: white; padding: 8px; border-radius: 5px;">
+                        <div style="margin-bottom: 8px;">
+                          <strong>${eventTypeName} @ ${countryName}</strong>
+                          <br/>
+                          ${contentCount} items
+                        </div>
+                        <div style="max-height: 200px; overflow-y: auto; font-size: 0.9em;">
+                          ${validContents.length > 0 
+                            ? validContents.map(content => `
+                                <div style="padding: 4px 0; border-bottom: 1px solid #eee;">
+                                  <a href="${content.url}" target="_blank" style="color: #2563eb; text-decoration: none; hover:text-decoration: underline;">
+                                    ${content.title}
+                                  </a>
+                                  <div style="font-size: 0.8em; color: #666;">
+                                    ${new Date(content.insertion_date).toLocaleDateString()}
+                                    ${content.source ? `<span style="margin-left: 4px;">(${content.source})</span>` : ''}
+                                  </div>
+                                </div>
+                              `).join('')
+                            : '<div>No content available</div>'
+                          }
+                        </div>
                       </div>
-                    `)
+                    `;
+                  } catch (error) {
+                    console.error('Error creating popup:', error);
+                    popupContent = '<div>Error loading content</div>';
+                  }
+
+                  new mapboxgl.Popup({ 
+                    closeButton: true,
+                    maxWidth: '300px',
+                    offset: [0, -15 * eventTypes.findIndex(et => et.type === eventType.type)]
+                  })
+                    .setLngLat(feature.geometry.coordinates)
+                    .setHTML(popupContent)
                     .addTo(mapRef.current);
                 }
               }
             });
 
-            mapRef.current.on('mouseleave', `geojson-events-layer-${eventType.type}`, () => {
+            // Add click handler for unclustered points
+            mapRef.current.on('click', `unclustered-point-${eventType.type}`, (e) => {
+              if (mapRef.current) {
+                const features = mapRef.current.queryRenderedFeatures(e.point, {
+                  layers: [`unclustered-point-${eventType.type}`]
+                });
+
+                if (features && features.length > 0) {
+                  const feature = features[0];
+                  const locationName = feature.properties?.name;
+
+                  if (locationName) {
+                    onLocationClick(locationName);
+                  }
+                }
+              }
+            });
+
+            // Add click handlers for clusters
+            mapRef.current.on('mouseenter', `clusters-${eventType.type}`, () => {
+              if (mapRef.current) {
+                mapRef.current.getCanvas().style.cursor = 'pointer';
+              }
+            });
+
+            mapRef.current.on('mouseleave', `clusters-${eventType.type}`, () => {
+              if (mapRef.current) {
+                mapRef.current.getCanvas().style.cursor = '';
+              }
+            });
+
+            // Fix for cluster click handling
+            mapRef.current.on('click', `clusters-${eventType.type}`, (e) => {
+              const features = mapRef.current?.queryRenderedFeatures(e.point, {
+                layers: [`clusters-${eventType.type}`]
+              });
+              
+              if (features && features.length > 0 && features[0].properties) {
+                const clusterId = features[0].properties.cluster_id;
+                const source = mapRef.current?.getSource(`geojson-events-${eventType.type}`);
+                
+                // Type assertion to access getClusterExpansionZoom
+                if ('getClusterExpansionZoom' in source) {
+                  (source as any).getClusterExpansionZoom(
+                    clusterId,
+                    (err: any, zoom: number) => {
+                      if (err) return;
+
+                      const coordinates = (features[0].geometry as any).coordinates;
+                      mapRef.current?.flyTo({
+                        center: coordinates,
+                        zoom: zoom
+                      });
+                    }
+                  );
+                }
+              }
+            });
+
+            // Add hover effects
+            mapRef.current.on('mouseenter', `clusters-${eventType.type}`, () => {
+              if (mapRef.current) {
+                mapRef.current.getCanvas().style.cursor = 'pointer';
+              }
+            });
+
+            mapRef.current.on('mouseleave', `clusters-${eventType.type}`, () => {
+              if (mapRef.current) {
+                mapRef.current.getCanvas().style.cursor = '';
+              }
+            });
+
+            // Add hover effects for unclustered points
+            mapRef.current.on('mouseenter', `unclustered-point-${eventType.type}`, (e) => {
+              if (mapRef.current) {
+                mapRef.current.getCanvas().style.cursor = 'pointer';
+                
+                const features = mapRef.current.queryRenderedFeatures(e.point, {
+                  layers: [`unclustered-point-${eventType.type}`]
+                });
+
+                if (features && features.length > 0) {
+                  const feature = features[0];
+                  console.log('Feature properties:', feature.properties); // Debug log
+                  
+                  const countryName = feature.properties?.name;
+                  const eventTypeName = eventType.type;
+                  const contentCount = feature.properties?.content_count || 0;
+                  
+                  let contents = [];
+                  try {
+                    contents = feature.properties?.contents || [];
+                    if (typeof contents === 'string') {
+                      contents = JSON.parse(contents);
+                    }
+                    console.log('Parsed contents:', contents); // Debug log
+                  } catch (error) {
+                    console.error('Error parsing contents:', error);
+                  }
+
+                  // Filter valid contents
+                  const validContents = Array.isArray(contents) 
+                    ? contents.filter(content => 
+                        content?.url && 
+                        content?.title && 
+                        content?.insertion_date
+                      )
+                    : [];
+
+                  let popupContent = '';
+                  try {
+                    popupContent = `
+                      <div class="custom-popup" style="color: black; background-color: white; padding: 8px; border-radius: 5px;">
+                        <div style="margin-bottom: 8px;">
+                          <strong>${eventTypeName} @ ${countryName}</strong>
+                          <br/>
+                          ${contentCount} items
+                        </div>
+                        <div style="max-height: 200px; overflow-y: auto; font-size: 0.9em;">
+                          ${validContents.length > 0 
+                            ? validContents.map(content => `
+                                <div style="padding: 4px 0; border-bottom: 1px solid #eee;">
+                                  <a href="${content.url}" target="_blank" style="color: #2563eb; text-decoration: none; hover:text-decoration: underline;">
+                                    ${content.title}
+                                  </a>
+                                  <div style="font-size: 0.8em; color: #666;">
+                                    ${new Date(content.insertion_date).toLocaleDateString()}
+                                    ${content.source ? `<span style="margin-left: 4px;">(${content.source})</span>` : ''}
+                                  </div>
+                                </div>
+                              `).join('')
+                            : '<div>No content available</div>'
+                          }
+                        </div>
+                      </div>
+                    `;
+                  } catch (error) {
+                    console.error('Error creating popup:', error);
+                    popupContent = '<div>Error loading content</div>';
+                  }
+
+                  new mapboxgl.Popup({ 
+                    closeButton: true,
+                    maxWidth: '300px',
+                    offset: [0, -15 * eventTypes.findIndex(et => et.type === eventType.type)]
+                  })
+                    .setLngLat(feature.geometry.coordinates)
+                    .setHTML(popupContent)
+                    .addTo(mapRef.current);
+                }
+              }
+            });
+
+            mapRef.current.on('mouseleave', `unclustered-point-${eventType.type}`, () => {
               if (mapRef.current) {
                 mapRef.current.getCanvas().style.cursor = '';
                 const popups = document.getElementsByClassName('mapboxgl-popup');
@@ -438,5 +708,3 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
 };
 
 export default Globe;
-
-

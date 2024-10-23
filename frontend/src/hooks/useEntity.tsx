@@ -59,7 +59,7 @@ export function useEntityData(entityName: string | null, isSelected: boolean) {
     if (!entityName || !isSelected) return; // Fetch only if an entity is selected
     setIsLoading((prev) => ({ ...prev, contents: true }));
     try {
-      const response = await fetch(`/api/v1/locations/${entityName}/contents?skip=${skip}&limit=${limit}`);
+      const response = await fetch(`/api/v1/locations/${entityName}/entities/contents?skip=${skip}&limit=${limit}`);
       if (!response.ok) {
         throw new Error('Failed to fetch contents');
       }

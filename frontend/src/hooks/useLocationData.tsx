@@ -7,6 +7,20 @@ interface LocationData {
   leaderInfo: LeaderInfo | null;
   contents: Content[];
   entities: Entity[];
+  contentMetadata?: {
+    total: number;
+    statistics: ContentStatistics;
+  };
+}
+
+interface ContentStatistics {
+  total_articles: number;
+  average_relevance: number;
+  source_distribution: Record<string, number>;
+  date_range: {
+    earliest: string | null;
+    latest: string | null;
+  };
 }
 
 interface LeaderInfo {
@@ -32,16 +46,21 @@ interface Content {
   url: string;
   source: string | null;
   insertion_date: string;
+  content_type: string;
+  relevance_metrics: {
+    entity_count: number;
+    location_mentions: number;
+    total_frequency: number;
+    relevance_score: number;
+  };
   entities: Array<{
     id: string;
     name: string;
     entity_type: string;
     locations: Array<{
-      id: string;
       name: string;
       location_type: string;
       coordinates: number[] | null;
-      weight: number;
     }>;
   }>;
   tags: Array<{
@@ -66,6 +85,23 @@ interface Content {
   } | null;
 }
 
+interface ContentResponse {
+  location: string;
+  total_results: number;
+  skip: number;
+  limit: number;
+  contents: Content[];
+  statistics: ContentStatistics;
+}
+
+interface FetchContentsParams {
+  skip?: number;
+  dateFrom?: string;
+  dateTo?: string;
+  contentType?: string;
+  minRelevance?: number;
+}
+
 export function useLocationData(locationName: string | null) {
   const [data, setData] = useState<LocationData>({
     legislativeData: [],
@@ -74,6 +110,7 @@ export function useLocationData(locationName: string | null) {
     contents: [],
     entities: [],
   });
+
   const [isLoading, setIsLoading] = useState({
     legislative: false,
     economic: false,
@@ -81,6 +118,7 @@ export function useLocationData(locationName: string | null) {
     contents: false,
     entities: false,
   });
+
   const [error, setError] = useState<{
     legislative: Error | null;
     economic: Error | null;
@@ -122,19 +160,27 @@ export function useLocationData(locationName: string | null) {
     }
   }, [locationName]);
 
-  const fetchContents = useCallback(async (searchQuery: string, skip: number) => {
+  const fetchContents = useCallback(async ({ skip = 0 }: { skip?: number }) => {
     if (!locationName) return;
+    
     setIsLoading((prev) => ({ ...prev, contents: true }));
     try {
-      const response = await fetch(`/api/v1/locations/${locationName}/contents?search_query=${searchQuery}&skip=${skip}&limit=20`);
+      const response = await fetch(
+        `/api/v1/locations/${locationName}/contents?skip=${skip}&limit=20`
+      );
+      
       if (!response.ok) {
         throw new Error('Failed to fetch contents');
       }
+
       const data = await response.json();
+      
       setData((prev) => ({
         ...prev,
         contents: skip === 0 ? data : [...prev.contents, ...data],
       }));
+
+      return data;
     } catch (error) {
       setError((prev) => ({ ...prev, contents: error as Error }));
     } finally {
@@ -151,7 +197,6 @@ export function useLocationData(locationName: string | null) {
     setIsLoading((prev) => ({ ...prev, entities: true }));
     try {
       const response = await fetch(`/api/v1/locations/${locationName}/entities?skip=${skip}&limit=${limit}`);
-      console.log(response);
       if (!response.ok) {
         throw new Error('Failed to fetch entities');
       }
@@ -197,9 +242,13 @@ export function useLocationData(locationName: string | null) {
     }
   }, [locationName]);
 
+  const getContentStatistics = useCallback(() => {
+    return data.contentMetadata?.statistics || null;
+  }, [data.contentMetadata]);
+
   useEffect(() => {
     if (locationName) {
-      fetchContents('', 0);
+      fetchContents({ skip: 0 });
       fetchData('legislativeData', `/api/v1/locations/legislation/${locationName}`);
       fetchData('leaderInfo', `/api/v1/locations/leaders/${locationName}`);
       fetchEntities(0, 50);
@@ -215,6 +264,7 @@ export function useLocationData(locationName: string | null) {
     fetchEntities,
     fetchCoordinates,
     fetchEconomicData,
+    getContentStatistics,
   };
 }
 

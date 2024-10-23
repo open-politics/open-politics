@@ -22,26 +22,62 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-class SearchType(str, Enum):
-    TEXT = "text"
-    SEMANTIC = "semantic"
 
 @router.get("/{location}/contents", response_model=None)
 async def get_location_contents(
     location: str,
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
-    search_query: Optional[str] = None,
-    search_type: SearchType = SearchType.TEXT,
 ):
+    """
+    Get articles related to a location with basic pagination.
+    """
     try:
-        result = await articles.get_contents(
-            location, skip, limit, search_query, search_type.value
+        response = requests.get(
+            f"http://postgres_service:5434/contents_by_location/{location}?skip={skip}&limit={limit}",
+            verify=False
         )
-        return JSONResponse(content=result, status_code=200)
-    except Exception as e:
-        logger.error(f"Error fetching contents: {str(e)}")
-        return JSONResponse(content={'error': 'Failed to fetch contents'}, status_code=500)
+        response.raise_for_status()
+        
+        return JSONResponse(content=response.json(), status_code=200)
+        
+    except requests.RequestException as e:
+        logger.error(f"Error fetching contents for location {location}: {str(e)}")
+        return JSONResponse(
+            content={
+                'error': 'Failed to fetch contents',
+                'detail': str(e)
+            }, 
+            status_code=500
+        )
+
+@router.get("/{location}/entities/contents", response_model=None)
+async def get_location_entities_contents(
+    location: str,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(20, ge=1, le=100),
+):
+    """
+    Get articles related to a location with basic pagination.
+    """
+    try:
+        response = requests.get(
+            f"http://postgres_service:5434/contents_by_entity/{location}?skip={skip}&limit={limit}",
+            verify=False
+        )
+        response.raise_for_status()
+        
+        return JSONResponse(content=response.json(), status_code=200)
+        
+    except requests.RequestException as e:
+        logger.error(f"Error fetching contents for location {location}: {str(e)}")
+        return JSONResponse(
+            content={
+                'error': 'Failed to fetch contents',
+                'detail': str(e)
+            }, 
+            status_code=500
+        ) 
 
 @router.get("/location_from_query")
 async def location_from_query(query: str):
@@ -180,4 +216,3 @@ async def get_geojson_for_article_ids(article_ids: List[str]):
     else:
         logger.error(f"Failed to fetch GeoJSON data: {geojson_data.text}")
         raise HTTPException(status_code=geojson_data.status_code, detail="Unable to fetch GeoJSON data")
-
