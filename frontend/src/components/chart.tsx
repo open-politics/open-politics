@@ -62,7 +62,6 @@ const EconomicDataChart = ({ data, selectedIndicators }) => {
           data={processedData}
           margin={{ top: 5, right: 0, left: 0, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
           <YAxis yAxisId="left" />
           <YAxis yAxisId="right" orientation="right" />
