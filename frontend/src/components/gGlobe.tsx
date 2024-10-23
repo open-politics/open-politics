@@ -390,20 +390,23 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
                       )
                     : [];
 
-                  let popupContent = '';
-                  try {
-                    popupContent = `
-                      <div class="w-[300px] p-0 bg-transparent">
-                        <div class="rounded-xl border bg-background text-foreground shadow-lg">
-                          <div class="flex flex-col space-y-1.5 p-4">
-                            <div class="flex items-center justify-between">
-                              <h3 class="font-semibold tracking-tight">
-                                ${eventTypeName} @ ${countryName}
-                              </h3>
-                              <span class="text-sm text-muted-foreground">
-                                ${contentCount} items
-                              </span>
-                            </div>
+                  let popupContent = `
+                    <div class="w-[300px] p-0 bg-transparent">
+                      <div class="rounded-xl border bg-background text-foreground shadow-lg">
+                        <div class="flex flex-col space-y-1.5 p-4">
+                          <div class="flex items-center justify-between">
+                            <h3 class="font-semibold tracking-tight">
+                              <a href="#" 
+                                class="text-primary hover:underline cursor-pointer"
+                                onclick="window.dispatchEvent(new CustomEvent('setLocation', {detail:'${countryName}'})); return false;"
+                              >
+                                ${eventTypeName} @ 📍 ${countryName}
+                              </a>
+                            </h3>
+                            <span class="text-sm text-muted-foreground">
+                              ${contentCount} items
+                            </span>
+                          </div>
                           </div>
                           <div class="p-4 pt-0">
                             <div class="max-h-[200px] overflow-y-auto custom-scrollbar">
@@ -433,14 +436,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
                         </div>
                       </div>
                     `;
-                  } catch (error) {
-                    console.error('Error creating popup:', error);
-                    popupContent = `
-                      <div class="p-4 bg-destructive text-destructive-foreground rounded-lg">
-                        Error loading content
-                      </div>
-                    `;
-                  }
+                  
 
                   new mapboxgl.Popup({ 
                     closeButton: true,
@@ -757,6 +753,16 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
     };
   }, []);
 
+  // Add these location mappings
+  const locationButtons = [
+    { coords: [13.4050, 52.5200], name: "Berlin", zoom: 6 },
+    { coords: [-77.0369, 38.9072], name: "Washington", zoom: 6 },
+    { coords: [34.7661, 31.0461], name: "Israel", zoom: 6 },
+    { coords: [30.5238, 50.4500], name: "Kyiv", zoom: 6 },
+    { coords: [139.767125, 35.681236], name: "Tokyo", zoom: 6 },
+    { coords: [121.5319, 25.0478], name: "Taiwan", zoom: 6 }
+  ];
+
   const styles = `
       .custom-popup-container .mapboxgl-popup-content {
         padding: 0 !important;
@@ -837,18 +843,27 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
         </div>
         {!isMobile && (
           <>
-            <Button onClick={() => flyToLocation(13.4050, 52.5200, 6)}>Fly to Berlin</Button>
+            <Button onClick={() => {
+              flyToLocation(13.4050, 52.5200, 6);
+              onLocationClick("Berlin");
+            }}>Fly to Berlin</Button>
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline"><MapPin /><List /></Button>
               </PopoverTrigger>
               <PopoverContent>
                 <div className="flex flex-col space-y-2">
-                  <Button onClick={() => flyToLocation(-77.0369, 38.9072, 6)}>Fly to Washington</Button>
-                  <Button onClick={() => flyToLocation(34.7661, 31.0461, 6)}>Fly to Israel</Button>
-                  <Button onClick={() => flyToLocation(30.5238, 50.4500, 6)}>Fly to Kyiv</Button>
-                  <Button onClick={() => flyToLocation(139.767125, 35.681236, 6)}>Fly to Tokyo</Button>
-                  <Button onClick={() => flyToLocation(121.5319, 25.0478, 6)}>Fly to Taiwan</Button>
+                  {locationButtons.slice(1).map(loc => (
+                    <Button 
+                      key={loc.name}
+                      onClick={() => {
+                        flyToLocation(loc.coords[0], loc.coords[1], loc.zoom);
+                        onLocationClick(loc.name);
+                      }}
+                    >
+                      Fly to {loc.name}
+                    </Button>
+                  ))}
                 </div>
               </PopoverContent>
             </Popover>
@@ -878,12 +893,17 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
       {/* Mobile Menu */}
       {isMobile && menuOpen && (
         <div className="absolute top-32 z-[52] left-4 bg-white dark:bg-black p-4 rounded shadow-lg space-y-2">
-          <Button onClick={() => flyToLocation(13.4050, 52.5200, 6)}>Fly to Berlin</Button>
-          <Button onClick={() => flyToLocation(-77.0369, 38.9072, 6)}>Fly to Washington</Button>
-          <Button onClick={() => flyToLocation(34.7661, 31.0461, 6)}>Fly to Israel</Button>
-          <Button onClick={() => flyToLocation(30.5238, 50.4500, 6)}>Fly to Kyiv</Button>
-          <Button onClick={() => flyToLocation(139.767125, 35.681236, 6)}>Fly to Tokyo</Button>
-          <Button onClick={() => flyToLocation(121.5319, 25.0478, 6)}>Fly to Taiwan</Button>
+          {locationButtons.map(loc => (
+            <Button 
+              key={loc.name}
+              onClick={() => {
+                flyToLocation(loc.coords[0], loc.coords[1], loc.zoom);
+                onLocationClick(loc.name);
+              }}
+            >
+              Fly to {loc.name}
+            </Button>
+          ))}
         </div>
       )}
     </div>
