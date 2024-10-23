@@ -279,10 +279,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
               filter: ['!', ['has', 'point_count']],
               layout: {
                 'icon-image': eventType.icon,
-                'icon-size': ['interpolate', ['linear'], ['zoom'],
-                  3, 0.5,  // Smaller at low zoom
-                  10, 1    // Full size at high zoom
-                ],
+                'icon-size': 1.2,
                 'icon-allow-overlap': false,
                 'icon-ignore-placement': false,
                 'symbol-placement': 'point',
@@ -292,10 +289,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
                 'icon-pitch-alignment': 'viewport',
                 'icon-rotation-alignment': 'viewport',
                 'text-field': ['get', 'content_count'],
-                'text-size': ['interpolate', ['linear'], ['zoom'],
-                  3, 8,    // Smaller text at low zoom
-                  10, 12   // Larger text at high zoom
-                ],
+                'text-size': 1,
                 'text-offset': [0, 1.2],
                 'text-allow-overlap': false,
                 'text-ignore-placement': false,
