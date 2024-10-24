@@ -39,6 +39,7 @@ import WikipediaView from './WikipediaView';
 import ArticlesView from './ArticlesView';
 import DataTable from "./DataTable";
 import Results from '@/components/Results';
+import { useArticleTabNameStore } from '@/hooks/useArticleTabNameStore';
 
 interface IssueAreasProps {
   locationName: string;
@@ -54,7 +55,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
   const [dateFilter, setDateFilter] = useState('all');
   const [selectedIndicators, setSelectedIndicators] = useState(['GDP', 'GDP_GROWTH']);
   const { toast } = useToast();
-  const { activeTab, setActiveTab } = useLayoutStore(); // Use Zustand store
+  const { activeTab, setActiveTab } = useArticleTabNameStore(); // Use Zustand store
   const [isMobile, setIsMobile] = useState(false);
 
 
@@ -209,9 +210,6 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
         value={activeTab} 
         onValueChange={(value) => {
           setActiveTab(value);
-          if (value === 'articles') {
-            articleSetActiveTab('articles');
-          }
         }} 
         className="w-full"
       >

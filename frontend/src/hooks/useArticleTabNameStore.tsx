@@ -1,15 +1,11 @@
 import { create } from 'zustand'
 
 interface ArticleTabNameState {
-  tabName: string;
-  activeTab: string; // Add activeTab to the state
-  setTabName: (name: string) => void;
-  setActiveTab: (tab: string) => void; // Add setActiveTab action
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
 }
 
 export const useArticleTabNameStore = create<ArticleTabNameState>((set) => ({
-  tabName: 'Articles',
-  activeTab: 'articles', // Default tab
-  setTabName: (name) => set(() => ({ tabName: name })),
-  setActiveTab: (tab) => set(() => ({ activeTab: tab })),
+  activeTab: 'articles', // Set default tab
+  setActiveTab: (tab) => set({ activeTab: tab }),
 }));

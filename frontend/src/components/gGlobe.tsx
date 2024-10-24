@@ -512,6 +512,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                   const locationName = feature.properties?.name;
 
                   if (locationName) {
+                    setActiveTab('articles'); // Set tab before triggering location click
                     onLocationClick(locationName);
                   }
                 }

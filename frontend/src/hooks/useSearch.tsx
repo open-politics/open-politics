@@ -4,7 +4,7 @@ import { generateSummaryFromArticles } from '@/app/actions';
 import { readStreamableValue } from 'ai/rsc';
 import { useLocationData } from './useLocationData';
 import { useCoordinatesStore } from '@/store/useCoordinatesStore';
-import { useArticleTabNameStore } from '@/hooks/useArticleTabNameStore';
+import { useArticleTabNameStore } from './useArticleTabNameStore';
 
 export type SearchType = 'text' | 'semantic' | 'structured';
 
@@ -55,13 +55,12 @@ export function useSearch(
   setResults: (results: any) => void,
   setCountry?: (country: string | null) => void,
   setSummary?: (summary: string) => void,
-  globeRef?: React.RefObject<any>,
-  initialFilters: SearchFilters = {}
+  globeRef?: React.RefObject<any>
 ) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [searchType, setSearchType] = useState<SearchType>('semantic');
-  const [filters, setFilters] = useState<SearchFilters>(initialFilters);
+  const [filters, setFilters] = useState<SearchFilters>({});
   const [analysisType, setAnalysisType] = useState('Conflict Analysis');
 
   const { fetchCoordinates } = useLocationData(null);
@@ -149,14 +148,13 @@ export function useSearch(
     setError(null);
     
     try {
-      // Set active tab to 'summary' immediately when search starts
-      setActiveTab('summary');
-      
       const locationData = await fetchLocationFromNLQuery(query);
+      console.log("Location API response:", locationData);
       
       if (locationData) {
         if (setCountry) {
           setCountry(locationData.country_name);
+          setActiveTab('summary'); // Set tab when we have a location
         }
         
         if (locationData.coordinates) {
@@ -190,8 +188,9 @@ export function useSearch(
 
       const combinedResults = { tavilyResults, ssareResults };
       setResults(combinedResults);
+      setActiveTab('summary'); // Set tab after results are available
 
-      // Generate summary with streaming
+      // Generate summary in background
       if (setSummary) {
         try {
           const summaryResult = await generateSummaryFromArticles(combinedResults, analysisType);
@@ -210,11 +209,11 @@ export function useSearch(
     } catch (err) {
       console.error("Error in search:", err);
       setError(err instanceof Error ? err : new Error('An error occurred during search'));
-      setActiveTab('articles');
+      setActiveTab('articles'); // Fallback to articles tab on error
     } finally {
       setLoading(false);
     }
-  }, [setResults, setSummary, setCountry, globeRef, filters, searchType, analysisType, setActiveTab]);
+  }, [setResults, setSummary, setCountry, globeRef, filters, searchType, analysisType, setActiveTab, setCoordinates]);
 
   return {
     search,
