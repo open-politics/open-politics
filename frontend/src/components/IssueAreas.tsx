@@ -191,16 +191,30 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
     }
   }, [data.economicData, fetchEconomicData]);
 
-  // Add effect to handle initial tab selection when results arrive
+  // Update the useEffect to only set initial tab state
   useEffect(() => {
-    if (results && summary) {
+    if (results?.tavilyResults && summary && !activeTab) {
       setActiveTab('summary');
+    } else if (!activeTab) {
+      setActiveTab('articles');
     }
-  }, [results, summary, setActiveTab]);
+  }, [results, summary, activeTab, setActiveTab]);
+
+  // Add a check for showing summary content
+  const showSummaryContent = results?.tavilyResults && summary;
 
   return (
     <div className="space-y-4 p-2">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full"> 
+      <Tabs 
+        value={activeTab} 
+        onValueChange={(value) => {
+          setActiveTab(value);
+          if (value === 'articles') {
+            articleSetActiveTab('articles');
+          }
+        }} 
+        className="w-full"
+      >
         <TabsList className="max-w-[80%] md:max-w-[calc(100%-60px)] overflow-x-auto flex justify-start scroll-snap-type-x mandatory">
           <TabsTrigger value="articles" className="scroll-snap-align-start">Articles</TabsTrigger>
           <TabsTrigger value="economic-data" className="scroll-snap-align-start" onClick={handleFetchEconomicData}>Economic Data</TabsTrigger>
@@ -209,7 +223,12 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
             <TabsTrigger value="legislative" className="scroll-snap-align-start">Legislative</TabsTrigger>
           )}
           <TabsTrigger value="wikipedia" className="scroll-snap-align-start">Wikipedia</TabsTrigger>
-          <TabsTrigger value="summary" className="scroll-snap-align-start">Summary</TabsTrigger>
+          {/* Only show summary tab if we have content */}
+          {showSummaryContent && (
+            <TabsTrigger value="summary" className="scroll-snap-align-start">
+              Summary
+            </TabsTrigger>
+          )}
         </TabsList>
         <div className="flex-grow overflow-hidden">
           <TabsContent value="articles" className="h-full max-h-screen overflow-y-auto">
@@ -375,7 +394,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {results ? (
+                {showSummaryContent ? (
                   <Results results={results} summary={summary} includeSummary={includeSummary} />
                 ) : (
                   <p>No search results available. They will show up if you use the main search bar.</p>

@@ -96,7 +96,10 @@ const Desk: React.FC = () => {
     setIsVisible(true);
     setHasClicked(true);
     setLocationKey(prevKey => prevKey + 1);
-    articleSetActiveTab('articles'); // Set default tab when clicking location
+    
+    // Instead of resetting results and summary, just switch tabs
+    setActiveTab('articles');
+    articleSetActiveTab('articles');
   };
 
   const handleSearch = (searchResults: any) => {

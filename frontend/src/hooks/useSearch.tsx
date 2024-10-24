@@ -149,6 +149,9 @@ export function useSearch(
     setError(null);
     
     try {
+      // Set active tab to 'summary' immediately when search starts
+      setActiveTab('summary');
+      
       const locationData = await fetchLocationFromNLQuery(query);
       
       if (locationData) {
@@ -162,19 +165,10 @@ export function useSearch(
           const locationType = locationData.location_type || 'country';
           
           if (globeRef?.current?.zoomToCountry) {
-            // Calculate dynamic zoom level based on bbox
-            let dynamicZoom = 4; // default
+            let dynamicZoom = 4;
             if (locationData.bbox) {
               dynamicZoom = calculateZoomLevel(locationData.bbox);
             }
-            
-            console.log('Zooming to location:', {
-              lat: locationData.coordinates.latitude,
-              lng: locationData.coordinates.longitude,
-              type: locationType,
-              bbox: locationData.bbox,
-              calculatedZoom: dynamicZoom
-            });
             
             globeRef.current.zoomToCountry(
               locationData.coordinates.latitude,
@@ -182,12 +176,11 @@ export function useSearch(
               locationData.country_name,
               locationData.bbox,
               locationType as 'continent' | 'country' | 'locality',
-              dynamicZoom // Pass the calculated zoom level
+              dynamicZoom
             );
           }
         }
       }
-      setActiveTab('summary');
 
       // Fetch search results
       const [tavilyResults, ssareResults] = await Promise.all([
@@ -204,7 +197,6 @@ export function useSearch(
           const summaryResult = await generateSummaryFromArticles(combinedResults, analysisType);
           let fullSummary = '';
           
-          // Handle streaming updates
           for await (const delta of readStreamableValue(summaryResult.output)) {
             fullSummary += delta;
             setSummary(fullSummary);
