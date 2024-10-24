@@ -97,7 +97,7 @@ const Desk: React.FC = () => {
     setHasClicked(true);
     setLocationKey(prevKey => prevKey + 1);
     
-    // Instead of resetting results and summary, just switch tabs
+    // Always switch to articles tab when clicking a location
     setActiveTab('articles');
     articleSetActiveTab('articles');
   };
@@ -110,6 +110,10 @@ const Desk: React.FC = () => {
     setHasEverSearched(true);
     setIsVisible(true);
     setHasClicked(true);
+    
+    // Explicitly set to summary tab after search
+    setActiveTab('summary');
+    articleSetActiveTab('summary');
 
     toast({
       title: "Search Completed",
