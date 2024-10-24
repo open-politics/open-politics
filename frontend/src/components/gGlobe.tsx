@@ -36,8 +36,9 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
     { type: "Elections", color: "#4CAF50", icon: "ballot", zIndex: 5 },
     { type: "Protests", color: "#2196F3", icon: "protest", zIndex: 4 },
     { type: "Economic", color: "#FF9800", icon: "economy", zIndex: 3 },
-    { type: "War", color: "#FF6347", icon: "war", zIndex: 2 },
-    { type: "News", color: "#FF6347", icon: "circle-stroked", zIndex: 1 }
+    { type: "War", color: "#FF5722", icon: "war", zIndex: 2 },
+    { type: "News", color: "#FF6347", icon: "circle-stroked", zIndex: 1 },
+    { type: "Politics", color: "#9C27B0", icon: "circle-stroked", zIndex: 1 }, // Updated with purple color
   ];
 
   const flyToLocation = (longitude: number, latitude: number, zoom: number) => {
@@ -223,7 +224,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
               features: data.features.map((feature: any) => {
                 // Ensure contents is properly handled
                 let contents;
-                 try {
+                try {
                   contents = typeof feature.properties.contents === 'string'
                     ? JSON.parse(feature.properties.contents)
                     : feature.properties.contents;

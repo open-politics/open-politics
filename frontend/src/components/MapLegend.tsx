@@ -4,9 +4,9 @@ const event_types = [
     { type: "Elections", emoji: "🗳️", color: "#4CAF50", text: "X" },
     { type: "Protests", emoji: "✊", color: "#2196F3", text: "\/" },
     { type: "Economic", emoji: "💰", color: "#FF9800", text: "$" },
-    { type: "Social", emoji: "👥", color: "#E91E63", text: "O" },
-    { type: "Crisis", emoji: "🚨", color: "#F44336", text: "!!" },
     { type: "War", emoji: "⚔️", color: "#FF5722", text: "<>" },
+    { type: "News", emoji: "📰", color: "#FF6347", text: "O" },
+    { type: "Politics", emoji: "🏛️", color: "#9C27B0", text: "P" }, // Added distinct purple color for Politics
 ];
 
 const MapLegend = () => {
