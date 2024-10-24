@@ -18,6 +18,7 @@ import { ChatWithContext } from '@/components/ChatWithContext';
 import { BookmarkedArticles } from '@/components/BookMarkedArticles';
 import Globe from '@/components/gGlobe';
 import { useLayoutStore } from '@/store/useLayoutStore'; // Import Zustand store
+import { useArticleTabNameStore } from '@/hooks/useArticleTabNameStore';
 
 // const Globe = dynamic(() => import('@/components/Globe'), { ssr: false });
 
@@ -49,6 +50,8 @@ const Desk: React.FC = () => {
 
     // Access Zustand store
     const setActiveTab = useLayoutStore((state) => state.setActiveTab);
+
+    const { setActiveTab: articleSetActiveTab } = useArticleTabNameStore();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -89,12 +92,11 @@ const Desk: React.FC = () => {
 
   const handleLocationClick = async (locationName: string) => {
     setLocation(locationName);
-    setCountry(locationName); // Set country when location is clicked
+    setCountry(locationName);
     setIsVisible(true);
     setHasClicked(true);
     setLocationKey(prevKey => prevKey + 1);
-    setActiveTab('articles'); // Set to default tab when clicking a location
-    console.log('Location clicked:', locationName);
+    articleSetActiveTab('articles'); // Set default tab when clicking location
   };
 
   const handleSearch = (searchResults: any) => {
@@ -105,7 +107,6 @@ const Desk: React.FC = () => {
     setHasEverSearched(true);
     setIsVisible(true);
     setHasClicked(true);
-    setActiveTab('search-results');
 
     toast({
       title: "Search Completed",

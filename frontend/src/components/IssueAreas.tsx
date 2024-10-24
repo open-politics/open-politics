@@ -191,11 +191,16 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
     }
   }, [data.economicData, fetchEconomicData]);
 
-  
+  // Add effect to handle initial tab selection when results arrive
+  useEffect(() => {
+    if (results && summary) {
+      setActiveTab('summary');
+    }
+  }, [results, summary, setActiveTab]);
 
   return (
     <div className="space-y-4 p-2">
-      <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full"> 
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full"> 
         <TabsList className="max-w-[80%] md:max-w-[calc(100%-60px)] overflow-x-auto flex justify-start scroll-snap-type-x mandatory">
           <TabsTrigger value="articles" className="scroll-snap-align-start">Articles</TabsTrigger>
           <TabsTrigger value="economic-data" className="scroll-snap-align-start" onClick={handleFetchEconomicData}>Economic Data</TabsTrigger>
@@ -204,7 +209,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
             <TabsTrigger value="legislative" className="scroll-snap-align-start">Legislative</TabsTrigger>
           )}
           <TabsTrigger value="wikipedia" className="scroll-snap-align-start">Wikipedia</TabsTrigger>
-          <TabsTrigger value="search-results" className="scroll-snap-align-start">Summary</TabsTrigger>
+          <TabsTrigger value="summary" className="scroll-snap-align-start">Summary</TabsTrigger>
         </TabsList>
         <div className="flex-grow overflow-hidden">
           <TabsContent value="articles" className="h-full max-h-screen overflow-y-auto">
@@ -361,7 +366,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
               </CardContent>
             </Card>
           </TabsContent>
-          <TabsContent value="search-results">
+          <TabsContent value="summary">
             <Card>
               <CardHeader>
                 <CardTitle>Summary</CardTitle>

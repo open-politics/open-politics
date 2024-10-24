@@ -62,23 +62,37 @@ const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) =
 
   const { tavilyResults, ssareResults } = results;
 
-  const MarkdownComponents: object = {
-    p: (paragraph: { children?: boolean; node?: any }) => {
-      const { node } = paragraph;
-      if (node.children[0].tagName === "img") {
+  // Update the MarkdownComponents definition
+  const MarkdownComponents = {
+    p: ({ children, node }: { children: React.ReactNode, node?: any }) => {
+      // Check if the first child is an image node
+      if (node?.children[0]?.tagName === "img") {
         const image = node.children[0];
         return (
           <div className="image-wrapper">
-            <img src={image.properties.src} alt={image.properties.alt} />
+            <img 
+              src={image.properties.src} 
+              alt={image.properties.alt || ''} 
+              className="rounded-lg"
+            />
           </div>
         );
       }
-      return <p className="mb-2">{paragraph.children}</p>;
+      // Regular paragraph
+      return <p className="mb-2">{children}</p>;
     },
-    h3: (props: any) => <h3 className="text-xl font-semibold mt-4 mb-2">{props.children}</h3>,
-    ul: (props: any) => <ul className="list-disc pl-4 mb-2">{props.children}</ul>,
-    ol: (props: any) => <ol className="list-decimal pl-4 mb-2">{props.children}</ol>,
-    li: (props: any) => <li className="mb-1">{props.children}</li>,
+    h3: ({ children }: { children: React.ReactNode }) => (
+      <h3 className="text-xl font-semibold mt-4 mb-2">{children}</h3>
+    ),
+    ul: ({ children }: { children: React.ReactNode }) => (
+      <ul className="list-disc pl-4 mb-2">{children}</ul>
+    ),
+    ol: ({ children }: { children: React.ReactNode }) => (
+      <ol className="list-decimal pl-4 mb-2">{children}</ol>
+    ),
+    li: ({ children }: { children: React.ReactNode }) => (
+      <li className="mb-1">{children}</li>
+    ),
   };
 
   const handleBookmarkAll = (articles: ContentCardProps[]) => {
@@ -137,11 +151,8 @@ const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) =
       </div>
       <div className="flex-none mb-4 overflow-auto max-h-96 prose prose-invert max-w-none rounded-md p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {showArticles && includeSummary && summary && (
-            <ReactMarkdown 
-              components={MarkdownComponents}
-              remarkPlugins={[remarkGfm]}
-            >
-              {summary}
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {String(summary)}
           </ReactMarkdown>
         )}
       </div>

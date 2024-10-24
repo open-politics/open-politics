@@ -26,21 +26,22 @@ export interface ClientMessage {
   display: ReactNode;
 }
 
-export async function generateSummaryFromArticles(
-  articles: ContentCardProps[], 
-  ssareArticles: ContentCardProps[], 
-  analysisType: string
-) {
+export async function generateSummaryFromArticles(results: any, analysisType: string = 'general politics') {
   const stream = createStreamableValue('');
 
+  // Safely extract articles from both sources
+  const tavilyArticles = results?.tavilyResults?.results || [];
+  const ssareArticles = results?.ssareResults?.contents || [];
+
   const combinedDescriptions = [
-    ...articles.map(article => article.content?.slice(0, 650) || ''),
-    ...ssareArticles.map(article => {
-      // Handle different possible content structures
+    // Handle Tavily results
+    ...tavilyArticles.map((article: any) => article.content?.slice(0, 650) || ''),
+    // Handle SSARE results
+    ...ssareArticles.map((article: any) => {
       const content = article.paragraphs || article.content || '';
       return typeof content === 'string' ? content.slice(0, 650) : '';
     })
-  ].filter(Boolean).join('\n\n');  // Filter out empty strings
+  ].filter(Boolean).join('\n\n');
 
   (async () => {
     const { textStream } = await streamText({

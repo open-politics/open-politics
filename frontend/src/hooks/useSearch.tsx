@@ -4,6 +4,7 @@ import { generateSummaryFromArticles } from '@/app/actions';
 import { readStreamableValue } from 'ai/rsc';
 import { useLocationData } from './useLocationData';
 import { useCoordinatesStore } from '@/store/useCoordinatesStore';
+import { useArticleTabNameStore } from '@/hooks/useArticleTabNameStore';
 
 export type SearchType = 'text' | 'semantic' | 'structured';
 
@@ -41,17 +42,13 @@ const calculateZoomLevel = (bbox: number[]): number => {
   const height = Math.abs(bbox[3] - bbox[1]);
   const area = width * height;
 
-  // Much more conservative zoom levels
-  if (area > 1000) return 2;     // Extremely large (Russia)
-  if (area > 500) return 2.5;    // Very large continents
-  if (area > 200) return 3;      // Large countries (Brazil, China)
-  if (area > 100) return 3.5;    // Medium-large countries
-  if (area > 50) return 4;       // Medium countries
-  if (area > 20) return 4.5;     // Medium-small countries
-  if (area > 10) return 5;       // Small countries
-  if (area > 5) return 5.5;      // Very small countries
-  if (area > 1) return 6;        // City regions
-  return 7;                      // Cities and small areas
+  // Adjust these thresholds based on testing
+  if (area > 400) return 2;      // Very large areas (continents)
+  if (area > 100) return 3;      // Large countries (Brazil, Russia)
+  if (area > 25) return 4;       // Medium countries
+  if (area > 5) return 5;        // Small countries
+  if (area > 1) return 6;        // Very small countries
+  return 7;                      // Cities and small regions
 };
 
 export function useSearch(
@@ -69,6 +66,7 @@ export function useSearch(
 
   const { fetchCoordinates } = useLocationData(null);
   const setCoordinates = useCoordinatesStore((state) => state.setCoordinates);
+  const setActiveTab = useArticleTabNameStore((state) => state.setActiveTab);
 
   const fetchTavilySearchResults = async (query: string) => {
     const apiKey = "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";
@@ -189,8 +187,9 @@ export function useSearch(
           }
         }
       }
+      setActiveTab('search-results');
 
-      // Then fetch search results
+      // Fetch search results
       const [tavilyResults, ssareResults] = await Promise.all([
         fetchTavilySearchResults(query),
         fetchSSAREContents(query)
@@ -199,27 +198,31 @@ export function useSearch(
       const combinedResults = { tavilyResults, ssareResults };
       setResults(combinedResults);
 
-      // Handle summary generation
+      // Generate summary with streaming
       if (setSummary) {
-        const tavilyArticles = tavilyResults.results.map((result: any) => ({ content: result.content }));
-        generateSummaryFromArticles(tavilyArticles, ssareResults, analysisType)
-          .then(async ({ output }) => {
-            let fullSummary = '';
-            for await (const delta of readStreamableValue(output)) {
-              fullSummary += delta;
-              setSummary(fullSummary);
-            }
-          })
-          .catch(console.error);
+        try {
+          const summaryResult = await generateSummaryFromArticles(combinedResults, analysisType);
+          let fullSummary = '';
+          
+          // Handle streaming updates
+          for await (const delta of readStreamableValue(summaryResult.output)) {
+            fullSummary += delta;
+            setSummary(fullSummary);
+          }
+        } catch (summaryError) {
+          console.error("Error generating summary:", summaryError);
+          setSummary('Failed to generate summary.');
+        }
       }
 
     } catch (err) {
       console.error("Error in search:", err);
       setError(err instanceof Error ? err : new Error('An error occurred during search'));
+      setActiveTab('articles');
     } finally {
       setLoading(false);
     }
-  }, [setResults, setSummary, setCountry, globeRef, filters, searchType, analysisType]);
+  }, [setResults, setSummary, setCountry, globeRef, filters, searchType, analysisType, setActiveTab]);
 
   return {
     search,

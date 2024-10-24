@@ -11,6 +11,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import MapLegend from './MapLegend'; 
 import { useCoordinatesStore } from '@/store/useCoordinatesStore'; 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { useArticleTabNameStore } from '@/hooks/useArticleTabNameStore';
 
 
 interface GlobeProps {
@@ -72,12 +73,13 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
   const [menuOpen, setMenuOpen] = useState(false);
   const [lastClickedCluster, setLastClickedCluster] = useState<string | null>(null);
   const [currentBbox, setCurrentBbox] = useState<number[] | null>(null);
+  const setActiveTab = useArticleTabNameStore((state) => state.setActiveTab);
 
   const eventTypes = [
     { type: "Elections", color: "#4CAF50", icon: "ballot", zIndex: 5 },
     { type: "Protests", color: "#2196F3", icon: "protest", zIndex: 4 },
     { type: "Economic", color: "#FF9800", icon: "economy", zIndex: 3 },
-    { type: "War", color: "#FF5722", icon: "war", zIndex: 2 },
+    { type: "War", color: "#FF5722", icon: "new_war", zIndex: 2 },
     { type: "News", color: "#FF6347", icon: "circle-stroked", zIndex: 1 },
     { type: "Politics", color: "#9C27B0", icon: "circle-stroked", zIndex: 1 }, // Updated with purple color
   ];
@@ -715,6 +717,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
               } catch (error) {
                 console.error('Error getting cluster information:', error);
               }
+              setActiveTab('articles'); // Set to articles tab when clicking a cluster
             });
           }
         });
