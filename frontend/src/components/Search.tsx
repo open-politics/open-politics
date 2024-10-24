@@ -28,7 +28,6 @@ import LottieLoader from './LottieLoader';
 import { useLocationData } from '@/hooks/useLocationData';
 import { useCoordinatesStore } from '@/store/useCoordinatesStore'; // Import the store
 import { useSearch } from '@/hooks/useSearch';
-import { useArticleTabNameStore } from '@/hooks/useArticleTabNameStore';
 
 interface SearchProps {
   setResults: (results: any) => void;
@@ -42,7 +41,6 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
   const [inputValue, setInputValue] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const setTabName = useArticleTabNameStore((state) => state.setTabName);
 
   const { 
     search, 
@@ -67,45 +65,28 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
     search(query);
   };
 
-  const handleSearch = async (query: string) => {
-    try {
-      // Reset tab name to Summary before performing search
-      setTabName('Summary');
-      
-      const results = await search(query);
-      
-      if (results?.coordinates) {
-        console.log('Search coordinates:', results.coordinates);
-        
-        const latitude = parseFloat(results.coordinates.latitude);
-        const longitude = parseFloat(results.coordinates.longitude);
-        
-        if (!isNaN(latitude) && !isNaN(longitude) && globeRef.current) {
-          console.log('Zooming to coordinates:', { latitude, longitude });
-          globeRef.current.zoomToCountry(latitude, longitude, results.country);
-        } else {
-          console.error('Invalid coordinates from search:', results.coordinates);
-        }
-      }
-    } catch (error) {
-      console.error('Search error:', error);
-    }
-  };
-
   return (
     <div className="relative w-full bg-white dark:bg-black bg-opacity-20 dark:bg-opacity-20 backdrop-blur-lg rounded-xl p-4 px-4">
       <h2 className="text-xl font-bold text-blue-500 dark:text-green-200 mb-2 text-left ml-1">Search News and all things Politics</h2>
       <Command className="mx-auto bg-transparent border border-blue-200 p-4 rounded-xl">
         <div className="relative">
           <CommandInput
-            onKeyDown={(e) => e.key === 'Enter' && search(inputValue)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault(); // Prevent default form submission
+                search(inputValue);
+              }
+            }}
             value={inputValue}
             onValueChange={setInputValue}
             placeholder="e.g. Economy of Oman"
             style={{ fontSize: '16px' }}
           />
           <Button 
-            onClick={() => search(inputValue)} 
+            onClick={(e) => {
+              e.preventDefault();
+              search(inputValue);
+            }} 
             className="absolute bg-[#BED4FF] dark:bg-sky-700 dark:bg-[#D2FFD9] right-2 top-1/4 sm:top-1 h-8 md:h-8 h-6 md:text-base text-xs"
           >
             Search

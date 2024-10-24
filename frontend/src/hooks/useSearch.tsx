@@ -32,6 +32,28 @@ interface UseSearchReturn {
   summary: string;
 }
 
+// Add this helper function at the top level
+const calculateZoomLevel = (bbox: number[]): number => {
+  if (!bbox || bbox.length !== 4) return 4; // Default country zoom
+
+  // Calculate the box dimensions
+  const width = Math.abs(bbox[2] - bbox[0]);
+  const height = Math.abs(bbox[3] - bbox[1]);
+  const area = width * height;
+
+  // Much more conservative zoom levels
+  if (area > 1000) return 2;     // Extremely large (Russia)
+  if (area > 500) return 2.5;    // Very large continents
+  if (area > 200) return 3;      // Large countries (Brazil, China)
+  if (area > 100) return 3.5;    // Medium-large countries
+  if (area > 50) return 4;       // Medium countries
+  if (area > 20) return 4.5;     // Medium-small countries
+  if (area > 10) return 5;       // Small countries
+  if (area > 5) return 5.5;      // Very small countries
+  if (area > 1) return 6;        // City regions
+  return 7;                      // Cities and small areas
+};
+
 export function useSearch(
   setResults: (results: any) => void,
   setCountry?: (country: string | null) => void,
@@ -99,12 +121,27 @@ export function useSearch(
     }
   };
 
-  const fetchLocationFromNLQuery = async (query: string) => {
+  const fetchLocationFromNLQuery = async (query: string): Promise<LocationData | null> => {
     try {
       const response = await axios.get(`/api/v1/locations/location_from_query?query=${query}`);
+      console.log("Location API response:", response.data); // Debug log
       if (response.data.error) return null;
-      return response.data;
+      
+      const { coordinates, country_name, bbox, area, location_type } = response.data;
+      const locationData = {
+        country_name,
+        coordinates: {
+          latitude: coordinates[1],
+          longitude: coordinates[0]
+        },
+        bbox,
+        area,
+        location_type: location_type || 'country'
+      };
+      console.log("Processed location data:", locationData); // Debug log
+      return locationData;
     } catch (error) {
+      console.error("Error in fetchLocationFromNLQuery:", error);
       return null;
     }
   };
@@ -114,41 +151,55 @@ export function useSearch(
     setError(null);
     
     try {
-      // Start country detection early and in parallel
-      const countryPromise = fetchLocationFromNLQuery(query);
+      const locationData = await fetchLocationFromNLQuery(query);
+      
+      if (locationData) {
+        if (setCountry) {
+          setCountry(locationData.country_name);
+        }
+        
+        if (locationData.coordinates) {
+          setCoordinates(locationData.coordinates.longitude, locationData.coordinates.latitude);
+          
+          const locationType = locationData.location_type || 'country';
+          
+          if (globeRef?.current?.zoomToCountry) {
+            // Calculate dynamic zoom level based on bbox
+            let dynamicZoom = 4; // default
+            if (locationData.bbox) {
+              dynamicZoom = calculateZoomLevel(locationData.bbox);
+            }
+            
+            console.log('Zooming to location:', {
+              lat: locationData.coordinates.latitude,
+              lng: locationData.coordinates.longitude,
+              type: locationType,
+              bbox: locationData.bbox,
+              calculatedZoom: dynamicZoom
+            });
+            
+            globeRef.current.zoomToCountry(
+              locationData.coordinates.latitude,
+              locationData.coordinates.longitude,
+              locationData.country_name,
+              locationData.bbox,
+              locationType as 'continent' | 'country' | 'locality',
+              dynamicZoom // Pass the calculated zoom level
+            );
+          }
+        }
+      }
 
-      // Fetch search results in parallel
+      // Then fetch search results
       const [tavilyResults, ssareResults] = await Promise.all([
         fetchTavilySearchResults(query),
         fetchSSAREContents(query)
       ]);
 
-      // Set results immediately
       const combinedResults = { tavilyResults, ssareResults };
       setResults(combinedResults);
 
-      // Handle country detection and globe zoom independently
-      countryPromise.then(async (country) => {
-        if (country && setCountry) {
-          setCountry(country.country_name);
-          
-          const coordinates = await fetchCoordinates(query);
-          if (coordinates) {
-            setCoordinates(coordinates.longitude, coordinates.latitude);
-            
-            // Direct ref call if available
-            if (globeRef?.current?.zoomToCountry) {
-              globeRef.current.zoomToCountry(
-                coordinates.latitude,
-                coordinates.longitude,
-                country.country_name
-              );
-            }
-          }
-        }
-      }).catch(console.error);
-
-      // Handle summary generation independently
+      // Handle summary generation
       if (setSummary) {
         const tavilyArticles = tavilyResults.results.map((result: any) => ({ content: result.content }));
         generateSummaryFromArticles(tavilyArticles, ssareResults, analysisType)
@@ -163,6 +214,7 @@ export function useSearch(
       }
 
     } catch (err) {
+      console.error("Error in search:", err);
       setError(err instanceof Error ? err : new Error('An error occurred during search'));
     } finally {
       setLoading(false);

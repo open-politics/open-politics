@@ -45,6 +45,7 @@ const Desk: React.FC = () => {
     const [lastSearchResults, setLastSearchResults] = useState(null);
     const [hasEverSearched, setHasEverSearched] = useState(false);
     const [country, setCountry] = useState<string | null>(null);
+    const [searchTransitionComplete, setSearchTransitionComplete] = useState(false);
 
     // Access Zustand store
     const setActiveTab = useLayoutStore((state) => state.setActiveTab);
@@ -102,9 +103,10 @@ const Desk: React.FC = () => {
     setIsBrowseMode(false);
     setHasSearched(true);
     setHasEverSearched(true);
-    setIsVisible(true); // Ensure the panel is set to visible
-    setHasClicked(true); // Ensure the panel is set to clicked
-    setActiveTab('search-results'); // Set active tab to search results
+    setIsVisible(true);
+    setHasClicked(true);
+    setActiveTab('search-results');
+
     toast({
       title: "Search Completed",
       description: "Your search results are now available.",
@@ -115,8 +117,7 @@ const Desk: React.FC = () => {
         window.scrollTo({ top: 100, behavior: 'smooth' });
       }, 100);
     }
-    console.log('Search performed:', searchResults);
-};
+  };
 
   const handleLocationZoom = (latitude: number, longitude: number, locationName: string) => {
     if (globeRef.current) {
@@ -167,133 +168,63 @@ const Desk: React.FC = () => {
           <h1 suppressHydrationWarning className="text-sm text-gray-400">{currentTime}</h1>
         </div>
 
-        <AnimatePresence mode="wait">
-          {!hasSearched ? (
+        {/* Main content area - always showing globe and search */}
+        <div className="relative w-full h-full overflow-x-hidden">
+          <motion.div
+            className={`absolute h-2/3 p-4 ${hasClicked || isVisible ? 'w-1/2' : 'w-full'}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Globe
+              ref={globeRef}
+              geojsonUrl={geojsonUrl}
+              setArticleContent={setArticleContent}
+              onLocationClick={handleLocationClick}
+              isBrowseMode={isBrowseMode}
+              toggleMode={toggleMode}
+              setLegislativeData={setLegislativeData}
+              setEconomicData={setEconomicData}
+              onCountryZoom={handleLocationZoom}
+            />
+          </motion.div>
+          
+          <motion.div
+            className={`absolute ${isMobile ? 'top-2/3 transform -translate-x-1/2 w-full' : `${hasClicked && isVisible ? 'top-2/3 left-2 transform -translate-x-1/2 -translate-y-1/2 w-1/2' : 'top-2/3 left-1/4 transform -translate-x-1/2 -translate-y-1/2 w-1/2'}`} px-0`}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Search
+              setResults={handleSearch}
+              setCountry={setCountry}
+              setSummary={handleSummary}
+              globeRef={globeRef}
+            />
+          </motion.div>
+
+          {/* Side panel */}
+          {hasClicked && (
             <motion.div
-              key="globe-view"
-              className="relative w-full h-full overflow-x-hidden"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
+              className={`absolute ${isMobile ? 'top-0' : 'top-0'} right-0 max-h-screen ${isMobile ? 'max-w-full' : 'w-1/2'}`}
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ duration: 0.3 }}
             >
-              <motion.div
-                className={`absolute h-2/3 p-4 ${hasClicked || isVisible ? 'w-1/2' : 'w-full'}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Globe
-                  ref={globeRef}
-                  geojsonUrl={geojsonUrl}
-                  setArticleContent={setArticleContent}
-                  onLocationClick={handleLocationClick}
-                  isBrowseMode={isBrowseMode}
-                  toggleMode={toggleMode}
-                  setLegislativeData={setLegislativeData}
-                  setEconomicData={setEconomicData}
-                  onCountryZoom={handleLocationZoom}
-                />
-              </motion.div>
-              <motion.div
-                className={`absolute ${isMobile ? 'top-2/3 transform -translate-x-1/2 w-full' : `${hasClicked && isVisible ? 'top-2/3  left-2 transform -translate-x-1/2 -translate-y-1/2 w-1/2' : 'top-2/3  left-1/4 transform -translate-x-1/2 -translate-y-1/2 w-1/2'}`} px-0`}
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                <Search
-                  setResults={handleSearch}
-                  setCountry={setCountry}
-                  setSummary={handleSummary}
-                  globeRef={globeRef}
-                />
-              </motion.div>
-              <AnimatePresence>
-                {hasClicked && (
-                  <motion.div
-                    className={`absolute ${isMobile ? 'top-0' : 'top-0'} right-0 max-h-screen ${isMobile ? 'max-w-full' : 'w-1/2'}`}
-                    initial={{ x: '100%' }}
-                    animate={{ x: 0 }}
-                    exit={{ x: '100%' }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <LocationDetailPanel
-                      key={locationKey}
-                      location={location}
-                      isVisible={isVisible}
-                      toggleVisibility={toggleVisibility}
-                      results={results}
-                      summary={summary}
-                    />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="search-results-view"
-              className={`${isMobile ? 'flex flex-col h-screen overflow-y-auto' : 'grid grid-cols-1 md:grid-cols-2 gap-2 h-full'}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className={`p-4 ${isMobile ? 'h-full flex flex-col' : 'h-screen flex flex-col col-span-1'}`}>
-                <motion.div
-                  className="flex-1 relative h-2/3"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <Globe
-                    ref={globeRef}
-                    geojsonUrl={geojsonUrl}
-                    setArticleContent={setArticleContent}
-                    onLocationClick={handleLocationClick}
-                    isBrowseMode={isBrowseMode}
-                    toggleMode={toggleMode}
-                    setLegislativeData={setLegislativeData}
-                    onCountryZoom={handleLocationZoom}
-                  />
-                </motion.div>
-                <motion.div
-                  className={`${isMobile ? 'w-full' : 'h-1/3 w-full'}`}
-                  initial={{ opacity: 0, y: 50 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <Search
-                    setResults={handleSearch}
-                    setCountry={setCountry}
-                    setSummary={handleSummary}
-                    globeRef={globeRef}
-                  />
-                </motion.div>
-              </div>
-              {hasSearched && isVisible && (
-                <motion.div
-                  className={`absolute top-4 right-0 max-h-screen ${isMobile ? 'max-w-full' : 'w-1/2'}`}
-                  initial={{ opacity: 0, x: '100%' }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: '100%' }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="flex-1 relative">
-                    <LocationDetailPanel
-                      key={locationKey}
-                      location={location}
-                      isVisible={isVisible}
-                      toggleVisibility={toggleVisibility}
-                      results={results}
-                      summary={summary}
-                    />
-                  </div>
-                </motion.div>
-              )}
+              <LocationDetailPanel
+                key={locationKey}
+                location={location}
+                isVisible={isVisible}
+                toggleVisibility={toggleVisibility}
+                results={results}
+                summary={summary}
+              />
             </motion.div>
           )}
-        </AnimatePresence>
+        </div>
 
+        {/* Bottom buttons */}
         <motion.button
           onClick={handleReload}
           className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white p-2 rounded-full shadow-lg"

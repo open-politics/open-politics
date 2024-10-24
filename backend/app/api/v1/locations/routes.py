@@ -98,22 +98,21 @@ async def location_from_query(query: str):
         geo_response.raise_for_status()
         data = geo_response.json()
 
-        # Validate coordinates exist and are in correct format
-        coordinates = data.get('coordinates', {}).get('coordinates')
-        if not coordinates or len(coordinates) < 2:
-            raise HTTPException(
-                status_code=500, 
-                detail="Invalid coordinates format received from geo service"
-            )
+        # Log the full response for debugging
+        logger.info(f"Geo service response: {data}")
 
         return {
-            "location": location, 
-            "longitude": coordinates[0], 
-            "latitude": coordinates[1]
+            "country_name": location,
+            "coordinates": data.get('coordinates'),  # This is already [lon, lat]
+            "bbox": data.get('bbox'),
+            "area": data.get('area'),
+            "location_type": data.get('location_type', 'locality')  # Add location_type
         }
     except requests.RequestException as e:
+        logger.error(f"Service request failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Service request failed: {str(e)}")
     except (KeyError, IndexError, json.JSONDecodeError) as e:
+        logger.error(f"Error processing response: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error processing response: {str(e)}")
 
 @router.get("/geojson/")

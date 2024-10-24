@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
@@ -17,9 +17,49 @@ interface GlobeProps {
   geojsonUrl: string;
   onLocationClick: (countryName: string) => void;
   coordinates?: { latitude: number; longitude: number }; 
+  onBboxChange?: (bbox: number[] | null) => void;
 }
 
-const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, coordinates }, ref) => {
+// Add this type and mapping near the top of your file
+type LocationType = 'continent' | 'country' | 'locality' | 'region' | 'city' | 'address';
+
+// Update the zoom level mapping with more granular levels
+const getZoomLevelForLocation = (locationType: LocationType): number => {
+  const zoomLevels: Record<LocationType, number> = {
+    continent: 2,
+    country: 4,
+    region: 5,
+    locality: 6,
+    city: 7,
+    address: 8
+  };
+  
+  return zoomLevels[locationType] || 4; // Default to country zoom if type not found
+};
+
+// Add this helper function at the top of the file
+const calculateZoomLevel = (bbox: number[]): number => {
+  if (!bbox || bbox.length !== 4) return 4; // Default country zoom
+
+  // Calculate the box dimensions
+  const width = Math.abs(bbox[2] - bbox[0]);
+  const height = Math.abs(bbox[3] - bbox[1]);
+  const area = width * height;
+
+  // Much more conservative zoom levels
+  if (area > 1000) return 2;     // Extremely large (Russia)
+  if (area > 500) return 2.5;    // Very large continents
+  if (area > 200) return 3;      // Large countries (Brazil, China)
+  if (area > 100) return 3.5;    // Medium-large countries
+  if (area > 50) return 4;       // Medium countries
+  if (area > 20) return 4.5;     // Medium-small countries
+  if (area > 10) return 5;       // Small countries
+  if (area > 5) return 5.5;      // Very small countries
+  if (area > 1) return 6;        // City regions
+  return 7;                      // Cities and small areas
+};
+
+const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, coordinates, onBboxChange }, ref) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -31,6 +71,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
   const { latitude, longitude } = useCoordinatesStore();
   const [menuOpen, setMenuOpen] = useState(false);
   const [lastClickedCluster, setLastClickedCluster] = useState<string | null>(null);
+  const [currentBbox, setCurrentBbox] = useState<number[] | null>(null);
 
   const eventTypes = [
     { type: "Elections", color: "#4CAF50", icon: "ballot", zIndex: 5 },
@@ -41,34 +82,24 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
     { type: "Politics", color: "#9C27B0", icon: "circle-stroked", zIndex: 1 }, // Updated with purple color
   ];
 
-  const flyToLocation = (longitude: number, latitude: number, zoom: number) => {
+  // Update the flyToLocation function
+  const flyToLocation = useCallback((longitude: number, latitude: number, zoom: number, locationType?: LocationType) => {
     if (mapRef.current) {
-      // Fix 1: Ensure coordinates are valid numbers
       if (isNaN(longitude) || isNaN(latitude)) {
         console.error('Invalid coordinates:', { longitude, latitude });
         return;
       }
 
-      // Fix 2: Add error boundaries for coordinates
-      const validLongitude = Math.max(-180, Math.min(180, longitude));
-      const validLatitude = Math.max(-90, Math.min(90, latitude));
-
-      // Fix 3: Add a try-catch block for the flyTo operation
-      try {
-        const offset: [number, number] = [0, -(mapRef.current.getContainer().offsetHeight * 0.2)];
-        
-        mapRef.current.flyTo({
-          center: [validLongitude, validLatitude],
-          zoom: zoom,
-          offset: offset,
-          essential: true,
-          duration: 2000 // Add a duration to make the animation smoother
-        });
-      } catch (error) {
-        console.error('Error during flyTo:', error);
-      }
+      const finalZoom = locationType ? getZoomLevelForLocation(locationType) : zoom;
+      
+      mapRef.current.flyTo({
+        center: [longitude, latitude],
+        zoom: finalZoom,
+        essential: true,
+        duration: 2000
+      });
     }
-  };
+  }, []);
 
   const handleFlyToInputLocation = async () => {
     const coordinates = await geocodeLocation(inputLocation);
@@ -835,14 +866,189 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
       }
   `;
 
-  // Fix 4: Update the ref implementation
+  // Update the highlightBbox function
+  const highlightBbox = useCallback((
+    bbox: string[] | number[], 
+    locationType: LocationType = 'locality',
+    dynamicZoom?: number
+  ) => {
+    if (!mapRef.current || !bbox || bbox.length !== 4) return;
+
+    const numericBbox = bbox.map(coord => typeof coord === 'string' ? parseFloat(coord) : coord);
+    const zoomLevel = dynamicZoom || getZoomLevelForLocation(locationType);
+
+    // Remove existing bbox layer if any
+    if (mapRef.current.getLayer('bbox-fill')) {
+      mapRef.current.removeLayer('bbox-fill');
+    }
+    if (mapRef.current.getLayer('bbox-outline')) {
+      mapRef.current.removeLayer('bbox-outline');
+    }
+    if (mapRef.current.getSource('bbox')) {
+      mapRef.current.removeSource('bbox');
+    }
+
+    if (bbox) {
+      // Create a GeoJSON polygon from the bbox
+      const bboxPolygon = {
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: [[
+            [bbox[0], bbox[1]], // SW
+            [bbox[2], bbox[1]], // SE
+            [bbox[2], bbox[3]], // NE
+            [bbox[0], bbox[3]], // NW
+            [bbox[0], bbox[1]]  // SW (close the polygon)
+          ]]
+        }
+      };
+
+      // Add the bbox source and layers
+      mapRef.current.addSource('bbox', {
+        type: 'geojson',
+        data: bboxPolygon
+      });
+
+      // Add fill layer
+      mapRef.current.addLayer({
+        id: 'bbox-fill',
+        type: 'fill',
+        source: 'bbox',
+        paint: {
+          'fill-color': '#000000', // Changed to black
+          'fill-opacity': 0.1
+        }
+      });
+
+      // Add outline layer
+      mapRef.current.addLayer({
+        id: 'bbox-outline',
+        type: 'line',
+        source: 'bbox',
+        paint: {
+          'line-color': '#000000', // Changed to black
+          'line-width': 2,
+          'line-dasharray': [2, 2]
+        }
+      });
+
+      // Update fitBounds with more padding and looser zoom constraints
+      mapRef.current.fitBounds(
+        [[numericBbox[0], numericBbox[1]], [numericBbox[2], numericBbox[3]]],
+        { 
+          padding: 150, // Increased padding
+          duration: 2000,
+          maxZoom: zoomLevel,
+          minZoom: Math.max(2, zoomLevel - 1.5) // Allow more zoom out, but never less than 2
+        }
+      );
+    }
+
+    setCurrentBbox(bbox);
+    if (onBboxChange) {
+      onBboxChange(bbox);
+    }
+  }, [onBboxChange]);
+
+  // Update the ref implementation
   React.useImperativeHandle(ref, () => ({
-    zoomToCountry: (latitude: number, longitude: number, country: string) => {
-      if (mapRef.current && !isNaN(latitude) && !isNaN(longitude)) {
-        console.log('Zooming to:', { latitude, longitude, country }); // Add logging
-        flyToLocation(longitude, latitude, 6);
-      } else {
-        console.error('Invalid coordinates in zoomToCountry:', { latitude, longitude, country });
+    zoomToCountry: (
+      latitude: number, 
+      longitude: number, 
+      country: string, 
+      bbox?: string[] | number[],
+      locationType: 'continent' | 'country' | 'locality' = 'country',
+      dynamicZoom?: number
+    ) => {
+      // Add validation
+      if (isNaN(latitude) || isNaN(longitude)) {
+        console.error('Invalid coordinates in zoomToCountry:', { latitude, longitude });
+        return;
+      }
+
+      console.log('zoomToCountry called with:', { 
+        latitude, 
+        longitude, 
+        country, 
+        bbox, 
+        locationType,
+        dynamicZoom 
+      });
+
+      if (mapRef.current) {
+        if (bbox && bbox.length === 4) {
+          const numericBbox = bbox.map(coord => typeof coord === 'string' ? parseFloat(coord) : coord);
+          const calculatedZoom = calculateZoomLevel(numericBbox);
+          
+          // Create a GeoJSON polygon from the bbox
+          const bboxPolygon = {
+            type: 'Feature',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [[
+                [bbox[0], bbox[1]], // SW
+                [bbox[2], bbox[1]], // SE
+                [bbox[2], bbox[3]], // NE
+                [bbox[0], bbox[3]], // NW
+                [bbox[0], bbox[1]]  // SW (close the polygon)
+              ]]
+            }
+          };
+
+          // Remove existing bbox layers if any
+          if (mapRef.current.getLayer('bbox-fill')) {
+            mapRef.current.removeLayer('bbox-fill');
+          }
+          if (mapRef.current.getLayer('bbox-outline')) {
+            mapRef.current.removeLayer('bbox-outline');
+          }
+          if (mapRef.current.getSource('bbox')) {
+            mapRef.current.removeSource('bbox');
+          }
+
+          // Add the bbox source and layers
+          mapRef.current.addSource('bbox', {
+            type: 'geojson',
+            data: bboxPolygon
+          });
+
+          // Add fill layer
+          mapRef.current.addLayer({
+            id: 'bbox-fill',
+            type: 'fill',
+            source: 'bbox',
+            paint: {
+              'fill-color': '#000000',
+              'fill-opacity': 0.1
+            }
+          });
+
+          // Add outline layer
+          mapRef.current.addLayer({
+            id: 'bbox-outline',
+            type: 'line',
+            source: 'bbox',
+            paint: {
+              'line-color': '#000000',
+              'line-width': 2,
+              'line-dasharray': [2, 2]
+            }
+          });
+
+          // Use fitBounds with the calculated zoom
+          mapRef.current.fitBounds(
+            [[numericBbox[0], numericBbox[1]], [numericBbox[2], numericBbox[3]]],
+            { 
+              padding: 150,
+              duration: 2000,
+              maxZoom: calculatedZoom,
+              minZoom: Math.max(2, calculatedZoom - 1)
+            }
+          );
+        } else {
+          flyToLocation(longitude, latitude, dynamicZoom || 6, locationType);
+        }
       }
     }
   }));
