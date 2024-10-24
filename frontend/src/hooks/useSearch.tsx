@@ -187,7 +187,7 @@ export function useSearch(
           }
         }
       }
-      setActiveTab('search-results');
+      setActiveTab('summary');
 
       // Fetch search results
       const [tavilyResults, ssareResults] = await Promise.all([

@@ -128,16 +128,39 @@ const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) =
       {tavilyResults && tavilyResults.images && tavilyResults.images.length > 0 && (
         <div className="flex overflow-x-auto max-h-32 space-x-4 mb-4 pb-2">
           {tavilyResults.images.map((imageSrc: string, index: number) => (
-            <a href={imageSrc} target="_blank" rel="noopener noreferrer" key={`tavily-image-link-${index}`}>
-              <Image
-                key={`tavily-image-${index}`}
-                src={imageSrc}
-                alt={`Tavily Image ${index}`}
-                width={200}
-                height={150}
-                className="rounded-md"
-              />
-            </a>
+            <Popover key={`tavily-image-popover-${index}`}>
+              <PopoverTrigger asChild>
+                <div className="cursor-pointer hover:opacity-80 transition-opacity">
+                  <Image
+                    src={imageSrc}
+                    alt={`Tavily Image ${index}`}
+                    width={150}
+                    height={150}
+                    className="rounded-md"
+                  />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-2">
+                <div className="relative">
+                  <Image
+                    src={imageSrc}
+                    alt={`Tavily Image ${index}`}
+                    width={400}
+                    height={400}
+                    max-height={400}
+                    className="rounded-lg object-contain"
+                  />
+                  <a 
+                    href={imageSrc}
+                    target="_blank"
+                    rel="noopener noreferrer" 
+                    className="absolute top-2 right-2 bg-black/50 text-white px-3 py-1 rounded-md text-sm hover:bg-black/70"
+                  >
+                    Open Original
+                  </a>
+                </div>
+              </PopoverContent>
+            </Popover>
           ))}
         </div>
       )}
@@ -149,7 +172,7 @@ const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) =
           variant="compact" 
         />
       </div>
-      <div className="flex-none mb-4 overflow-auto max-h-96 prose prose-invert max-w-none rounded-md p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div className="flex-none mb-4 overflow-auto max-h-64 prose prose-invert max-w-none rounded-md p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {showArticles && includeSummary && summary && (
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
             {String(summary)}

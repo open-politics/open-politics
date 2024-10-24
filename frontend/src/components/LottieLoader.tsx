@@ -27,7 +27,7 @@ const LottieLoader: React.FC = () => {
   }
 
   if (!animationData) {
-    return <div>Loading...</div>;
+    return <div></div>;
   }
 
   return (

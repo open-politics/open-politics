@@ -93,7 +93,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
           </Button>
         </div>
         {loading && (
-          <div className="absolute left-0 right-0 flex justify-center mt-24">
+          <div className="absolute left-0 right-0 flex justify-center mt-12">
             <LottieLoader />
           </div>
         )}
