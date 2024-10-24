@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image'; // Import Image from next/image
-import ArticleCard, { ArticleCardProps } from './ContentCard';
+import { ContentCard, ContentCardProps } from './ContentCard'; // Update import
 import EntitiesView from './EntitiesView'; // Import EntitiesView
 import {
   Popover,
@@ -20,7 +20,7 @@ interface ResultsProps {
       images?: string[];
       results: any[];
     };
-    ssareResults: ArticleCardProps[];
+    ssareResults: ContentCardProps[]; // Update type
   };
   summary?: string;
   includeSummary: boolean; // New prop for including summary
@@ -81,12 +81,12 @@ const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) =
     li: (props: any) => <li className="mb-1">{props.children}</li>,
   };
 
-  const handleBookmarkAll = (articles: ArticleCardProps[]) => {
+  const handleBookmarkAll = (articles: ContentCardProps[]) => {
     articles.forEach(article => {
       addBookmark({
         id: article.id,
-        headline: article.headline,
-        paragraphs: article.paragraphs,
+        headline: article.title,
+        paragraphs: article.text_content,
         url: article.url,
         source: article.source,
         insertion_date: article.insertion_date,
@@ -149,29 +149,19 @@ const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) =
       <div className="flex-1 max-h-[50vh] overflow-y-auto">
         {showArticles && (
           <Tabs defaultValue="ssare" className="w-full h-full">
-            <TabsList className="grid w-full grid-cols-3 gap-1">
-              <TabsTrigger value="all" className="py-1">All Results</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 gap-1">
               <TabsTrigger value="tavily" className="py-1">Tavily Results</TabsTrigger>
               <TabsTrigger value="ssare" className="py-1">SSARE Results</TabsTrigger>
             </TabsList>
-            <TabsContent value="all" className="h-full overflow-y-auto">
-              <div className="flex-grow overflow-auto max-h-full overflow-y-auto max-w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                {/* Render all results here */}
-                <Button onClick={() => handleBookmarkAll([...tavilyResults.results, ...ssareResults])} variant="outline" className="mt-2">Bookmark All Tavily & SSARE Articles</Button>
-                {renderAllResults(tavilyResults, ssareResults)}
-              </div>
-            </TabsContent>
+            
             <TabsContent value="tavily" className="h-full overflow-y-auto">
               <div className="flex-grow overflow-auto max-h-full overflow-y-auto max-w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                {/* Render Tavily results here */}
-                <Button onClick={() => handleBookmarkAll(tavilyResults.results)} variant="outline" className="mt-2">Bookmark All Tavily Articles</Button>
                 {renderTavilyResults(tavilyResults)}
               </div>
             </TabsContent>
+
             <TabsContent value="ssare" className="h-full overflow-y-auto">
               <div className="flex-grow overflow-auto max-h-full overflow-y-auto max-w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                {/* Render SSARE results here */}
-                <Button onClick={() => handleBookmarkAll(ssareResults)} variant="outline" className="mt-2">Bookmark All SSARE Articles</Button>
                 {renderSsareResults(ssareResults)}
               </div>
             </TabsContent>
@@ -183,42 +173,62 @@ const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) =
 };
 
 // Helper functions to render results
-const renderAllResults = (tavilyResults: any, ssareResults: ArticleCardProps[]) => (
+const renderAllResults = (tavilyResults: any, ssareResults: ContentCardProps[]) => (
   <>
-    {renderTavilyResults(tavilyResults)}
-    {renderSsareResults(ssareResults)}
+    <div key="tavily-section">
+      {renderTavilyResults(tavilyResults)}
+    </div>
+    <div key="ssare-section">
+      {renderSsareResults(ssareResults)}
+    </div>
   </>
 );
 
 const renderTavilyResults = (tavilyResults: any) => (
   <>
     <h3 className="text-lg font-semibold mb-2">Tavily Results</h3>
-    {tavilyResults && tavilyResults.results && tavilyResults.results.map((result: any, index: number) => (
-      <ArticleCard
-        className={index === 0 ? 'first-article' : ''}
-        key={`tavily-${index}`}
-        id={`tavily-${index}`}
-        headline={result.title}
-        paragraphs={result.content.length > 300 ? `${result.content.substring(0, 300)}...` : result.content}
-        url={result.url}
-        source={result.url || 'Unknown'}
-        insertion_date={null}
-        entities={[]}
-        tags={[]}
-        classification={null}
-      />
-    ))}
+    {tavilyResults?.results?.map((result: any, index: number) => {
+      // Create a unique ID using URL and index
+      const uniqueId = `tavily-${index}-${encodeURIComponent(result.url)}`;
+      
+      const contentCardProps: ContentCardProps = {
+        id: uniqueId,
+        title: result.title || 'Untitled',  // Fallback for empty titles
+        text_content: result.content || '',
+        url: result.url,
+        source: result.url,
+        insertion_date: new Date().toISOString(),
+        entities: [],
+        tags: [],
+        classification: null
+      };
+
+      return (
+        <ContentCard
+          key={uniqueId}
+          {...contentCardProps}
+          className={index === 0 ? 'first-article' : ''}
+        />
+      );
+    })}
   </>
 );
 
-const renderSsareResults = (ssareResults: ArticleCardProps[]) => (
+const renderSsareResults = (ssareResults: ContentCardProps[]) => (
   <>
-    {ssareResults && ssareResults.map((result: ArticleCardProps) => (
-      <ArticleCard
-        key={`ssare-${result.id}`}
-        {...result}
-      />
-    ))}
+    {ssareResults?.map((result: ContentCardProps, index: number) => {
+      // Create a unique key using ID and index as fallback
+      const uniqueKey = result.id ? 
+        `ssare-${result.id}-${index}` : 
+        `ssare-fallback-${index}-${encodeURIComponent(result.url || '')}`;
+      
+      return (
+        <ContentCard
+          key={uniqueKey}
+          {...result}
+        />
+      );
+    })}
   </>
 );
 

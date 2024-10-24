@@ -19,7 +19,7 @@ interface GlobeProps {
   coordinates?: { latitude: number; longitude: number }; 
 }
 
-const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates }) => {
+const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, coordinates }, ref) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -42,15 +42,30 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
 
   const flyToLocation = (longitude: number, latitude: number, zoom: number) => {
     if (mapRef.current) {
-      // Explicitly type the offset as a tuple [number, number]
-      const offset: [number, number] = [0, -(mapRef.current.getContainer().offsetHeight * 0.2)];
-      
-      mapRef.current.flyTo({
-        center: [longitude, latitude],
-        zoom: zoom,
-        offset: offset,
-        essential: true
-      });
+      // Fix 1: Ensure coordinates are valid numbers
+      if (isNaN(longitude) || isNaN(latitude)) {
+        console.error('Invalid coordinates:', { longitude, latitude });
+        return;
+      }
+
+      // Fix 2: Add error boundaries for coordinates
+      const validLongitude = Math.max(-180, Math.min(180, longitude));
+      const validLatitude = Math.max(-90, Math.min(90, latitude));
+
+      // Fix 3: Add a try-catch block for the flyTo operation
+      try {
+        const offset: [number, number] = [0, -(mapRef.current.getContainer().offsetHeight * 0.2)];
+        
+        mapRef.current.flyTo({
+          center: [validLongitude, validLatitude],
+          zoom: zoom,
+          offset: offset,
+          essential: true,
+          duration: 2000 // Add a duration to make the animation smoother
+        });
+      } catch (error) {
+        console.error('Error during flyTo:', error);
+      }
     }
   };
 
@@ -208,7 +223,7 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
               features: data.features.map((feature: any) => {
                 // Ensure contents is properly handled
                 let contents;
-                try {
+                 try {
                   contents = typeof feature.properties.contents === 'string'
                     ? JSON.parse(feature.properties.contents)
                     : feature.properties.contents;
@@ -819,6 +834,18 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
       }
   `;
 
+  // Fix 4: Update the ref implementation
+  React.useImperativeHandle(ref, () => ({
+    zoomToCountry: (latitude: number, longitude: number, country: string) => {
+      if (mapRef.current && !isNaN(latitude) && !isNaN(longitude)) {
+        console.log('Zooming to:', { latitude, longitude, country }); // Add logging
+        flyToLocation(longitude, latitude, 6);
+      } else {
+        console.error('Invalid coordinates in zoomToCountry:', { latitude, longitude, country });
+      }
+    }
+  }));
+
   return (
     <div style={{ position: 'relative', height: '100%', width: '100%' }}>
       <div ref={mapContainerRef} className="map-container" style={{ height: '100%', padding: '10px', borderRadius: '12px' }}></div>
@@ -908,6 +935,6 @@ const Globe: React.FC<GlobeProps> = ({ geojsonUrl, onLocationClick, coordinates 
       )}
     </div>
   );
-};
+});
 
 export default Globe;

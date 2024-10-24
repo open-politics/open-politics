@@ -82,11 +82,17 @@ export function useSearch(
           ...filters
         }
       });
-      // Transform the data to ensure it has the required structure
-      return response.data.map((article: any) => ({
-        ...article,
-        paragraphs: article.paragraphs || article.content || ''  // Fallback to content or empty string
-      }));
+      // Remove duplicates based on article ID
+      const uniqueArticles = response.data.reduce((acc: any[], article: any) => {
+        if (!acc.find((a: any) => a.id === article.id)) {
+          acc.push({
+            ...article,
+            paragraphs: article.paragraphs || article.content || ''
+          });
+        }
+        return acc;
+      }, []);
+      return uniqueArticles;
     } catch (error) {
       console.error('Error fetching SSARE articles:', error);
       return [];
@@ -108,38 +114,54 @@ export function useSearch(
     setError(null);
     
     try {
+      // Start country detection early and in parallel
+      const countryPromise = fetchLocationFromNLQuery(query);
+
+      // Fetch search results in parallel
       const [tavilyResults, ssareResults] = await Promise.all([
         fetchTavilySearchResults(query),
         fetchSSAREContents(query)
       ]);
 
+      // Set results immediately
       const combinedResults = { tavilyResults, ssareResults };
       setResults(combinedResults);
 
-      if (setSummary) {
-        const tavilyArticles = tavilyResults.results.map((result: any) => ({ content: result.content }));
-        const { output } = await generateSummaryFromArticles(tavilyArticles, ssareResults, analysisType);
-        let fullSummary = '';
-        for await (const delta of readStreamableValue(output)) {
-          fullSummary += delta;
-          setSummary(fullSummary);
-        }
-      }
-
-      if (setCountry) {
-        const country = await fetchLocationFromNLQuery(query);
-        if (country) {
+      // Handle country detection and globe zoom independently
+      countryPromise.then(async (country) => {
+        if (country && setCountry) {
           setCountry(country.country_name);
           
-          if (globeRef?.current) {
-            const coordinates = await fetchCoordinates(query);
-            if (coordinates) {
-              setCoordinates(coordinates.longitude, coordinates.latitude);
-              globeRef.current.zoomToCountry(coordinates.latitude, coordinates.longitude, country.country_name);
+          const coordinates = await fetchCoordinates(query);
+          if (coordinates) {
+            setCoordinates(coordinates.longitude, coordinates.latitude);
+            
+            // Direct ref call if available
+            if (globeRef?.current?.zoomToCountry) {
+              globeRef.current.zoomToCountry(
+                coordinates.latitude,
+                coordinates.longitude,
+                country.country_name
+              );
             }
           }
         }
+      }).catch(console.error);
+
+      // Handle summary generation independently
+      if (setSummary) {
+        const tavilyArticles = tavilyResults.results.map((result: any) => ({ content: result.content }));
+        generateSummaryFromArticles(tavilyArticles, ssareResults, analysisType)
+          .then(async ({ output }) => {
+            let fullSummary = '';
+            for await (const delta of readStreamableValue(output)) {
+              fullSummary += delta;
+              setSummary(fullSummary);
+            }
+          })
+          .catch(console.error);
       }
+
     } catch (err) {
       setError(err instanceof Error ? err : new Error('An error occurred during search'));
     } finally {

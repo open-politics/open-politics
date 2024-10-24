@@ -28,6 +28,7 @@ import LottieLoader from './LottieLoader';
 import { useLocationData } from '@/hooks/useLocationData';
 import { useCoordinatesStore } from '@/store/useCoordinatesStore'; // Import the store
 import { useSearch } from '@/hooks/useSearch';
+import { useArticleTabNameStore } from '@/hooks/useArticleTabNameStore';
 
 interface SearchProps {
   setResults: (results: any) => void;
@@ -41,6 +42,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
   const [inputValue, setInputValue] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const setTabName = useArticleTabNameStore((state) => state.setTabName);
 
   const { 
     search, 
@@ -63,6 +65,31 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
   const handleSuggestionSelect = (query: string) => {
     setInputValue(query);
     search(query);
+  };
+
+  const handleSearch = async (query: string) => {
+    try {
+      // Reset tab name to Summary before performing search
+      setTabName('Summary');
+      
+      const results = await search(query);
+      
+      if (results?.coordinates) {
+        console.log('Search coordinates:', results.coordinates);
+        
+        const latitude = parseFloat(results.coordinates.latitude);
+        const longitude = parseFloat(results.coordinates.longitude);
+        
+        if (!isNaN(latitude) && !isNaN(longitude) && globeRef.current) {
+          console.log('Zooming to coordinates:', { latitude, longitude });
+          globeRef.current.zoomToCountry(latitude, longitude, results.country);
+        } else {
+          console.error('Invalid coordinates from search:', results.coordinates);
+        }
+      }
+    } catch (error) {
+      console.error('Search error:', error);
+    }
   };
 
   return (

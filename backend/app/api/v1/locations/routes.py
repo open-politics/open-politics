@@ -81,20 +81,40 @@ async def get_location_entities_contents(
 
 @router.get("/location_from_query")
 async def location_from_query(query: str):
-    location = requests.get(f"http://classification_service:5688/location_from_query?query={query}", verify=False)
-    location = location.json()
-    print(location)
-
-    response = requests.get(f"http://geo_service:3690/geocode_location?location={location}", verify=False)
-    print(response.json())
     try:
-        if response.status_code == 200:
-            coordinates = response.json()['coordinates']
-            return {"location": location, "longitude": coordinates[0], "latitude": coordinates[1]}
-        else:
-            raise HTTPException(status_code=response.status_code, detail="Unable to fetch geocoding data")
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=500, detail="Error decoding geocoding data")
+        # Get location from classification service
+        location_response = requests.get(
+            f"http://classification_service:5688/location_from_query?query={query}", 
+            verify=False
+        )
+        location_response.raise_for_status()
+        location = location_response.json()
+
+        # Get coordinates from geo service
+        geo_response = requests.get(
+            f"http://geo_service:3690/geocode_location?location={location}", 
+            verify=False
+        )
+        geo_response.raise_for_status()
+        data = geo_response.json()
+
+        # Validate coordinates exist and are in correct format
+        coordinates = data.get('coordinates', {}).get('coordinates')
+        if not coordinates or len(coordinates) < 2:
+            raise HTTPException(
+                status_code=500, 
+                detail="Invalid coordinates format received from geo service"
+            )
+
+        return {
+            "location": location, 
+            "longitude": coordinates[0], 
+            "latitude": coordinates[1]
+        }
+    except requests.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"Service request failed: {str(e)}")
+    except (KeyError, IndexError, json.JSONDecodeError) as e:
+        raise HTTPException(status_code=500, detail=f"Error processing response: {str(e)}")
 
 @router.get("/geojson/")
 async def geojson_view():

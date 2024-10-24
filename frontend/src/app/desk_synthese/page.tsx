@@ -238,9 +238,9 @@ const Desk: React.FC = () => {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <div className={`p-4 ${isMobile ? 'h-full flex flex-col' : 'h-2/3 flex flex-col col-span-1'}`}>
+              <div className={`p-4 ${isMobile ? 'h-full flex flex-col' : 'h-screen flex flex-col col-span-1'}`}>
                 <motion.div
-                  className="flex-1 relative"
+                  className="flex-1 relative h-2/3"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.5 }}
@@ -257,7 +257,7 @@ const Desk: React.FC = () => {
                   />
                 </motion.div>
                 <motion.div
-                  className={`${isMobile ? 'w-full' : 'max-h-5/6 overflow-y-auto w-full'}`}
+                  className={`${isMobile ? 'w-full' : 'h-1/3 w-full'}`}
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
