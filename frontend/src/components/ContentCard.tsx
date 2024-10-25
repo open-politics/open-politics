@@ -132,9 +132,9 @@ export function ContentCard({
               )}
             </div>
             {classification && (
-              <div className="grid grid-cols-1 gap-4 text-xs text-muted-foreground mb-2">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-3 border hover:border-blue-500 transition-colors">
+              <div className="grid grid-cols-1 gap-2 text-xs text-muted-foreground mb-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="p-2 border hover:border-blue-500 transition-colors">
                     <p className="text-sm font-semibold">🔍 Event Type: {classification.event_type}</p>
                   </div>
                   <div className="p-3 border hover:border-blue-500 transition-colors">
@@ -142,38 +142,38 @@ export function ContentCard({
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-2">
                   {/* Political Impact Metrics */}
-                  <div className="p-3 border hover:border-blue-500 transition-colors">
-                    <p className="font-semibold mb-3">Political Impact</p>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="p-2">
+                  <div className="p-2 border hover:border-blue-500 transition-colors">
+                    <p className="font-semibold mb-2">Political Impact</p>
+                    <div className="grid grid-cols-2 gap-1">
+                      <div className="p-1">
                         <p className="text-xs text-gray-500">Geopolitical</p>
-                        <p className="text-lg">🌍 <span className={`font-bold ${getColorClass(classification.geopolitical_relevance, false)}`}>
+                        <p className="text-sm">🌍 <span className={`font-bold ${getColorClass(classification.geopolitical_relevance, false)}`}>
                           {classification.geopolitical_relevance.toFixed(2)}
                         </span></p>
                       </div>
-                      <div className="p-2">
+                      <div className="p-1">
                         <p className="text-xs text-gray-500">Legislative</p>
-                        <p className="text-lg">📜 <span className={`font-bold ${getColorClass(classification.legislative_influence_score, false)}`}>
+                        <p className="text-sm">📜 <span className={`font-bold ${getColorClass(classification.legislative_influence_score, false)}`}>
                           {classification.legislative_influence_score.toFixed(2)}
                         </span></p>
                       </div>
-                      <div className="p-2">
+                      <div className="p-1">
                         <p className="text-xs text-gray-500">International</p>
-                        <p className="text-lg">🌐 <span className={`font-bold ${getColorClass(classification.international_relevance_score, false)}`}>
+                        <p className="text-sm">🌐 <span className={`font-bold ${getColorClass(classification.international_relevance_score, false)}`}>
                           {classification.international_relevance_score.toFixed(2)}
                         </span></p>
                       </div>
-                      <div className="p-2">
+                      <div className="p-1">
                         <p className="text-xs text-gray-500">Democratic</p>
-                        <p className="text-lg">🗳️ <span className={`font-bold ${getColorClass(classification.democratic_process_implications_score, false)}`}>
+                        <p className="text-sm">🗳️ <span className={`font-bold ${getColorClass(classification.democratic_process_implications_score, false)}`}>
                           {classification.democratic_process_implications_score.toFixed(2)}
                           </span></p>
                       </div>
-                      <div className="p-2">
+                      <div className="p-1">
                         <p className="text-xs text-gray-500">Interest</p>
-                        <p className="text-lg">📊 <span className={`font-bold ${getColorClass(classification.general_interest_score, false)}`}>
+                        <p className="text-sm">📊 <span className={`font-bold ${getColorClass(classification.general_interest_score, false)}`}>
                           {classification.general_interest_score.toFixed(2)}
                         </span></p>
                       </div>
@@ -181,19 +181,19 @@ export function ContentCard({
                   </div>
 
                   {/* Content Quality Metrics */}
-                  <div className="p-3 border hover:border-blue-500 transition-colors">
-                    <p className="font-semibold mb-3">Content Quality</p>
-                    <div className="grid grid-cols-2 gap-2">
+                  <div className="p-2 border hover:border-blue-500 transition-colors">
+                    <p className="font-semibold mb-2">Content Quality</p>
+                    <div className="grid grid-cols-2 gap-1">
                       
-                      <div className="p-2">
+                      <div className="p-1">
                         <p className="text-xs text-gray-500">Spam</p>
-                        <p className="text-lg">🚫 <span className={`font-bold ${getColorClass(classification.spam_score, true)}`}>
+                        <p className="text-sm">🚫 <span className={`font-bold ${getColorClass(classification.spam_score, true)}`}>
                           {classification.spam_score.toFixed(2)}
                         </span></p>
                       </div>
-                      <div className="p-2">
+                      <div className="p-1">
                         <p className="text-xs text-gray-500">Clickbait</p>
-                        <p className="text-lg">🎣 <span className={`font-bold ${getColorClass(classification.clickbait_score, true)}`}>
+                        <p className="text-sm">🎣 <span className={`font-bold ${getColorClass(classification.clickbait_score, true)}`}>
                           {classification.clickbait_score.toFixed(2)}
                         </span></p>
                       </div>

@@ -229,7 +229,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
           )}
         </TabsList>
         <div className="flex-grow overflow-hidden">
-          <TabsContent value="articles" className="h-full max-h-screen overflow-y-auto">
+          <TabsContent value="articles" className="h-full max-h-[70vh] overflow-y-auto">
             <Card className="h-full flex flex-col">
               <CardHeader>
                 <CardTitle>Articles for {locationName}</CardTitle>

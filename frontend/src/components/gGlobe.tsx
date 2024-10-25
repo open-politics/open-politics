@@ -74,6 +74,8 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
   const [lastClickedCluster, setLastClickedCluster] = useState<string | null>(null);
   const [currentBbox, setCurrentBbox] = useState<number[] | null>(null);
   const setActiveTab = useArticleTabNameStore((state) => state.setActiveTab);
+  const [isSpinning, setIsSpinning] = useState(true);
+  const spinningRef = useRef<number | null>(null);
 
   const eventTypes = [
     { type: "Elections", color: "#4CAF50", icon: "ballot", zIndex: 5 },
@@ -141,7 +143,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
         style: 'mapbox://styles/jimvw/cm27kipx600fw01pbg59k9w97', 
         projection: 'globe',
         center: [13.4, 52.5],
-        zoom: 1
+        zoom: 3.5
       });
 
       mapRef.current.on('styleimagemissing', (e) => {
@@ -212,6 +214,11 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
 
         // mapRef.current.addControl(new mapboxgl.NavigationControl());
       });
+
+      // Add these event listeners
+      mapRef.current.on('dragstart', () => setIsSpinning(false));
+      mapRef.current.on('touchstart', () => setIsSpinning(false));
+      mapRef.current.on('mousedown', () => setIsSpinning(false));
     }
     const resizeObserver = new ResizeObserver(() => {
       mapRef.current?.resize();
@@ -1057,6 +1064,33 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
     }
   }));
 
+  // Add this function to handle the spinning animation
+  const spin = useCallback(() => {
+    if (!mapRef.current || !isSpinning) return;
+    
+    const rotationSpeed = 0.0115; // Degrees per frame
+    const currentCenter = mapRef.current.getCenter();
+    currentCenter.lng += rotationSpeed;
+    
+    mapRef.current.setCenter([currentCenter.lng, currentCenter.lat]);
+    spinningRef.current = requestAnimationFrame(spin);
+  }, [isSpinning]);
+
+  // Add this effect to manage spinning state
+  useEffect(() => {
+    if (isSpinning) {
+      spin();
+    } else if (spinningRef.current) {
+      cancelAnimationFrame(spinningRef.current);
+    }
+
+    return () => {
+      if (spinningRef.current) {
+        cancelAnimationFrame(spinningRef.current);
+      }
+    };
+  }, [isSpinning, spin]);
+
   return (
     <div style={{ position: 'relative', height: '100%', width: '100%' }}>
       <div ref={mapContainerRef} className="map-container" style={{ height: '100%', padding: '10px', borderRadius: '12px' }}></div>
@@ -1111,6 +1145,12 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
           {showLegend ? 'Hide Legend' : 'Legend'}
         </Button>
         {error && <div className="text-red-500">{error}</div>}
+        <Button 
+          variant={isSpinning ? "secondary" : "outline"}
+          onClick={() => setIsSpinning(!isSpinning)}
+        >
+          {isSpinning ? '🌐⏸️' : '🌐🔄'}
+        </Button>
       </div>
       {showLegend && <MapLegend />} {/* Conditionally render the MapLegend */}
       {hoveredFeature && (

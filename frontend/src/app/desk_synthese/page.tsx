@@ -171,13 +171,13 @@ const Desk: React.FC = () => {
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      <div className="relative w-full h-screen max-h-screen">
+      <div className="relative w-full h-screen max-h-[95vh]">
         <div className={`absolute ${isMobile ? 'top-0 hidden' : 'top-6 block'} left-8 z-[10]`}> 
           <h1 suppressHydrationWarning className="text-sm text-gray-400">{currentTime}</h1>
         </div>
 
         {/* Main content area - always showing globe and search */}
-        <div className="relative w-full h-full overflow-x-hidden">
+        <div className="relative w-full h-full overflow-hidden">
           <motion.div
             className={`absolute h-2/3 p-4 ${hasClicked || isVisible ? 'w-1/2' : 'w-full'}`}
             initial={{ opacity: 0 }}
@@ -214,7 +214,7 @@ const Desk: React.FC = () => {
           {/* Side panel */}
           {hasClicked && (
             <motion.div
-              className={`absolute ${isMobile ? 'top-0' : 'top-0'} right-0 max-h-screen ${isMobile ? 'max-w-full' : 'w-1/2'}`}
+              className={`absolute ${isMobile ? 'top-0' : 'top-0'} right-0 max-h-[50vh] ${isMobile ? 'max-w-full' : 'w-1/2'}`}
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
