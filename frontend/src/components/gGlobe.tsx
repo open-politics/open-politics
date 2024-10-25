@@ -362,34 +362,90 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
             let hoveredStateId: string | number | null = null;
 
             // Improved cluster hover handling
-            mapRef.current.on('mouseenter', `clusters-${eventType.type}`, (e) => {
-              if (mapRef.current && e.features && e.features[0]) {
-                mapRef.current.getCanvas().style.cursor = 'pointer';
-                
-                if (hoveredStateId !== null) {
-                  mapRef.current.setFeatureState(
-                    { source: `geojson-events-${eventType.type}`, id: hoveredStateId },
-                    { hover: false }
+            mapRef.current.on('mouseenter', `clusters-${eventType.type}`, async (e) => {
+              if (!mapRef.current || !e.features || !e.features[0]) return;
+              
+              mapRef.current.getCanvas().style.cursor = 'pointer';
+              
+              const clusterId = e.features[0].properties.cluster_id;
+              const clusterCount = e.features[0].properties.point_count;
+              const source = mapRef.current.getSource(`geojson-events-${eventType.type}`) as mapboxgl.GeoJSONSource;
+              const coordinates = (e.features[0].geometry as any).coordinates;
+
+              try {
+                // Get first 3 leaves from the cluster
+                const leaves = await new Promise((resolve, reject) => {
+                  (source as any).getClusterLeaves(
+                    clusterId,
+                    3, // Limit to 3 items for preview
+                    0,
+                    (err: any, features: any) => {
+                      if (err) reject(err);
+                      resolve(features);
+                    }
                   );
-                }
-                
-                hoveredStateId = e.features[0].id;
-                
-                mapRef.current.setFeatureState(
-                  { source: `geojson-events-${eventType.type}`, id: hoveredStateId },
-                  { hover: true }
-                );
+                });
+
+                let popupContent = `
+                  <div class="w-[250px] p-0 bg-transparent">
+                    <div class="rounded-xl border bg-background text-foreground shadow-lg">
+                      <div class="flex flex-col space-y-1.5 p-3">
+                        <div class="flex items-center justify-between">
+                          <h3 class="font-semibold tracking-tight text-sm">
+                            ${eventType.type} Cluster
+                          </h3>
+                          <span class="text-xs text-muted-foreground">
+                            ${clusterCount} locations
+                          </span>
+                        </div>
+                      </div>
+                      <div class="p-3 pt-0">
+                        <div class="max-h-[150px] overflow-y-auto custom-scrollbar">
+                          ${(leaves as any[]).map(feature => {
+                            const locationName = feature.properties.name;
+                            const contentCount = feature.properties.content_count;
+                            
+                            return `
+                              <div class="mb-2 last:mb-0 text-sm">
+                                <div class="flex items-center justify-between">
+                                  <span class="text-primary">📍${locationName}</span>
+                                  <span class="text-xs text-muted-foreground">${contentCount} items</span>
+                                </div>
+                              </div>
+                            `;
+                          }).join('')}
+                          ${clusterCount > 3 ? `
+                            <div class="text-xs text-muted-foreground mt-2 pt-2 border-t">
+                              And ${clusterCount - 3} more locations...
+                            </div>
+                          ` : ''}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                `;
+
+                new mapboxgl.Popup({
+                  closeButton: false,
+                  maxWidth: 'none',
+                  className: 'custom-popup-container hover-popup',
+                  offset: [0, -10]
+                })
+                  .setLngLat(coordinates)
+                  .setHTML(popupContent)
+                  .addTo(mapRef.current);
+              } catch (error) {
+                console.error('Error getting cluster preview:', error);
               }
             });
 
             mapRef.current.on('mouseleave', `clusters-${eventType.type}`, () => {
-              if (mapRef.current && hoveredStateId !== null) {
+              if (mapRef.current) {
                 mapRef.current.getCanvas().style.cursor = '';
-                mapRef.current.setFeatureState(
-                  { source: `geojson-events-${eventType.type}`, id: hoveredStateId },
-                  { hover: false }
-                );
-                hoveredStateId = null;
+                const popups = document.getElementsByClassName('hover-popup');
+                while (popups.length > 0) {
+                  popups[0].remove();
+                }
               }
             });
 
@@ -874,6 +930,17 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
 
       .cluster-popup {
         z-index: 5;
+      }
+
+      .hover-popup {
+        z-index: 4;
+      }
+
+      .hover-popup .mapboxgl-popup-content {
+        padding: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        border-radius: 0.75rem;
       }
   `;
 
