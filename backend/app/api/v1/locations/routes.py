@@ -198,16 +198,25 @@ async def get_tavily_data():
 @router.get("/get_coordinates/")
 async def get_coordinates(location: str, language: str = "en"):
     """
-    Fetches the coordinates (longitude, latitude) for a given location.
+    Fetches the coordinates, bounding box, and location type for a given location.
     """
     try:
-        result = requests.get(f"http://geo_service:3690/geocode_location?location={location}&language={language}", verify=False)
+        result = requests.get(
+            f"http://geo_service:3690/geocode_location?location={location}&language={language}", 
+            verify=False
+        )
         logger.info(f"Result: {result.json()}")
         if result.status_code == 200:
             data = result.json()
             coordinates = data.get('coordinates')
             if coordinates and len(coordinates) == 2:
-                return {"location": location, "longitude": coordinates[0], "latitude": coordinates[1]}
+                return {
+                    "location": location,
+                    "longitude": coordinates[0],
+                    "latitude": coordinates[1],
+                    "bbox": data.get('bbox'),  # Include bbox if available
+                    "location_type": data.get('location_type', 'locality')  # Include location type
+                }
         
         raise HTTPException(status_code=404, detail="Coordinates not found for the given location")
     except Exception as e:

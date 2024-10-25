@@ -106,11 +106,18 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
   }, []);
 
   const handleFlyToInputLocation = async () => {
-    const coordinates = await geocodeLocation(inputLocation);
-    if (coordinates) {
-      const [longitude, latitude] = coordinates;
+    const result = await geocodeLocation(inputLocation);
+    if (result) {
+      const { longitude, latitude, bbox, type } = result;
       onLocationClick(inputLocation);  // This will set the location to the searched query
-      flyToLocation(longitude, latitude, 6);  // This will just handle the map movement
+      
+      if (bbox) {
+        // Use the highlightBbox function if we have a bounding box
+        highlightBbox(bbox, type || 'locality');
+      } else {
+        // Fall back to simple flyTo if no bounding box
+        flyToLocation(longitude, latitude, 6, type);
+      }
     }
   };
 
