@@ -171,13 +171,13 @@ const Desk: React.FC = () => {
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      <div className="relative w-full h-screen max-h-[95vh]">
+      <div className="fixed top-16 inset-x-0 bottom-0 w-full overflow-hidden"> {/* Adjusted to start below header */}
         <div className={`absolute ${isMobile ? 'top-0 hidden' : 'top-6 block'} left-8 z-[10]`}> 
           <h1 suppressHydrationWarning className="text-sm text-gray-400">{currentTime}</h1>
         </div>
 
         {/* Main content area - always showing globe and search */}
-        <div className="relative w-full h-full overflow-hidden">
+        <div className="absolute inset-0 w-full h-full overflow-hidden">
           <motion.div
             className={`absolute h-2/3 p-4 ${hasClicked || isVisible ? 'w-1/2' : 'w-full'}`}
             initial={{ opacity: 0 }}

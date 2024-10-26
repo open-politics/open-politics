@@ -126,28 +126,26 @@ const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) =
 
       {/* Display Tavily Images */}
       {tavilyResults && tavilyResults.images && tavilyResults.images.length > 0 && (
-        <div className="flex overflow-x-auto max-h-32 space-x-4 mb-4 pb-2">
+        <div className="flex overflow-x-auto h-32 space-x-4 mb-4 pb-2">
           {tavilyResults.images.map((imageSrc: string, index: number) => (
             <Popover key={`tavily-image-popover-${index}`}>
               <PopoverTrigger asChild>
-                <div className="cursor-pointer hover:opacity-80 transition-opacity">
+                <div className="cursor-pointer hover:opacity-80 transition-opacity h-full min-w-[150px]">
                   <Image
                     src={imageSrc}
                     alt={`Tavily Image ${index}`}
                     width={150}
                     height={150}
-                    className="rounded-md"
+                    className="rounded-md w-full h-full object-cover"
                   />
                 </div>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-2">
-                <div className="relative">
+                <div className="relative w-[400px] h-[400px]">
                   <Image
                     src={imageSrc}
                     alt={`Tavily Image ${index}`}
-                    width={400}
-                    height={400}
-                    max-height={400}
+                    fill
                     className="rounded-lg object-contain"
                   />
                   <a 

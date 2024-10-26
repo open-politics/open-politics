@@ -215,10 +215,20 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
       >
         <TabsList className="max-w-[80%] md:max-w-[calc(100%-60px)] overflow-x-auto flex justify-start scroll-snap-type-x mandatory">
           <TabsTrigger value="articles" className="scroll-snap-align-start">Articles</TabsTrigger>
-          <TabsTrigger value="economic-data" className="scroll-snap-align-start" onClick={handleFetchEconomicData}>Economic Data</TabsTrigger>
+          {data.locationMetadata.isOECDCountry && (
+            <TabsTrigger 
+              value="economic-data" 
+              className="scroll-snap-align-start" 
+              onClick={handleFetchEconomicData}
+            >
+              Economic Data
+            </TabsTrigger>
+          )}
           <TabsTrigger value="leader-info" className="scroll-snap-align-start">Entities</TabsTrigger>
-          {locationName.toLowerCase() === 'germany' && (
-            <TabsTrigger value="legislative" className="scroll-snap-align-start">Legislative</TabsTrigger>
+          {data.locationMetadata.isLegislativeEnabled && (
+            <TabsTrigger value="legislative" className="scroll-snap-align-start">
+              Legislative
+            </TabsTrigger>
           )}
           <TabsTrigger value="wikipedia" className="scroll-snap-align-start">Wikipedia</TabsTrigger>
           {/* Only show summary tab if we have content */}
@@ -228,8 +238,8 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
             </TabsTrigger>
           )}
         </TabsList>
-        <div className="flex-grow overflow-hidden">
-          <TabsContent value="articles" className="h-full max-h-[70vh] overflow-y-auto">
+        <div className="flex-grow max-h-[80vh] overflow-hidden">
+          <TabsContent value="articles" className="h-full max-h-[90vh] overflow-y-auto">
             <Card className="h-full flex flex-col">
               <CardHeader>
                 <CardTitle>Articles for {locationName}</CardTitle>
@@ -249,7 +259,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
               </CardContent>
             </Card>
           </TabsContent>
-          {locationName.toLowerCase() === 'germany' && (
+          {data.locationMetadata.isLegislativeEnabled && (
             <TabsContent value="legislative">
               <Card>
                 <CardHeader>

@@ -244,3 +244,15 @@ async def get_geojson_for_article_ids(article_ids: List[str]):
     else:
         logger.error(f"Failed to fetch GeoJSON data: {geojson_data.text}")
         raise HTTPException(status_code=geojson_data.status_code, detail="Unable to fetch GeoJSON data")
+
+from .country_services.economy import COUNTRY_TO_ISO  # Import the existing mapping
+
+@router.get("/metadata/{location}")
+async def get_location_metadata(location: str):
+    """
+    Get metadata about a location including supported features
+    """
+    return {
+        "isOECDCountry": location in COUNTRY_TO_ISO,
+        "isLegislativeEnabled": location.lower() == "germany"
+    }

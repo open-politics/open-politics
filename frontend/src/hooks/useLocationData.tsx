@@ -11,6 +11,10 @@ interface LocationData {
     total: number;
     statistics: ContentStatistics;
   };
+  locationMetadata: {
+    isOECDCountry: boolean;
+    isLegislativeEnabled: boolean;
+  };
 }
 
 interface ContentStatistics {
@@ -109,6 +113,10 @@ export function useLocationData(locationName: string | null) {
     leaderInfo: null,
     contents: [],
     entities: [],
+    locationMetadata: {
+      isOECDCountry: false,
+      isLegislativeEnabled: false
+    }
   });
 
   const [isLoading, setIsLoading] = useState({
@@ -228,19 +236,36 @@ export function useLocationData(locationName: string | null) {
     }
   }, []);
 
-  const fetchEconomicData = useCallback(async () => {
+  const fetchLocationMetadata = useCallback(async () => {
     if (!locationName) return;
+
+    try {
+      const response = await axios.get(`/api/v1/locations/metadata/${locationName}`);
+      setData(prev => ({
+        ...prev,
+        locationMetadata: response.data
+      }));
+    } catch (err) {
+      console.error('Error fetching location metadata:', err);
+    }
+  }, [locationName]);
+
+  const fetchEconomicData = useCallback(async () => {
+    if (!locationName || !data.locationMetadata.isOECDCountry) return;
   
     setIsLoading(prev => ({ ...prev, economic: true }));
     try {
       const response = await axios.get(`/api/v1/locations/econ_data/${locationName}`);
       setData(prev => ({ ...prev, economicData: response.data }));
     } catch (err) {
-      setError(prev => ({ ...prev, economic: err instanceof Error ? err : new Error('An error occurred fetching economic data') }));
+      setError(prev => ({ 
+        ...prev, 
+        economic: err instanceof Error ? err : new Error('An error occurred fetching economic data') 
+      }));
     } finally {
       setIsLoading(prev => ({ ...prev, economic: false }));
     }
-  }, [locationName]);
+  }, [locationName, data.locationMetadata.isOECDCountry]);
 
   const getContentStatistics = useCallback(() => {
     return data.contentMetadata?.statistics || null;
@@ -248,12 +273,13 @@ export function useLocationData(locationName: string | null) {
 
   useEffect(() => {
     if (locationName) {
+      fetchLocationMetadata();
       fetchContents({ skip: 0 });
       fetchData('legislativeData', `/api/v1/locations/legislation/${locationName}`);
       fetchData('leaderInfo', `/api/v1/locations/leaders/${locationName}`);
       fetchEntities(0, 50);
     }
-  }, [locationName, fetchContents, fetchData, fetchEntities]);
+  }, [locationName, fetchContents, fetchData, fetchEntities, fetchLocationMetadata]);
 
   return {
     data,

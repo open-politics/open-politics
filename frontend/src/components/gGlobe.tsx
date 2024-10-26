@@ -82,8 +82,8 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
     { type: "Protests", color: "#2196F3", icon: "protest", zIndex: 4 },
     { type: "Economic", color: "#FF9800", icon: "economy", zIndex: 3 },
     { type: "War", color: "#FF5722", icon: "new_war", zIndex: 2 },
-    { type: "News", color: "#FF6347", icon: "circle-stroked", zIndex: 1 },
-    { type: "Politics", color: "#9C27B0", icon: "circle-stroked", zIndex: 1 }, // Updated with purple color
+    { type: "News", color: "#FF6347", icon: "news", zIndex: 1 },
+    { type: "Politics", color: "#9C27B0", icon: "politics", zIndex: 1 }, // Updated with purple color
   ];
 
   // Update the flyToLocation function
@@ -106,18 +106,32 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
   }, []);
 
   const handleFlyToInputLocation = async () => {
+    setIsSpinning(false);
+    
     const result = await geocodeLocation(inputLocation);
     if (result) {
       const { longitude, latitude, bbox, type } = result;
-      onLocationClick(inputLocation);  // This will set the location to the searched query
       
-      if (bbox) {
-        // Use the highlightBbox function if we have a bounding box
-        highlightBbox(bbox, type || 'locality');
-      } else {
-        // Fall back to simple flyTo if no bounding box
-        flyToLocation(longitude, latitude, 6, type);
-      }
+      // Wait a brief moment for any layout changes to settle
+      setTimeout(() => {
+        // Force a map resize to handle any container size changes
+        if (mapRef.current) {
+          mapRef.current.resize();
+          
+          if (bbox) {
+            // Use the highlightBbox function if we have a bounding box
+            highlightBbox(bbox, type || 'locality');
+          } else {
+            // Fall back to simple flyTo if no bounding box
+            flyToLocation(longitude, latitude, 6, type);
+          }
+        }
+        
+        // Set location after map has been resized and centered
+        setTimeout(() => {
+          onLocationClick(inputLocation);
+        }, 600); // Reduced delay since we're already waiting for resize
+      }, 100);
     }
   };
 

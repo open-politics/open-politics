@@ -6,7 +6,7 @@ import { ToastProvider, ToastViewport } from '@/components/ui/toast';
 import ClientWrapper from './ClientWrapper';
 import { AI } from './actions';
 import { ReactNode } from 'react';
-import Footer from '@/components/Footer';
+import FooterWrapper from '@/components/FooterWrapper';
 import BlurredDots from '@/components/BlurredDots';
 import { SelectedArticlesView } from '@/components/SelectedArticlesView';
 
@@ -27,13 +27,13 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
               <Header />
               <main className="flex-grow relative z-20">
                 <ToastProvider>
-                  <div className="min-h-screen flex flex-col">
+                  <div className="flex flex-col">
                     {children}
                     <ToastViewport />
                   </div>
                 </ToastProvider>
               </main>
-              <Footer />
+              <FooterWrapper />
             </div>
           </ClientWrapper>
         </AI>
