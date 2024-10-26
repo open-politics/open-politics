@@ -31,8 +31,8 @@ const getZoomLevelForLocation = (locationType: LocationType): number => {
     country: 4,
     region: 5,
     locality: 6,
-    city: 7,
-    address: 8
+    city: 11,
+    address: 12
   };
   
   return zoomLevels[locationType] || 4; // Default to country zoom if type not found
@@ -314,7 +314,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
               data: adjustedData,
               cluster: true,
               clusterMaxZoom: 14,
-              clusterRadius: 100
+              clusterRadius: 20
             });
 
             // Modified clusters layer with improved hover area
