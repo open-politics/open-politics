@@ -86,7 +86,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
     { type: "Politics", color: "#9C27B0", icon: "politics", zIndex: 1 }, // Updated with purple color
   ];
 
-  // Update the flyToLocation function
+  // Fly to location from coordinates and with zoomlevel
   const flyToLocation = useCallback((longitude: number, latitude: number, zoom: number, locationType?: LocationType) => {
     if (mapRef.current) {
       if (isNaN(longitude) || isNaN(latitude)) {
