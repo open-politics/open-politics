@@ -44,14 +44,14 @@ const Header = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">
             {/* Static Links */}
-            <Link href="/blog/about" className="nav-link">About</Link>
-            <Link href="https://docs.open-politics.org" className="nav-link">Documentation</Link>
-            <a href="mailto:engage@open-politics.org" className="nav-link">Contact</a>
+            <Link href="/blog/about" className="">About</Link>
+            <Link href="https://docs.open-politics.org" className="">Documentation</Link>
+            <a href="mailto:engage@open-politics.org" className="">Contact</a>
             
             {/* GitHub Links */}
             <Popover>
               <PopoverTrigger asChild>
-                <a className="nav-link">
+                <a className="">
                   <FaGithub className="h-6 w-6 mx-auto" />
                 </a>
               </PopoverTrigger>
@@ -72,16 +72,16 @@ const Header = () => {
             {/* Auth Navigation */}
             {isLoggedIn ? (
               <>
-                <Link href="/desk_synthese" className="nav-link">Desk</Link>
+                <Link href="/desk_synthese" className="">Desk</Link>
                 {user?.is_superuser && (
-                  <Link href="/admin/users" className="nav-link">Admin</Link>
+                  <Link href="/admin/users" className="">Admin</Link>
                 )}
-                <button onClick={logout} className="nav-link">
+                <button onClick={logout} className="">
                   Logout
                 </button>
               </>
             ) : (
-              <Link href="/login" className="nav-link">Login</Link>
+              <Link href="/login" className="">Login</Link>
             )}
 
             {/* Theme Toggle */}
@@ -106,22 +106,22 @@ const Header = () => {
               </SheetTrigger>
               <SheetContent side="left">
                 <nav className="flex flex-col space-y-4">
-                  <Link href="/blog/about" className="nav-link">About</Link>
-                  <Link href="https://docs.open-politics.org" className="nav-link">Documentation</Link>
-                  <a href="mailto:engage@open-politics.org" className="nav-link">Contact</a>
+                  <Link href="/blog/about" className="">About</Link>
+                  <Link href="https://docs.open-politics.org" className="">Documentation</Link>
+                  <a href="mailto:engage@open-politics.org" className="">Contact</a>
                   
                   {isLoggedIn ? (
                     <>
-                      <Link href="/desk_synthese" className="nav-link">Desk</Link>
+                      <Link href="/desk_synthese" className="">Desk</Link>
                       {user?.is_superuser && (
-                        <Link href="/admin/users" className="nav-link">Admin</Link>
+                        <Link href="/admin/users" className="">Admin</Link>
                       )}
-                      <button onClick={logout} className="nav-link">
+                      <button onClick={logout} className="">
                         Logout 
                       </button>
                     </>
                   ) : (
-                    <Link href="/login" className="nav-link">Login</Link>
+                    <Link href="/login" className="">Login</Link>
                   )}
 
                   <div className="flex items-center justify-between py-4 border-t">
