@@ -48,7 +48,18 @@ export type OpenAPIConfig = {
 	BASE: '',
 	CREDENTIALS: 'include',
 	ENCODE_PATH: undefined,
-	HEADERS: undefined,
+	HEADERS: async () => {
+	  // Dynamically get the token for each request
+	  const token = typeof window !== 'undefined' 
+		? localStorage.getItem('access_token') 
+		: null;
+	  
+	  // Return the headers object
+	  return {
+		'Authorization': token ? `Bearer ${token}` : '',
+		'Content-Type': 'application/json',
+	  };
+	},
 	PASSWORD: undefined,
 	RESULT: 'body',
 	TOKEN: undefined,

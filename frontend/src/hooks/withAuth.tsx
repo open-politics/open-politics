@@ -13,7 +13,7 @@ const withAuth = (WrappedComponent: React.ComponentType) => {
     }, []);
 
     useEffect(() => {
-      if (!isLoading && !isLoggedIn()) {
+      if (!isLoading && !isLoggedIn) {
         router.push('/login');
       }
     }, [isLoading, isLoggedIn, router]);
@@ -26,7 +26,7 @@ const withAuth = (WrappedComponent: React.ComponentType) => {
       return <div>Loading...</div>;
     }
 
-    if (!isLoggedIn()) {
+    if (!isLoggedIn) {
       return null;
     }
 

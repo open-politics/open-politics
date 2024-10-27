@@ -1,32 +1,41 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardFooter, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import useAuth, { isLoggedIn } from "@/hooks/useAuth";
+import useAuth from "@/hooks/useAuth";
 import { Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
-  const { loginMutation, error, resetError } = useAuth();
+  const { loginMutation, error, isLoggedIn } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isLoggedIn) {
+      router.push('/desk_synthese');
+    }
+  }, [isLoggedIn, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMessage('');
-    resetError();
 
     try {
-      await loginMutation.mutateAsync({ username: email, password });
-      router.push('/desk_synthese');
-    } catch {
-      // error is handled by useAuth hook
-      setErrorMessage('Invalid email or password. Please try again.');
+      await loginMutation.mutateAsync({
+        username: email,
+        password,
+        grant_type: 'password',
+        scope: '',
+        client_id: '',
+        client_secret: '',
+      });
+    } catch (err) {
+      console.error('Login error:', err);
     }
   };
 
@@ -73,12 +82,28 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
-            {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-            <Button type="submit" className="w-full">Login</Button>
+            {error && (
+              <p className="text-red-500 text-sm">{error}</p>
+            )}
+            <Button 
+              type="submit" 
+              className="w-full"
+              disabled={loginMutation.isPending}
+            >
+              {loginMutation.isPending ? 'Logging in...' : 'Login'}
+            </Button>
           </form>
         </CardContent>
         <CardFooter>
-          <p className="text-center text-sm">For an account, please contact us at <a href="mailto:engage@open-politics.org">engage@open-politics.org</a></p>
+          <p className="text-center text-sm">
+            For an account, please contact us at{' '}
+            <a 
+              href="mailto:engage@open-politics.org"
+              className="text-blue-500 hover:text-blue-600"
+            >
+              engage@open-politics.org
+            </a>
+          </p>
         </CardFooter>
       </Card>
     </div>

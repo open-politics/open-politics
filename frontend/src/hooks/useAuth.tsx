@@ -1,66 +1,46 @@
-import { useState, useEffect } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { AxiosError } from 'axios';
-import { LoginService, UsersService } from '../client';
+import { useState } from 'react';
+import { LoginService, UsersService } from '../client/services';
 import type { Body_login_login_access_token as AccessToken, ApiError } from '../client';
 
-type UserPublic = {
+type User = {
   email: string;
-  is_active?: boolean;
-  is_superuser?: boolean;
-  full_name?: string | null;
   id: number;
-};
-
-const isLoggedIn = () => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('access_token') !== null;
-  }
-  return false;
+  is_active: boolean;
+  is_superuser: boolean;
+  full_name?: string;
 };
 
 const useAuth = () => {
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [enabled, setEnabled] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    setEnabled(isLoggedIn());
-  }, []);
-
-  const { data: user, isLoading } = useQuery<UserPublic | null, Error>({
-    queryKey: ['currentUser'],
-    queryFn: UsersService.readUserMe,
-    enabled,
+  const { data: user, isLoading } = useQuery<User>({
+    queryKey: ['user'],
+    queryFn: async () => {
+      const token = localStorage.getItem('access_token');
+      if (!token) return null;
+      return UsersService.readUserMe();
+    },
+    retry: false,
+    staleTime: 1000,
   });
 
-  const login = async (data: AccessToken) => {
-    const response = await LoginService.loginAccessToken({
-      formData: data,
-    });
-    localStorage.setItem('access_token', response.access_token);
-    setEnabled(true); // Re-enable the query after setting the token
-  };
-
   const loginMutation = useMutation({
-    mutationFn: login,
+    mutationFn: async (data: AccessToken) => {
+      const response = await LoginService.loginAccessToken({ formData: data });
+      localStorage.setItem('access_token', response.access_token);
+      return response;
+    },
     onSuccess: () => {
-      console.log('Login successful');
+      setError(null);
+      queryClient.invalidateQueries({ queryKey: ['user'] });
       router.push('/');
     },
     onError: (err: ApiError) => {
-      let errDetail = (err.body as any)?.detail;
-
-      if (err instanceof AxiosError) {
-        errDetail = err.message;
-      }
-
-      if (Array.isArray(errDetail)) {
-        errDetail = 'Something went wrong';
-      }
-
+      const errDetail = (err.body as any)?.detail || 'Login failed';
       setError(errDetail);
       console.error('Login error:', errDetail);
     },
@@ -68,22 +48,20 @@ const useAuth = () => {
 
   const logout = () => {
     localStorage.removeItem('access_token');
-    queryClient.invalidateQueries({ queryKey: ['currentUser'] });
-    setEnabled(false); // Disable the query after removing the token
-    console.log('Access token removed from localStorage:', localStorage.getItem('access_token'));
+    queryClient.invalidateQueries({ queryKey: ['user'] });
+    setError(null);
     router.push('/login');
   };
 
   return {
-    loginMutation,
-    logout,
     user,
     isLoading,
-    isLoggedIn: enabled,
+    isLoggedIn: !!user,
+    loginMutation,
+    logout,
     error,
     resetError: () => setError(null),
   };
 };
 
-export { isLoggedIn };
 export default useAuth;

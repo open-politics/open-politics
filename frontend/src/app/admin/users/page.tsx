@@ -19,20 +19,6 @@ export default withAdminAuth(function UserManagementPage() {
   const router = useRouter();
   const { user, isLoading } = useAuth();
 
-  useEffect(() => {
-    if (!isLoading && (!user || !user.is_superuser)) {
-      router.push('/');
-    }
-  }, [user, isLoading, router]);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!user || !user.is_superuser) {
-    return null;
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
