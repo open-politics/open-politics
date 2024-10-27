@@ -94,6 +94,9 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
         return;
       }
 
+      // Stop spinning before flying
+      setIsSpinning(false);
+
       const finalZoom = locationType ? getZoomLevelForLocation(locationType) : zoom;
       
       mapRef.current.flyTo({
@@ -103,7 +106,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
         duration: 2000
       });
     }
-  }, []);
+  }, [setIsSpinning]);
 
   const handleFlyToInputLocation = async () => {
     setIsSpinning(false);
@@ -486,7 +489,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
               }
             });
 
-            // Add hover effects for unclustered points
+            // hover effects for unclustered points
             mapRef.current.on('mouseenter', `unclustered-point-${eventType.type}`, (e) => {
               if (mapRef.current) {
                 mapRef.current.getCanvas().style.cursor = 'pointer';
@@ -497,7 +500,6 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
 
                 if (features && features.length > 0) {
                   const feature = features[0];
-                  console.log('Feature properties:', feature.properties); // Debug log
                   
                   const countryName = feature.properties?.name;
                   const eventTypeName = eventType.type;
@@ -509,7 +511,6 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                     if (typeof contents === 'string') {
                       contents = JSON.parse(contents);
                     }
-                    console.log('Parsed contents:', contents); // Debug log
                   } catch (error) {
                     console.error('Error parsing contents:', error);
                   }
@@ -656,7 +657,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
               }
             });
 
-            mapRef.current.on('mouseleave', `clusters-${eventType.type}`, () => {
+            mapRef.current.on('mouseleave', `clsters-${eventType.type}`, () => {
               if (mapRef.current) {
                 mapRef.current.getCanvas().style.cursor = '';
               }
@@ -675,7 +676,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
 
             // Add this to the clusters click handler
             mapRef.current.on('click', `clusters-${eventType.type}`, async (e) => {
-              if (!mapRef.current) return;
+              if (!mapRef.current || !e.features || !e.features[0]) return;
               
               const features = mapRef.current.queryRenderedFeatures(e.point, {
                 layers: [`clusters-${eventType.type}`]
@@ -685,14 +686,13 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
 
               const clusterId = features[0].properties.cluster_id;
               const clusterKey = `${eventType.type}-${clusterId}`;
+              const coordinates = (features[0].geometry as any).coordinates;
+              const source = mapRef.current.getSource(`geojson-events-${eventType.type}`) as mapboxgl.GeoJSONSource;
               
-              // Remove the second click behavior that was setting the location
               setLastClickedCluster(clusterKey);
 
-              const source = mapRef.current.getSource(`geojson-events-${eventType.type}`) as mapboxgl.GeoJSONSource;
-              const coordinates = (features[0].geometry as any).coordinates;
-
               try {
+                // Get cluster leaves for popup content
                 const leaves = await new Promise((resolve, reject) => {
                   (source as any).getClusterLeaves(
                     clusterId,
@@ -705,10 +705,8 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                   );
                 });
 
-                // Create and show popup content...
-                const clusterCount = features[0].properties.point_count;
-                
-                let popupContent = `
+                // Create popup with more conservative zoom level in the button
+                const popupContent = `
                   <div class="w-[350px] p-0 bg-transparent">
                     <div class="rounded-xl border bg-background text-foreground shadow-lg">
                       <div class="flex flex-col space-y-1.5 p-4">
@@ -717,11 +715,8 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                             ${eventType.type} Cluster
                           </h3>
                           <span class="text-sm text-muted-foreground">
-                            ${clusterCount} locations
+                            ${features[0].properties.point_count} locations
                           </span>
-                        </div>
-                        <div class="text-xs text-muted-foreground">
-                          Click location names to view details
                         </div>
                       </div>
                       <div class="p-4 pt-0">
@@ -771,16 +766,20 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                             `;
                           }).join('')}
                         </div>
-                        ${clusterCount > 5 ? `
-                          <div class="mt-4 pt-4 border-t">
-                            <button 
-                              class="text-sm text-primary hover:underline"
-                              onclick="window.dispatchEvent(new CustomEvent('zoomToCluster', {detail:{lng:${coordinates[0]},lat:${coordinates[1]},zoom:6}}))"
-                            >
-                              Zoom in to see more locations
-                            </button>
-                          </div>
-                        ` : ''}
+                        <div class="mt-4 pt-4 border-t text-center">
+                          <button 
+                            class="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+                            onclick="window.dispatchEvent(new CustomEvent('zoomToCluster', {
+                              detail: {
+                                lng: ${coordinates[0]},
+                                lat: ${coordinates[1]},
+                                zoom: ${Math.min(mapRef.current.getZoom() + 1.5, 8)} // More conservative zoom
+                              }
+                            }))"
+                          >
+                            Zoom to view cluster
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -795,14 +794,12 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                   .setHTML(popupContent)
                   .addTo(mapRef.current)
                   .on('close', () => {
-                    // Reset last clicked cluster when popup is closed
                     setLastClickedCluster(null);
                   });
 
               } catch (error) {
                 console.error('Error getting cluster information:', error);
               }
-              setActiveTab('articles'); // Set to articles tab when clicking a cluster
             });
           }
         });
@@ -888,14 +885,14 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
     };
   }, []);
 
-  // Add these location mappings
+  // Simplify to just an array of location names
   const locationButtons = [
-    { coords: [13.4050, 52.5200], name: "Berlin", zoom: 6 },
-    { coords: [-77.0369, 38.9072], name: "Washington", zoom: 6 },
-    { coords: [34.7661, 31.0461], name: "Israel", zoom: 6 },
-    { coords: [30.5238, 50.4500], name: "Kyiv", zoom: 6 },
-    { coords: [139.767125, 35.681236], name: "Tokyo", zoom: 6 },
-    { coords: [121.5319, 25.0478], name: "Taiwan", zoom: 6 }
+    "Berlin",
+    "Washington D.C.",
+    "Israel",
+    "Kyiv",
+    "Tokyo",
+    "Taiwan"
   ];
 
   const styles = `
@@ -1179,6 +1176,39 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
     };
   }, [isSpinning, spin]);
 
+  // Add this new handler function
+  const handleLocationButtonClick = async (locationName: string) => {
+    setIsSpinning(false);
+    
+    const result = await geocodeLocation(locationName);
+    if (result) {
+      const { longitude, latitude, bbox, type } = result;
+      
+      // Wait a brief moment for any layout changes to settle
+      setTimeout(() => {
+        if (mapRef.current) {
+          mapRef.current.resize();
+          
+          if (bbox) {
+            highlightBbox(bbox, type || 'locality');
+          } else {
+            flyToLocation(longitude, latitude, 6, type);
+          }
+        }
+        
+        // Set location after map has been resized and centered
+        setTimeout(() => {
+          onLocationClick(locationName);
+        }, 600);
+      }, 100);
+    }
+  };
+
+  // Handle location click
+  const handleLocationClick = (coords: [number, number], locationName: string, zoom: number) => {
+    handleLocationButtonClick(locationName);
+  };
+
   return (
     <div style={{ position: 'relative', height: '100%', width: '100%' }}>
       <div ref={mapContainerRef} className="map-container" style={{ height: '100%', padding: '10px', borderRadius: '12px' }}></div>
@@ -1203,25 +1233,21 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
         </div>
         {!isMobile && (
           <>
-            <Button onClick={() => {
-              flyToLocation(13.4050, 52.5200, 6);
-              onLocationClick("Berlin");
-            }}>Fly to Berlin</Button>
+            <Button onClick={() => handleLocationButtonClick("Berlin")}>
+              Fly to Berlin
+            </Button>
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline"><MapPin /><List /></Button>
               </PopoverTrigger>
               <PopoverContent>
                 <div className="flex flex-col space-y-2">
-                  {locationButtons.slice(1).map(loc => (
+                  {locationButtons.slice(1).map(locationName => (
                     <Button 
-                      key={loc.name}
-                      onClick={() => {
-                        flyToLocation(loc.coords[0], loc.coords[1], loc.zoom);
-                        onLocationClick(loc.name);
-                      }}
+                      key={locationName}
+                      onClick={() => handleLocationButtonClick(locationName)}
                     >
-                      Fly to {loc.name}
+                      Fly to {locationName}
                     </Button>
                   ))}
                 </div>
@@ -1259,15 +1285,12 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
       {/* Mobile Menu */}
       {isMobile && menuOpen && (
         <div className="absolute top-32 z-[52] left-4 bg-white dark:bg-black p-4 rounded shadow-lg space-y-2">
-          {locationButtons.map(loc => (
+          {locationButtons.map(locationName => (
             <Button 
-              key={loc.name}
-              onClick={() => {
-                flyToLocation(loc.coords[0], loc.coords[1], loc.zoom);
-                onLocationClick(loc.name);
-              }}
+              key={locationName}
+              onClick={() => handleLocationButtonClick(locationName)}
             >
-              Fly to {loc.name}
+              Fly to {locationName}
             </Button>
           ))}
         </div>
