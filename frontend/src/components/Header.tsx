@@ -77,7 +77,7 @@ const Header = () => {
                   <Link href="/admin/users" className="nav-link">Admin</Link>
                 )}
                 <button onClick={logout} className="nav-link">
-                  Logout {user?.email && `(${user.email})`}
+                  Logout
                 </button>
               </>
             ) : (
@@ -117,7 +117,7 @@ const Header = () => {
                         <Link href="/admin/users" className="nav-link">Admin</Link>
                       )}
                       <button onClick={logout} className="nav-link">
-                        Logout {user?.email && `(${user.email})`}
+                        Logout 
                       </button>
                     </>
                   ) : (
