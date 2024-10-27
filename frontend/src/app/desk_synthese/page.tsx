@@ -171,7 +171,7 @@ const Desk: React.FC = () => {
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      <div className="fixed top-16 inset-x-0 bottom-0 w-full overflow-hidden"> {/* Adjusted to start below header */}
+      <div className="fixed top-16 inset-x-0 bottom-0 w-full overflow-hidden">
         <div className={`absolute ${isMobile ? 'top-0 hidden' : 'top-6 block'} left-8 z-[10]`}> 
           <h1 suppressHydrationWarning className="text-sm text-gray-400">{currentTime}</h1>
         </div>
@@ -179,7 +179,7 @@ const Desk: React.FC = () => {
         {/* Main content area - always showing globe and search */}
         <div className="absolute inset-0 w-full h-full overflow-hidden">
           <motion.div
-            className={`absolute h-2/3 p-4 ${hasClicked || isVisible ? 'w-1/2' : 'w-full'}`}
+            className={`absolute h-3/4 p-2 pb-0 ${hasClicked || isVisible ? 'w-1/2' : 'w-full'}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
@@ -198,7 +198,7 @@ const Desk: React.FC = () => {
           </motion.div>
           
           <motion.div
-            className={`absolute ${isMobile ? 'top-2/3 transform -translate-x-1/2 w-full' : `${hasClicked && isVisible ? 'top-2/3 left-2 transform -translate-x-1/2 -translate-y-1/2 w-1/2' : 'top-2/3 left-1/4 transform -translate-x-1/2 -translate-y-1/2 w-1/2'}`} px-0`}
+            className={`absolute pl-0 pr-3 ${isMobile ? 'top-3/4 transform -translate-x-1/2 w-full' : `${hasClicked && isVisible ? 'top-3/4 left-2 transform -translate-x-1/2 -translate-y-1/2 w-1/2' : 'top-3/4 left-1/4 transform -translate-x-1/2 -translate-y-1/2 w-1/2'}`}`}
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}

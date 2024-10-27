@@ -317,7 +317,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
               data: adjustedData,
               cluster: true,
               clusterMaxZoom: 14,
-              clusterRadius: 20
+              clusterRadius: 10
             });
 
             // Modified clusters layer with improved hover area

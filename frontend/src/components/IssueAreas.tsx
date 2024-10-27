@@ -205,7 +205,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
   const showSummaryContent = results?.tavilyResults && summary;
 
   return (
-    <div className="space-y-4 p-2">
+    <div className="">
       <Tabs 
         value={activeTab} 
         onValueChange={(value) => {
@@ -213,7 +213,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
         }} 
         className="w-full"
       >
-        <TabsList className="max-w-[80%] md:max-w-[calc(100%-60px)] overflow-x-auto flex justify-start scroll-snap-type-x mandatory">
+        <TabsList className="max-w-[80%] md:max-w-[calc(100%-60px)] overflow-y-auto flex justify-start scroll-snap-type-x mandatory">
           <TabsTrigger value="articles" className="scroll-snap-align-start">Articles</TabsTrigger>
           {data.locationMetadata.isOECDCountry && (
             <TabsTrigger 
@@ -238,8 +238,8 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
             </TabsTrigger>
           )}
         </TabsList>
-        <div className="flex-grow max-h-[80vh] overflow-hidden">
-          <TabsContent value="articles" className="h-full max-h-[90vh] overflow-y-auto">
+        <div className="flex-grow max-h-[95vh] overflow-hidden">
+          <TabsContent value="articles" className="h-full max-h-[80vh] overflow-y-auto">
             <Card className="h-full flex flex-col">
               <CardHeader>
                 <CardTitle>Articles for {locationName}</CardTitle>
