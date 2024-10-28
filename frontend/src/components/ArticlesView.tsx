@@ -1,9 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ContentCard } from './ContentCard';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import DotLoader from 'react-spinners/DotLoader';
 import { useBookMarkStore } from '@/hooks/useBookMarkStore';
+import { addDays, differenceInDays, format } from "date-fns";
+import { DateRange } from "react-day-picker";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { CalendarDays } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ArticlesViewProps {
   locationName: string;
@@ -17,7 +34,73 @@ interface ArticlesViewProps {
 
 export function ArticlesView({ locationName, contents = [], isLoading, error, fetchContents, loadMore, resetContents }: ArticlesViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [showDateRange, setShowDateRange] = useState(false);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: addDays(new Date(), -30), // Default to last month
+    to: new Date()
+  });
+  const [sortBy, setSortBy] = useState<string>("date"); // Default sort by date
   const { bookmarks, addBookmark, removeBookmark } = useBookMarkStore();
+
+  // Add debug logging to see the full content structure
+  useEffect(() => {
+    console.log('Full content example:', contents[0]);
+    console.log('Available fields:', contents[0] ? Object.keys(contents[0]) : []);
+  }, [contents]);
+
+  // Modify the filtering and sorting logic to use insertion_date if publication_date is not available
+  const getArticleDate = (content: any): Date | null => {
+    // Try publication_date first, then insertion_date, then created_at if they exist
+    const dateString = content.publication_date || content.insertion_date || content.created_at;
+    if (!dateString) return null;
+    
+    const parsed = new Date(dateString);
+    return isNaN(parsed.getTime()) ? null : parsed;
+  };
+
+  const filteredAndSortedContents = contents
+      .filter(content => {
+        const matchesSearch = !searchQuery || 
+          content.title?.toLowerCase().includes(searchQuery.toLowerCase());
+        
+        if (!dateRange?.from || !dateRange?.to) return matchesSearch;
+        
+        const contentDate = getArticleDate(content);
+        if (!contentDate) return matchesSearch; // Include undated content when filtering
+        
+        const isInDateRange = contentDate >= dateRange.from && 
+                            contentDate <= addDays(dateRange.to, 1);
+        
+        return matchesSearch && isInDateRange;
+      })
+      .sort((a, b) => {
+        const dateA = getArticleDate(a);
+        const dateB = getArticleDate(b);
+        
+        // Put articles with dates first
+        if (!dateA && !dateB) return 0;
+        if (!dateA) return 1;
+        if (!dateB) return -1;
+        
+        // Sort by date descending (newest first)
+        return dateB.getTime() - dateA.getTime();
+      });
+
+  // Group articles by date
+  const groupedArticles = React.useMemo(() => {
+    return filteredAndSortedContents.reduce((groups: Record<string, any[]>, content) => {
+      const date = getArticleDate(content);
+      const dateKey = date 
+        ? format(date, "MMM dd, yyyy")
+        : "Recent";
+      
+      if (!groups[dateKey]) {
+        groups[dateKey] = [];
+      }
+      groups[dateKey].push(content);
+      return groups;
+    }, {});
+  }, [filteredAndSortedContents]);
 
   const handleSearch = () => {
     resetContents();
@@ -56,9 +139,18 @@ export function ArticlesView({ locationName, contents = [], isLoading, error, fe
 
   const allBookmarked = contents.every(content => bookmarks.some(bookmark => bookmark.url === content.url));
 
-  const filteredContents = contents.filter(content =>
-    content.title?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handleDatePreset = (days: number) => {
+    setDateRange({
+      from: addDays(new Date(), -days),
+      to: new Date()
+    });
+  };
+
+  const handleDateRangeChange = (newDateRange: DateRange | undefined) => {
+    setDateRange(newDateRange);
+    resetContents();
+    fetchContents(searchQuery);
+  };
 
   if (error) {
     return <div className="text-red-500">{error.message}</div>;
@@ -66,36 +158,143 @@ export function ArticlesView({ locationName, contents = [], isLoading, error, fe
 
   return (
     <div className="space-y-4 flex flex-col h-full">
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2 flex-wrap gap-2">
         <Input
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder={`Search ${locationName}'s articles`}
+          className="min-w-[200px]"
         />
-        <Button onClick={handleSearch}>Search</Button>
-        <Button onClick={allBookmarked ? handleUnbookmarkAll : handleBookmarkAll}>
-          {allBookmarked ? 'Unbookmark All' : 'Bookmark All'}
-        </Button> {/* Toggle button */}
+        
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "w-[350px] justify-start text-left font-normal gap-2",
+                !dateRange && "text-muted-foreground"
+              )}
+            >
+              <CalendarDays className="h-4 w-4 shrink-0" />
+              <span className="truncate">
+                {dateRange?.from ? (
+                  dateRange.to ? (
+                    <>
+                      {format(dateRange.from, "MMM dd, yyyy")} - {format(dateRange.to, "MMM dd, yyyy")}
+                      {" "}
+                      (Last {differenceInDays(dateRange.to, dateRange.from)} days)
+                    </>
+                  ) : (
+                    format(dateRange.from, "MMM dd, yyyy")
+                  )
+                ) : (
+                  <span>Pick a date range</span>
+                )}
+              </span>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <div className="p-2 space-y-2 bg-background">
+              <div className="flex gap-2 flex-wrap">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleDateRangeChange({
+                    from: addDays(new Date(), -3),
+                    to: new Date()
+                  })}
+                >
+                  Last 3 days
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleDateRangeChange({
+                    from: addDays(new Date(), -7),
+                    to: new Date()
+                  })}
+                >
+                  Last 7 days
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleDateRangeChange({
+                    from: addDays(new Date(), -30),
+                    to: new Date()
+                  })}
+                >
+                  Last month
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleDateRangeChange(undefined)}
+                >
+                  All
+                </Button>
+              </div>
+              <Calendar
+                mode="range"
+                defaultMonth={dateRange?.from}
+                selected={dateRange}
+                onSelect={handleDateRangeChange}
+                numberOfMonths={2}
+                className="rounded-md border bg-background"
+              />
+            </div>
+          </PopoverContent>
+        </Popover>
+
+        <Select
+          value={sortBy}
+          onValueChange={setSortBy}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="date">Date</SelectItem>
+            {/* Add more sorting options here */}
+          </SelectContent>
+        </Select>
+
+        {/* <Button onClick={handleSearch}>Search</Button> */}
       </div>
+
+      {/* Add debug info in development */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="text-sm text-muted-foreground">
+          Total articles: {contents.length}
+          Filtered articles: {filteredAndSortedContents.length}
+        </div>
+      )}
+
       {isLoading && contents.length === 0 ? (
         <div className="flex flex-col items-center justify-center flex-grow">
           <DotLoader color="#000" size={50} />
           <p className="mt-4">Loading articles...</p>
         </div>
       ) : (
-        <div className="overflow-y-auto flex-grow">
-          <div className="space-y-2">
-            {filteredContents.length > 0 ? (
-              filteredContents.map((content) => (
-                <ContentCard
-                  key={content.url}
-                  {...content}
-                />
-              ))
-            ) : (
+        <div className="overflow-y-auto flex-grow px-4">
+          <div className="space-y-6">
+            {Object.entries(groupedArticles).map(([date, articles]) => (
+              <div key={date} className="space-y-2">
+                <h2 className="text-lg font-semibold text-muted-foreground sticky top-0 bg-background/95 backdrop-blur-sm py-2">
+                  {date}
+                </h2>
+                <div className="space-y-2">
+                  {articles.map((content) => (
+                    <ContentCard key={content.url} {...content} />
+                  ))}
+                </div>
+              </div>
+            ))}
+            {Object.keys(groupedArticles).length === 0 && (
               <p>No articles found.</p>
             )}
           </div>
+          
           {!isLoading && contents.length >= 20 && (
             <Button onClick={loadMore} className="w-full mt-4">Load More</Button>
           )}
