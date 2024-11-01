@@ -22,7 +22,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { CalendarDays } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface ArticlesViewProps {
+interface ContentsViewProps {
   locationName: string;
   contents: any[];
   isLoading: boolean;
@@ -32,7 +32,9 @@ interface ArticlesViewProps {
   resetContents: () => void;
 }
 
-export function ArticlesView({ locationName, contents = [], isLoading, error, fetchContents, loadMore, resetContents }: ArticlesViewProps) {
+type Content = any;
+
+export function ContentsView({ locationName, contents = [], isLoading, error, fetchContents, loadMore, resetContents }: ContentsViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showDateRange, setShowDateRange] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -49,7 +51,7 @@ export function ArticlesView({ locationName, contents = [], isLoading, error, fe
   }, [contents]);
 
   // Modify the filtering and sorting logic to use insertion_date if publication_date is not available
-  const getArticleDate = (content: any): Date | null => {
+  const getContentDate = (content: any): Date | null => {
     // Try publication_date first, then insertion_date, then created_at if they exist
     const dateString = content.publication_date || content.insertion_date || content.created_at;
     if (!dateString) return null;
@@ -65,7 +67,7 @@ export function ArticlesView({ locationName, contents = [], isLoading, error, fe
         
         if (!dateRange?.from || !dateRange?.to) return matchesSearch;
         
-        const contentDate = getArticleDate(content);
+        const contentDate = getContentDate(content);
         if (!contentDate) return matchesSearch; // Include undated content when filtering
         
         const isInDateRange = contentDate >= dateRange.from && 
@@ -74,10 +76,10 @@ export function ArticlesView({ locationName, contents = [], isLoading, error, fe
         return matchesSearch && isInDateRange;
       })
       .sort((a, b) => {
-        const dateA = getArticleDate(a);
-        const dateB = getArticleDate(b);
+        const dateA = getContentDate(a);
+        const dateB = getContentDate(b);
         
-        // Put articles with dates first
+        // Put contents with dates first
         if (!dateA && !dateB) return 0;
         if (!dateA) return 1;
         if (!dateB) return -1;
@@ -86,10 +88,10 @@ export function ArticlesView({ locationName, contents = [], isLoading, error, fe
         return dateB.getTime() - dateA.getTime();
       });
 
-  // Group articles by date
-  const groupedArticles = React.useMemo(() => {
+  // Group contents by date
+  const groupedContents = React.useMemo(() => {
     return filteredAndSortedContents.reduce((groups: Record<string, any[]>, content) => {
-      const date = getArticleDate(content);
+      const date = getContentDate(content);
       const dateKey = date 
         ? format(date, "MMM dd, yyyy")
         : "Recent";
@@ -162,7 +164,7 @@ export function ArticlesView({ locationName, contents = [], isLoading, error, fe
         <Input
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder={`Search ${locationName}'s articles`}
+          placeholder={`Search ${locationName}'s contents`}
           className="min-w-[200px]"
         />
         
@@ -240,7 +242,6 @@ export function ArticlesView({ locationName, contents = [], isLoading, error, fe
                 selected={dateRange}
                 onSelect={handleDateRangeChange}
                 numberOfMonths={2}
-                className="rounded-md border bg-background"
               />
             </div>
           </PopoverContent>
@@ -265,33 +266,33 @@ export function ArticlesView({ locationName, contents = [], isLoading, error, fe
       {/* Add debug info in development */}
       {process.env.NODE_ENV === 'development' && (
         <div className="text-sm text-muted-foreground">
-          Total articles: {contents.length}
-          Filtered articles: {filteredAndSortedContents.length}
+          Total contents: {contents.length}
+          Filtered contents: {filteredAndSortedContents.length}
         </div>
       )}
 
       {isLoading && contents.length === 0 ? (
         <div className="flex flex-col items-center justify-center flex-grow">
           <DotLoader color="#000" size={50} />
-          <p className="mt-4">Loading articles...</p>
+          <p className="mt-4">Loading contents...</p>
         </div>
       ) : (
         <div className="overflow-y-auto flex-grow px-4">
           <div className="space-y-6">
-            {Object.entries(groupedArticles).map(([date, articles]) => (
+            {Object.entries(groupedContents).map(([date, contents]) => (
               <div key={date} className="space-y-2">
                 <h2 className="text-lg font-semibold text-muted-foreground sticky top-0 bg-background/95 backdrop-blur-sm py-2">
                   {date}
                 </h2>
                 <div className="space-y-2">
-                  {articles.map((content) => (
+                  {contents.map((content: Content) => (
                     <ContentCard key={content.url} {...content} />
                   ))}
                 </div>
               </div>
             ))}
-            {Object.keys(groupedArticles).length === 0 && (
-              <p>No articles found.</p>
+            {Object.keys(groupedContents).length === 0 && (
+              <p>No § contents found.</p>
             )}
           </div>
           
@@ -309,4 +310,4 @@ export function ArticlesView({ locationName, contents = [], isLoading, error, fe
   );
 }
 
-export default ArticlesView;
+export default ContentsView;

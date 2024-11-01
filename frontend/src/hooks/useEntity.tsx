@@ -38,6 +38,17 @@ interface Content {
   classification: any | null;
 }
 
+interface EntityScore {
+  date: string;
+  score: number;
+}
+
+interface EntityScoreData {
+  scores: EntityScore[];
+  entity: string;
+  scoreType: string;
+}
+
 export function useEntityData(entityName: string | null, isSelected: boolean) {
   const [data, setData] = useState<EntityData>({
     contents: [],
@@ -54,6 +65,9 @@ export function useEntityData(entityName: string | null, isSelected: boolean) {
     contents: null,
     details: null,
   });
+  const [scoreData, setScoreData] = useState<EntityScoreData | null>(null);
+  const [isLoadingScores, setIsLoadingScores] = useState(false);
+  const [scoreError, setScoreError] = useState<Error | null>(null);
 
   const fetchContents = useCallback(async (skip: number, limit: number) => {
     if (!entityName || !isSelected) return; // Fetch only if an entity is selected
@@ -79,12 +93,44 @@ export function useEntityData(entityName: string | null, isSelected: boolean) {
     setData((prev) => ({ ...prev, contents: [] }));
   }, []);
 
+  const fetchEntityScores = useCallback(async (
+    scoreType: string,
+    timeframeFrom: string,
+    timeframeTo: string
+    ) => {
+        if (!entityName) return;
+        setIsLoadingScores(true);
+        try {
+            const response = await fetch(
+                `/api/v1/entities/score_over_time/${encodeURIComponent(entityName)}?` + 
+                `score_type=${encodeURIComponent(scoreType)}` +
+                `&timeframe_from=${encodeURIComponent(timeframeFrom)}` +
+                `&timeframe_to=${encodeURIComponent(timeframeTo)}`
+            );
+            if (!response.ok) throw new Error('Failed to fetch entity scores');
+            const data = await response.json();
+            setScoreData({
+                scores: data,
+                entity: entityName,
+                scoreType
+            });
+        } catch (error) {
+            setScoreError(error as Error);
+        } finally {
+            setIsLoadingScores(false);
+        }
+  }, [entityName]);
+
   return {
     data,
     isLoading,
     error,
     fetchContents,
     resetContents,
+    scoreData,
+    isLoadingScores,
+    scoreError,
+    fetchEntityScores,
   };
 }
 

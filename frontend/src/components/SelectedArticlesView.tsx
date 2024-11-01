@@ -3,7 +3,7 @@
 import React, { useContext } from 'react';
 import { ArticleSelectionContext } from '@/contexts/ArticleSelectionContext';
 import { Button } from '@/components/ui/button';
-import { ArticleCard } from '@/components/ContentCard';
+import { ContentCard } from '@/components/ContentCard';
 
 export const SelectedArticlesView: React.FC = () => {
   const { selectedArticles, clearSelections } = useContext(ArticleSelectionContext);
@@ -17,7 +17,7 @@ export const SelectedArticlesView: React.FC = () => {
         <>
           <div className="article-list">
             {selectedArticles.map(article => (
-              <ArticleCard key={article.id} {...article} />
+              <ContentCard key={article.id} {...article} />
             ))}
           </div>
           <Button onClick={clearSelections}>Clear Selection</Button>

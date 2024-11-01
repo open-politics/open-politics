@@ -1,15 +1,15 @@
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import JSONResponse
-from .services import update_leaders
-from .schemas import CountryRequest, CountryResponse, Law
+from ..locations.services import update_leaders
+from ..locations.schemas import CountryRequest, CountryResponse, Law
 import logging
 import json
 import requests
 import marvin
 from pathlib import Path
 from typing import List
-from .country_services import legislation, economy
-from .country_services import articles
+from ..locations.country_services import legislation, economy
+from ..locations.country_services import articles
 import tavily
 from enum import Enum
 from typing import Optional
@@ -117,3 +117,62 @@ async def get_tavily_data():
     result = tavily.get_tavily_data()
     
 
+@router.get("/score_over_time/{entity}")
+async def get_entity_score_over_time(
+    entity: str,
+    score_type: str,
+    timeframe_from: str,
+    timeframe_to: str
+):
+    try:
+        logging.info(f"Fetching entity score over time for {entity} with score type {score_type} from {timeframe_from} to {timeframe_to}")
+        
+        response = requests.post(
+            "http://postgres_service:5434/entity_score_over_time",
+            json={
+                "entity": entity,
+                "score_type": score_type,
+                "timeframe_from": timeframe_from,
+                "timeframe_to": timeframe_to
+            },
+            verify=False
+        )
+        response.raise_for_status()
+        return JSONResponse(content=response.json(), status_code=200)
+        
+    except requests.RequestException as e:
+        logger.error(f"Error fetching entity scores: {str(e)}")
+        return JSONResponse(
+            content={'error': 'Failed to fetch entity scores'},
+            status_code=500
+        )
+
+@router.get("/top_entities_by_score")
+async def get_top_entities_by_score(
+    score_type: str = Query(..., description="Type of score to rank entities by"),
+    timeframe_from: str = Query(..., description="Start date in ISO format"),
+    timeframe_to: str = Query(..., description="End date in ISO format"),
+    limit: int = Query(10, description="Number of top entities to retrieve")
+):
+    try:
+        params = {
+            "score_type": score_type,
+            "timeframe_from": timeframe_from,
+            "timeframe_to": timeframe_to,
+            "limit": limit
+        }
+        
+        response = requests.get(
+            "http://postgres_service:5434/top_entities_by_score",
+            params=params,
+            verify=False
+        )
+        response.raise_for_status()
+        return JSONResponse(content=response.json(), status_code=200)
+        
+    except requests.RequestException as e:
+        logger.error(f"Error fetching top entities: {str(e)}")
+        return JSONResponse(
+            content={'error': 'Failed to fetch top entities'},
+            status_code=500
+        )

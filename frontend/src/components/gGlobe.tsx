@@ -635,12 +635,13 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                       if (err) return;
 
                       const coordinates = (features[0].geometry as any).coordinates;
-                      // Explicitly type the offset as a tuple
                       const offset: [number, number] = [0, -(mapRef.current!.getContainer().offsetHeight * 0.2)];
+                      
+                      const limitedZoom = Math.min(zoom, 6); // Limit maximum zoom to 6
                       
                       mapRef.current?.flyTo({
                         center: coordinates,
-                        zoom: zoom,
+                        zoom: limitedZoom,
                         offset: offset,
                         essential: true
                       });
@@ -773,7 +774,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                               detail: {
                                 lng: ${coordinates[0]},
                                 lat: ${coordinates[1]},
-                                zoom: ${Math.min(mapRef.current.getZoom() + 1.5, 8)} // More conservative zoom
+                                zoom: ${Math.min(mapRef.current.getZoom() + 1, 7)}
                               }
                             }))"
                           >
@@ -1300,3 +1301,4 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
 });
 
 export default Globe;
+
