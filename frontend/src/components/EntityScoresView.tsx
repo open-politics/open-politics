@@ -20,11 +20,12 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
+import type { EntityScoreData, EntityScore } from '@/hooks/useEntity';
 
 interface EntityScoresViewProps {
   entity: string;
   fetchEntityScores: (scoreType: string, timeframeFrom: string, timeframeTo: string) => Promise<void>;
-  scoreData: any;
+  scoreData: EntityScoreData | null;
   isLoading: boolean;
   onDateSelect?: (date: string) => void;
 }
@@ -52,15 +53,17 @@ const CustomTooltip: React.FC<TooltipProps<number, string>> = ({ active, payload
   if (active && payload && payload.length) {
     const formattedDate = format(parseISO(label), 'dd MMMM yyyy');
     return (    
-      <div className="custom-tooltip p-2 bg-opacity-80 shadow-xl backdrop-blur-lg">
-        <p className="label">{`Date: ${formattedDate}`}</p>
-        {payload.map((entry, index) => (
-          <p key={index} className="text-sm text-blue-500">
-            {`Score: ${entry.value !== null && entry.value !== undefined 
-              ? entry.value.toFixed(2)
-              : 'N/A'}`}
-          </p>
-        ))}
+      <div className="custom-tooltip p-4 rounded-md shadow-lg border">
+        <p className="label font-semibold">{formattedDate}</p>
+        <p className="text-sm text-blue-500">
+          Average: {payload[0].value?.toFixed(2)}
+        </p>
+        <p className="text-sm text-green-500">
+          Max: {payload[1]?.value?.toFixed(2)}
+        </p>
+        <p className="text-sm text-red-500">
+          Min: {payload[2]?.value?.toFixed(2)}
+        </p>
       </div>
     );
   }
@@ -75,10 +78,24 @@ export function EntityScoresView({
   onDateSelect 
 }: EntityScoresViewProps) {
   const [selectedScoreType, setSelectedScoreType] = useState(SCORE_TYPES[0].value);
+  const [selectedTimeRange, setSelectedTimeRange] = useState('30d');
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: addDays(new Date(), -30),
     to: new Date()
   });
+
+  const handleTimeRangeChange = (value: string) => {
+    setSelectedTimeRange(value);
+    const days = parseInt(value.replace('d', ''));
+    const years = parseInt(value.replace('y', ''));
+    
+    const to = new Date();
+    const from = value.includes('d') 
+      ? addDays(to, -days)
+      : addDays(to, -years * 365);
+      
+    setDateRange({ from, to });
+  };
 
   const handleFetchScores = () => {
     if (!dateRange?.from || !dateRange?.to) return;
@@ -92,24 +109,26 @@ export function EntityScoresView({
 
   useEffect(() => {
     handleFetchScores();
-  }, [selectedScoreType, dateRange]);
+  }, [selectedScoreType, dateRange?.from, dateRange?.to, fetchEntityScores]);
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
   };
 
-  const formatData = (data: any[]) => {
+  const formatData = (data: EntityScore[]) => {
     if (!data) return [];
     return data.map(item => ({
-      ...item,
       date: item.date,
-      average_score: parseFloat(item.average_score)
+      average_score: item.metrics.average_score,
+      min_score: item.metrics.min_score,
+      max_score: item.metrics.max_score
     }));
   };
 
   const handleDateRangeChange = (newDateRange: DateRange | undefined) => {
     setDateRange(newDateRange);
+    setSelectedTimeRange('custom');
   };
 
   const handleChartClick = (data: any) => {
@@ -137,6 +156,20 @@ export function EntityScoresView({
                       {type.label}
                     </SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={selectedTimeRange} onValueChange={handleTimeRangeChange}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select time range" />
+                </SelectTrigger>
+                <SelectContent>
+                  {TIME_RANGES.map(range => (
+                    <SelectItem key={range.value} value={range.value}>
+                      {range.label}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="custom">Custom Range</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -198,19 +231,36 @@ export function EntityScoresView({
                     }}
                     onClick={handleChartClick}
                   >
-                    <XAxis dataKey="date" tickFormatter={(date) => format(parseISO(date), 'MM/dd/yyyy')} />
+                    {/* <CartesianGrid strokeDasharray="3 3" /> */}
+                    <XAxis 
+                      dataKey="date" 
+                      tickFormatter={(date) => format(parseISO(date), 'MM/dd/yyyy')}
+                    />
                     <YAxis domain={[0, 10]} />
                     <Tooltip content={<CustomTooltip />} />
                     <Line
-                      type="monotone" 
+                      type="monotone"
                       dataKey="average_score"
                       stroke="#8884d8"
-                      activeDot={{ r: 8, onClick: (data) => {
-                        if (onDateSelect && data.payload.date) {
-                          onDateSelect(data.payload.date);
-                        }
-                      }}} 
+                      strokeWidth={2}
+                      activeDot={{ r: 8 }}
                       connectNulls={true}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="max_score"
+                      stroke="#82ca9d"
+                      strokeWidth={1}
+                      strokeDasharray="3 3"
+                      dot={false}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="min_score"
+                      stroke="#ff7f7f"
+                      strokeWidth={1}
+                      strokeDasharray="3 3"
+                      dot={false}
                     />
                   </LineChart>
                 </ResponsiveContainer>

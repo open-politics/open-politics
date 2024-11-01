@@ -8,6 +8,7 @@ import WikipediaView from './WikipediaView';
 import { Image as LucideImage } from 'lucide-react';
 import { EntityScoresView } from './EntityScoresView';
 import { format, parseISO } from 'date-fns';
+import type { EntityScore } from '@/hooks/useEntity';
 
 interface Entity {
   name: string;
@@ -22,6 +23,38 @@ interface EntityCardProps {
   isSelected: boolean;
   onSelect: (name: string | null) => void;
 }
+
+const MetricsDisplay: React.FC<{ score: EntityScore }> = ({ score }) => {
+  return (
+    <div className="bg-background p-4 rounded-lg shadow-sm">
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <h5 className="font-semibold">Metrics</h5>
+          <p>Average: {score.metrics.average_score.toFixed(2)}</p>
+          <p>Min: {score.metrics.min_score.toFixed(2)}</p>
+          <p>Max: {score.metrics.max_score.toFixed(2)}</p>
+        </div>
+        <div>
+          <h5 className="font-semibold">Context</h5>
+          <p>Articles: {score.context.article_count}</p>
+          <p>Mentions: {score.context.total_mentions}</p>
+          <p>Interest: {score.context.general_interest_level.toFixed(1)}</p>
+        </div>
+        <div>
+          <h5 className="font-semibold">Reliability</h5>
+          <p>Confidence: {(score.reliability.confidence_score * 100).toFixed(0)}%</p>
+          <p>Spam Score: {(score.reliability.avg_spam_score * 100).toFixed(0)}%</p>
+          <p>Fake News: {(score.reliability.avg_fake_news_score * 100).toFixed(0)}%</p>
+        </div>
+        <div>
+          <h5 className="font-semibold">Sources & Events</h5>
+          <p>{score.context.sources.filter(s => s).join(', ') || 'N/A'}</p>
+          <p>{score.context.event_types.slice(0, 2).join(', ')}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const EntityCard: React.FC<EntityCardProps> = ({ entity, isSelected, onSelect }) => {
   const { imageUrl, loading: imageLoading } = useEntityImage(entity.name);
@@ -140,6 +173,27 @@ const EntityCard: React.FC<EntityCardProps> = ({ entity, isSelected, onSelect })
                 text_content={content.text_content}
               />
             ))
+          )}
+        </div>
+      )}
+
+      {isSelected && scoreData?.scores && (
+        <div className="mt-4" onClick={handleInteractiveElementClick}>
+          <h4 className="text-center text-lg font-bold mb-2">
+            Metrics {selectedDate ? `for ${format(parseISO(selectedDate), 'MMM dd, yyyy')}` : ''}
+          </h4>
+          {selectedDate ? (
+            // Show specific date metrics
+            scoreData.scores.find(s => format(parseISO(s.date), 'yyyy-MM-dd') === selectedDate) ? (
+              <MetricsDisplay 
+                score={scoreData.scores.find(s => format(parseISO(s.date), 'yyyy-MM-dd') === selectedDate)!} 
+              />
+            ) : (
+              <p className="text-center text-gray-500">No metrics available for this date</p>
+            )
+          ) : (
+            // Show latest metrics
+            <MetricsDisplay score={scoreData.scores[scoreData.scores.length - 1]} />
           )}
         </div>
       )}

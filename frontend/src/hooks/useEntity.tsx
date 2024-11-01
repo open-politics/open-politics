@@ -38,12 +38,37 @@ interface Content {
   classification: any | null;
 }
 
-interface EntityScore {
-  date: string;
-  score: number;
+export interface EntityMetrics {
+  average_score: number;
+  min_score: number;
+  max_score: number;
+  standard_deviation: number | null;
 }
 
-interface EntityScoreData {
+export interface EntityContext {
+  article_count: number;
+  total_mentions: number;
+  source_diversity: number;
+  sources: (string | null)[];
+  categories: string[];
+  event_types: string[];
+  general_interest_level: number;
+}
+
+export interface EntityReliability {
+  confidence_score: number;
+  avg_spam_score: number;
+  avg_fake_news_score: number;
+}
+
+export interface EntityScore {
+  date: string;
+  metrics: EntityMetrics;
+  context: EntityContext;
+  reliability: EntityReliability;
+}
+
+export interface EntityScoreData {
   scores: EntityScore[];
   entity: string;
   scoreType: string;
