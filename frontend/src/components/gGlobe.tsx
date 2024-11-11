@@ -78,12 +78,20 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
   const spinningRef = useRef<number | null>(null);
 
   const eventTypes = [
-    { type: "Elections", color: "#4CAF50", icon: "ballot", zIndex: 5 },
     { type: "Protests", color: "#2196F3", icon: "protest", zIndex: 4 },
+    { type: "Elections", color: "#4CAF50", icon: "ballot", zIndex: 5 },
+    { type: "Politics", color: "#9C27B0", icon: "politics", zIndex: 1 },
     { type: "Economic", color: "#FF9800", icon: "economy", zIndex: 3 },
+    { type: "Legal", color: "#8B4513", icon: "court", zIndex: 2 }, 
+    { type: "Social", color: "#FFD700", icon: "social", zIndex: 2 }, 
+    { type: "Crisis", color: "#FF4500", icon: "new_war", zIndex: 2 }, 
     { type: "War", color: "#FF5722", icon: "new_war", zIndex: 2 },
-    { type: "News", color: "#FF6347", icon: "news", zIndex: 1 },
-    { type: "Politics", color: "#9C27B0", icon: "politics", zIndex: 1 }, // Updated with purple color
+    { type: "Peace", color: "#00FF00", icon: "peace", zIndex: 2 }, 
+    { type: "Diplomacy", color: "#1E90FF", icon: "embassy", zIndex: 2 }, 
+    { type: "Technology", color: "#00CED1", icon: "technology", zIndex: 2 }, 
+    { type: "Science", color: "#8A2BE2", icon: "laboratory", zIndex: 2 }, 
+    { type: "Culture", color: "#FF69B4", icon: "museum", zIndex: 2 }, 
+    { type: "Sports", color: "#32CD32", icon: "stadium", zIndex: 2 }, 
   ];
 
   // Fly to location from coordinates and with zoomlevel

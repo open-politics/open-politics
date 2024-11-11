@@ -91,6 +91,10 @@ export function ContentCard({
         url,
         source,
         insertion_date,
+        content_type,
+        content_language,
+        author,
+        publication_date,
         entities,
         tags,
         evaluation
@@ -146,33 +150,33 @@ export function ContentCard({
                     <p className="font-semibold mb-1">Political Impact</p> {/* Reduced margin */}
                     <div className="grid grid-cols-3 gap-1"> {/* Changed to 3 columns */}
                       <div className="p-0.5"> {/* Minimal padding */}
-                        <p className="text-xs text-gray-500">Geo</p>
+                        <p className="text-xs text-gray-500">Global Political</p>
                         <p className="text-xs">🌍 <span className={`font-bold ${getColorClass(evaluation.global_political_impact, false)}`}>
-                          {evaluation.global_political_impact.toFixed(1)}
+                          {evaluation.global_political_impact?.toFixed(1)}
                         </span></p>
                       </div>
                       <div className="p-0.5">
-                        <p className="text-xs text-gray-500">Legislative</p>
+                        <p className="text-xs text-gray-500">Regional Political</p>
                         <p className="text-xs">📜 <span className={`font-bold ${getColorClass(evaluation.regional_political_impact, false)}`}>
-                          {evaluation.regional_political_impact.toFixed(1)}
+                          {evaluation.regional_political_impact?.toFixed(1)}
                         </span></p>
                       </div>
                       <div className="p-0.5">
-                        <p className="text-xs text-gray-500">International</p>
+                        <p className="text-xs text-gray-500">Global Economic</p>
                         <p className="text-xs">🌐 <span className={`font-bold ${getColorClass(evaluation.global_economic_impact, false)}`}>
-                          {evaluation.global_economic_impact.toFixed(1)}
+                          {evaluation.global_economic_impact?.toFixed(1)}
                         </span></p>
                       </div>
                       <div className="p-0.5">
-                        <p className="text-xs text-gray-500">Democratic</p>
+                        <p className="text-xs text-gray-500">Regional Economic</p>
                         <p className="text-xs">🗳️ <span className={`font-bold ${getColorClass(evaluation.regional_economic_impact, false)}`}>
-                          {evaluation.regional_economic_impact.toFixed(1)}
+                          {evaluation.regional_economic_impact?.toFixed(1)}
                           </span></p>
                       </div>
                       <div className="p-0.5">
-                        <p className="text-xs text-gray-500">Interest</p>
+                        <p className="text-xs text-gray-500">Sociocultural Attention</p>
                         <p className="text-xs">📊 <span className={`font-bold ${getColorClass(evaluation.sociocultural_interest, false)}`}>
-                          {evaluation.sociocultural_interest.toFixed(1)}
+                          {evaluation.sociocultural_interest?.toFixed(1)}
                         </span></p>
                       </div>
                     </div>
@@ -185,13 +189,13 @@ export function ContentCard({
                       <div className="p-0.5">
                         <p className="text-xs text-gray-500">Spam</p>
                         <p className="text-xs">🚫 <span className={`font-bold ${getColorClass(evaluation.global_political_impact, true)}`}>
-                          {evaluation.global_political_impact.toFixed(1)}
+                          {evaluation.global_political_impact?.toFixed(1)}
                         </span></p>
                       </div>
                       <div className="p-0.5">
                         <p className="text-xs text-gray-500">Clickbait</p>
                         <p className="text-xs">🎣 <span className={`font-bold ${getColorClass(evaluation.global_economic_impact, true)}`}>
-                          {evaluation.global_economic_impact.toFixed(1)}
+                          {evaluation.global_economic_impact?.toFixed(1)}
                         </span></p>
                       </div>
                     </div>

@@ -51,9 +51,8 @@ type Bookmark = {
     id: string;
     name: string;
   }>;
-  classification: {
+  evaluation: {
     content_id: string;
-    rhetoric: string;
     sociocultural_interest: number | null;
     global_political_impact: number | null;
     regional_political_impact: number | null;

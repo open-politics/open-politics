@@ -47,11 +47,14 @@ interface Entity {
 interface Content {
   id: string;
   url: string;
-  title: string;
+  title: string | null;
   content_type: string;
   source: string | null;
   insertion_date: string;
-  text_content: string;
+  text_content: string | null;
+  publication_date: string | null;
+  content_language?: string | null;
+  author?: string | null;
   relevance_metrics: {
     entity_count: number;
     location_mentions: number;
@@ -60,7 +63,7 @@ interface Content {
   };
   entities: Entity[];
   tags: Tag[];
-  classification: ContentEvaluation;
+  evaluation: ContentEvaluation;
 }
 
 interface ContentEvaluation {

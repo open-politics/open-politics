@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import EntityCard from './EntityCard'; // Import the new EntityCard component
-import { Badge } from "@/components/ui/badge"; // Import the Badge component
+import EntityCard from './EntityCard';
+import { Badge } from "@/components/ui/badge"; 
 
 interface Entity {
+  id: string;
   name: string;
-  type: string;
-  article_count: number;
-  total_frequency: number;
-  relevance_score: number;
+  entity_type: string;
+  locations: any[];
+  article_count?: number;
+  total_frequency?: number;
+  relevance_score?: number;
 }
 
 interface LeaderInfo {
@@ -21,7 +23,7 @@ interface LeaderInfo {
 
 interface EntitiesViewProps {
   leaderInfo: LeaderInfo | null;
-  entities: Entity[];
+  entities: Entity[] | null;
   variant?: 'default' | 'compact';
 }
 
@@ -54,8 +56,8 @@ const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities, varia
           </div>
         </div>
         <div className="flex flex-wrap gap-1">
-          {entities
-            .filter(entity => selectedEntityTypes.includes(entity.type))
+          {entities && Array.isArray(entities) && entities
+            .filter(entity => selectedEntityTypes.includes(entity.entity_type))
             .slice(0, 10)
             .map((entity) => (
               <Badge
@@ -125,13 +127,13 @@ const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities, varia
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 h-full overflow-y-auto">
-          {entities
+          {entities && entities
             .filter((entity, index, self) => 
               index === self.findIndex((t) => (
-                t.name === entity.name && t.type === entity.type
+                t.name === entity.name && t.entity_type === entity.entity_type
               ))
             )
-            .filter(entity => selectedEntityTypes.includes(entity.type))
+            .filter(entity => selectedEntityTypes.includes(entity.entity_type))
             .map((entity) => (
               <EntityCard
                 key={entity.name}
