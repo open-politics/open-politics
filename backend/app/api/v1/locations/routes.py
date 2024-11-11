@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import JSONResponse
 from fastapi.responses import HTMLResponse
 from fastapi.responses import StreamingResponse
+from fastapi.responses import Response
 from .services import update_leaders
 from .schemas import CountryRequest, CountryResponse, Law
 import logging
@@ -15,6 +16,11 @@ from .country_services import articles
 import tavily
 from enum import Enum
 from typing import Optional
+from sentinelsat import SentinelAPI
+from datetime import date, timedelta, datetime
+from sentinelhub import SHConfig, DataCollection, SentinelHubRequest, BBox, CRS, MimeType
+from io import BytesIO
+from PIL import Image
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
@@ -256,3 +262,45 @@ async def get_location_metadata(location: str):
         "isOECDCountry": location in COUNTRY_TO_ISO,
         "isLegislativeEnabled": location.lower() == "germany"
     }
+
+from pydantic import BaseModel
+
+class QueryType(BaseModel):
+    type: str 
+
+class Request(BaseModel):
+    "Request object for search synthesizer"
+    query: str
+    query_type: QueryType
+    
+
+
+
+@router.get("/channel/{service_name}/{path:path}", response_model=None)
+async def channel_route(service_name: str, path: str, request: Request):
+    """
+    A channel route that forwards requests to a specified service.
+    """
+    try:
+        # Construct the URL for the target service
+        target_url = f"http://{service_name}/{path}"
+        
+        # Forward the request to the target service
+        response = requests.request(
+            method=request.method,
+            url=target_url,
+            headers=request.headers,
+            params=request.query_params,
+            data=await request.body(),
+            verify=False
+        )
+        
+        # Return the response from the target service
+        return Response(
+            content=response.content,
+            status_code=response.status_code,
+            headers=dict(response.headers)
+        )
+    except requests.RequestException as e:
+        logger.error(f"Error forwarding request to {service_name}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error forwarding request: {str(e)}")

@@ -1,4 +1,5 @@
 import DocsSidebar from "@/components/DocsSidebar"
+import { docsLinks } from "@/data/docLinks"
 
 export default function MdxLayout({ children }: { children: React.ReactNode }) {
   return (

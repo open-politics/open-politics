@@ -45,6 +45,7 @@ const Header = () => {
           <div className="hidden md:flex items-center space-x-4">
             {/* Static Links */}
             <Link href="/blog/about" className="">About</Link>
+            {/* <Link href="/blog" className="">Blog</Link> */}
             <Link href="https://docs.open-politics.org" className="">Documentation</Link>
             <a href="mailto:engage@open-politics.org" className="">Contact</a>
             
@@ -79,6 +80,9 @@ const Header = () => {
                 <button onClick={logout} className="">
                   Logout
                 </button>
+                <Link href="/home" className=''>
+                  Home
+                </Link>
               </>
             ) : (
               <Link href="/login" className="">Login</Link>
@@ -107,6 +111,7 @@ const Header = () => {
               <SheetContent side="left">
                 <nav className="flex flex-col space-y-4">
                   <Link href="/blog/about" className="">About</Link>
+                  {/* <Link href="/blog" className="">Blog</Link> */}
                   <Link href="https://docs.open-politics.org" className="">Documentation</Link>
                   <a href="mailto:engage@open-politics.org" className="">Contact</a>
                   
@@ -119,6 +124,9 @@ const Header = () => {
                       <button onClick={logout} className="">
                         Logout 
                       </button>
+                      <Link href="/home" className=''>
+                        Home
+                      </Link>
                     </>
                   ) : (
                     <Link href="/login" className="">Login</Link>

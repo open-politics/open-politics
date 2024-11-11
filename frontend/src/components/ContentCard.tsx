@@ -30,10 +30,10 @@ export interface ContentCardProps {
     id: string;
     name: string;
     entity_type: string;
-    locations?: Array<{
+    locations: Array<{
       id: string;
       name: string;
-      location_type: string | null;
+      location_type: string;
       coordinates: number[] | null;
       weight: number;
     }>;
@@ -42,21 +42,18 @@ export interface ContentCardProps {
     id: string;
     name: string;
   }>;
-  classification: {
+  evaluation: {
     content_id: string;
-    category: string;
-    secondary_categories: string[] | null;
+    rhetoric: string;
+    sociocultural_interest: number | null;
+    global_political_impact: number | null;
+    regional_political_impact: number | null;
+    global_economic_impact: number | null;
+    regional_economic_impact: number | null;
+    event_type: string | null;
+    event_subtype: string | null;
     keywords: string[] | null;
-    geopolitical_relevance: number;
-    legislative_influence_score: number;
-    international_relevance_score: number;
-    democratic_process_implications_score: number;
-    general_interest_score: number;
-    spam_score: number;
-    clickbait_score: number;
-    fake_news_score: number;
-    satire_score: number;
-    event_type: string;
+    categories: string[] | null;
   } | null;
   className?: string;
 }
@@ -74,7 +71,7 @@ export function ContentCard({
   publication_date, 
   entities = [], 
   tags = [], 
-  classification, 
+  evaluation, 
   className, 
   ...props 
 }: ContentCardProps) {
@@ -96,7 +93,7 @@ export function ContentCard({
         insertion_date,
         entities,
         tags,
-        classification
+        evaluation
       });
     }
   };
@@ -123,23 +120,23 @@ export function ContentCard({
               {text_content}
             </p>
             <div className="flex flex-wrap gap-1 mb-2">
-              {classification && (
+              {evaluation && (
                 <>
-                  <Badge variant="secondary">{classification.category}</Badge>
-                  {classification.secondary_categories?.map((category) => (
-                    <Badge key={category} variant="outline">{category}</Badge>
+                  <Badge variant="secondary">{evaluation.rhetoric}</Badge>
+                  {evaluation.keywords?.map((keyword) => (
+                    <Badge key={keyword} variant="outline">{keyword}</Badge>
                   ))}
                 </>
               )}
             </div>
-            {classification && (
+            {evaluation && (
               <div className="grid grid-cols-1 gap-1 text-xs text-muted-foreground mb-2"> {/* Reduced gap */}
                 <div className="grid grid-cols-2 gap-1"> {/* Reduced gap */}
                   <div className="p-1 border border-transparent hover:border-blue-500 transition-colors"> {/* Reduced padding */}
-                    <p className="text-sm font-semibold">🔍 {classification.event_type}</p>
+                    <p className="text-sm font-semibold">🔍 {evaluation.event_type}</p>
                   </div>
                   <div className="p-1 border border-transparent hover:border-blue-500 transition-colors">
-                    <p className="text-sm font-semibold">🏛️ {classification.category}</p>
+                    <p className="text-sm font-semibold">🏛️ {evaluation.rhetoric}</p>
                   </div>
                 </div>
                 
@@ -150,32 +147,32 @@ export function ContentCard({
                     <div className="grid grid-cols-3 gap-1"> {/* Changed to 3 columns */}
                       <div className="p-0.5"> {/* Minimal padding */}
                         <p className="text-xs text-gray-500">Geo</p>
-                        <p className="text-xs">🌍 <span className={`font-bold ${getColorClass(classification.geopolitical_relevance, false)}`}>
-                          {classification.geopolitical_relevance.toFixed(1)}
+                        <p className="text-xs">🌍 <span className={`font-bold ${getColorClass(evaluation.global_political_impact, false)}`}>
+                          {evaluation.global_political_impact.toFixed(1)}
                         </span></p>
                       </div>
                       <div className="p-0.5">
                         <p className="text-xs text-gray-500">Legislative</p>
-                        <p className="text-xs">📜 <span className={`font-bold ${getColorClass(classification.legislative_influence_score, false)}`}>
-                          {classification.legislative_influence_score.toFixed(1)}
+                        <p className="text-xs">📜 <span className={`font-bold ${getColorClass(evaluation.regional_political_impact, false)}`}>
+                          {evaluation.regional_political_impact.toFixed(1)}
                         </span></p>
                       </div>
                       <div className="p-0.5">
                         <p className="text-xs text-gray-500">International</p>
-                        <p className="text-xs">🌐 <span className={`font-bold ${getColorClass(classification.international_relevance_score, false)}`}>
-                          {classification.international_relevance_score.toFixed(1)}
+                        <p className="text-xs">🌐 <span className={`font-bold ${getColorClass(evaluation.global_economic_impact, false)}`}>
+                          {evaluation.global_economic_impact.toFixed(1)}
                         </span></p>
                       </div>
                       <div className="p-0.5">
                         <p className="text-xs text-gray-500">Democratic</p>
-                        <p className="text-xs">🗳️ <span className={`font-bold ${getColorClass(classification.democratic_process_implications_score, false)}`}>
-                          {classification.democratic_process_implications_score.toFixed(1)}
+                        <p className="text-xs">🗳️ <span className={`font-bold ${getColorClass(evaluation.regional_economic_impact, false)}`}>
+                          {evaluation.regional_economic_impact.toFixed(1)}
                           </span></p>
                       </div>
                       <div className="p-0.5">
                         <p className="text-xs text-gray-500">Interest</p>
-                        <p className="text-xs">📊 <span className={`font-bold ${getColorClass(classification.general_interest_score, false)}`}>
-                          {classification.general_interest_score.toFixed(1)}
+                        <p className="text-xs">📊 <span className={`font-bold ${getColorClass(evaluation.sociocultural_interest, false)}`}>
+                          {evaluation.sociocultural_interest.toFixed(1)}
                         </span></p>
                       </div>
                     </div>
@@ -187,14 +184,14 @@ export function ContentCard({
                     <div className="grid grid-cols-2 gap-1">
                       <div className="p-0.5">
                         <p className="text-xs text-gray-500">Spam</p>
-                        <p className="text-xs">🚫 <span className={`font-bold ${getColorClass(classification.spam_score, true)}`}>
-                          {classification.spam_score.toFixed(1)}
+                        <p className="text-xs">🚫 <span className={`font-bold ${getColorClass(evaluation.global_political_impact, true)}`}>
+                          {evaluation.global_political_impact.toFixed(1)}
                         </span></p>
                       </div>
                       <div className="p-0.5">
                         <p className="text-xs text-gray-500">Clickbait</p>
-                        <p className="text-xs">🎣 <span className={`font-bold ${getColorClass(classification.clickbait_score, true)}`}>
-                          {classification.clickbait_score.toFixed(1)}
+                        <p className="text-xs">🎣 <span className={`font-bold ${getColorClass(evaluation.global_economic_impact, true)}`}>
+                          {evaluation.global_economic_impact.toFixed(1)}
                         </span></p>
                       </div>
                     </div>
@@ -229,14 +226,11 @@ export function ContentCard({
               <Badge key={entity.id} variant="secondary">{entity.name}</Badge>
             ))}
           </div>
-          {classification && (
+          {evaluation && (
               <div className="grid grid-cols-1 gap-1 text-xs text-muted-foreground mb-2"> {/* Reduced gap */}
                 <div className="grid grid-cols-2 gap-1"> {/* Reduced gap */}
                   <div className="p-1 border border-transparent hover:border-blue-500 transition-colors"> {/* Reduced padding */}
-                    <p className="text-sm font-semibold">🔍 {classification.event_type}</p>
-                  </div>
-                  <div className="p-1 border border-transparent hover:border-blue-500 transition-colors">
-                    <p className="text-sm font-semibold">🏛️ {classification.category}</p>
+                    <p className="text-sm font-semibold">🔍 {evaluation.event_type}</p>
                   </div>
                 </div>
                 
@@ -247,32 +241,32 @@ export function ContentCard({
                     <div className="grid grid-cols-3 gap-1"> {/* Changed to 3 columns */}
                       <div className="p-0.5"> {/* Minimal padding */}
                         <p className="text-xs text-gray-500">Geo</p>
-                        <p className="text-xs">🌍 <span className={`font-bold ${getColorClass(classification.geopolitical_relevance, false)}`}>
-                          {classification.geopolitical_relevance.toFixed(1)}
+                        <p className="text-xs">🌍 <span className={`font-bold ${getColorClass(evaluation.global_political_impact, false)}`}>
+                          {evaluation.global_political_impact?.toFixed(1)}
                         </span></p>
                       </div>
                       <div className="p-0.5">
                         <p className="text-xs text-gray-500">Legislative</p>
-                        <p className="text-xs">📜 <span className={`font-bold ${getColorClass(classification.legislative_influence_score, false)}`}>
-                          {classification.legislative_influence_score.toFixed(1)}
+                        <p className="text-xs">📜 <span className={`font-bold ${getColorClass(evaluation.regional_political_impact, false)}`}>
+                          {evaluation.regional_political_impact?.toFixed(1)}
                         </span></p>
                       </div>
                       <div className="p-0.5">
                         <p className="text-xs text-gray-500">International</p>
-                        <p className="text-xs">🌐 <span className={`font-bold ${getColorClass(classification.international_relevance_score, false)}`}>
-                          {classification.international_relevance_score.toFixed(1)}
+                        <p className="text-xs">🌐 <span className={`font-bold ${getColorClass(evaluation.global_economic_impact, false)}`}>
+                          {evaluation.global_economic_impact?.toFixed(1)}
                         </span></p>
                       </div>
                       <div className="p-0.5">
                         <p className="text-xs text-gray-500">Democratic</p>
-                        <p className="text-xs">🗳️ <span className={`font-bold ${getColorClass(classification.democratic_process_implications_score, false)}`}>
-                          {classification.democratic_process_implications_score.toFixed(1)}
+                        <p className="text-xs">🗳️ <span className={`font-bold ${getColorClass(evaluation.regional_economic_impact, false)}`}>
+                          {evaluation.regional_economic_impact?.toFixed(1)}
                           </span></p>
                       </div>
                       <div className="p-0.5">
                         <p className="text-xs text-gray-500">Interest</p>
-                        <p className="text-xs">📊 <span className={`font-bold ${getColorClass(classification.general_interest_score, false)}`}>
-                          {classification.general_interest_score.toFixed(1)}
+                        <p className="text-xs">📊 <span className={`font-bold ${getColorClass(evaluation.sociocultural_interest, false)}`}>
+                          {evaluation.sociocultural_interest?.toFixed(1)}
                         </span></p>
                       </div>
                     </div>
@@ -284,14 +278,14 @@ export function ContentCard({
                     <div className="grid grid-cols-2 gap-1">
                       <div className="p-0.5">
                         <p className="text-xs text-gray-500">Spam</p>
-                        <p className="text-xs">🚫 <span className={`font-bold ${getColorClass(classification.spam_score, true)}`}>
-                          {classification.spam_score.toFixed(1)}
+                        <p className="text-xs">🚫 <span className={`font-bold ${getColorClass(evaluation.global_political_impact, true)}`}>
+                          {evaluation.global_political_impact?.toFixed(1)}
                         </span></p>
                       </div>
                       <div className="p-0.5">
                         <p className="text-xs text-gray-500">Clickbait</p>
-                        <p className="text-xs">🎣 <span className={`font-bold ${getColorClass(classification.clickbait_score, true)}`}>
-                          {classification.clickbait_score.toFixed(1)}
+                        <p className="text-xs">🎣 <span className={`font-bold ${getColorClass(evaluation.global_economic_impact, true)}`}>
+                          {evaluation.global_economic_impact?.toFixed(1)}
                         </span></p>
                       </div>
                     </div>

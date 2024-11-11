@@ -53,19 +53,16 @@ type Bookmark = {
   }>;
   classification: {
     content_id: string;
-    category: string;
-    secondary_categories: string[] | null;
+    rhetoric: string;
+    sociocultural_interest: number | null;
+    global_political_impact: number | null;
+    regional_political_impact: number | null;
+    global_economic_impact: number | null;
+    regional_economic_impact: number | null;
+    event_type: string | null;
+    event_subtype: string | null;
     keywords: string[] | null;
-    geopolitical_relevance: number;
-    legislative_influence_score: number;
-    international_relevance_score: number;
-    democratic_process_implications_score: number;
-    general_interest_score: number;
-    spam_score: number;
-    clickbait_score: number;
-    fake_news_score: number;
-    satire_score: number;
-    event_type: string;
+    categories: string[] | null;
   } | null;
 
 };

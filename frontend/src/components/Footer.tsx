@@ -1,8 +1,9 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 const Footer = () => {
   return (
-    <footer className="bg-transparent border-t border-border/40 py-2 relative h-12">
+    <footer className="bg-transparent border-t border-border/40 py-2 relative h-32">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
@@ -12,6 +13,11 @@ const Footer = () => {
             <p className="text-sm">
               Open Source Political Intelligence.
             </p>
+            <div className="flex space-x-4 mt-4">
+              <a href="https://www.ngisearch.eu/view/Main/"><Image src="/logos/ngi-logo.svg" alt="NGI Logo" width={80} height={80} /></a>
+              <a href="https://europa.eu/"><Image src="/logos/eu-logo.png" alt="EU Logo" width={80} height={100} /></a>
+            </div>
+            <p className="text-sm p-2 pl-0 text-gray-500">Supported by NGI Search</p>
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>

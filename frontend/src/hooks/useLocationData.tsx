@@ -36,8 +36,9 @@ interface LeaderInfo {
 }
 
 interface Entity {
+  id: string;
   name: string;
-  type: string;
+  entity_type: string;
   content_count: number;
   total_frequency: number;
   relevance_score: number;
@@ -45,48 +46,33 @@ interface Entity {
 
 interface Content {
   id: string;
-  title: string;
-  text_content: string;
   url: string;
+  title: string;
+  content_type: string;
   source: string | null;
   insertion_date: string;
-  content_type: string;
+  text_content: string;
   relevance_metrics: {
     entity_count: number;
     location_mentions: number;
     total_frequency: number;
     relevance_score: number;
   };
-  entities: Array<{
-    id: string;
-    name: string;
-    entity_type: string;
-    locations: Array<{
-      name: string;
-      location_type: string;
-      coordinates: number[] | null;
-    }>;
-  }>;
-  tags: Array<{
-    id: string;
-    name: string;
-  }>;
-  classification: {
-    content_id: string;
-    category: string;
-    secondary_categories: string[] | null;
-    keywords: string[] | null;
-    geopolitical_relevance: number;
-    legislative_influence_score: number;
-    international_relevance_score: number;
-    democratic_process_implications_score: number;
-    general_interest_score: number;
-    spam_score: number;
-    clickbait_score: number;
-    fake_news_score: number;
-    satire_score: number;
-    event_type: string;
-  } | null;
+  entities: Entity[];
+  tags: Tag[];
+  classification: ContentEvaluation;
+}
+
+interface ContentEvaluation {
+  sociocultural_interest: number | null;
+  global_political_impact: number | null;
+  regional_political_impact: number | null;
+  global_economic_impact: number | null;
+  regional_economic_impact: number | null;
+  event_type: string | null;
+  event_subtype: string | null;
+  keywords: string[] | null;
+  categories: string[] | null;
 }
 
 interface ContentResponse {

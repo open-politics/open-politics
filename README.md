@@ -38,25 +38,22 @@ As a quick pitch element to get you interested; this is where we are going:
 #### [SSARE - (Semantic Search Article Recommendation Engine)](https://github.com/JimVincentW/SSARE)
 SSARE is Open Politics' data aggregation system and vector storage endpoint. It aims to create up-to-date and relevant datasets for the LLMs to work with. A microservice infrastructure continuously scrapes news sites and stores them in a vector storage and a relational database (Postgres). Sources can be added with Python scripts which yield a dataframe with: URL | Headline | Paragraphs | Source. Just clone the service, add your scripts and bring your own data endpoint into production.
 
-### The Webapp (Overview):
-![Open Politics Stack](assets/images/opp_high_level.png)
-25.06.2024: 
-**The Django stack is now replaced by a FastAPI backend + NextJS Frontend.**
-The stack setup & is largely based on Tiangolo's Fullstack Template. 
-Security and configuration updates will be fetched from the template.
+**The methodic layer** 
+1. The webapp integrates multiple APIs among which are Tavily, OECD, Bundestag, etc.
+2. Most work regarding data infrastructure,ingestion, processing, classifications - is done in the SSARE microservices.
+    - Furthermore SSARE concentrates on:
+        - Search & Retrieval
+        - Embedding, Entity & Geocoding Processing
+        - OPP's custom dynamic semantic classification system 
+            - Along the NLP Codebooks we use to classify content
+        - Storage & Orchestration
 
-Backend:
-FastAPI, Postgres, Adminer \
-The API's can be generated into OpenAPI clients. 
-For the prototype some static data is served to illustrate future purposes (like the leaders of countries, articles on the globe, etc.).
-The rest of the data is pulled from APIs, SSARE (https://github.com/JimVincentW/SSARE) and storages like Tavily, Bundestag API, OECD API, etc.
+3. The webapp serves the data to the frontend and our developed interfaceswhile integrating APIs where useful for extending the experience of an open source political intelligence system. However, SSARE is operable and useful as a standalone service.
+4. The webapp is a NextJS app using mostly shadcn components - the globe is rendered with mapbox.
 
-**The methodic layer** of what information is presented and when is currently buried in the frontend with the help of the Vercel AI SDK. The plan is to dynamically choose data analysis and presentation methods that are presented as streaming generative interfaces. 
 
-Once it is more clear how FastAPI can provide the same capabilities as the Vercel AI SDK, the methodic layer will be moved to the backend. 
-
-Frontend:
-The frontend is now a Next.js app using shadcn as a UI library, amcharts for the globe and axios data fatches to the backend. The roamdap foresees that Open Politics will provide a unified interface for data resource management.
+## Goal for the Open Politics Webapp
+- SSARE is a data & infrastructure project. This webapp is a project of user interfaces. This distinction becomes valuable so we can avoid integrating new APIs & data sources which are only focused on small features or user experience enhacenments into a our carefully designed data infrastructure.
 
 ## Want to engage? Look into our Developer Jour Fixe!
 - Interested in the project? Want to contribute? Share a thought?
@@ -69,23 +66,6 @@ Currently needed:
 - Prompt Engineering suggestions
 - Frontend/UX/UI work
 
-## Tasks
-MVP Elements:
-- Issue Area Identification
-- Actor Identification / Named Entity Recognition
-- Stance Triangulation
-
-Including but not limited to tasks like:
-- Information summarization
-- Vector storage & retrieval 
-- Information clustering
-- Entity Extraction (Named Entity Recognition)
-- Q&A Chatbots (for interactive information)
-- Providing historical context 
-- Statement & Intention decoding
-- Visual representation of political data
-- Monitoring and alerts
-- Fact-checking (information triangulation)
 
 ## AI Models
 - Open-Source is our friend.
@@ -108,20 +88,24 @@ Including but not limited to tasks like:
 ## Quality Assurance
 - Automatic Evaluation of Results Pipelines needed (conciseness, accuracy, bias weighting etc.)
 
-# Architecture
-## Development
-Run `docker compose -f docker-compose.yml up` to start the backend and frontend.
-You can also go into the frontendfolder and run npm run dev. You need to plugin the backend url into the .env file inside of frontent( which you have to create).
-We recommend at least booting up the backend as a docker container. It has configurations set to rebuild on code changes.
+## Usage/ Installation
+## Clone the repository
+```bash
+git clone https://github.com/open-politics/open-politics.git
+```
 
+## Change .env.example to .env
+```bash
+cd open-politics
+mv .env.example .env
+```
 
+## Run the docker compose file
+```bash
+docker compose up
+```
 
-
-## Backend
-### FastAPI
-- We are transitioning away from Django and using a FastAPI backend now. The structure and configuration is largely based on Tiangolo's Fullstack Template ([https://github.com/tiangolo/full-stack-fastapi-template](https://github.com/tiangolo/full-stack-fastapi-template))
- 
-- As placeholders, before the SSARE data engine is fully integrated a geojson file is served articles to the globe.
-
-## Usage (better build script upcoming)
-- Clone the repo
+## Go to the dashboard
+```bash
+http://localhost:3000/desk_synthese
+```

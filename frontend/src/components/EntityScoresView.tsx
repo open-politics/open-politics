@@ -31,15 +31,15 @@ interface EntityScoresViewProps {
 }
 
 const SCORE_TYPES = [
-  { value: 'geopolitical_relevance', label: 'Geopolitical Relevance' },
-  { value: 'legislative_influence_score', label: 'Legislative Influence' },
-  { value: 'international_relevance_score', label: 'International Relevance' },
-  { value: 'democratic_process_implications_score', label: 'Democratic Process Impact' },
-  { value: 'general_interest_score', label: 'General Interest' },
-  { value: 'spam_score', label: 'Spam Score' },
-  { value: 'clickbait_score', label: 'Clickbait Score' },
-  { value: 'fake_news_score', label: 'Fake News Score' },
-  { value: 'satire_score', label: 'Satire Score' }
+  { value: 'sociocultural_interest', label: 'Sociocultural Interest' },
+  { value: 'global_political_impact', label: 'Global Political Impact' },
+  { value: 'regional_political_impact', label: 'Regional Political Impact' },
+  { value: 'global_economic_impact', label: 'Global Economic Impact' },
+  { value: 'regional_economic_impact', label: 'Regional Economic Impact' },
+  { value: 'event_type', label: 'Event Type' },
+  { value: 'event_subtype', label: 'Event Subtype' },
+  { value: 'keywords', label: 'Keywords' },
+  { value: 'categories', label: 'Categories' }
 ];
 
 const TIME_RANGES = [

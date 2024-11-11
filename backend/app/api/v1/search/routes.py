@@ -149,3 +149,4 @@ async def search_synthesizer(search_query: str):
         "String of main location. Either City, Region or Continent"
         query: str
 
+
