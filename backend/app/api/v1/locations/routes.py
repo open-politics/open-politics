@@ -151,14 +151,43 @@ async def dashboard_view():
         raise HTTPException(status_code=request.status_code, detail="Unable to fetch dashboard data")
 
 @router.get("/{location_name}/entities", response_model=None)
-async def get_location_entities(location_name: str, skip: int = 0, limit: int = 50):
+async def get_location_entities(
+    location_name: str, 
+    skip: int = 0, 
+    limit: int = 50,
+    min_relevance: float = 0.0  # Add minimum relevance threshold
+):
     try:
-        response = requests.get(f"http://postgres_service:5434/location_entities/{location_name}?skip={skip}&limit={limit}")
+        response = requests.get(
+            f"http://postgres_service:5434/location_entities/{location_name}",
+            params={
+                "skip": skip,
+                "limit": limit,
+                "min_relevance": min_relevance
+            }
+        )
         response.raise_for_status()
-        return JSONResponse(content=response.json(), status_code=200)
+        
+        # Map entity types to match frontend expectations / due to changing NER model
+        entity_type_mapping = {
+            "organization": "ORG",
+            "person": "PERSON",
+            "location": "GPE",
+        }
+        
+        entities = response.json()
+        mapped_entities = [{
+            **entity,
+            "type": entity_type_mapping.get(entity["type"].lower(), entity["type"].upper())
+        } for entity in entities]
+        
+        return JSONResponse(content=mapped_entities, status_code=200)
     except requests.RequestException as e:
         logger.error(f"Error fetching location entities: {str(e)}")
-        return JSONResponse(content={'error': 'Failed to fetch location entities'}, status_code=500)
+        return JSONResponse(
+            content={'error': 'Failed to fetch location entities'}, 
+            status_code=500
+        )
 
 @router.get("/leaders/{state}")
 async def get_leader_info(state: str):

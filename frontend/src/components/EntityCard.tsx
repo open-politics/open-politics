@@ -30,26 +30,24 @@ const MetricsDisplay: React.FC<{ score: EntityScore }> = ({ score }) => {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <h5 className="font-semibold">Metrics</h5>
-          <p>Average: {score.metrics.average_score.toFixed(2)}</p>
-          <p>Min: {score.metrics.min_score.toFixed(2)}</p>
-          <p>Max: {score.metrics.max_score.toFixed(2)}</p>
+          <p>Average: {score.metrics?.average_score?.toFixed(2) ?? 'N/A'}</p>
+          <p>Min: {score.metrics?.min_score?.toFixed(2) ?? 'N/A'}</p>
+          <p>Max: {score.metrics?.max_score?.toFixed(2) ?? 'N/A'}</p>
         </div>
         <div>
           <h5 className="font-semibold">Context</h5>
-          <p>Articles: {score.context.article_count}</p>
-          <p>Mentions: {score.context.total_mentions}</p>
-          <p>Interest: {score.context.general_interest_level.toFixed(1)}</p>
-        </div>
-        <div>
-          <h5 className="font-semibold">Reliability</h5>
-          <p>Confidence: {(score.reliability.confidence_score * 100).toFixed(0)}%</p>
-          <p>Spam Score: {(score.reliability.avg_spam_score * 100).toFixed(0)}%</p>
-          <p>Fake News: {(score.reliability.avg_fake_news_score * 100).toFixed(0)}%</p>
+          <p>Articles: {score.context?.article_count ?? 'N/A'}</p>
+          <p>Mentions: {score.context?.total_mentions ?? 'N/A'}</p>
+          <p>Interest: {score.context?.sociocultural_interest?.toFixed(1) ?? 'N/A'}</p>
+          <p>Global Political Impact: {score.context?.global_political_impact?.toFixed(1) ?? 'N/A'}</p>
+          <p>Regional Political Impact: {score.context?.regional_political_impact?.toFixed(1) ?? 'N/A'}</p>
+          <p>Global Economic Impact: {score.context?.global_economic_impact?.toFixed(1) ?? 'N/A'}</p>
+          <p>Regional Economic Impact: {score.context?.regional_economic_impact?.toFixed(1) ?? 'N/A'}</p>
         </div>
         <div>
           <h5 className="font-semibold">Sources & Events</h5>
-          <p>{score.context.sources.filter(s => s).join(', ') || 'N/A'}</p>
-          <p>{score.context.event_types.slice(0, 2).join(', ')}</p>
+          <p>{score.context?.sources?.filter(s => s).join(', ') || 'N/A'}</p>
+          <p>{score.context?.event_types?.slice(0, 2).join(', ') || 'N/A'}</p>
         </div>
       </div>
     </div>
@@ -177,7 +175,7 @@ const EntityCard: React.FC<EntityCardProps> = ({ entity, isSelected, onSelect })
         </div>
       )}
 
-      {isSelected && scoreData?.scores && (
+      {isSelected && scoreData?.scores?.length > 0 && (
         <div className="mt-4" onClick={handleInteractiveElementClick}>
           <h4 className="text-center text-lg font-bold mb-2">
             Metrics {selectedDate ? `for ${format(parseISO(selectedDate), 'MMM dd, yyyy')}` : ''}
@@ -192,8 +190,12 @@ const EntityCard: React.FC<EntityCardProps> = ({ entity, isSelected, onSelect })
               <p className="text-center text-gray-500">No metrics available for this date</p>
             )
           ) : (
-            // Show latest metrics
-            <MetricsDisplay score={scoreData.scores[scoreData.scores.length - 1]} />
+            // Show latest metrics if available
+            scoreData.scores.length > 0 ? (
+              <MetricsDisplay score={scoreData.scores[scoreData.scores.length - 1]} />
+            ) : (
+              <p className="text-center text-gray-500">No metrics available</p>
+            )
           )}
         </div>
       )}

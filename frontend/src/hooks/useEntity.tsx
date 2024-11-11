@@ -35,7 +35,7 @@ interface Content {
     id: string;
     name: string;
   }>;
-  classification: any | null;
+  evaluation: any | null;
 }
 
 export interface EntityMetrics {
@@ -52,7 +52,7 @@ export interface EntityContext {
   sources: (string | null)[];
   categories: string[];
   event_types: string[];
-  general_interest_level: number;
+  keywords: string[];
 }
 
 export interface EntityReliability {

@@ -36,7 +36,6 @@ interface LeaderInfo {
 }
 
 interface Entity {
-  id: string;
   name: string;
   entity_type: string;
   content_count: number;
@@ -198,9 +197,18 @@ export function useLocationData(locationName: string | null) {
         throw new Error('Failed to fetch entities');
       }
       const data = await response.json();
+      
+      const mappedEntities = data.map((entity: any) => ({
+        name: entity.name,
+        entity_type: entity.type.toUpperCase(),
+        content_count: entity.article_count,
+        total_frequency: entity.total_frequency,
+        relevance_score: entity.relevance_score
+      }));
+
       setData((prev) => ({
         ...prev,
-        entities: skip === 0 ? data : [...prev.entities, ...data],
+        entities: skip === 0 ? mappedEntities : [...prev.entities, ...mappedEntities],
       }));
     } catch (error) {
       setError((prev) => ({ ...prev, entities: error as Error }));
