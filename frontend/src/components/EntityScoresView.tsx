@@ -70,6 +70,16 @@ const CustomTooltip: React.FC<TooltipProps<number, string>> = ({ active, payload
   return null;
 };
 
+const formatData = (data: EntityScore[]) => {
+  if (!data) return [];
+  return data.map(item => ({
+    date: item.date,
+    average_score: item.metrics.average_score,
+    min_score: item.metrics.min_score,
+    max_score: item.metrics.max_score
+  }));
+};
+
 export function EntityScoresView({ 
   entity, 
   fetchEntityScores, 
@@ -114,16 +124,6 @@ export function EntityScoresView({
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
-  };
-
-  const formatData = (data: EntityScore[]) => {
-    if (!data) return [];
-    return data.map(item => ({
-      date: item.date,
-      average_score: item.metrics.average_score,
-      min_score: item.metrics.min_score,
-      max_score: item.metrics.max_score
-    }));
   };
 
   const handleDateRangeChange = (newDateRange: DateRange | undefined) => {
@@ -231,7 +231,6 @@ export function EntityScoresView({
                     }}
                     onClick={handleChartClick}
                   >
-                    {/* <CartesianGrid strokeDasharray="3 3" /> */}
                     <XAxis 
                       dataKey="date" 
                       tickFormatter={(date) => format(parseISO(date), 'MM/dd/yyyy')}

@@ -82,13 +82,10 @@ const EntityCard: React.FC<EntityCardProps> = ({ entity, isSelected, onSelect })
   useEffect(() => {
     if (isSelected) {
       resetContents();
-      fetchContents(0, 20, selectedDate).then(() => {
-        console.log(`Fetched contents for ${entity.name}${selectedDate ? ` on ${selectedDate}` : ''}`);
-      }).catch((error) => {
-        console.error(`Error fetching contents for ${entity.name}: ${error}`);
-      });
+      fetchContents(0, 20);
+      fetchEntityScores('global_economic_impact', '2023-01-01', '2025-12-31');
     }
-  }, [isSelected, selectedDate, fetchContents, resetContents]);
+  }, [isSelected, selectedDate, fetchContents, resetContents, fetchEntityScores]);
 
   const handleCardClick = () => {
     onSelect(isSelected ? null : entity.name);
@@ -181,7 +178,6 @@ const EntityCard: React.FC<EntityCardProps> = ({ entity, isSelected, onSelect })
             Metrics {selectedDate ? `for ${format(parseISO(selectedDate), 'MMM dd, yyyy')}` : ''}
           </h4>
           {selectedDate ? (
-            // Show specific date metrics
             scoreData.scores.find(s => format(parseISO(s.date), 'yyyy-MM-dd') === selectedDate) ? (
               <MetricsDisplay 
                 score={scoreData.scores.find(s => format(parseISO(s.date), 'yyyy-MM-dd') === selectedDate)!} 
@@ -190,7 +186,6 @@ const EntityCard: React.FC<EntityCardProps> = ({ entity, isSelected, onSelect })
               <p className="text-center text-gray-500">No metrics available for this date</p>
             )
           ) : (
-            // Show latest metrics if available
             scoreData.scores.length > 0 ? (
               <MetricsDisplay score={scoreData.scores[scoreData.scores.length - 1]} />
             ) : (

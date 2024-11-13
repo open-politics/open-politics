@@ -28,7 +28,7 @@ interface EntitiesViewProps {
 }
 
 const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities, variant = 'default' }) => {
-  const [selectedEntityTypes, setSelectedEntityTypes] = useState<string[]>(['PERSON', 'ORG', 'GPE']);
+  const [selectedEntityTypes, setSelectedEntityTypes] = useState<string[]>(['PER', 'ORG', 'GPE']);
   const [selectedEntity, setSelectedEntity] = useState<string | null>(null);
 
   const toggleEntityType = (type: string) => {
@@ -43,7 +43,7 @@ const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities, varia
         <div className="flex justify-between items-center">
           <h3 className="text-sm font-medium">Key Entities</h3>
           <div className="flex space-x-1">
-            {['PERSON', 'ORG', 'GPE'].map((type) => (
+            {['PER', 'ORG', 'GPE'].map((type) => (
               <Badge
                 key={type}
                 variant={selectedEntityTypes.includes(type) ? 'secondary' : 'outline'}
@@ -114,7 +114,7 @@ const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities, varia
         
         {/* Badge List for Entity Types */}
         <div className="flex overflow-x-auto space-x-2 rounded-full">
-          {['PERSON', 'ORG', 'GPE', 'LOC', 'EVENT', 'PRODUCT', 'WORK_OF_ART', 'LAW', 'LANGUAGE', 'DATE', 'TIME', 'PERCENT', 'MONEY', 'QUANTITY', 'ORDINAL', 'CARDINAL'].map((type) => (
+          {['PER', 'ORG', 'GPE', 'LOC', 'EVENT', 'PRODUCT', 'WORK_OF_ART', 'LAW', 'LANGUAGE', 'DATE', 'TIME', 'PERCENT', 'MONEY', 'QUANTITY', 'ORDINAL', 'CARDINAL'].map((type) => (
             <Badge
               key={type}
               variant={selectedEntityTypes.includes(type) ? 'secondary' : 'outline'}

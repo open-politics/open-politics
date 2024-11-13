@@ -42,17 +42,11 @@ export interface EntityMetrics {
   average_score: number;
   min_score: number;
   max_score: number;
-  standard_deviation: number | null;
 }
 
 export interface EntityContext {
   article_count: number;
   total_mentions: number;
-  source_diversity: number;
-  sources: (string | null)[];
-  categories: string[];
-  event_types: string[];
-  keywords: string[];
 }
 
 export interface EntityReliability {
