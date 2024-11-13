@@ -12,7 +12,7 @@ import { format, parseISO } from 'date-fns';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts';
 import { CalendarDays } from "lucide-react";
 import { DateRange } from "react-day-picker";
-import { addDays, differenceInDays } from "date-fns";
+import { addDays } from "date-fns";
 import {
   Popover,
   PopoverContent,
@@ -47,6 +47,7 @@ const TIME_RANGES = [
   { value: '30d', label: 'Last 30 Days' },
   { value: '90d', label: 'Last 90 Days' },
   { value: '1y', label: 'Last Year' },
+  { value: 'custom', label: 'Custom Range' },
 ];
 
 const CustomTooltip: React.FC<TooltipProps<number, string>> = ({ active, payload, label }) => {
@@ -96,20 +97,25 @@ export function EntityScoresView({
 
   const handleTimeRangeChange = (value: string) => {
     setSelectedTimeRange(value);
-    const days = parseInt(value.replace('d', ''));
-    const years = parseInt(value.replace('y', ''));
-    
+    let from: Date;
     const to = new Date();
-    const from = value.includes('d') 
-      ? addDays(to, -days)
-      : addDays(to, -years * 365);
-      
+
+    if (value.includes('d')) {
+      const days = parseInt(value.replace('d', ''));
+      from = addDays(to, -days);
+    } else if (value.includes('y')) {
+      const years = parseInt(value.replace('y', ''));
+      from = addDays(to, -years * 365); // Approximate 1 year as 365 days
+    } else {
+      from = addDays(to, -30); // Default to 30 days if unrecognized
+    }
+
     setDateRange({ from, to });
   };
 
   const handleFetchScores = () => {
     if (!dateRange?.from || !dateRange?.to) return;
-    
+
     fetchEntityScores(
       selectedScoreType,
       format(dateRange.from, 'yyyy-MM-dd'),
@@ -119,7 +125,8 @@ export function EntityScoresView({
 
   useEffect(() => {
     handleFetchScores();
-  }, [selectedScoreType, dateRange?.from, dateRange?.to, fetchEntityScores]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedScoreType, dateRange?.from, dateRange?.to]);
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -169,7 +176,6 @@ export function EntityScoresView({
                       {range.label}
                     </SelectItem>
                   ))}
-                  <SelectItem value="custom">Custom Range</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -218,7 +224,7 @@ export function EntityScoresView({
               </Button>
             </div>
 
-            {scoreData && scoreData.scores && (
+            {scoreData && scoreData.scores && scoreData.scores.length > 0 ? (
               <div className="highlight-bar-charts" style={{ userSelect: 'none', width: '100%', maxWidth: '100%' }}>
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart
@@ -231,6 +237,7 @@ export function EntityScoresView({
                     }}
                     onClick={handleChartClick}
                   >
+                    <CartesianGrid strokeDasharray="3 3" />
                     <XAxis 
                       dataKey="date" 
                       tickFormatter={(date) => format(parseISO(date), 'MM/dd/yyyy')}
@@ -244,6 +251,7 @@ export function EntityScoresView({
                       strokeWidth={2}
                       activeDot={{ r: 8 }}
                       connectNulls={true}
+                      dot={{ r: 4 }}
                     />
                     <Line
                       type="monotone"
@@ -264,6 +272,8 @@ export function EntityScoresView({
                   </LineChart>
                 </ResponsiveContainer>
               </div>
+            ) : (
+              <p className="text-center text-gray-500">No metrics available for the selected range and score type.</p>
             )}
           </CardContent>
         </Card>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 
 interface EntityData {
@@ -88,18 +88,23 @@ export function useEntityData(entityName: string | null, isSelected: boolean) {
   const [isLoadingScores, setIsLoadingScores] = useState(false);
   const [scoreError, setScoreError] = useState<Error | null>(null);
 
-  const fetchContents = useCallback(async (skip: number, limit: number) => {
+  const fetchIdRef = useRef(0);
+
+  const fetchContents = useCallback(async (skip: number, limit: number, selectedDate?: string) => {
     if (!entityName || !isSelected) return; // Fetch only if an entity is selected
     setIsLoading((prev) => ({ ...prev, contents: true }));
     try {
-      const response = await fetch(`/api/v1/locations/${entityName}/entities/contents?skip=${skip}&limit=${limit}`);
+      const url = selectedDate
+        ? `/api/v1/locations/${encodeURIComponent(entityName)}/entities/contents?skip=${skip}&limit=${limit}&date=${encodeURIComponent(selectedDate)}`
+        : `/api/v1/locations/${encodeURIComponent(entityName)}/entities/contents?skip=${skip}&limit=${limit}`;
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Failed to fetch contents');
       }
-      const data = await response.json();
+      const fetchedData = await response.json();
       setData((prev) => ({
         ...prev,
-        contents: skip === 0 ? data : [...prev.contents, ...data],
+        contents: skip === 0 ? fetchedData : [...prev.contents, ...fetchedData],
       }));
     } catch (error) {
       setError((prev) => ({ ...prev, contents: error as Error }));
@@ -116,28 +121,51 @@ export function useEntityData(entityName: string | null, isSelected: boolean) {
     scoreType: string,
     timeframeFrom: string,
     timeframeTo: string
-    ) => {
-        if (!entityName) return;
-        setIsLoadingScores(true);
-        try {
-            const response = await fetch(
-                `/api/v1/entities/score_over_time/${encodeURIComponent(entityName)}?` + 
-                `score_type=${encodeURIComponent(scoreType)}` +
-                `&timeframe_from=${encodeURIComponent(timeframeFrom)}` +
-                `&timeframe_to=${encodeURIComponent(timeframeTo)}`
-            );
-            if (!response.ok) throw new Error('Failed to fetch entity scores');
-            const data = await response.json();
-            setScoreData({
-                scores: data,
-                entity: entityName,
-                scoreType
-            });
-        } catch (error) {
-            setScoreError(error as Error);
-        } finally {
-            setIsLoadingScores(false);
-        }
+  ) => {
+    if (!entityName) return;
+    setIsLoadingScores(true);
+    const fetchId = ++fetchIdRef.current;
+
+    try {
+      const defaultTimeframe = {
+        from: '2023-01-01',
+        to: '2025-12-31'
+      };
+
+      console.log('Fetching scores with:', { 
+        entityName, 
+        scoreType, 
+        timeframeFrom: defaultTimeframe.from, 
+        timeframeTo: defaultTimeframe.to 
+      });
+
+      const response = await fetch(
+        `/api/v1/entities/score_over_time/${encodeURIComponent(entityName)}?` + 
+        `score_type=${encodeURIComponent(scoreType)}` +
+        `&timeframe_from=${defaultTimeframe.from}` +
+        `&timeframe_to=${defaultTimeframe.to}`
+      );
+
+      if (!response.ok) throw new Error('Failed to fetch entity scores');
+      const fetchedData = await response.json();
+      
+      if (fetchId === fetchIdRef.current) {
+        setScoreData({
+          scores: fetchedData,
+          entity: entityName,
+          scoreType
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching scores:', error);
+      if (fetchId === fetchIdRef.current) {
+        setScoreError(error as Error);
+      }
+    } finally {
+      if (fetchId === fetchIdRef.current) {
+        setIsLoadingScores(false);
+      }
+    }
   }, [entityName]);
 
   return {

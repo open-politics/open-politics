@@ -80,12 +80,11 @@ const EntityCard: React.FC<EntityCardProps> = ({ entity, isSelected, onSelect })
   }, [data.contents, selectedDate]);
 
   useEffect(() => {
-    if (isSelected) {
+    if (isSelected && !scoreData) {
       resetContents();
       fetchContents(0, 20);
-      fetchEntityScores('global_economic_impact', '2023-01-01', '2025-12-31');
     }
-  }, [isSelected, selectedDate, fetchContents, resetContents, fetchEntityScores]);
+  }, [isSelected]);
 
   const handleCardClick = () => {
     onSelect(isSelected ? null : entity.name);

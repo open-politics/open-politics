@@ -117,7 +117,7 @@ async def get_tavily_data():
     result = tavily.get_tavily_data()
     
 
-@router.get("/score_over_time/{entity}")
+@router.get("/score_over_time/{entity}", response_model=None)
 async def get_entity_score_over_time(
     entity: str,
     score_type: str,
@@ -125,25 +125,48 @@ async def get_entity_score_over_time(
     timeframe_to: str
 ):
     try:
-        logging.info(f"Fetching entity score over time for {entity} with score type {score_type} from {timeframe_from} to {timeframe_to}")
+        # Create the payload
+        payload = {
+            "entity": entity,
+            "score_type": score_type,
+            "timeframe_from": timeframe_from,
+            "timeframe_to": timeframe_to
+        }
+        
+        logger.info(f"Sending request to postgres_service with payload: {payload}")
         
         response = requests.post(
             "http://postgres_service:5434/entity_score_over_time",
-            json={
-                "entity": entity,
-                "score_type": score_type,
-                "timeframe_from": timeframe_from,
-                "timeframe_to": timeframe_to
-            },
+            json=payload,
+            headers={'Content-Type': 'application/json'},
             verify=False
         )
+        
+        # Log the raw response
+        logger.info(f"Raw response from postgres: Status={response.status_code}, Content={response.content}")
+        
         response.raise_for_status()
-        return JSONResponse(content=response.json(), status_code=200)
+        data = response.json()
+        
+        if not data:
+            logger.warning(f"No data found for entity {entity} in timeframe {timeframe_from} to {timeframe_to}")
+            return JSONResponse(
+                content=[],
+                status_code=200
+            )
+            
+        return JSONResponse(content=data, status_code=200)
         
     except requests.RequestException as e:
         logger.error(f"Error fetching entity scores: {str(e)}")
         return JSONResponse(
-            content={'error': 'Failed to fetch entity scores'},
+            content={'error': f'Failed to fetch entity scores: {str(e)}'},
+            status_code=500
+        )
+    except json.JSONDecodeError as e:
+        logger.error(f"Error decoding JSON response: {str(e)}")
+        return JSONResponse(
+            content={'error': 'Invalid JSON response from database service'},
             status_code=500
         )
 
