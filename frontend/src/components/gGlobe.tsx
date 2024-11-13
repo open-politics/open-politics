@@ -82,16 +82,9 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
     { type: "Elections", color: "#4CAF50", icon: "ballot", zIndex: 5 },
     { type: "Politics", color: "#9C27B0", icon: "politics", zIndex: 1 },
     { type: "Economic", color: "#FF9800", icon: "economy", zIndex: 3 },
-    { type: "Legal", color: "#8B4513", icon: "court", zIndex: 2 }, 
     { type: "Social", color: "#FFD700", icon: "social", zIndex: 2 }, 
     { type: "Crisis", color: "#FF4500", icon: "new_war", zIndex: 2 }, 
     { type: "War", color: "#FF5722", icon: "new_war", zIndex: 2 },
-    { type: "Peace", color: "#00FF00", icon: "peace", zIndex: 2 }, 
-    { type: "Diplomacy", color: "#1E90FF", icon: "embassy", zIndex: 2 }, 
-    { type: "Technology", color: "#00CED1", icon: "technology", zIndex: 2 }, 
-    { type: "Science", color: "#8A2BE2", icon: "laboratory", zIndex: 2 }, 
-    { type: "Culture", color: "#FF69B4", icon: "museum", zIndex: 2 }, 
-    { type: "Sports", color: "#32CD32", icon: "stadium", zIndex: 2 }, 
   ];
 
   // Fly to location from coordinates and with zoomlevel
@@ -144,6 +137,14 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
         }, 600); // Reduced delay since we're already waiting for resize
       }, 100);
     }
+  };
+
+  const hexToRgb = (hex: string): string => {
+    const bigint = parseInt(hex.slice(1), 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return `${r}, ${g}, ${b}`;
   };
 
   useEffect(() => {
@@ -335,27 +336,25 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
               source: `geojson-events-${eventType.type}`,
               filter: ['has', 'point_count'],
               paint: {
-                'circle-color': eventType.color,
+                'circle-color': [
+                  'interpolate',
+                  ['linear'],
+                  ['get', 'point_count'],
+                  1, `rgba(${hexToRgb(eventType.color)}, 1)`,   // Base color
+                  100, `rgba(${hexToRgb(eventType.color)}, 0.8)`, // Lighter shade
+                  750, `rgba(${hexToRgb(eventType.color)}, 0.6)`  // Even lighter shade
+                ],
                 'circle-radius': [
                   'step',
                   ['get', 'point_count'],
-                  30,  // Base size
-                  100, // At this point count
-                  40,  // Increase size
-                  750, // At this point count
-                  50   // Max size
+                  20,  // Base size
+                  100, 30,  // Increase size
+                  750, 40   // Max size
                 ],
-                'circle-opacity': ['case',
-                  ['boolean', ['feature-state', 'hover'], false],
-                  0.8,  // Hover opacity
-                  0.6   // Default opacity
-                ],
-                'circle-stroke-width': ['case',
-                  ['boolean', ['feature-state', 'hover'], false],
-                  3,    // Hover stroke width
-                  2     // Default stroke width
-                ],
-                'circle-stroke-color': '#fff'
+                'circle-opacity': 0.7,
+                'circle-stroke-width': 2,
+                'circle-stroke-color': '#fff',
+                'circle-blur': 0.5
               }
             });
 
@@ -461,7 +460,6 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                   closeButton: false,
                   maxWidth: 'none',
                   className: 'custom-popup-container hover-popup',
-                  offset: [0, -10]
                 })
                   .setLngLat(coordinates)
                   .setHTML(popupContent)
@@ -645,7 +643,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                       const coordinates = (features[0].geometry as any).coordinates;
                       const offset: [number, number] = [0, -(mapRef.current!.getContainer().offsetHeight * 0.2)];
                       
-                      const limitedZoom = Math.min(zoom, 6); // Limit maximum zoom to 6
+                      const limitedZoom = Math.min(zoom, 4); // Limit maximum zoom to 6
                       
                       mapRef.current?.flyTo({
                         center: coordinates,
@@ -782,7 +780,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                               detail: {
                                 lng: ${coordinates[0]},
                                 lat: ${coordinates[1]},
-                                zoom: ${Math.min(mapRef.current.getZoom() + 1, 7)}
+                                zoom: ${Math.min(mapRef.current.getZoom() + 1, 4)}
                               }
                             }))"
                           >
@@ -907,14 +905,10 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
   const styles = `
       .custom-popup-container .mapboxgl-popup-content {
         padding: 0 !important;
-        background: transparent !important;
-        box-shadow: none !important;
+        background: rgba(255, 255, 255, 0.8) !important;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
         border-radius: 0.75rem;
-        max-height: 12re;
-      }
-
-      .custom-popup-container .mapboxgl-popup-tip {
-        display: none !important;
+        backdrop-filter: blur(10px);
       }
 
       .custom-popup-container .mapboxgl-popup-close-button {
@@ -928,8 +922,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
       }
 
       .custom-popup-container .mapboxgl-popup-close-button:hover {
-        background: none !important;
-        color: var(--text-foreground);
+        color: limegreen;
       }
 
       .custom-scrollbar {

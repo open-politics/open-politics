@@ -170,9 +170,10 @@ async def get_location_entities(
         
         # Map entity types to match frontend expectations / due to changing NER model
         entity_type_mapping = {
-            "organization": "ORG",
-            "person": "PERSON",
-            "location": "GPE",
+            # "organization": "ORG",
+            # "person": "PERSON",
+            # "location": "GPE",
+            "x" : "y"
         }
         
         entities = response.json()

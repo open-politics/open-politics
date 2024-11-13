@@ -28,7 +28,7 @@ interface EntitiesViewProps {
 }
 
 const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities, variant = 'default' }) => {
-  const [selectedEntityTypes, setSelectedEntityTypes] = useState<string[]>(['PERSON']);
+  const [selectedEntityTypes, setSelectedEntityTypes] = useState<string[]>(['PERSON', 'ORG', 'GPE']);
   const [selectedEntity, setSelectedEntity] = useState<string | null>(null);
 
   const toggleEntityType = (type: string) => {

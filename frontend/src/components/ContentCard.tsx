@@ -1,10 +1,10 @@
 'use client'
-import React from 'react';
+import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Bookmark, BookMarked } from 'lucide-react'; // Import bookmark icons
+import { Bookmark, BookMarked, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -76,6 +76,7 @@ export function ContentCard({
   ...props 
 }: ContentCardProps) {
   const { bookmarks, addBookmark, removeBookmark } = useBookMarkStore();
+  const [isTextExpanded, setIsTextExpanded] = useState(false);
 
   const isBookmarked = bookmarks.some(bookmark => bookmark.url === url);
 
@@ -109,8 +110,8 @@ export function ContentCard({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Card className={cn("rounded-md opacity-90 bg-background-blur  overflow-y-auto cursor-pointer relative max-h-[500px]", className)} {...props} onClick={handleCardClick}>
-          <div className="p-3">  {/* Reduced padding */}
+        <Card className={cn("rounded-md opacity-90 bg-background-blur overflow-y-auto cursor-pointer relative max-h-[500px]", className)} {...props} onClick={handleCardClick}>
+          <div className="p-3">
             <div className="absolute top-2 right-2" onClick={handleBookmark}>
               {isBookmarked ? <BookMarked className="text-blue-500" /> : <Bookmark className="text-gray-500" />}
             </div>
@@ -123,7 +124,7 @@ export function ContentCard({
             <p className="text-sm text-muted-foreground mb-2 line-clamp-2 leading-relaxed tracking-wide">
               {text_content}
             </p>
-            <div className="flex flex-wrap gap-1 mb-2">
+            {/* <div className="flex flex-wrap gap-1 mb-2">
               {evaluation && (
                 <>
                   <Badge variant="secondary">{evaluation.rhetoric}</Badge>
@@ -132,24 +133,23 @@ export function ContentCard({
                   ))}
                 </>
               )}
-            </div>
+            </div> */}
             {evaluation && (
-              <div className="grid grid-cols-1 gap-1 text-xs text-muted-foreground mb-2"> {/* Reduced gap */}
-                <div className="grid grid-cols-2 gap-1"> {/* Reduced gap */}
-                  <div className="p-1 border border-transparent hover:border-blue-500 transition-colors"> {/* Reduced padding */}
-                    <p className="text-sm font-semibold">🔍 {evaluation.event_type}</p>
+              <div className="grid grid-cols-1 gap-1 text-xs text-muted-foreground mb-2">
+                <div className="grid grid-cols-2 gap-1">
+                  <div className="p-1 border border-transparent hover:border-blue-500 transition-colors">
+                    <p className="text-sm font-semibold">Event Type: {evaluation.event_type}</p>
                   </div>
                   <div className="p-1 border border-transparent hover:border-blue-500 transition-colors">
-                    <p className="text-sm font-semibold">🏛️ {evaluation.rhetoric}</p>
+                    <p className="text-sm font-semibold">🗣️ {evaluation.rhetoric}</p>
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-1">
-                  {/* Political Impact Metrics */}
+                <div className="grid grid-cols-1 gap-1">
                   <div className="p-1 border border-transparent hover:border-blue-500 transition-colors">
-                    <p className="font-semibold mb-1">Political Impact</p> {/* Reduced margin */}
-                    <div className="grid grid-cols-3 gap-1"> {/* Changed to 3 columns */}
-                      <div className="p-0.5"> {/* Minimal padding */}
+                    <p className="font-semibold mb-1">Impact Assessment</p>
+                    <div className="grid grid-cols-4 gap-1">
+                      <div className="p-0.5">
                         <p className="text-xs text-gray-500">Global Political</p>
                         <p className="text-xs">🌍 <span className={`font-bold ${getColorClass(evaluation.global_political_impact, false)}`}>
                           {evaluation.global_political_impact?.toFixed(1)}
@@ -169,21 +169,14 @@ export function ContentCard({
                       </div>
                       <div className="p-0.5">
                         <p className="text-xs text-gray-500">Regional Economic</p>
-                        <p className="text-xs">🗳️ <span className={`font-bold ${getColorClass(evaluation.regional_economic_impact, false)}`}>
+                        <p className="text-xs">📜 <span className={`font-bold ${getColorClass(evaluation.regional_economic_impact, false)}`}>
                           {evaluation.regional_economic_impact?.toFixed(1)}
-                          </span></p>
-                      </div>
-                      <div className="p-0.5">
-                        <p className="text-xs text-gray-500">Sociocultural Attention</p>
-                        <p className="text-xs">📊 <span className={`font-bold ${getColorClass(evaluation.sociocultural_interest, false)}`}>
-                          {evaluation.sociocultural_interest?.toFixed(1)}
                         </span></p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Content Quality Metrics */}
-                  <div className="p-1 border border-transparent hover:border-blue-500 transition-colors">
+                  {/* <div className="p-1 border border-transparent hover:border-blue-500 transition-colors">
                     <p className="font-semibold mb-1">Content Quality</p>
                     <div className="grid grid-cols-2 gap-1">
                       <div className="p-0.5">
@@ -198,86 +191,79 @@ export function ContentCard({
                           {evaluation.global_economic_impact?.toFixed(1)}
                         </span></p>
                       </div>
+                      
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             )}
           </div>
         </Card>
       </DialogTrigger>
+
       <DialogContent className="max-h-[90vh] max-w-[100vw] md:max-w-[50vw] flex flex-col">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
-            {source} 
+            {source && <span>Source: <span className="text-green-500">{source}</span></span>}
             {author && ` • ${author}`}
             {insertion_date && ` • ${new Date(insertion_date).toLocaleDateString()}`}
           </DialogDescription>
         </DialogHeader>
-        <div className="mt-4 overflow-y-auto flex-grow">
-          <p className="text-sm mb-4 leading-relaxed tracking-wide whitespace-pre-line">
-            {text_content?.slice(0, 450)}
-            {text_content && text_content.length > 450 && '...'}
-          </p>
-          <div className="flex flex-wrap flex-row gap-2 mb-4 max-h-[10vh] overflow-y-auto">
-            Tags:
-            {tags.map((tag) => (
-              <Badge key={tag.id} variant="outline">{tag.name}</Badge>
-            ))}
-            Entities:
-            {entities.map((entity) => (
-              <Badge key={entity.id} variant="secondary">{entity.name}</Badge>
-            ))}
-          </div>
+        
+        <div className="mt-4 overflow-y-auto flex-grow flex flex-col">
+          {/* Evaluation section first */}
           {evaluation && (
-              <div className="grid grid-cols-1 gap-1 text-xs text-muted-foreground mb-2"> {/* Reduced gap */}
-                <div className="grid grid-cols-2 gap-1"> {/* Reduced gap */}
-                  <div className="p-1 border border-transparent hover:border-blue-500 transition-colors"> {/* Reduced padding */}
+            <>
+              <div className="flex flex-wrap gap-1 mb-2">
+                <Badge variant="secondary">{evaluation.rhetoric}</Badge>
+                {evaluation.keywords?.map((keyword) => (
+                  <Badge key={keyword} variant="outline">{keyword}</Badge>
+                ))}
+              </div>
+              
+              <div className="grid grid-cols-1 gap-1 text-xs text-muted-foreground mb-4">
+                <div className="grid grid-cols-2 gap-1">
+                  <div className="p-1 border border-transparent hover:border-blue-500 transition-colors">
                     <p className="text-sm font-semibold">🔍 {evaluation.event_type}</p>
+                  </div>
+                  <div className="p-1 border border-transparent hover:border-blue-500 transition-colors">
+                    <p className="text-sm font-semibold">🏛️ {evaluation.rhetoric}</p>
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-1">
-                  {/* Political Impact Metrics */}
+                <div className="grid grid-cols-1 gap-1">
                   <div className="p-1 border border-transparent hover:border-blue-500 transition-colors">
-                    <p className="font-semibold mb-1">Political Impact</p> {/* Reduced margin */}
-                    <div className="grid grid-cols-3 gap-1"> {/* Changed to 3 columns */}
-                      <div className="p-0.5"> {/* Minimal padding */}
-                        <p className="text-xs text-gray-500">Geo</p>
+                    <p className="font-semibold mb-1">Impact Assessment</p>
+                    <div className="grid grid-cols-4 gap-1">
+                      <div className="p-0.5">
+                        <p className="text-xs text-gray-500">Global Political</p>
                         <p className="text-xs">🌍 <span className={`font-bold ${getColorClass(evaluation.global_political_impact, false)}`}>
                           {evaluation.global_political_impact?.toFixed(1)}
                         </span></p>
                       </div>
                       <div className="p-0.5">
-                        <p className="text-xs text-gray-500">Legislative</p>
+                        <p className="text-xs text-gray-500">Regional Political</p>
                         <p className="text-xs">📜 <span className={`font-bold ${getColorClass(evaluation.regional_political_impact, false)}`}>
                           {evaluation.regional_political_impact?.toFixed(1)}
                         </span></p>
                       </div>
                       <div className="p-0.5">
-                        <p className="text-xs text-gray-500">International</p>
+                        <p className="text-xs text-gray-500">Global Economic</p>
                         <p className="text-xs">🌐 <span className={`font-bold ${getColorClass(evaluation.global_economic_impact, false)}`}>
                           {evaluation.global_economic_impact?.toFixed(1)}
                         </span></p>
                       </div>
                       <div className="p-0.5">
-                        <p className="text-xs text-gray-500">Democratic</p>
-                        <p className="text-xs">🗳️ <span className={`font-bold ${getColorClass(evaluation.regional_economic_impact, false)}`}>
+                        <p className="text-xs text-gray-500">Global Economic</p>
+                        <p className="text-xs">📜 <span className={`font-bold ${getColorClass(evaluation.regional_economic_impact, false)}`}>
                           {evaluation.regional_economic_impact?.toFixed(1)}
-                          </span></p>
-                      </div>
-                      <div className="p-0.5">
-                        <p className="text-xs text-gray-500">Interest</p>
-                        <p className="text-xs">📊 <span className={`font-bold ${getColorClass(evaluation.sociocultural_interest, false)}`}>
-                          {evaluation.sociocultural_interest?.toFixed(1)}
                         </span></p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Content Quality Metrics */}
-                  <div className="p-1 border border-transparent hover:border-blue-500 transition-colors">
+                  {/* <div className="p-1 border border-transparent hover:border-blue-500 transition-colors">
                     <p className="font-semibold mb-1">Content Quality</p>
                     <div className="grid grid-cols-2 gap-1">
                       <div className="p-0.5">
@@ -293,20 +279,62 @@ export function ContentCard({
                         </span></p>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
-            )} 
-          <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">
-            Read full article
-          </a>
+            </>
+          )}
+
+          {/* Text content with expand/collapse */}
+          <div className="mt-auto">
+            <div 
+              className={cn(
+                "relative transition-all duration-300 ease-in-out",
+                !isTextExpanded ? "max-h-[100px] overflow-hidden" : "max-h-[1000px]"
+              )}
+              style={{ 
+                transition: 'max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1)' 
+              }}
+            >
+              <p className="text-sm mb-4 leading-relaxed tracking-wide whitespace-pre-line">
+                {text_content}
+              </p>
+            </div>
+            
+            <div className="flex flex-col items-center gap-4 mt-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsTextExpanded(!isTextExpanded)}
+                className="rounded-full h-8 w-8 p-0 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              >
+                {isTextExpanded ? (
+                  <ChevronUp className="h-5 w-5" />
+                ) : (
+                  <ChevronDown className="h-5 w-5" />
+                )}
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => window.open(url, '_blank')}
+              >
+                <span>Read full article</span>
+                <ExternalLink className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
   );
 }
 
-function getColorClass(value: number, isNegative: boolean = false): string {
+function getColorClass(value: number | null, isNegative: boolean = false): string {
+  if (!value) return 'text-gray-500';
+  
   if (isNegative) {
     if (value < 3.33) return 'text-green-500';
     if (value < 6.66) return 'text-yellow-500';
@@ -314,7 +342,7 @@ function getColorClass(value: number, isNegative: boolean = false): string {
   } else {
     if (value < 3.33) return 'text-red-500';
     if (value < 6.66) return 'text-yellow-500';
-    return 'text-red-500';
+    return 'text-green-500';
   }
 }
 
