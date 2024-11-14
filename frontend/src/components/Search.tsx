@@ -66,7 +66,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
   };
 
   return (
-    <div className="relative w-full bg-white dark:bg-black bg-opacity-20 dark:bg-opacity-20 backdrop-blur-lg rounded-md p-2">
+    <div className="relative w-full bg-white dark:bg-black bg-opacity-50 dark:bg-opacity-50 backdrop-blur-lg rounded-md p-2">
       <h2 className="text-xl font-bold text-blue-500 dark:text-green-200 mb-2 text-left ml-1">Search News and all things Politics</h2>
       <Command className="mx-auto bg-transparent border border-blue-200 p-4 rounded-xl">
         <div className="relative">
@@ -93,7 +93,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
           </Button>
         </div>
         {loading && (
-          <div className="absolute left-0 right-0 flex justify-center mt-12">
+          <div className="absolute left-0 right-0 flex justify-center mb-12">
             <LottieLoader />
           </div>
         )}

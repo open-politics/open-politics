@@ -18,7 +18,7 @@ export default function LoginPage() {
   // Redirect if already logged in
   useEffect(() => {
     if (isLoggedIn) {
-      router.push('/desk_synthese');
+      router.push('/desks/home');
     }
   }, [isLoggedIn, router]);
 
