@@ -7,7 +7,6 @@ import BlurredDots from '@/components/BlurredDots';
 import { ToastProvider, ToastViewport } from '@/components/ui/toast';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { AppStateProvider } from '@/lib/utils/app-state'
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
@@ -19,7 +18,6 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
             fontMono.variable
           )}
         >
-          <AppStateProvider>
             <ClientWrapper>
               <BlurredDots />
               <Header />
@@ -29,7 +27,6 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
               </ToastProvider>
               <Footer />
             </ClientWrapper>
-          </AppStateProvider>
       </body>
     </html>
   );
