@@ -81,7 +81,7 @@ const Header = () => {
               {isLoggedIn ? (
                 <div className="flex items-center gap-2">
                   <Button variant="ghost" asChild>
-                    <Link href="/desk_synthese">Desk</Link>
+                    <Link href="/desks/home">Desk</Link>
                   </Button>
                   {user?.is_superuser && (
                     <Button variant="ghost" asChild>
