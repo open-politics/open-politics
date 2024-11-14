@@ -42,8 +42,8 @@ export default function DesksLayout({ children }: { children: React.ReactNode })
       >
         <AppSidebar className="fixed h-full" />
         <SidebarInset className="flex-1 flex flex-col pt-16">
-          <header className="flex h-12 shrink-0 items-center gap-2">
-            <div className="flex items-center gap-2 px-4">
+          <header className="flex h-12 shrink-0 items-center gap-2 px-4">
+            <div className="flex items-center gap-2">
               <SidebarTrigger className="-ml-1" />
               <Breadcrumb>
                 <BreadcrumbList>
@@ -56,6 +56,19 @@ export default function DesksLayout({ children }: { children: React.ReactNode })
                 </BreadcrumbList>
               </Breadcrumb>
             </div>
+            {/* <div className="flex-1 flex justify-end gap-2 h-10">
+              {["A1", "A2"].map((item, index) => (
+                <div
+                  key={index}
+                  className="w-48 flex flex-col items-start gap-0.5 rounded-lg border p-1 text-left text-sm transition-all hover:bg-accent overflow-hidden"
+                >
+                  <div className="text-xs font-medium truncate w-full">Sample Subject</div>
+                  <div className="text-xs text-muted-foreground line-clamp-1">
+                    This is a sample text for the card content.
+                  </div>
+                </div>
+              ))}
+            </div> */}
           </header>
           <main className="flex-1 overflow-auto">
             {children}

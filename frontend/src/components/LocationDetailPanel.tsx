@@ -36,10 +36,10 @@ const LocationDetailPanel: React.FC<LocationDetailPanelProps> = ({
 
 
   return (
-    <div className="max-h-screen relative z-50 bg-white dark:bg-black bg-opacity-20 dark:bg-opacity-20 backdrop-blur-lg rounded-lg p-2">
+    <div className="max-h-screen relative z-50 bg-background dark:bg-background bg-opacity-20 dark:bg-opacity-20 backdrop-blur-lg rounded-lg p-2 pt-0 border border-transparent">
       <div className={`flex flex-col h-full ${isVisible ? 'block' : 'hidden'}`}>
-        <Button onClick={toggleVisibility} className="fixed top-2 right-2 w-12 h-9 p-2">
-          <CircleX size={18} />
+        <Button onClick={toggleVisibility} className="fixed top-0 right-2 w-12 h-9 p-2">
+          <CircleX size={20} />
         </Button> 
         {isVisible && (searchTerm || results) && ( 
           <IssueAreas 

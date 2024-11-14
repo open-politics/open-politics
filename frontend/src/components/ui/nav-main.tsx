@@ -25,6 +25,7 @@ export function NavMain({
     title: string
     url: string
     icon?: LucideIcon
+    color?: string
     isActive?: boolean
     items?: {
       title: string
@@ -45,8 +46,19 @@ export function NavMain({
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title}>
-                  {item.icon && <item.icon />}
+                <SidebarMenuButton
+                  tooltip={item.title}
+                  style={{
+                    color: item.color ? `hsl(var(${item.color}))` : undefined,
+                  }}
+                >
+                  {item.icon && (
+                    <item.icon
+                      style={{
+                        color: item.color ? `hsl(var(${item.color}))` : undefined,
+                      }}
+                    />
+                  )}
                   <span>{item.title}</span>
                   <ChevronRight className="ml-auto transition-transform border-none duration-200 group-data-[state=open]/collapsible:rotate-90" />
                 </SidebarMenuButton>
