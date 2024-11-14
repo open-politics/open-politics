@@ -80,6 +80,18 @@ const data = {
       ],
     },
     {
+      title: "Chat",
+      url: "/desks/home/chat",
+      icon: Bot,
+      isActive: true,
+      items: [
+        {
+          title: "Chat",
+          url: "/desks/home/chat",
+        }
+      ],
+    },
+    {
       title: "Briefings",
       url: "/desks/briefings",
       icon: Send,
@@ -113,7 +125,7 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="icon" variant="floating" {...props} className="bg-transparent pt-16">
+    <Sidebar collapsible="icon" variant="floating" {...props} className="bg-white dark:bg-black md:bg-transparent pt-16">
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>

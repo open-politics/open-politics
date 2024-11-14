@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import axios from 'axios';
-import { generateSummaryFromArticles } from '@/app/actions';
+import { generateSummaryFromArticles } from '../app/xactions';
 import { readStreamableValue } from 'ai/rsc';
 import { useLocationData } from './useLocationData';
 import { useCoordinatesStore } from '@/store/useCoordinatesStore';

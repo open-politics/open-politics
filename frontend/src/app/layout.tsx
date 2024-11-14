@@ -2,12 +2,12 @@ import './globals.css';
 import { cn } from "@/lib/utils";
 import { fontSans, fontMono } from "@/lib/fonts";
 import { ReactNode } from 'react';
-import { AI } from './actions';
 import ClientWrapper from './ClientWrapper';
 import BlurredDots from '@/components/BlurredDots';
 import { ToastProvider, ToastViewport } from '@/components/ui/toast';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { AppStateProvider } from '@/lib/utils/app-state'
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
@@ -19,7 +19,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
             fontMono.variable
           )}
         >
-          <AI>
+          <AppStateProvider>
             <ClientWrapper>
               <BlurredDots />
               <Header />
@@ -29,7 +29,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
               </ToastProvider>
               <Footer />
             </ClientWrapper>
-          </AI>
+          </AppStateProvider>
       </body>
     </html>
   );

@@ -1,216 +1,315 @@
-'use server';
-
-import { createAI, getMutableAIState, streamUI } from 'ai/rsc';
-import { openai } from '@ai-sdk/openai';
-import { ReactNode } from 'react';
-import { z } from 'zod';
-import { nanoid } from 'nanoid';
-import { Button } from '@/components/ui/button';
-import { Card, CardTitle, CardContent, CardFooter, CardDescription, CardHeader } from '@/components/ui/card';
-import { generateText } from 'ai';
-import ReactMarkdown from 'react-markdown';
-import { Progress } from '@/components/ui/progress';
-import { createStreamableUI } from 'ai/rsc';
-import { createStreamableValue } from 'ai/rsc';
-import { streamText } from 'ai';
-import { ContentCardProps } from '@/components/ContentCard';
-
-export interface ServerMessage {
-  role: 'user' | 'assistant';
-  content: string;
-}
-
-export interface ClientMessage {
-  id: string;
-  role: 'user' | 'assistant';
-  display: ReactNode;
-}
-
-export async function generateSummaryFromArticles(results: any, analysisType: string = 'general politics') {
-  const stream = createStreamableValue('');
-
-  // Safely extract articles from both sources
-  const tavilyArticles = results?.tavilyResults?.results || [];
-  const ssareArticles = results?.ssareResults?.contents || [];
-
-  const combinedDescriptions = [
-    // Handle Tavily results
-    ...tavilyArticles.map((article: any) => article.content?.slice(0, 650) || ''),
-    // Handle SSARE results
-    ...ssareArticles.map((article: any) => {
-      const content = article.paragraphs || article.content || '';
-      return typeof content === 'string' ? content.slice(0, 650) : '';
-    })
-  ].filter(Boolean).join('\n\n');
-
-  (async () => {
-    const { textStream } = await streamText({
-      model: openai('gpt-4o'),
-      prompt: `As a geopolitical analyst specializing in ${analysisType}, create a concise yet comprehensive report on recent global developments based on the following information:
-
-${combinedDescriptions}
-
-Your report should follow this structure:
-
-# # [Headline: Max 10 words]
-
-**Key Takeaway:** [1-2 sentences]
-
-⚠️ [Immediate concern related to ${analysisType}]
-🌍 [Global impact from a ${analysisType} perspective]
-🔮 [Future implication considering ${analysisType}]
-
-## [Topic 1 relevant to ${analysisType}]
-- Key points
-- Balanced perspective
-- Relevant data/statistics
-
-## [Topic 2 relevant to ${analysisType}]
-- Key points
-- Balanced perspective
-- Relevant data/statistics
-
-## [Topic 3 relevant to ${analysisType}]
-- Key points
-- Balanced perspective
-- Relevant data/statistics
-
-Use professional language and Markdown for clean formatting. Focus on aspects most relevant to ${analysisType}. Begin immediately with the headline, omitting any introductory phrases.
-
-
-If there is a mismatch between the query intent of the user and the returned data you can use an abbreviated style/ version to tell them what is there in the data but also note your limits to answer there.
-If you can answer the question to a degress that justifies the report style, please do so.
-You will retrieve content from one api returning data for everything, like "Whats happening in Berlin" will return articles about nightlife, but the other api will always return news data scraped for political articles. You should also recognise which are which and highlight what you can for political.
-Be neutral and meta-observant.
-
-`
-    });
-
-    for await (const delta of textStream) {
-      stream.update(delta);
+import {
+    StreamableValue,
+    createAI,
+    createStreamableUI,
+    createStreamableValue,
+    getAIState,
+    getMutableAIState
+  } from 'ai/rsc'
+  import { CoreMessage, generateId } from 'ai'
+  import { Section } from '@/components/section'
+  import { FollowupPanel } from '@/components/followup-panel'
+  import { saveChat } from '@/lib/actions/chat'
+  import { Chat } from '@/lib/types'
+  import { AIMessage } from '@/lib/types'
+  import { UserMessage } from '@/components/user-message'
+  import { SearchSection } from '@/components/search-section'
+  import SearchRelated from '@/components/search-related'
+  import { CopilotDisplay } from '@/components/copilot-display'
+  import RetrieveSection from '@/components/retrieve-section'
+  import { VideoSearchSection } from '@/components/video-search-section'
+  import { AnswerSection } from '@/components/answer-section'
+  import { workflow } from '@/lib/actions/workflow'
+  import { isProviderEnabled } from '@/lib/utils/registry'
+  
+  const MAX_MESSAGES = 6
+  
+  async function submit(
+    formData?: FormData,
+    skip?: boolean,
+    retryMessages?: AIMessage[]
+  ) {
+    'use server'
+  
+    const aiState = getMutableAIState<typeof AI>()
+    const uiStream = createStreamableUI()
+    const isGenerating = createStreamableValue(true)
+    const isCollapsed = createStreamableValue(false)
+  
+    const aiMessages = [...(retryMessages ?? aiState.get().messages)]
+    // Get the messages from the state, filter out the tool messages
+    const messages: CoreMessage[] = aiMessages
+      .filter(
+        message =>
+          message.role !== 'tool' &&
+          message.type !== 'followup' &&
+          message.type !== 'related' &&
+          message.type !== 'end'
+      )
+      .map(message => {
+        const { role, content } = message
+        return { role, content } as CoreMessage
+      })
+  
+    // Limit the number of messages to the maximum
+    messages.splice(0, Math.max(messages.length - MAX_MESSAGES, 0))
+    // Get the user input from the form data
+    const userInput = skip
+      ? `{"action": "skip"}`
+      : (formData?.get('input') as string)
+  
+    const content = skip
+      ? userInput
+      : formData
+      ? JSON.stringify(Object.fromEntries(formData))
+      : null
+    const type = skip
+      ? undefined
+      : formData?.has('input')
+      ? 'input'
+      : formData?.has('related_query')
+      ? 'input_related'
+      : 'inquiry'
+  
+    // Get the model from the form data (e.g., openai:gpt-4o-mini)
+    const model = (formData?.get('model') as string) || 'openai:gpt-4'
+    const providerId = model.split(':')[0]
+    console.log(`Using model: ${model}`)
+    // Check if provider is enabled
+    if (!isProviderEnabled(providerId)) {
+      throw new Error(
+        `Provider ${providerId} is not available (API key not configured or base URL not set)`
+      )
     }
-
-    stream.done();
-  })();
-
-  return { output: stream.value };
-}
-
-
-export async function continueConversation(input: string): Promise<ClientMessage> {
-  'use server';
-
-  const history = getMutableAIState();
-
-  const result = await streamUI({
-    model: openai('gpt-4o'),
-    messages: [...history.get(), { role: 'user', content: input }],
-    text: ({ content, done }) => {
-      if (done) {
-        history.done((messages: ServerMessage[]) => [
-          ...messages,
-          { role: 'assistant', content },
-        ]);
-      }
-
-      return <div>{content}</div>;
+  
+    // Add the user message to the state
+    if (content) {
+      aiState.update({
+        ...aiState.get(),
+        messages: [
+          ...aiState.get().messages,
+          {
+            id: generateId(),
+            role: 'user',
+            content,
+            type
+          }
+        ]
+      })
+      messages.push({
+        role: 'user',
+        content
+      })
+    }
+  
+    // Run the agent workflow
+    workflow(
+      { uiStream, isCollapsed, isGenerating },
+      aiState,
+      messages,
+      skip ?? false,
+      model
+    )
+  
+    return {
+      id: generateId(),
+      isGenerating: isGenerating.value,
+      component: uiStream.value,
+      isCollapsed: isCollapsed.value
+    }
+  }
+  
+  export type AIState = {
+    messages: AIMessage[]
+    chatId: string
+    isSharePage?: boolean
+  }
+  
+  export type UIState = {
+    id: string
+    component: React.ReactNode
+    isGenerating?: StreamableValue<boolean>
+    isCollapsed?: StreamableValue<boolean>
+  }[]
+  
+  const initialAIState: AIState = {
+    chatId: generateId(),
+    messages: []
+  }
+  
+  const initialUIState: UIState = []
+  
+  // AI is a provider you wrap your application with so you can access AI and UI state in your components.
+  export const AI = createAI<AIState, UIState>({
+    actions: {
+      submit
     },
-    tools: {
-      searchTavily: {
-        description: 'Search data using Tavily API',
-        parameters: z.object({
-          query: z.string().describe('The search query'),
-          searchDepth: z.string().default('basic').describe('Search depth: basic or advanced'),
-          maxResults: z.number().default(5).describe('Maximum number of search results'),
-        }),
-        generate: async ({ query, searchDepth, maxResults }) => {
-          history.done((messages: ServerMessage[]) => [
-            ...messages,
-            {
-              role: 'assistant',
-              content: `Searching Tavily for query: ${query}`,
-            },
-          ]);
-
-          const response = await fetch('https://api.tavily.com/search', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${process.env.TAVILY_API_KEY}`,
-            },
-            body: JSON.stringify({
-              api_key: process.env.TAVILY_API_KEY,
-              query,
-              search_depth: searchDepth,
-              max_results: maxResults,
-            }),
-          });
-
-          const data = await response.json();
-
-          return (
-            <div>
-            <div className="space-y-4">
-              <h2 className="text-lg font-bold">Results for "{query}"</h2>
-              <div className="flex flex-nowrap overflow-x-auto gap-4">
-                {data.results.map((result: any, index: number) => (
-                  <div key={index} className="min-w-full md:min-w-1/2 lg:min-w-1/3">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>{result.title}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <CardDescription>{result.content.substring(0, 200)}{result.content.length > 200 ? '...' : ''}</CardDescription>
-                      </CardContent>
-                      <CardFooter>
-                        <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700">
-                          Read more
-                        </a>
-                      </CardFooter>
-                    </Card>
-                  </div>
-                ))}
-              </div>
-            </div>
-            </div>
-          );
-        },
-      },
-      fetchReport: {
-        description: 'Fetch a more detailed report using AI agents',
-        parameters: z.object({
-          query: z.string().describe('The query to search for. From the role of a journalist/ political analyst.'),
-        }),
-        generate: async ({query}) => {
-          const url = new URL(`http://dev.open-politics.org/api/v1/search/report/${query}`);
-          url.searchParams.append('query', query);
-          const response = await fetch(url.toString(), {
-            method: 'GET'
-          });
-          const data = await response.json();
-          return (
-            <div>
-              <div className="h-96 overflow-hidden">
-                <ReactMarkdown>{data.report}</ReactMarkdown>
-              </div>
-            </div>
-          );
+    initialUIState,
+    initialAIState,
+    onGetUIState: async () => {
+      'use server'
+  
+      const aiState = getAIState()
+      if (aiState) {
+        const uiState = getUIStateFromAIState(aiState as Chat)
+        return uiState
+      } else {
+        return
+      }
+    },
+    onSetAIState: async ({ state, done }) => {
+      'use server'
+  
+      // Check if there is any message of type 'answer' in the state messages
+      if (!state.messages.some(e => e.type === 'answer')) {
+        return
+      }
+  
+      const { chatId, messages } = state
+      const createdAt = new Date()
+      const userId = 'anonymous'
+      const path = `/search/${chatId}`
+      const title =
+        messages.length > 0
+          ? JSON.parse(messages[0].content)?.input?.substring(0, 100) ||
+            'Untitled'
+          : 'Untitled'
+      // Add an 'end' message at the end to determine if the history needs to be reloaded
+      const updatedMessages: AIMessage[] = [
+        ...messages,
+        {
+          id: generateId(),
+          role: 'assistant',
+          content: `end`,
+          type: 'end'
         }
+      ]
+  
+      const chat: Chat = {
+        id: chatId,
+        createdAt,
+        userId,
+        path,
+        title,
+        messages: updatedMessages
       }
-    },
-  });
-
-  return {
-    id: nanoid(),
-    role: 'assistant',
-    display: result.value,
-  };
-}
-
-export const AI = createAI<ServerMessage[], ClientMessage[]>({
-  actions: {
-    continueConversation,
-  },
-  initialAIState: [],
-  initialUIState: [],
-});
+      await saveChat(chat)
+    }
+  })
+  
+  export const getUIStateFromAIState = (aiState: Chat) => {
+    const chatId = aiState.chatId
+    const isSharePage = aiState.isSharePage
+  
+    // Ensure messages is an array of plain objects
+    const messages = Array.isArray(aiState.messages)
+      ? aiState.messages.map(msg => ({ ...msg }))
+      : []
+  
+    return messages
+      .map((message, index) => {
+        const { role, content, id, type, name } = message
+  
+        if (
+          !type ||
+          type === 'end' ||
+          (isSharePage && type === 'related') ||
+          (isSharePage && type === 'followup')
+        )
+          return null
+  
+        switch (role) {
+          case 'user':
+            switch (type) {
+              case 'input':
+              case 'input_related':
+                const json = JSON.parse(content)
+                const value = type === 'input' ? json.input : json.related_query
+                return {
+                  id,
+                  component: (
+                    <UserMessage
+                      message={value}
+                      chatId={chatId}
+                      showShare={index === 0 && !isSharePage}
+                    />
+                  )
+                }
+              case 'inquiry':
+                return {
+                  id,
+                  component: <CopilotDisplay content={content} />
+                }
+            }
+          case 'assistant':
+            const answer = createStreamableValue()
+            answer.done(content)
+            switch (type) {
+              case 'answer':
+                return {
+                  id,
+                  component: <AnswerSection result={answer.value} />
+                }
+              case 'related':
+                const relatedQueries = createStreamableValue()
+                relatedQueries.done(JSON.parse(content))
+                return {
+                  id,
+                  component: (
+                    <SearchRelated relatedQueries={relatedQueries.value} />
+                  )
+                }
+              case 'followup':
+                return {
+                  id,
+                  component: (
+                    <Section title="Follow-up" className="pb-8">
+                      <FollowupPanel />
+                    </Section>
+                  )
+                }
+            }
+          case 'tool':
+            try {
+              const toolOutput = JSON.parse(content)
+              const isCollapsed = createStreamableValue()
+              isCollapsed.done(true)
+              const searchResults = createStreamableValue()
+              searchResults.done(JSON.stringify(toolOutput))
+              switch (name) {
+                case 'search':
+                  return {
+                    id,
+                    component: <SearchSection result={searchResults.value} />,
+                    isCollapsed: isCollapsed.value
+                  }
+                case 'retrieve':
+                  return {
+                    id,
+                    component: <RetrieveSection data={toolOutput} />,
+                    isCollapsed: isCollapsed.value
+                  }
+                case 'videoSearch':
+                  return {
+                    id,
+                    component: (
+                      <VideoSearchSection result={searchResults.value} />
+                    ),
+                    isCollapsed: isCollapsed.value
+                  }
+              }
+            } catch (error) {
+              return {
+                id,
+                component: null
+              }
+            }
+          default:
+            return {
+              id,
+              component: null
+            }
+        }
+      })
+      .filter(message => message !== null) as UIState
+  }
