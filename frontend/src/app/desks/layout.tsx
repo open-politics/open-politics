@@ -12,8 +12,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb"
-import { AppStateProvider } from '@/lib/utils/app-state'
-
+import { Separator } from "@/components/ui/separator"
 
 export default function DesksLayout({ children }: { children: React.ReactNode }) {
   const { isLoggedIn, isLoading } = useAuth()
@@ -41,9 +40,8 @@ export default function DesksLayout({ children }: { children: React.ReactNode })
           "--sidebar-width-icon": "4rem",
         } as React.CSSProperties}
       >
-        <AppStateProvider>
-          <AppSidebar className="fixed h-full" />
-          <SidebarInset className="flex-1 flex flex-col pt-16">
+        <AppSidebar className="fixed h-full" />
+        <SidebarInset className="flex-1 flex flex-col pt-16">
           <header className="flex h-12 shrink-0 items-center gap-2 px-4">
             <div className="flex items-center gap-2">
               <SidebarTrigger className="-ml-1" />
@@ -74,9 +72,8 @@ export default function DesksLayout({ children }: { children: React.ReactNode })
           </header>
           <main className="flex-1 overflow-auto">
             {children}
-            </main>
-          </SidebarInset>
-        </AppStateProvider>
+          </main>
+        </SidebarInset>
       </SidebarProvider>
     </div>
   )
