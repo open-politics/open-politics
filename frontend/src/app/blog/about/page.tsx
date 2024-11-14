@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export default function AboutPage() {
   return (
-    <div className="flex relative z-20">
+    <div className="flex relative z-20 pt-16">
       {/* <div className="">
         <DocsSidebar />
       </div> */}

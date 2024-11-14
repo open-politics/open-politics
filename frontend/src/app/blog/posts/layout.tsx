@@ -1,12 +1,8 @@
-import DocsSidebar from "@/components/DocsSidebar"
-import { docsLinks } from "@/data/docLinks"
+
 
 export default function MdxLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex relative z-20">
-      <div className="">
-        <DocsSidebar />
-      </div>
+    <div className="flex relative z-20 pt-16">
       <div className="
         flex-1
         xl:p-8

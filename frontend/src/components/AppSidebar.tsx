@@ -94,16 +94,6 @@ const data = {
           url: "/desks/bookmarks/conflict-news",
           icon: Swords,
         },
-        {
-          title: "Chat",
-          url: "/desks/home/chat",
-          icon: ShieldAlert,
-        },
-        {
-          title: "Bookmarks",
-          url: "/desks/home/bookmarks",
-          icon: Bookmark,
-        }
       ],
     }
   ],

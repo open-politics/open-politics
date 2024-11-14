@@ -22,10 +22,26 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import useAuth from "@/hooks/useAuth"
+import { useState, useEffect } from 'react'
 
 export function NavUser() {
   const { isMobile } = useSidebar()
   const { user, logout } = useAuth()
+  const [opacity, setOpacity] = useState(1)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY
+      const maxScroll = 50 // Adjust this value as needed
+      const newOpacity = Math.max(1 - scrollY / maxScroll, 0)
+      setOpacity(newOpacity)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
 
   return (
     <SidebarMenu>
@@ -40,8 +56,15 @@ export function NavUser() {
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user?.name}</span>
-                <span className="truncate text-xs">{user?.email?.split('@')[0]}@...</span>
+                <span
+                  className="truncate font-semibold transition-opacity duration-300"
+                  style={{ opacity }}
+                >
+                  {user?.name}
+                </span>
+                <span className="truncatetransition-opacity duration-300" style={{ opacity }}>
+                  {user?.email?.split('@')[0]}@...
+                </span>
               </div>
             </SidebarMenuButton>
           </DropdownMenuTrigger>

@@ -16,6 +16,7 @@ export default function MovedPage() {
           </p>
           <p className="text-sm text-muted-foreground">
             If you&apos;re seeing this, you either have an invite or discovered our easter egg!
+            Please use the following credentials to access the prototype.
           </p>
           <div className="rounded-md bg-muted p-4">
             <p className="font-mono text-sm">
