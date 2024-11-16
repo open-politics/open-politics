@@ -10,6 +10,7 @@ import Footer from '@/components/Footer';
 import { AppStateProvider } from '@/lib/utils/app-state'
 import { AI } from './xactions';
 
+
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>

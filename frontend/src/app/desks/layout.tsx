@@ -34,17 +34,17 @@ export default function DesksLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="h-screen flex overflow-hidden">
-      <SidebarProvider
-        style={{
-          "--sidebar-width": "320px",
-          "--sidebar-width-icon": "4rem",
-        } as React.CSSProperties}
-      >
+    <SidebarProvider
+                style={{
+            "--sidebar-width": "20rem",
+            "--sidebar-width-mobile": "20rem",
+          }}
+        >
         <AppSidebar className="fixed h-full" />
         <SidebarInset className="flex-1 flex flex-col pt-16">
           <header className="flex h-12 shrink-0 items-center gap-2 px-4">
             <div className="flex items-center gap-2">
-              <SidebarTrigger className="-ml-1" />
+              <SidebarTrigger className="-ml-2 " />
               <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem>
@@ -56,7 +56,7 @@ export default function DesksLayout({ children }: { children: React.ReactNode })
                 </BreadcrumbList>
               </Breadcrumb>
             </div>
-            {/* <div className="flex-1 flex justify-end gap-2 h-10">
+            <div className="flex-1 flex justify-end gap-2 h-10">
               {["A1", "A2"].map((item, index) => (
                 <div
                   key={index}
@@ -68,9 +68,9 @@ export default function DesksLayout({ children }: { children: React.ReactNode })
                   </div>
                 </div>
               ))}
-            </div> */}
+            </div>
           </header>
-          <main className="flex-1 overflow-auto">
+          <main>
             {children}
           </main>
         </SidebarInset>

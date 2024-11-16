@@ -125,7 +125,7 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="icon" variant="floating" {...props} className="bg-white dark:bg-black md:bg-transparent pt-16">
+    <Sidebar collapsible="icon" variant="floating" {...props} className="pt-16">
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>

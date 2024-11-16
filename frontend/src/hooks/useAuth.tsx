@@ -25,7 +25,8 @@ const useAuth = () => {
       return UsersService.readUserMe();
     },
     retry: false,
-    staleTime: 1000,
+    staleTime: 60000, // Increased stale time to 1 minute
+    cacheTime: 300000, // Cache time set to 5 minutes
   });
 
   const loginMutation = useMutation({
@@ -37,7 +38,7 @@ const useAuth = () => {
     onSuccess: () => {
       setError(null);
       queryClient.invalidateQueries({ queryKey: ['user'] });
-      router.push('/');
+      router.push('/desks/home');
     },
     onError: (err: ApiError) => {
       const errDetail = (err.body as any)?.detail || 'Login failed';
