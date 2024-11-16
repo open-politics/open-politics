@@ -140,7 +140,7 @@ const GlobePage = () => {
   };
 
   return (
-    <div className="h-full w-full overflow-hidden">
+    <div className="h-[calc(100vh-64px)] w-full overflow-hidden">
       {/* Main Content Area */}
       <div className="flex h-full">
         {/* Globe Section */}
