@@ -34,17 +34,12 @@ export default function DesksLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="h-screen flex overflow-hidden">
-    <SidebarProvider
-                style={{
-            "--sidebar-width": "20rem",
-            "--sidebar-width-mobile": "20rem",
-          }}
-        >
+    <SidebarProvider>
         <AppSidebar className="fixed h-full" />
         <SidebarInset className="flex-1 flex flex-col pt-16">
           <header className="flex h-12 shrink-0 items-center gap-2 px-4">
-              <SidebarTrigger className="-ml-2 mr-2" />
             <div className="flex items-center gap-2">
+              <SidebarTrigger className="-ml-2 " />
               <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem>
