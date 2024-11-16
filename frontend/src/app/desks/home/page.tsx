@@ -10,7 +10,7 @@ export default function DesksPage() {
         <h1 className="text-2xl font-bold">Home</h1>
       </div>
 
-      <div className="flex-1 flex justify-end gap-2 h-10">
+      {/* <div className="flex-1 flex justify-end gap-2 h-10">
         {["A1", "A2"].map((item, index) => (
           <CardItem
             key={index}
@@ -18,7 +18,7 @@ export default function DesksPage() {
             content="This is a sample text for the card content."
           />
         ))}
-      </div>
+      </div> */}
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card 

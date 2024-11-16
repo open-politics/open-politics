@@ -15,7 +15,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 
 export default function DesksLayout({ children }: { children: React.ReactNode }) {
-  const { isLoggedIn, isLoading } = useAuth()
+  const { user, isLoggedIn, isLoading } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
@@ -56,8 +56,9 @@ export default function DesksLayout({ children }: { children: React.ReactNode })
                 </BreadcrumbList>
               </Breadcrumb>
             </div>
-            <div className="flex-1 flex justify-end gap-2 h-10">
-              {["A1", "A2"].map((item, index) => (
+            {user?.is_superuser && (
+              <div className="flex-1 flex justify-end gap-2 h-10">
+                {["A1", "A2"].map((item, index) => (
                 <div
                   key={index}
                   className="w-48 flex flex-col items-start gap-0.5 rounded-lg border p-1 text-left text-sm transition-all hover:bg-accent overflow-hidden"
@@ -65,10 +66,11 @@ export default function DesksLayout({ children }: { children: React.ReactNode })
                   <div className="text-xs font-medium truncate w-full">Sample Subject</div>
                   <div className="text-xs text-muted-foreground line-clamp-1">
                     This is a sample text for the card content.
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </header>
           <main>
             {children}
