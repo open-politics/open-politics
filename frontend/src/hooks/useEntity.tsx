@@ -91,7 +91,7 @@ export function useEntityData(entityName: string | null, isSelected: boolean) {
   const fetchIdRef = useRef(0);
 
   const fetchContents = useCallback(async (skip: number, limit: number, selectedDate?: string) => {
-    if (!entityName || !isSelected) return; // Fetch only if an entity is selected
+    if (!entityName || !isSelected) return;
     setIsLoading((prev) => ({ ...prev, contents: true }));
     try {
       const url = selectedDate
@@ -142,8 +142,8 @@ export function useEntityData(entityName: string | null, isSelected: boolean) {
       const response = await fetch(
         `/api/v1/entities/score_over_time/${encodeURIComponent(entityName)}?` + 
         `score_type=${encodeURIComponent(scoreType)}` +
-        `&timeframe_from=${defaultTimeframe.from}` +
-        `&timeframe_to=${defaultTimeframe.to}`
+        `&timeframe_from=${encodeURIComponent(defaultTimeframe.from)}` +
+        `&timeframe_to=${encodeURIComponent(defaultTimeframe.to)}`
       );
 
       if (!response.ok) throw new Error('Failed to fetch entity scores');

@@ -74,9 +74,7 @@ const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities, varia
   }
 
   return (
-    <div className="space-y-8 max-h-[80vh] overflow-y-auto">
-      
-      {/* Display leader information if available */}
+    <div className="space-y-8 h-full overflow-y-auto">
       {leaderInfo && (
         <div className="grid grid-cols-2 gap-4 mb-4">
           {leaderInfo.headOfState && (
@@ -108,12 +106,9 @@ const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities, varia
           )}
         </div>
       )}
-      {/* Display entities regardless of leader information */}
       <div className="entities-info">
         <h2 className="p-4 pl-0">Relevant Entities</h2>
-        
-        {/* Badge List for Entity Types */}
-        <div className="flex overflow-x-auto space-x-2 rounded-full">
+        <div className="flex flex-wrap overflow-x-auto space-x-2 rounded-full">
           {['PER', 'ORG', 'GPE', 'LOC', 'EVENT', 'PRODUCT', 'WORK_OF_ART', 'LAW', 'LANGUAGE', 'DATE', 'TIME', 'PERCENT', 'MONEY', 'QUANTITY', 'ORDINAL', 'CARDINAL'].map((type) => (
             <Badge
               key={type}
@@ -126,7 +121,7 @@ const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities, varia
           ))}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 h-full overflow-y-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4 h-full overflow-y-auto">
           {entities && entities
             .filter((entity, index, self) => 
               index === self.findIndex((t) => (
@@ -140,6 +135,7 @@ const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities, varia
                 entity={entity}
                 isSelected={selectedEntity === entity.name}
                 onSelect={(name) => setSelectedEntity(name)}
+                className="mx-auto"
               />
             ))}
         </div>

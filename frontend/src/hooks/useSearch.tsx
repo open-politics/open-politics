@@ -33,22 +33,19 @@ interface UseSearchReturn {
   summary: string;
 }
 
-// Add this helper function at the top level
 const calculateZoomLevel = (bbox: number[]): number => {
-  if (!bbox || bbox.length !== 4) return 4; // Default country zoom
+  if (!bbox || bbox.length !== 4) return 4;
 
-  // Calculate the box dimensions
   const width = Math.abs(bbox[2] - bbox[0]);
   const height = Math.abs(bbox[3] - bbox[1]);
   const area = width * height;
 
-  // Adjust these thresholds based on testing
-  if (area > 400) return 2;      // Very large areas (continents)
-  if (area > 100) return 3;      // Large countries (Brazil, Russia)
-  if (area > 25) return 4;       // Medium countries
-  if (area > 5) return 5;        // Small countries
-  if (area > 1) return 6;        // Very small countries
-  return 7;                      // Cities and small regions
+  if (area > 400) return 2;
+  if (area > 100) return 3;
+  if (area > 25) return 4;
+  if (area > 5) return 5;
+  if (area > 1) return 6;
+  return 7;
 };
 
 export function useSearch(
@@ -101,7 +98,6 @@ export function useSearch(
           ...filters
         }
       });
-      // Remove duplicates based on article ID
       const uniqueArticles = response.data.reduce((acc: any[], article: any) => {
         if (!acc.find((a: any) => a.id === article.id)) {
           acc.push({
@@ -121,7 +117,7 @@ export function useSearch(
   const fetchLocationFromNLQuery = async (query: string): Promise<LocationData | null> => {
     try {
       const response = await axios.get(`/api/v1/locations/location_from_query?query=${query}`);
-      console.log("Location API response:", response.data); // Debug log
+      console.log("Location API response:", response.data);
       if (response.data.error) return null;
       
       const { coordinates, country_name, bbox, area, location_type } = response.data;
@@ -135,7 +131,7 @@ export function useSearch(
         area,
         location_type: location_type || 'country'
       };
-      console.log("Processed location data:", locationData); // Debug log
+      console.log("Processed location data:", locationData);
       return locationData;
     } catch (error) {
       console.error("Error in fetchLocationFromNLQuery:", error);
@@ -154,7 +150,7 @@ export function useSearch(
       if (locationData) {
         if (setCountry) {
           setCountry(locationData.country_name);
-          setActiveTab('summary'); // Set tab when we have a location
+          setActiveTab('summary');
         }
         
         if (locationData.coordinates) {
@@ -180,7 +176,6 @@ export function useSearch(
         }
       }
 
-      // Fetch search results
       const [tavilyResults, ssareResults] = await Promise.all([
         fetchTavilySearchResults(query),
         fetchSSAREContents(query)
@@ -188,9 +183,8 @@ export function useSearch(
 
       const combinedResults = { tavilyResults, ssareResults };
       setResults(combinedResults);
-      setActiveTab('summary'); // Set tab after results are available
+      setActiveTab('summary');
 
-      // Generate summary in background
       if (setSummary) {
         try {
           const summaryResult = await generateSummaryFromArticles(combinedResults, analysisType);
@@ -209,7 +203,7 @@ export function useSearch(
     } catch (err) {
       console.error("Error in search:", err);
       setError(err instanceof Error ? err : new Error('An error occurred during search'));
-      setActiveTab('articles'); // Fallback to articles tab on error
+      setActiveTab('articles');
     } finally {
       setLoading(false);
     }

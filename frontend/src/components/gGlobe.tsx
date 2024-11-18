@@ -183,7 +183,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
         const id = e.id;
         if (eventTypes.some(eventType => eventType.icon === id)) {
           const img = new Image();
-          img.src = `animations/maki-icons/${id}.svg`;
+          img.src = `/animations/maki-icons/${id}.svg`;
           img.onload = () => {
             mapRef.current?.addImage(id, img);
           };

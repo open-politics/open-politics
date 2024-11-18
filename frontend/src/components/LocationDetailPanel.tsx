@@ -34,23 +34,20 @@ const LocationDetailPanel: React.FC<LocationDetailPanelProps> = ({
     }
   }, [isVisible, summary, activeTab, setActiveTab]);
 
-
   return (
-    <div className="max-h-screen relative z-50 bg-background dark:bg-background bg-opacity-20 dark:bg-opacity-20 backdrop-blur-lg rounded-lg p-2 pt-0 border border-transparent">
-      <div className={`flex flex-col h-full ${isVisible ? 'block' : 'hidden'}`}>
-        <Button onClick={toggleVisibility} className="fixed top-0 right-2 w-12 h-9 p-2">
-          <CircleX size={20} />
-        </Button> 
-        {isVisible && (searchTerm || results) && ( 
-          <IssueAreas 
-            locationName={searchTerm}
-            results={results}
-            summary={summary}
-            includeSummary={true}
-            activeTab={activeTab}
-          />
-        )}
-      </div>
+    <div className={`h-full relative z-50 bg-background/80 backdrop-blur-lg rounded-lg p-4 pt-0`}>
+      <Button onClick={toggleVisibility} className="fixed top-0 right-2 w-12 h-9 p-2">
+        <CircleX size={24} />
+      </Button> 
+      { (searchTerm || results) && ( 
+        <IssueAreas 
+          locationName={searchTerm}
+          results={results}
+          summary={summary}
+          includeSummary={true}
+          activeTab={activeTab}
+        />
+      )}
     </div>
   );
 };
