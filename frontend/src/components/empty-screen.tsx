@@ -3,20 +3,20 @@ import { ArrowRight } from 'lucide-react'
 
 const exampleMessages = [
   {
-    heading: 'What is OpenAI o1?',
-    message: 'What is OpenAI o1?'
+    heading: 'What are the key political issues in Ukraine?',
+    message: 'What are the key political issues in Ukraine?'
   },
   {
-    heading: 'Why is Nvidia growing rapidly?',
-    message: 'Why is Nvidia growing rapidly?'
+    heading: 'Compare US and EU climate policies',
+    message: 'Compare US and EU climate policies'
   },
   {
-    heading: 'Tesla vs Rivian',
-    message: 'Tesla vs Rivian'
+    heading: 'Analyze recent elections in Argentina',
+    message: 'Analyze recent elections in Argentina'
   },
   {
-    heading: 'Summary: https://arxiv.org/pdf/2407.16833',
-    message: 'Summary: https://arxiv.org/pdf/2407.16833'
+    heading: 'What are the main geopolitical tensions in Taiwan?',
+    message: 'What are the main geopolitical tensions in Taiwan?'
   }
 ]
 export function EmptyScreen({
