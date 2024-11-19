@@ -150,20 +150,22 @@ const GlobePage = () => {
         <AnimatePresence>
           {!isMobile && hasClicked && (
             <motion.div
-              className={`w-1/2 block md:block max-h-[calc(100vh-8rem)] overflow-y-auto`}
+              className={`w-1/2 block md:block max-h-[calc(100vh-8rem)] overflow-hidden`}
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ duration: 0.3 }}
             >
-              <LocationDetailPanel
-                key={locationKey}
-                location={location}
-                isVisible={isVisible}
-                toggleVisibility={toggleVisibility}
-                results={results}
-                summary={summary}
-              />
+              <div className="overflow-y-auto h-full scrollbar-hide">
+                <LocationDetailPanel
+                  key={locationKey}
+                  location={location}
+                  isVisible={isVisible}
+                  toggleVisibility={toggleVisibility}
+                  results={results}
+                  summary={summary}
+                />
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -180,20 +182,22 @@ const GlobePage = () => {
             transition={{ duration: 0.3 }}
           >
             <motion.div
-              className="bg-background dark:bg-opacity-90 rounded-lg w-full h-full md:w-1/2 md:h-auto overflow-auto pt-4 md:pt-0"
+              className="bg-background dark:bg-opacity-90 rounded-lg w-full h-full md:w-1/2 md:h-auto overflow-hidden"
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.8 }}
               transition={{ duration: 0.3 }}
             >
-              <LocationDetailPanel
-                key={locationKey}
-                location={location}
-                isVisible={isVisible}
-                toggleVisibility={toggleVisibility}
-                results={results}
-                summary={summary}
-              />
+              <div className="overflow-y-auto h-full scrollbar-hide">
+                <LocationDetailPanel
+                  key={locationKey}
+                  location={location}
+                  isVisible={isVisible}
+                  toggleVisibility={toggleVisibility}
+                  results={results}
+                  summary={summary}
+                />
+              </div>
             </motion.div>
           </motion.div>
         )}

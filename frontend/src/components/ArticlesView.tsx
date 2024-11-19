@@ -277,11 +277,11 @@ export function ContentsView({ locationName, contents = [], isLoading, error, fe
           <p className="mt-4">Loading contents...</p>
         </div>
       ) : (
-        <div className="overflow-y-auto flex-grow px-4">
+        <div className="lex-grow px-4">
           <div className="space-y-6">
             {Object.entries(groupedContents).map(([date, contents]) => (
               <div key={date} className="space-y-2">
-                <h2 className="text-lg font-semibold text-muted-foreground sticky top-0 bg-background/95 backdrop-blur-sm py-2">
+                <h2 className="text-lg font-semibold text-muted-foreground top-0 bg-background/95 backdrop-blur-sm py-2">
                   {date}
                 </h2>
                 <div className="space-y-2">

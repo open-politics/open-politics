@@ -33,14 +33,14 @@ export default function DesksLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="h-screen flex overflow-hidden">
+    <div className="h-screen flex flex-col md:flex-row overflow-hidden">
       <SidebarProvider>
-        <AppSidebar className="fixed h-full" />
+        <AppSidebar className="fixed md:relative h-full md:h-auto" />
         <SidebarInset className="flex-1 flex flex-col pt-16">
           <header className="flex h-12 shrink-0 items-center gap-2 px-4">
             <div className="flex items-center gap-2">
-              <SidebarTrigger className="-ml-4 " />
-              <Breadcrumb>
+              <SidebarTrigger className="md:-ml-4 " />
+              <Breadcrumb className="pr-6 md:pr-2">
                 <BreadcrumbList>
                   <BreadcrumbItem>
                     <BreadcrumbLink href="/desks">Desks</BreadcrumbLink>
@@ -56,7 +56,7 @@ export default function DesksLayout({ children }: { children: React.ReactNode })
                 {["A1", "A2"].map((item, index) => (
                   <div
                     key={index}
-                    className="w-48 flex flex-col items-start gap-0.5 rounded-lg p-1 text-left text-sm transition-all hover:bg-accent overflow-hidden"
+                    className="w-full md:w-48 flex flex-col items-start gap-0.5 rounded-lg p-1 text-left text-sm transition-all hover:bg-accent overflow-hidden"
                   >
                     <div className="text-xs font-medium truncate w-full">Sample Subject</div>
                     <div className="text-xs text-muted-foreground line-clamp-1">

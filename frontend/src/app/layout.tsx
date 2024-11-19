@@ -30,7 +30,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
                   {children}
                   <ToastViewport />
                 </ToastProvider>
-                <Footer />
+                {/* <Footer /> */}
               </ClientWrapper>
             </AI>
           </AppStateProvider>
