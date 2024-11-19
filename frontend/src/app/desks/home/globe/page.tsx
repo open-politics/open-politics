@@ -137,7 +137,7 @@ const GlobePage = () => {
           </div>
           
           {/* Search Bar */}
-          <div className="absolute top-3/4 mb-2 left-1/2 transform -translate-x-1/2 w-3/4">
+          <div className="absolute top-3/4 mb-2 left-1/2 transform -translate-x-1/2 w-3/4 z-20">
             <Search
               setResults={handleSearch}
               setSummary={handleSummary}
@@ -175,14 +175,14 @@ const GlobePage = () => {
       <AnimatePresence>
         {isMobile && hasClicked && isVisible && (
           <motion.div
-            className="fixed inset-0 bg-background/45 backdrop-blur supports-[backdrop-filter]:bg-background/60flex justify-center items-center z-50 p-6"
+            className="fixed inset-0 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/85 flex justify-center items-center z-50 p-2 pt-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
             <motion.div
-              className="bg-background dark:bg-opacity-90 rounded-lg w-full h-full md:w-1/2 md:h-auto overflow-hidden"
+              className="bg-transparent rounded-lg w-full h-full md:w-1/2 md:h-auto overflow-hidden"
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.8 }}

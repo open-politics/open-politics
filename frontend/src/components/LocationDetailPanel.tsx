@@ -35,9 +35,9 @@ const LocationDetailPanel: React.FC<LocationDetailPanelProps> = ({
   }, [isVisible, summary, activeTab, setActiveTab]);
 
   return (
-    <div className={`h-full relative z-50 bg-background/80 backdrop-blur-lg rounded-lg p-4 pt-2`}>
-      <Button onClick={toggleVisibility} className="fixed top-2 right-2 w-12 h-9 p-2">
-        <CircleX size={24} />
+    <div className={`h-full relative z-50 bg-transparent rounded-lg p-2 pt-4 md:pt-0`}>
+      <Button onClick={toggleVisibility} className="fixed right-2 w-12 h-9 p-2">
+        <CircleX size={24} /> 
       </Button> 
       { (searchTerm || results) && ( 
         <IssueAreas 
