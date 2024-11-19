@@ -21,44 +21,47 @@ export default function DesksPage() {
       </div> */}
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card 
-          href="home/desks/globe"
-          className="transition-all duration-200 hover:scale-105 hover:shadow-lg cursor-pointer relative"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 blur-xl opacity-60 rounded-full -z-10 animate-pulse"></div>
-          <CardHeader>
-            <CardTitle>Globe View</CardTitle>
-          </CardHeader>
-          <CardContent>
-            Geo
-          </CardContent>
-        </Card>
+        <a href="/desks/home/globe">
+          <Card 
+            className="transition-all duration-200 hover:scale-105 hover:shadow-lg cursor-pointer relative"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 blur-xl opacity-60 rounded-full -z-10 animate-pulse"></div>
+            <CardHeader>
+              <CardTitle>Globe View</CardTitle>
+            </CardHeader>
+            <CardContent>
+              Geo
+            </CardContent>
+          </Card>
+        </a>
         
-        <Card 
-          href="home/desks/chat"
-          className="transition-all duration-200 hover:scale-105 hover:shadow-lg cursor-pointer relative"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-teal-500 blur-xl opacity-60 rounded-full -z-10 animate-pulse"></div>
-          <CardHeader>
-            <CardTitle>Chat Interface</CardTitle>
-          </CardHeader>
-          <CardContent>
-            AI-powered political analysis assistant
-          </CardContent>
-        </Card>
+        <a href="/desks/home/chat">
+          <Card 
+            className="transition-all duration-200 hover:scale-105 hover:shadow-lg cursor-pointer relative"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-teal-500 blur-xl opacity-60 rounded-full -z-10 animate-pulse"></div>
+            <CardHeader>
+              <CardTitle>Chat Interface</CardTitle>
+            </CardHeader>
+            <CardContent>
+              AI-powered political analysis assistant
+            </CardContent>
+          </Card>
+        </a>
         
-        <Card 
-          href="home/desks/bookmarks"
-          className="transition-all duration-200 hover:scale-105 hover:shadow-lg cursor-pointer relative"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-yellow-500 blur-xl opacity-60 rounded-full -z-10 animate-pulse"></div>
-          <CardHeader>
-            <CardTitle>Bookmarked Articles</CardTitle>
-          </CardHeader>
-          <CardContent>
-            Your saved articles and analyses
-          </CardContent>
-        </Card>
+        {/* <a href="home/desks/bookmarks">
+          <Card 
+            className="transition-all duration-200 hover:scale-105 hover:shadow-lg cursor-pointer relative"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-yellow-500 blur-xl opacity-60 rounded-full -z-10 animate-pulse"></div>
+            <CardHeader>
+              <CardTitle>Bookmarked Articles</CardTitle>
+            </CardHeader>
+            <CardContent>
+              Your saved articles and analyses
+            </CardContent>
+          </Card>
+        </a> */}
       </div>
     </div>
   )
