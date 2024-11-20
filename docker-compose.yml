@@ -41,6 +41,7 @@ services:
     networks:
       - default
       - traefik-public
+      - ssare-network
     depends_on:
       - db
     env_file:
@@ -140,6 +141,7 @@ services:
     networks:
       - default
       - traefik-public
+      - ssare-network
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik-public
@@ -167,4 +169,6 @@ networks:
   default:
     external: false
   traefik-public:
+    external: true
+  ssare-network:
     external: true
