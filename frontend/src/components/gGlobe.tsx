@@ -183,7 +183,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
         const id = e.id;
         if (eventTypes.some(eventType => eventType.icon === id)) {
           const img = new Image();
-          img.src = `animations/maki-icons/${id}.svg`;
+          img.src = `/animations/maki-icons/${id}.svg`;
           img.onload = () => {
             mapRef.current?.addImage(id, img);
           };
@@ -419,7 +419,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
 
                 let popupContent = `
                   <div class="w-[250px] p-0 bg-transparent">
-                    <div class="rounded-xl border bg-background text-foreground shadow-lg">
+                    <div class="rounded-xl bg-background text-foreground shadow-lg">
                       <div class="flex flex-col space-y-1.5 p-3">
                         <div class="flex items-center justify-between">
                           <h3 class="font-semibold tracking-tight text-sm">
@@ -531,8 +531,8 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                     : [];
 
                   let popupContent = `
-                    <div class="w-[300px] p-0 bg-transparent">
-                      <div class="rounded-xl border bg-background text-foreground shadow-lg">
+                    <div class="w-[300px] p-0 border-none bg-transparent">
+                      <div class="rounded-xl bg-background text-foreground shadow-lg">
                         <div class="flex flex-col space-y-1.5 p-4">
                           <div class="flex items-center justify-between">
                             <h3 class="font-semibold tracking-tight">
@@ -715,7 +715,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                 // Create popup with more conservative zoom level in the button
                 const popupContent = `
                   <div class="w-[350px] p-0 bg-transparent">
-                    <div class="rounded-xl border bg-background text-foreground shadow-lg">
+                    <div class="rounded-xl bg-background text-foreground shadow-lg">
                       <div class="flex flex-col space-y-1.5 p-4">
                         <div class="flex items-center justify-between">
                           <h3 class="font-semibold tracking-tight">
@@ -1269,13 +1269,13 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
         </Button>
       </div>
       {showLegend && <MapLegend />} {/* Conditionally render the MapLegend */}
-      {hoveredFeature && (
+      {/* {hoveredFeature && (
         <div
           className="absolute bottom-12 left-2 bg-white dark:bg-black bg-opacity-40 p-2 rounded z-10 backdrop-filter backdrop-blur-lg"
         >
           <pre>{JSON.stringify(hoveredFeature.name_en, null, 2).replace(/"/g, '')}</pre>
         </div>
-      )}
+      )} */}
       {/* Mobile Menu Button */}
       {isMobile && (
         <div className="absolute top-16 left-2 md:hidden">

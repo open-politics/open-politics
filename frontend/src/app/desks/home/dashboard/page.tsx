@@ -5,45 +5,34 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker"
-import axios from 'axios'
 import ContentCard from "@/components/ContentCard"
-import EntityCard from "@/components/EntityCard"
-import EntitiesView from "@/components/EntitiesView"
+import { useSearch } from "@/hooks/search/search-providers"
+
 
 export default function DashboardPage() {
   const [selectedEntity, setSelectedEntity] = useState<string | null>(null)
-  const [search, setSearch] = useState<string>("")
+  const [searchQuery, setSearchQuery] = useState<string>("")
   const [tabs, setTabs] = useState<string[]>(["Berlin", "USA Election", "German Snap Elections"])
-  const [results, setResults] = useState<any>(null)
-  const [loading, setLoading] = useState<boolean>(false)
-  const [error, setError] = useState<Error | null>(null)
+  const [activeTab, setActiveTab] = useState<string>("Berlin")
 
-  const fetchArticles = async (query: string) => {
-    setLoading(true)
-    setError(null)
-    try {
-      const response = await axios.get(`/api/v1/search/contents`, {
-        params: {
-          search_query: query,
-          limit: 20,
-          skip: 0,
-          search_type: 'text',
-        }
-      })
-      setResults(response.data)
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error('An error occurred during search'))
-    } finally {
-      setLoading(false)
-    }
-  }
+  const { search, results, loading, error } = useSearch({
+    provider: 'searxng',
+    maxResults: 20,
+    searchDepth: 'advanced',
+    includeDomains: [],
+    excludeDomains: []
+  })
 
   useEffect(() => {
-    fetchArticles("initial query")
+    if (tabs[0]) {
+      search(tabs[0])
+    }
   }, [])
 
-  const filteredEntities = results?.ssareResults || []
+  // Get filtered entities from results
+  const filteredEntities = results?.results || []
 
+  // Tab management functions
   const addTab = (tabName: string) => {
     setTabs([...tabs, tabName])
   }
@@ -56,6 +45,12 @@ export default function DashboardPage() {
     setTabs(tabs.map(tab => (tab === oldName ? newName : tab)))
   }
 
+  // Handle search input with debounce
+  const handleSearch = (value: string) => {
+    setSearchQuery(value)
+    search(value)
+  }
+
   return (
     <>
       <div className="md:hidden">
@@ -65,7 +60,7 @@ export default function DashboardPage() {
         <div className="flex-1 space-y-4 p-8 pt-6">
           <div className="flex items-center justify-between space-y-2">
             <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-            <div className="flex items-center space-x-2">
+            <div   className="flex items-center space-x-2">
               <CalendarDateRangePicker />
               <Button>Download</Button>
             </div>
@@ -74,12 +69,12 @@ export default function DashboardPage() {
             <input
               type="text"
               placeholder="Search entities..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              value={searchQuery}
+              onChange={(e) => handleSearch(e.target.value)}
               className="border p-2 rounded"
             />
           </div>
-          <Tabs defaultValue="overview" className="space-y-4">
+          <Tabs defaultValue="Berlin" className="space-y-4">
             <TabsList>
               {tabs.map(tab => (
                 <TabsTrigger key={tab} value={tab.toLowerCase()}>{tab}</TabsTrigger>
@@ -95,9 +90,6 @@ export default function DashboardPage() {
                     <Button onClick={() => removeTab(tab)}>Delete</Button>
                   </div>
                 </div>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                  {/* Add any additional cards or components here */}
-                </div>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
                   <Card className="col-span-4">
                     <CardHeader>
@@ -109,8 +101,13 @@ export default function DashboardPage() {
                       ) : error ? (
                         <div>Error loading articles: {error.message}</div>
                       ) : (
-                        filteredEntities.map(content => (
-                          <ContentCard key={content.id} {...content} />
+                        filteredEntities.map((content: any) => (
+                          <ContentCard 
+                            key={content.url} 
+                            title={content.title}
+                            url={content.url}
+                            content={content.content}
+                          />
                         ))
                       )}
                     </CardContent>
@@ -120,7 +117,19 @@ export default function DashboardPage() {
                       <CardTitle>Entities</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      {/* Render entities or other content here */}
+                      {/* Display images or other metadata from search results */}
+                      {results?.images && results.images.length > 0 && (
+                        <div className="grid grid-cols-2 gap-2">
+                          {results.images.slice(0, 4).map((image, index) => (
+                            <img 
+                              key={index}
+                              src={typeof image === 'string' ? image : image.url}
+                              alt={typeof image === 'string' ? '' : image.description}
+                              className="w-full h-32 object-cover rounded"
+                            />
+                          ))}
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 </div>

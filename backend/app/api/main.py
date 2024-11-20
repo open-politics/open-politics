@@ -5,6 +5,7 @@ from app.api.v1.locations.routes import router as location_router
 from app.api.v1.search.routes import router as search_router
 from app.api.v1.entities.routes import router as entities_router
 from app.api.v1.satellite.routes import router as satellite_router
+from app.api.routes.search_history import router as search_history_router
 
 # from app.api.v2.satellite.routes import router as satellite_router_v2
 
@@ -22,6 +23,9 @@ api_router.include_router(location_router, prefix="/locations", tags=["locations
 api_router.include_router(search_router, prefix="/search", tags=["search"])
 api_router.include_router(entities_router, prefix="/entities", tags=["entities"])
 api_router.include_router(satellite_router, prefix="/satellite", tags=["satellite"])
+
+## User routes:
+api_router.include_router(search_history_router, prefix="/search_histories", tags=["search-history"])
 
 
 # V2/ Experimental APIs

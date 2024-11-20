@@ -81,7 +81,7 @@ const Header = () => {
               {isLoggedIn ? (
                 <div className="flex items-center gap-2">
                   <Button variant="ghost" asChild>
-                    <Link href="/desk_synthese">Desk</Link>
+                    <Link href="/desks/home">Desk</Link>
                   </Button>
                   {user?.is_superuser && (
                     <Button variant="ghost" asChild>
@@ -89,12 +89,9 @@ const Header = () => {
                     </Button>
                   )}
                   <Button variant="ghost" onClick={logout}>Logout</Button>
-                  <Button variant="ghost" asChild>
-                    <Link href="/home">Home</Link>
-                  </Button>
                 </div>
               ) : (
-                <Button variant="default" asChild>
+                <Button variant="ghost" asChild>
                   <Link href="/login">Login</Link>
                 </Button>
               )}

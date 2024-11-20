@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import EntityCard from './EntityCard';
 import { Badge } from "@/components/ui/badge"; 
-
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 interface Entity {
   id: string;
   name: string;
@@ -39,15 +39,15 @@ const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities, varia
 
   if (variant === 'compact') {
     return (
-      <div className="space-y-2">
+      <div className="space-y-2 border-none">
         <div className="flex justify-between items-center">
           <h3 className="text-sm font-medium">Key Entities</h3>
           <div className="flex space-x-1">
             {['PER', 'ORG', 'GPE'].map((type) => (
               <Badge
                 key={type}
-                variant={selectedEntityTypes.includes(type) ? 'secondary' : 'outline'}
-                className="cursor-pointer text-xs px-2 py-0.5"
+                variant={selectedEntityTypes.includes(type) ? 'ghost' : 'secondary'}
+                className="cursor-pointer text-xs px-2 py-0.5 hover:bg-secondary/80"
                 onClick={() => toggleEntityType(type)}
               >
                 {type}
@@ -62,7 +62,7 @@ const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities, varia
             .map((entity) => (
               <Badge
                 key={entity.name}
-                variant="outline"
+                variant="ghost"
                 className="text-xs"
               >
                 {entity.name}
@@ -74,14 +74,12 @@ const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities, varia
   }
 
   return (
-    <div className="space-y-8 max-h-[80vh] overflow-y-auto">
-      
-      {/* Display leader information if available */}
+    <div className="space-y-8 h-full overflow-y-auto">
       {leaderInfo && (
         <div className="grid grid-cols-2 gap-4 mb-4">
           {leaderInfo.headOfState && (
             <div className="flex items-center space-x-2">
-              <Badge variant="outline" className="text-green-600 font-bold rounded-full w-18">
+              <Badge variant="ghost" className="text-green-600 font-bold border-none rounded-full w-18">
                 National State
               </Badge>
               <Avatar className="w-12 h-12">
@@ -108,25 +106,48 @@ const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities, varia
           )}
         </div>
       )}
-      {/* Display entities regardless of leader information */}
-      <div className="entities-info">
-        <h2 className="p-4 pl-0">Relevant Entities</h2>
-        
-        {/* Badge List for Entity Types */}
-        <div className="flex overflow-x-auto space-x-2 rounded-full">
-          {['PER', 'ORG', 'GPE', 'LOC', 'EVENT', 'PRODUCT', 'WORK_OF_ART', 'LAW', 'LANGUAGE', 'DATE', 'TIME', 'PERCENT', 'MONEY', 'QUANTITY', 'ORDINAL', 'CARDINAL'].map((type) => (
-            <Badge
-              key={type}
-              variant={selectedEntityTypes.includes(type) ? 'secondary' : 'outline'}
-              className="cursor-pointer px-3 py-1"
-              onClick={() => toggleEntityType(type)}
-            >
-              {type}
-            </Badge>
-          ))}
+      <div className="entities-info space-y-4">
+        <div>
+          <h2 className="text-sm font-medium mb-2">Filter Entities</h2>
+          <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap gap-1">
+              {['PER', 'ORG', 'GPE', 'LOC'].map((type) => (
+                <Badge
+                key={type}
+                variant={selectedEntityTypes.includes(type) ? 'ghost' : 'secondary'} 
+                className="cursor-pointer text-xs px-2 py-0.5 hover:bg-secondary/80"
+                onClick={() => toggleEntityType(type)}
+                >
+                  {type}
+                </Badge>
+              ))}
+            </div>
+            <Popover>
+              {/* <PopoverTrigger asChild>
+                <Badge variant="ghost" className="cursor-pointer text-xs px-2 py-0.5">
+                  More...
+                </Badge>
+              </PopoverTrigger> */}
+              <PopoverContent className="w-48 z-50">
+                <div className="flex flex-wrap gap-1">
+                  {['EVENT', 'PRODUCT', 'WORK_OF_ART', 'LAW', 'LANGUAGE', 'DATE', 'TIME', 'PERCENT', 'MONEY', 'QUANTITY', 'ORDINAL', 'CARDINAL'].map((type) => (
+                    <Badge
+                      key={type}
+                      variant={selectedEntityTypes.includes(type) ? 'secondary' : 'outline'}
+                      className="cursor-pointer text-xs px-2 py-0.5"
+                      onClick={() => toggleEntityType(type)}
+                    >
+                      {type}
+                    </Badge>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 h-full overflow-y-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 h-full overflow-y-auto">
           {entities && entities
             .filter((entity, index, self) => 
               index === self.findIndex((t) => (
@@ -140,6 +161,7 @@ const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities, varia
                 entity={entity}
                 isSelected={selectedEntity === entity.name}
                 onSelect={(name) => setSelectedEntity(name)}
+                className="mx-auto"
               />
             ))}
         </div>

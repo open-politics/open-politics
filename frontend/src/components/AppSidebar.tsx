@@ -26,6 +26,7 @@ import { NavProjects } from "@/components/ui/nav-projects"
 import { Separator } from "@/components/ui/separator"
 import { NavUser } from "@/components/ui/nav-user"
 import { TeamSwitcher } from "@/components/ui/team-switcher"
+import useAuth from "@/hooks/useAuth"
 import {
   Sidebar,
   SidebarContent,
@@ -33,8 +34,9 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import HistoryList from "./history-list"
 
-
+import { Chat } from "./chat"
 
 // This is sample data.
 const data = {
@@ -45,7 +47,7 @@ const data = {
       plan: "International news",
     },
     {
-      name: "Deutsche Nachrichten",
+      name: "Deutsche Nachrichten", 
       logo: Orbit,
       plan: "German news only",
     }
@@ -60,10 +62,6 @@ const data = {
         {
           title: "Overview",
           url: "/desks/home",
-        },
-        {
-          title: "Dashboard",
-          url: "/desks/home/dashboard",
         }
       ],
     },
@@ -80,24 +78,29 @@ const data = {
       ],
     },
     {
-      title: "Briefings",
+      title: "Chat",
+      url: "/desks/home/chat",
+      icon: Bot,
+      isActive: true,
+      items: [
+        {
+          title: "Chat",
+          url: "/desks/home/chat",
+        }
+      ],
+    },
+  ],
+  projects: [
+    {
+      name: "Briefings",
       url: "/desks/briefings",
       icon: Send,
     },
     {
-      title: "Bookmarks",
-      url: "/desks/bookmarks",
+      name: "Bookmarks",
+      url: "/desks/bookmarks", 
       icon: Bookmark,
-      items: [
-        {
-          title: "Conflict News",
-          url: "/desks/bookmarks/conflict-news",
-          icon: Swords,
-        },
-      ],
-    }
-  ],
-  projects: [
+    },
     {
       name: "Open Globe",
       url: "/desks/home/globe",
@@ -109,11 +112,17 @@ const data = {
       icon: Frame,
     }
   ],
+  user: {
+    name: "User",
+    email: "user@example.com"
+  }
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useAuth();
+
   return (
-    <Sidebar collapsible="icon" variant="floating" {...props} className="bg-transparent pt-16">
+    <Sidebar collapsible="icon" variant="floating" {...props} className="pt-16">
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
@@ -125,10 +134,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               {item.title}
             </Link>
           ),
+          content: item.url === "/desks/home/chat" && item.isActive ? (
+            <HistoryList userId={user?.id} />
+          ) : null,
         }))}
       />
-      {/* <NavProjects projects={data.projects} /> */}
+      {user?.is_superuser && (
+        <NavProjects projects={data.projects} />
+      )}
       <SidebarContent>
+         <HistoryList userId={user?.id} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

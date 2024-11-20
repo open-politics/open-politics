@@ -174,10 +174,10 @@ export function ContentsView({ locationName, contents = [], isLoading, error, fe
               variant="outline"
               className={cn(
                 "w-[350px] justify-start text-left font-normal gap-2",
-                !dateRange && "text-muted-foreground"
+                !dateRange && "text-muted-foreground bg-transparent"
               )}
             >
-              <CalendarDays className="h-4 w-4 shrink-0" />
+              <CalendarDays className="h-4 w-4 shrink-0 bg-transparent" />
               <span className="truncate">
                 {dateRange?.from ? (
                   dateRange.to ? (
@@ -196,9 +196,10 @@ export function ContentsView({ locationName, contents = [], isLoading, error, fe
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
-            <div className="p-2 space-y-2 bg-background">
+            <div className="p-2 space-y-2">
               <div className="flex gap-2 flex-wrap">
                 <Button
+                  className="bg-transparent"
                   size="sm"
                   variant="outline"
                   onClick={() => handleDateRangeChange({
@@ -219,6 +220,7 @@ export function ContentsView({ locationName, contents = [], isLoading, error, fe
                   Last 7 days
                 </Button>
                 <Button
+                  className="bg-transparent"
                   size="sm"
                   variant="outline"
                   onClick={() => handleDateRangeChange({
@@ -277,11 +279,11 @@ export function ContentsView({ locationName, contents = [], isLoading, error, fe
           <p className="mt-4">Loading contents...</p>
         </div>
       ) : (
-        <div className="overflow-y-auto flex-grow px-4">
+        <div className="lex-grow px-4">
           <div className="space-y-6">
             {Object.entries(groupedContents).map(([date, contents]) => (
               <div key={date} className="space-y-2">
-                <h2 className="text-lg font-semibold text-muted-foreground sticky top-0 bg-background/95 backdrop-blur-sm py-2">
+                <h2 className="">
                   {date}
                 </h2>
                 <div className="space-y-2">

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import LandingLayout from './landing_layout';
 
 const sleep = (time: number) => new Promise((resolve) => setTimeout(resolve, time));
 
@@ -61,8 +62,9 @@ const HomePage: React.FC<HiProps> = () => {
   const words = ['looking', 'researching', 'rooting', 'developing', 'asking', '']; 
 
   return (
-    <div className="p-8 flex flex-col items-center justify-center min-h-screen">
-      <div className="text-center mb-8">
+    <LandingLayout>
+      <div className="p-8 flex flex-col items-center justify-center min-h-screen">
+        <div className="text-center mb-8">
       {/* <div className="text-sm text-gray-500 sticky top-16 left-0 p-2 z-50 w-full">
         <p>Public Maintenance Notice: Scheduled downtime on July 13, 2024</p>
       </div> */}
@@ -111,7 +113,8 @@ const HomePage: React.FC<HiProps> = () => {
           100% { color: violet; }
         }
       `}</style>
-    </div>
+      </div>
+    </LandingLayout>
   );
 };
 

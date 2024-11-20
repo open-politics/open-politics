@@ -1,4 +1,6 @@
 from sqlmodel import Field, Relationship, SQLModel
+from typing import List, Optional
+from datetime import datetime
 
 
 # Shared properties
@@ -44,7 +46,8 @@ class UpdatePassword(SQLModel):
 class User(UserBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     hashed_password: str
-    items: list["Item"] = Relationship(back_populates="owner")
+    items: List["Item"] = Relationship(back_populates="owner")
+    search_histories: List["SearchHistory"] = Relationship(back_populates="user")
 
 
 # Properties to return via API, id is always required
@@ -111,3 +114,29 @@ class TokenPayload(SQLModel):
 class NewPassword(SQLModel):
     token: str
     new_password: str
+
+
+# New SearchHistory model
+class SearchHistoryBase(SQLModel):
+    query: str
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+
+class SearchHistory(SearchHistoryBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="user.id")
+    user: Optional["User"] = Relationship(back_populates="search_histories")
+
+
+class SearchHistoryCreate(SearchHistoryBase):
+    pass
+
+
+class SearchHistoryRead(SearchHistoryBase):
+    id: int
+    user_id: int
+
+
+class SearchHistoriesOut(SQLModel):
+    data: List[SearchHistoryRead]
+    count: int

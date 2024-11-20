@@ -44,7 +44,7 @@ export function NavUser() {
   }, [])
 
   return (
-    <SidebarMenu>
+    <SidebarMenu className="border-none">
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

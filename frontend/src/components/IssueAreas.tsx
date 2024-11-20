@@ -205,7 +205,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
   const showSummaryContent = results?.tavilyResults && summary;
 
   return (
-    <div className="">
+    <div className="h-full md:max-h-[calc(100vh-10rem)]">
       <Tabs 
         value={activeTab} 
         onValueChange={(value) => {
@@ -238,13 +238,13 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
             </TabsTrigger>
           )}
         </TabsList>
-        <div className="flex-grow max-h-[95vh] overflow-hidden">
-          <TabsContent value="articles" className="h-full max-h-[80vh] overflow-y-auto">
+        <div className="flex-grow h-full md:max-h-[calc(100vh-10rem)] mt-4 scrollbar-hide overflow-y-auto">
+          <TabsContent value="articles" className="h-full overflow-y-auto">
             <Card className="h-full flex flex-col">
               <CardHeader>
-                <CardTitle>Articles for {locationName}</CardTitle>
+                <CardTitle>Articles for <span className="text-green-500">{locationName}</span></CardTitle>
                 <CardDescription>
-                  Articles related to {locationName}.
+                  Articles related to <span className="text-green-500">{locationName}</span>.
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex-grow overflow-hidden">
@@ -263,7 +263,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
             <TabsContent value="legislative">
               <Card>
                 <CardHeader>
-                  <CardTitle>Legislation for {locationName}</CardTitle>
+                  <CardTitle>Legislation for <span className="text-green-500">{locationName}</span></CardTitle>
                   <CardDescription>
                     Recent legislative activities and proposals.
                   </CardDescription>
@@ -305,11 +305,11 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
                          <p className="mt-4">Legislative data is loading...</p>
                        </div>
                     ) : error.legislative ? (
-                      <p>No legislative data available for {locationName}. Currently only available for Germany.</p>
+                      <p>No legislative data available for <span className="text-green-500">{locationName}</span>. Currently only available for Germany.</p>
                     ) : filteredLegislativeData.length > 0 ? (
                       <DataTable columns={legislationColumns} data={filteredLegislativeData} />
                     ) : (
-                      <p>No legislative data available for {locationName}. Currently only available for Germany.</p>
+                      <p>No legislative data available for <span className="text-green-500">{locationName}</span>. Currently only available for Germany.</p>
                     )}
                   </div>
                 </CardContent>
@@ -319,7 +319,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
           <TabsContent value="economic-data">
             <Card>
               <CardHeader>
-                <CardTitle>Economic Data for {locationName}</CardTitle>
+                <CardTitle>Economic Data for <span className="text-green-500">{locationName}</span></CardTitle>
                 <CardDescription>
                   Key economic indicators and market trends. (Only OECD Data)
                 </CardDescription>
@@ -358,7 +358,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
           <TabsContent value="leader-info">
             <Card>
               <CardHeader>
-                <CardTitle>Leaders and Entities for {locationName}</CardTitle>
+                <CardTitle>Leaders and Entities for <span className="text-green-500">{locationName}</span></CardTitle>
                 <CardDescription>
                   Current leadership, key political figures, and relevant entities.
                 </CardDescription>
@@ -383,7 +383,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
           <TabsContent value="wikipedia">
             <Card>
               <CardHeader>
-                <CardTitle>Wikipedia Information for {locationName}</CardTitle>
+                <CardTitle>Wikipedia Information for <span className="text-green-500">{locationName}</span></CardTitle>
                 <CardDescription>
                   General information from Wikipedia.
                 </CardDescription>
