@@ -72,9 +72,9 @@ services:
       args:
         - NODE_ENV=development
         - NEXT_PUBLIC_API_URL=http://backend:8000
-    # volumes:
-    #   - ./frontend:/app
-    #   - /app/node_modules
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
 
 networks:
   default:
