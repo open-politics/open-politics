@@ -117,7 +117,7 @@ export function ChatPanel({ messages, query, onModelChange }: ChatPanelProps) {
     setMessages([])
     setAIMessage({ messages: [], chatId: '' })
     setInput('')
-    router.push('/')
+    router.push('/desks/home/chat')
   }
 
   useEffect(() => {

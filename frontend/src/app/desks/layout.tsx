@@ -12,7 +12,6 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
 
 export default function DesksLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoggedIn, isLoading } = useAuth()

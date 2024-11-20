@@ -8,7 +8,9 @@ export default function Page() {
   const id = generateId()
   return (
     <AI initialAIState={{ chatId: id, messages: [] }}>
-      <Chat id={id} />
+      <div className="h-full overflow-y-auto">
+        <Chat id={id} />
+      </div>
     </AI>
   )
 }

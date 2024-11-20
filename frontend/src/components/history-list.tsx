@@ -1,37 +1,33 @@
-import React, { cache } from 'react'
-import HistoryItem from './history-item'
-import { Chat } from '@/lib/types'
-import { getChats } from '@/lib/actions/chat'
-import { ClearHistory } from './clear-history'
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { SearchHistoriesService } from '@/hooks/search/search-history-service';
+import type { SearchHistory } from '@/lib/types';
 
-type HistoryListProps = {
-  userId?: string
-}
+const HistoryList: React.FC<{ userId: number | undefined }> = ({ userId }) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['search_histories', userId],
+    queryFn: async () => {
+      if (!userId) return { data: [], count: 0 };
+      return await SearchHistoriesService.list();
+    },
+    enabled: !!userId, // Only run query if userId is available
+  });
 
-const loadChats = cache(async (userId?: string) => {
-  return await getChats(userId)
-})
-
-// Start of Selection
-export async function HistoryList({ userId }: HistoryListProps) {
-  const chats = await loadChats(userId)
+  if (isLoading) return <div>Loading search history...</div>;
+  if (error) return <div>Error loading search history.</div>;
 
   return (
-    <div className="flex flex-col flex-1 space-y-3 h-full">
-      <div className="flex flex-col space-y-0.5 flex-1 overflow-y-auto">
-        {!chats?.length ? (
-          <div className="text-foreground/30 text-sm text-center py-4">
-            No search history
-          </div>
-        ) : (
-          chats?.map(
-            (chat: Chat) => chat && <HistoryItem key={chat.id} chat={chat} />
-          )
-        )}
-      </div>
-      <div className="mt-auto">
-        <ClearHistory empty={!chats?.length} />
-      </div>
+    <div>
+      <h2>Your Search History</h2>
+      <ul>
+        {data?.data.map((history: SearchHistory) => (
+          <li key={history.id}>
+            <span>{history.query}</span> - <span>{new Date(history.timestamp).toLocaleString()}</span>
+          </li>
+        ))}
+      </ul>
     </div>
-  )
-}
+  );
+};
+
+export default HistoryList;

@@ -34,6 +34,9 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import HistoryList from "./history-list"
+
+import { Chat } from "./chat"
 
 // This is sample data.
 const data = {
@@ -117,6 +120,7 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuth();
+
   return (
     <Sidebar collapsible="icon" variant="floating" {...props} className="pt-16">
       <SidebarHeader>
@@ -130,12 +134,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               {item.title}
             </Link>
           ),
+          content: item.url === "/desks/home/chat" && item.isActive ? (
+            <HistoryList userId={user?.id} />
+          ) : null,
         }))}
       />
       {user?.is_superuser && (
         <NavProjects projects={data.projects} />
       )}
       <SidebarContent>
+         <HistoryList userId={user?.id} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

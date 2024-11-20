@@ -91,7 +91,7 @@ const Header = () => {
                   <Button variant="ghost" onClick={logout}>Logout</Button>
                 </div>
               ) : (
-                <Button variant="default" asChild>
+                <Button variant="ghost" asChild>
                   <Link href="/login">Login</Link>
                 </Button>
               )}

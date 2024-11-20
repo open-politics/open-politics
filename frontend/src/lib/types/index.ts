@@ -105,3 +105,15 @@ export type SearXNGSearchResults = {
   number_of_results?: number
   query: string
 }
+
+export type SearchHistory = {
+  id: number;
+  query: string;
+  timestamp: string;
+  user_id: number;
+};
+
+export type SearchHistoriesOut = {
+  data: SearchHistory[];
+  count: number;
+};
