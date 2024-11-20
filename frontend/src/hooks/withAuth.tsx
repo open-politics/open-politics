@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Lottie from 'lottie-react'; 
 import useAuth from '@/hooks/useAuth';
+import LottiePlaceholder from '@/components/ui/lottie-placeholder';
 
 const withAuth = (WrappedComponent: React.ComponentType) => {
   return (props: any) => {
@@ -23,7 +25,7 @@ const withAuth = (WrappedComponent: React.ComponentType) => {
     }
 
     if (isLoading) {
-      return <div>Loading...</div>;
+      return <LottiePlaceholder />;
     }
 
     if (!isLoggedIn) {

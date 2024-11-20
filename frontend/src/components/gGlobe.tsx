@@ -13,7 +13,6 @@ import { useCoordinatesStore } from '@/store/useCoordinatesStore';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useArticleTabNameStore } from '@/hooks/useArticleTabNameStore';
 
-
 interface GlobeProps {
   geojsonUrl: string;
   onLocationClick: (countryName: string) => void;
@@ -76,6 +75,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
   const setActiveTab = useArticleTabNameStore((state) => state.setActiveTab);
   const [isSpinning, setIsSpinning] = useState(true);
   const spinningRef = useRef<number | null>(null);
+  const [currentHighlightedFeature, setCurrentHighlightedFeature] = useState<any>(null);
 
   const eventTypes = [
     { type: "Protests", color: "#2196F3", icon: "protest", zIndex: 4 },
@@ -456,7 +456,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                   </div>
                 `;
 
-                new mapboxgl.Popup({
+                const popup = new mapboxgl.Popup({
                   closeButton: false,
                   maxWidth: 'none',
                   className: 'custom-popup-container hover-popup',
@@ -464,6 +464,25 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                   .setLngLat(coordinates)
                   .setHTML(popupContent)
                   .addTo(mapRef.current);
+
+                // Add mouse enter and leave events to the popup
+                const popupElement = popup.getElement();
+                popupElement.addEventListener('mouseenter', () => {
+                  clearTimeout(popupTimeout);
+                  popupElement.style.animation = 'none'; // Disable fade effect
+                });
+
+                popupElement.addEventListener('mouseleave', () => {
+                  popupElement.style.animation = ''; // Re-enable fade effect if needed
+                  popupTimeout = setTimeout(() => {
+                    popup.remove();
+                  }, 4500); // Adjust the delay as needed
+                });
+
+                let popupTimeout = setTimeout(() => {
+                  popup.remove();
+                }, 15000); // Initial timeout to remove popup
+
               } catch (error) {
                 console.error('Error getting cluster preview:', error);
               }
@@ -575,7 +594,8 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                           </div>
                         </div>
                       </div>
-                    `;
+                    </div>
+                  `;
                   
 
                   new mapboxgl.Popup({ 
@@ -643,7 +663,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                       const coordinates = (features[0].geometry as any).coordinates;
                       const offset: [number, number] = [0, -(mapRef.current!.getContainer().offsetHeight * 0.2)];
                       
-                      const limitedZoom = Math.min(zoom, 4); // Limit maximum zoom to 6
+                      const limitedZoom = Math.min(zoom, 6); // Limit maximum zoom to 6
                       
                       mapRef.current?.flyTo({
                         center: coordinates,
@@ -670,7 +690,6 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
               }
             });
 
-      
             mapRef.current.on('mouseleave', `unclustered-point-${eventType.type}`, () => {
               if (mapRef.current) {
                 mapRef.current.getCanvas().style.cursor = '';
@@ -905,7 +924,6 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
   const styles = `
       .custom-popup-container .mapboxgl-popup-content {
         padding: 0 !important;
-        background: rgba(255, 255, 255, 0.8) !important;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
         border-radius: 0.75rem;
         backdrop-filter: blur(10px);
@@ -961,6 +979,19 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
         background: transparent !important;
         box-shadow: none !important;
         border-radius: 0.75rem;
+      }
+
+      .spinning-popup {
+        z-index: 3;
+        opacity: 0;
+        animation: fadeInOut 5s forwards;
+      }
+
+      @keyframes fadeInOut {
+        0% { opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { opacity: 0; }
       }
   `;
 
@@ -1031,11 +1062,11 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
         }
       });
 
-      // Update fitBounds with more padding and looser zoom constraints
+      // Use fitBounds to restrict the viewport to the specified bounding box
       mapRef.current.fitBounds(
         [[numericBbox[0], numericBbox[1]], [numericBbox[2], numericBbox[3]]],
         { 
-          padding: 150, // Increased padding
+          padding: 50, // Adjust padding as needed
           duration: 2000,
           maxZoom: zoomLevel,
           minZoom: Math.max(2, zoomLevel - 1.5) // Allow more zoom out, but never less than 2
@@ -1211,6 +1242,257 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
     handleLocationButtonClick(locationName);
   };
 
+  // Functions to create popup content
+  const createClusterPopupContent = (eventType, feature, map) => {
+    const clusterId = feature.properties.cluster_id;
+    const clusterCount = feature.properties.point_count;
+    const source = map.getSource(`geojson-events-${eventType.type}`) as mapboxgl.GeoJSONSource;
+    const coordinates = (feature.geometry as any).coordinates;
+
+    return new Promise((resolve, reject) => {
+      // Get first 3 leaves from the cluster
+      (source as any).getClusterLeaves(
+        clusterId,
+        2, // Limit to 2 items for preview
+        0,
+        (err: any, features: any) => {
+          if (err) reject(err);
+
+          let popupContent = `
+            <div class="w-[250px] p-0 bg-transparent">
+              <div class="rounded-lg bg-background/75 backdrop-blur supports-[backdrop-filter]:bg-background/75 shadow-lg">
+                <div class="flex flex-col space-y-1.5 p-3">
+                  <div class="flex items-center justify-between">
+                    <h3 class="font-semibold tracking-tight text-sm">
+                      ${eventType.type} Cluster
+                    </h3>
+                    <span class="text-xs text-muted-foreground">
+                      ${clusterCount} locations
+                    </span>
+                  </div>
+                </div>
+                <div class="p-3 pt-0">
+                  <div class="max-h-[150px] overflow-y-auto custom-scrollbar">
+                    ${features.map(feature => {
+                      const locationName = feature.properties.name;
+                      const contentCount = feature.properties.content_count;
+
+                      // Limit to 2 items (properties.contents.title)
+                      const contents = feature.properties.contents;
+                      const limitedContents = contents ? contents.slice(0, 2) : [];
+
+                      return `
+                        <div class="mb-2 last:mb-0 text-sm">
+                          <div class="flex items-center justify-between">
+                            <span class="text-primary">📍${locationName}</span>
+                            <span class="text-xs text-muted-foreground">${contentCount} items</span>
+                          </div>
+                        </div>
+                      `;
+                    }).join('')}
+                    ${clusterCount > 3 ? `
+                      <div class="text-xs text-muted-foreground mt-2 pt-2 border-t">
+                        And ${clusterCount - 3} more locations...
+                      </div>
+                    ` : ''}
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+
+          resolve(popupContent);
+        }
+      );
+    });
+  };
+
+  const createUnclusteredPointPopupContent = (eventType, feature) => {
+    const countryName = feature.properties.name;
+    const eventTypeName = eventType.type;
+    const contentCount = feature.properties.content_count || 0;
+
+    let contents = [];
+    try {
+      contents = feature.properties.contents || [];
+      if (typeof contents === 'string') {
+        contents = JSON.parse(contents);
+      }
+    } catch (error) {
+      console.error('Error parsing contents:', error);
+    }
+
+    // Filter valid contents
+    const validContents = Array.isArray(contents) 
+      ? contents.filter(content => 
+          content?.url && 
+          content?.title && 
+          content?.insertion_date
+        )
+      : [];
+
+    let popupContent = `
+      <div class="w-[300px] p-0 bg-background/75 backdrop-blur supports-[backdrop-filter]:bg-background/75">
+        <div class="rounded-lg text-foreground shadow-lg">
+          <div class="flex flex-col space-y-1.5 p-4">
+            <div class="flex items-center justify-between">
+              <h3 class="tracking-tight">
+                <a href="#" 
+                   class=""
+                   onclick="window.dispatchEvent(new CustomEvent('setLocation', {detail:'${countryName}'}))"
+                >
+                  ${eventTypeName} @ 📍 ${countryName}
+                </a>
+              </h3>
+              <span class="text-green-500">
+                ${contentCount} items
+              </span>
+            </div>
+            </div>
+            <div class="p-4 pt-0">
+              <div class="max-h-[200px] overflow-y-auto custom-scrollbar">
+                ${validContents.length > 0 
+                  ? validContents.map(content => `
+                      <div class="mb-3 last:mb-0 pb-2 last:border-0 last:pb-0">
+                        <a href="${content.url}" 
+                           target="_blank" 
+                           class="text-sm text-primary hover:underline block">
+                          ${content.title}
+                        </a>
+                        <div class="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                          <span>${new Date(content.insertion_date).toLocaleDateString()}</span>
+                          ${content.source ? `
+                            <span class="inline-flex items-center">
+                              <span class="mx-1">•</span>
+                              ${content.source}
+                            </span>
+                          ` : ''}
+                        </div>
+                      </div>
+                    `).join('')
+                  : '<div class="text-sm text-muted-foreground py-2">No content available</div>'
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    return popupContent;
+  };
+
+  // Implement passive highlighting during spinning
+  useEffect(() => {
+    if (!mapRef.current || !mapLoaded) return;
+
+    let intervalId;
+    const activePopups: mapboxgl.Popup[] = [];
+
+    if (isSpinning) {
+      intervalId = setInterval(() => {
+        // Query features in the viewport
+        const features = mapRef.current.queryRenderedFeatures(undefined, {
+          layers: [
+            ...eventTypes.map(type => `clusters-${type.type}`),
+            ...eventTypes.map(type => `unclustered-point-${type.type}`)
+          ]
+        });
+
+        if (features.length > 0) {
+          // Remove previous popups
+          activePopups.forEach(popup => popup.remove());
+          activePopups.length = 0;
+
+          // Pick random features for multiple popups
+          const selectedFeatures = features.slice(0, 3); // Adjust the number of concurrent popups
+
+          selectedFeatures.forEach(feature => {
+            const coordinates = (feature.geometry as any).coordinates.slice();
+            const layerId = feature.layer.id;
+            const eventTypeName = layerId.replace('clusters-', '').replace('unclustered-point-', '');
+            const eventType = eventTypes.find(et => et.type === eventTypeName);
+
+            if (!eventType) return;
+
+            let popupContentPromise;
+            if (feature.properties.cluster) {
+              // Cluster
+              popupContentPromise = createClusterPopupContent(eventType, feature, mapRef.current);
+            } else {
+              // Unclustered point
+              popupContentPromise = Promise.resolve(createUnclusteredPointPopupContent(eventType, feature));
+            }
+
+            popupContentPromise.then(popupContent => {
+              const popup = new mapboxgl.Popup({
+                closeButton: false,
+                maxWidth: 'none',
+                className: 'custom-popup-container spinning-popup',
+                offset: [0, -15]
+              })
+              .setLngLat(coordinates)
+              .setHTML(popupContent)
+              .addTo(mapRef.current);
+
+              activePopups.push(popup);
+
+              // Set timeout to remove highlight
+              setTimeout(() => {
+                popup.remove();
+                setCurrentHighlightedFeature(null);
+              }, 15000); // Increased duration to 15 seconds
+            }).catch(error => {
+              console.error('Error creating popup content:', error);
+            });
+          });
+        }
+      }, 6000); // Every 6 seconds
+    }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+      activePopups.forEach(popup => popup.remove());
+    };
+  }, [mapLoaded, isSpinning]);
+
+  const setVerticalLineViewport = useCallback(() => {
+    if (!mapRef.current) return;
+
+    // Get the current map bounds
+    const bounds = mapRef.current.getBounds();
+    const mapWidth = mapRef.current.getContainer().offsetWidth;
+    const mapHeight = mapRef.current.getContainer().offsetHeight;
+
+    // Calculate the pixel dimensions for 60vw and 80vh
+    const lineWidth = mapWidth * 0.6;
+    const lineHeight = mapHeight * 0.8;
+
+    // Calculate the center of the map in pixels
+    const centerX = mapWidth / 2;
+    const centerY = mapHeight / 2;
+
+    // Calculate the top-left and bottom-right corners of the bounding box in pixels
+    const topLeft = mapRef.current.unproject([centerX - lineWidth / 2, centerY - lineHeight / 2]);
+    const bottomRight = mapRef.current.unproject([centerX + lineWidth / 2, centerY + lineHeight / 2]);
+
+    // Define the bounding box using the calculated geographic coordinates
+    const bbox = [
+      topLeft.lng, topLeft.lat, // SW corner
+      bottomRight.lng, bottomRight.lat // NE corner
+    ];
+
+    // Use fitBounds to adjust the map's viewport to the specified bounding box
+    mapRef.current.fitBounds(
+      [[bbox[0], bbox[1]], [bbox[2], bbox[3]]],
+      { 
+        padding: 250, // Adjust padding as needed
+        duration: 2000,
+        maxZoom: 10, // Adjust max zoom level as needed
+        minZoom: 2 // Adjust min zoom level as needed
+      }
+    );
+  }, []);
+
   return (
     <div style={{ position: 'relative', height: '100%', width: '100%' }}>
       <div ref={mapContainerRef} className="map-container" style={{ height: '100%', padding: '10px', borderRadius: '12px' }}></div>
@@ -1269,13 +1551,6 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
         </Button>
       </div>
       {showLegend && <MapLegend />} {/* Conditionally render the MapLegend */}
-      {/* {hoveredFeature && (
-        <div
-          className="absolute bottom-12 left-2 bg-white dark:bg-black bg-opacity-40 p-2 rounded z-10 backdrop-filter backdrop-blur-lg"
-        >
-          <pre>{JSON.stringify(hoveredFeature.name_en, null, 2).replace(/"/g, '')}</pre>
-        </div>
-      )} */}
       {/* Mobile Menu Button */}
       {isMobile && (
         <div className="absolute top-16 left-2 md:hidden">
@@ -1302,4 +1577,3 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
 });
 
 export default Globe;
-

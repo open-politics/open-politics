@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import useAuth from '@/hooks/useAuth';
 
+
 const withAdminAuth = (WrappedComponent: React.ComponentType) => {
   return (props: any) => {
     const { user, isLoading, isLoggedIn } = useAuth();
@@ -41,7 +42,7 @@ const withAdminAuth = (WrappedComponent: React.ComponentType) => {
     // Show loading state while we're initializing or loading
     if (!isClient || isLoading || !isInitialized) {
       console.log('Loading state:', { isClient, isLoading, isInitialized });
-      return <div>Loading...</div>;
+      return <div>adssad...</div>;
     }
 
     // Only show the component if we're logged in and a superuser

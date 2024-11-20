@@ -213,7 +213,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
         }} 
         className="w-full"
       >
-        <TabsList className="max-w-[80%] md:max-w-[calc(100%-60px)] overflow-y-auto flex justify-start scroll-snap-type-x mandatory">
+        <TabsList className="max-w-[80%] md:max-w-[calc(100%-60px)] overflow-y-auto flex justify-start scroll-snap-type-x mandatory bg-background/45 backdrop-blur supports-[backdrop-filter]:bg-background/40">
           <TabsTrigger value="articles" className="scroll-snap-align-start">Articles</TabsTrigger>
           {data.locationMetadata.isOECDCountry && (
             <TabsTrigger 

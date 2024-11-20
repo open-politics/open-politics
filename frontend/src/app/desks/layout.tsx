@@ -12,6 +12,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb"
+import LottiePlaceholder from "@/components/ui/lottie-placeholder"
 
 export default function DesksLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoggedIn, isLoading } = useAuth()
@@ -24,7 +25,7 @@ export default function DesksLayout({ children }: { children: React.ReactNode })
   }, [isLoading, isLoggedIn, router])
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return <LottiePlaceholder />
   }
 
   if (!isLoggedIn) {
