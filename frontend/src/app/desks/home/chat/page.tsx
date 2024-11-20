@@ -9,7 +9,7 @@ export default function Page() {
   return (
     <AI initialAIState={{ chatId: id, messages: [] }}>
       <div className="h-full flex flex-col">
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 max-h-screen overflow-y-auto">
           <Chat id={id} />
         </div>
       </div>
