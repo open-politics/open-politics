@@ -1,3 +1,5 @@
+// store/useCoordinatesStore.ts
+
 import { create } from 'zustand';
 
 interface CoordinatesState {

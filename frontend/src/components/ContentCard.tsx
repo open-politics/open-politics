@@ -143,7 +143,7 @@ export function ContentCard({
         </Card>
       </DialogTrigger>
 
-      <DialogContent className="max-h-[90vh] max-w-[100vw] md:max-w-[50vw] flex flex-col">
+      <DialogContent className="max-h-[90vh] bg-transparent max-w-[100vw] md:max-w-[50vw] flex flex-col">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>

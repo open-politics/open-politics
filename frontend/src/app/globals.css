@@ -96,4 +96,16 @@
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
   }
+
+  .d3-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none; /* Allow map interactions through the SVG */
+  }
+  
+  .node {
+    cursor: pointer;
+  }
+  
 }

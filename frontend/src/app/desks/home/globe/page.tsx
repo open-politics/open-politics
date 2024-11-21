@@ -137,7 +137,7 @@ const GlobePage = () => {
           </div>
           
           {/* Search Bar */}
-          <div className="absolute top-3/4 mb-2 left-1/2 transform -translate-x-1/2 w-3/4 z-20">
+          <div className="absolute top-3/4 min-w-[40vw] w-1/3 max-w-[80vw] left-[10vw] z-20">
             <Search
               setResults={handleSearch}
               setSummary={handleSummary}
@@ -145,47 +145,23 @@ const GlobePage = () => {
             />
           </div>
         </div>
-
-        {/* Details Panel for Desktop */}
-        <AnimatePresence>
-          {!isMobile && hasClicked && (
-            <motion.div
-              className={`w-1/2 block md:block max-h-[calc(100vh-8rem)] overflow-hidden`}
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="overflow-y-auto h-full scrollbar-hide">
-                <LocationDetailPanel
-                  key={locationKey}
-                  location={location}
-                  isVisible={isVisible}
-                  toggleVisibility={toggleVisibility}
-                  results={results}
-                  summary={summary}
-                />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
-      {/* Overlay Detail Panel for Mobile */}
+      {/* Overlay Detail Panel */}
       <AnimatePresence>
-        {isMobile && hasClicked && isVisible && (
+        {hasClicked && isVisible && (
           <motion.div
-            className="fixed inset-0 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/85 flex justify-center items-center z-50 p-2 pt-6"
+            className="fixed top-[18vh] right-0 min-w-[40vw] w-auto max-w-[80vw] h-3/4 bg-background/90 mr-4 backdrop-blur-lg supports-[backdrop-filter]:bg-background/90 z-50 p-6 rounded-lg shadow-xl"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
             <motion.div
-              className="bg-transparent rounded-lg w-full h-full md:w-1/2 md:h-auto overflow-hidden"
-              initial={{ scale: 0.8 }}
+              className="rounded-lg w-full h-full overflow-hidden shadow-lg"
+              initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
-              exit={{ scale: 0.8 }}
+              exit={{ scale: 0.9 }}
               transition={{ duration: 0.3 }}
             >
               <div className="overflow-y-auto h-full scrollbar-hide">
@@ -202,7 +178,6 @@ const GlobePage = () => {
           </motion.div>
         )}
       </AnimatePresence>
-
     </div>
   );
 };

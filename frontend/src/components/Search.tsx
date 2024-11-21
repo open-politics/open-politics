@@ -68,7 +68,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
   return (
     <div className="relative w-full bg-white dark:bg-black bg-opacity-50 dark:bg-opacity-50 backdrop-blur-lg rounded-xl p-2">
       <h2 className="text-xl font-bold text-blue-500 dark:text-green-200 mb-2 text-left ml-1">Search News and all things Politics</h2>
-      <Command className="mx-auto bg-transparent border border-blue-200 p-4 rounded-xl">
+      <Command className="mx-auto bg-transparent p-4 rounded-lg">
         <div className="relative">
           <CommandInput
             onKeyDown={(e) => {

@@ -26,7 +26,7 @@ interface EntityCardProps {
 
 const MetricsDisplay: React.FC<{ score: EntityScore }> = ({ score }) => {
   return (
-    <div className="bg-background p-4 rounded-lg shadow-sm">
+    <div className="bg-transparent">
       <div className="grid grid-cols-2 gap-4">
         <div>
           <h5 className="font-semibold">Metrics</h5>
