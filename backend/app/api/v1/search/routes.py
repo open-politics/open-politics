@@ -51,7 +51,7 @@ async def get_contents(
         }
 
         async with httpx.AsyncClient() as client:
-            response = await client.get("http://postgres_service:5434/contents", params=params)
+            response = await client.get("http://api.opol.io/postgres-service/contents", params=params)
             response.raise_for_status()
             data = response.json()
             
@@ -81,7 +81,7 @@ async def get_most_relevant_entities(
 ):
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.post("http://postgres_service:5434/most_relevant_entities", json=request.dict())
+            response = await client.post("http://api.opol.io/postgres-service/most_relevant_entities", json=request.dict())
             response.raise_for_status()
             return response.json()
     except httpx.HTTPError as e:

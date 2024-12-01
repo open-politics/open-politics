@@ -165,19 +165,19 @@ export function ContentsView({ locationName, contents = [], isLoading, error, fe
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder={`Search ${locationName}'s contents`}
-          className="min-w-[200px]"
+          className="min-w-[200px] max-w-[200px]"
         />
         
         <Popover>
           <PopoverTrigger asChild>
             <Button
-              variant="outline"
+              variant="ghost"
               className={cn(
                 "w-[350px] justify-start text-left font-normal gap-2",
                 !dateRange && "text-muted-foreground bg-transparent"
               )}
             >
-              <CalendarDays className="h-4 w-4 shrink-0 bg-transparent" />
+              <CalendarDays className="h-4 w-4 shrink-0 bg-transparent text-blue-400" />
               <span className="truncate">
                 {dateRange?.from ? (
                   dateRange.to ? (
@@ -248,10 +248,13 @@ export function ContentsView({ locationName, contents = [], isLoading, error, fe
             </div>
           </PopoverContent>
         </Popover>
+      </div>
 
+      <div className="w-full">
         <Select
           value={sortBy}
           onValueChange={setSortBy}
+          className="w-full"
         >
           <SelectTrigger>
             <SelectValue placeholder="Sort by" />
@@ -261,8 +264,6 @@ export function ContentsView({ locationName, contents = [], isLoading, error, fe
             {/* Add more sorting options here */}
           </SelectContent>
         </Select>
-
-        {/* <Button onClick={handleSearch}>Search</Button> */}
       </div>
 
       {/* Add debug info in development */}

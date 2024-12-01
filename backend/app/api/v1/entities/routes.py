@@ -35,7 +35,6 @@ async def get_location_articles(
     try:
         result = await articles.get_articles(
             location, skip, limit, search_query, search_type.value,
-            has_geocoding, has_entities, has_classification, has_embeddings
         )
         return JSONResponse(content=result, status_code=200)
     except Exception as e:
@@ -48,7 +47,7 @@ async def get_location_articles(
 async def country_from_query(query: str):
     country_name = marvin.cast(query, target=str, instructions="Return the country name most relevant to the query.")
 
-    response = requests.get(f"http://geo_service:3690/call_pelias_api?location={country_name}", verify=False)
+    response = requests.get(f"http://api.opol.io/geo-service/call_pelias_api?location={country_name}", verify=False)
     print(response)
     try:
         # return {"country_name": country_name}
@@ -62,14 +61,14 @@ async def country_from_query(query: str):
 
 @router.get("/geojson/")
 async def geojson_view():
-    request = requests.get("http://geo_service:3690/geojson", verify=False)
+    request = requests.get("http://api.opol.io/geo-service/geojson", verify=False)
     return request.json()
 
 @router.get("/{entity_name}/articles", response_model=None)
 async def get_entity_articles(entity_name: str, skip: int = 0, limit: int = 50):
     try:
         logger.info(f"Fetching articles for entity: {entity_name}")
-        response = requests.get(f"http://postgres_service:5434/articles_by_entity/{entity_name}?skip={skip}&limit={limit}")
+        response = requests.get(f"http://api.opol.io/postgres-service/articles_by_entity/{entity_name}?skip={skip}&limit={limit}")
         response.raise_for_status()
         return JSONResponse(content=response.json(), status_code=200)
     except requests.RequestException as e:
@@ -136,7 +135,7 @@ async def get_entity_score_over_time(
         logger.info(f"Sending request to postgres_service with payload: {payload}")
         
         response = requests.post(
-            "http://postgres_service:5434/entity_score_over_time",
+            "http://api.opol.io/postgres-service/entity_score_over_time",
             json=payload,
             headers={'Content-Type': 'application/json'},
             verify=False
@@ -186,7 +185,7 @@ async def get_top_entities_by_score(
         }
         
         response = requests.get(
-            "http://postgres_service:5434/top_entities_by_score",
+            "http://api.opol.io/postgres-service/top_entities_by_score",
             params=params,
             verify=False
         )

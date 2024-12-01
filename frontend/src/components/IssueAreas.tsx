@@ -40,6 +40,7 @@ import ArticlesView from './ArticlesView';
 import DataTable from "./DataTable";
 import Results from '@/components/Results';
 import { useArticleTabNameStore } from '@/hooks/useArticleTabNameStore';
+import axios from 'axios';
 
 interface IssueAreasProps {
   locationName: string;
@@ -57,7 +58,23 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
   const { toast } = useToast();
   const { activeTab, setActiveTab } = useArticleTabNameStore(); // Use Zustand store
   const [isMobile, setIsMobile] = useState(false);
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
 
+  // Fetch image from Wikipedia
+  useEffect(() => {
+    if (locationName) {
+      axios.get(`https://en.wikipedia.org/api/rest_v1/page/summary/${locationName}`)
+        .then(response => {
+          const imageUrl = response.data.thumbnail?.source;
+          if (imageUrl) {
+            setBackgroundImage(imageUrl);
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching image:', error);
+        });
+    }
+  }, [locationName]);
 
   const filteredLegislativeData = useMemo(() => {
     if (!data?.legislativeData) return [];
@@ -240,7 +257,15 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
         </TabsList>
         <div className="flex-grow h-full md:max-h-[calc(100vh-10rem)] mt-4 scrollbar-hide overflow-y-auto">
           <TabsContent value="articles" className="h-full overflow-y-auto">
-            <Card className="h-full flex flex-col">
+            <Card 
+              className="h-full w-/6 h-1/4 flex flex-col bg-no-repeat transition-transform duration-200"
+              style={{
+                backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
+                backgroundPosition: 'top right',
+                opacity: backgroundImage ? 1 : 0,
+                transform: backgroundImage ? 'translate(0, 0)' : 'translate(10px, 10px)',
+              }}
+            >
               <CardHeader>
                 <CardTitle>Articles for <span className="text-green-500">{locationName}</span></CardTitle>
                 <CardDescription>

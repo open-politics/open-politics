@@ -48,9 +48,9 @@ async def get_contents(
 
         # Different endpoint based on search type
         if search_type == SearchType.LOCATION:
-            endpoint = f"http://postgres_service:5434/contents_by_location/{location}"
+            endpoint = f"https://api.opol.io/postgres_service/contents_by_location/{location}"
         elif search_type == SearchType.LOCATION_WITH_TEXT:
-            endpoint = "http://postgres_service:5434/contents"
+            endpoint = "https://api.opol.io/postgres_service/contents"
             params.update({
                 "locations": location,
                 "search_query": search_query,

@@ -40,7 +40,7 @@ async def get_location_contents(
     """
     try:
         response = requests.get(
-            f"http://postgres_service:5434/contents_by_location/{location}?skip={skip}&limit={limit}",
+            f"https://api.opol.io/postgres-service/contents_by_location/{location}?skip={skip}&limit={limit}",
             verify=False
         )
         response.raise_for_status()
@@ -68,7 +68,7 @@ async def get_location_entities_contents(
     """
     try:
         response = requests.get(
-            f"http://postgres_service:5434/contents_by_entity/{location}?skip={skip}&limit={limit}",
+            f"https://api.opol.io/postgres-service/contents_by_entity/{location}?skip={skip}&limit={limit}",
             verify=False
         )
         response.raise_for_status()
@@ -90,7 +90,7 @@ async def location_from_query(query: str):
     try:
         # Get location from classification service
         location_response = requests.get(
-            f"http://classification_service:5688/location_from_query?query={query}", 
+            f"https://api.opol.io/classification-service/location_from_query?query={query}", 
             verify=False
         )
         location_response.raise_for_status()
@@ -98,7 +98,7 @@ async def location_from_query(query: str):
 
         # Get coordinates from geo service
         geo_response = requests.get(
-            f"http://geo_service:3690/geocode_location?location={location}", 
+            f"https://api.opol.io/geo-service/geocode_location?location={location}", 
             verify=False
         )
         geo_response.raise_for_status()
@@ -123,7 +123,7 @@ async def location_from_query(query: str):
 
 @router.get("/geojson/")
 async def geojson_view():
-    request = requests.get("http://geo_service:3690/geojson", verify=False)
+    request = requests.get("https://api.opol.io/geo-service/geojson", verify=False)
     if request.status_code == 200:
         return request.json()
     else:
@@ -131,7 +131,7 @@ async def geojson_view():
 
 @router.get("/geojson_events")
 async def geojson_events_view(event_type: str = Query(...)):
-    request = requests.get(f"http://geo_service:3690/geojson_events/{event_type}", verify=False)
+    request = requests.get(f"http://api.opol.io/geo-service/geojson_events/{event_type}", verify=False)
     if request.status_code == 200:
         return request.json()
     else:
@@ -141,7 +141,7 @@ async def geojson_events_view(event_type: str = Query(...)):
 async def dashboard_view():
     try:
         # Update the URL to point to the correct service name or IP address
-        request = requests.get("http://main_core_app:8089/", verify=False)
+        request = requests.get("http://api.opol.io/main_core_app/", verify=False)
         request.raise_for_status()  # Raise an exception for HTTP errors
         
         # Return the raw HTML content
@@ -159,7 +159,7 @@ async def get_location_entities(
 ):
     try:
         response = requests.get(
-            f"http://postgres_service:5434/location_entities/{location_name}",
+            f"http://api.opol.io/postgres-service/location_entities/{location_name}",
             params={
                 "skip": skip,
                 "limit": limit,
@@ -238,7 +238,7 @@ async def get_coordinates(location: str, language: str = "en"):
     """
     try:
         result = requests.get(
-            f"http://geo_service:3690/geocode_location?location={location}&language={language}", 
+            f"http://api.opol.io/geo-service/geocode_location?location={location}&language={language}", 
             verify=False
         )
         logger.info(f"Result: {result.json()}")
@@ -269,7 +269,7 @@ async def get_geojson_for_article_ids(article_ids: List[str]):
 
     # Send the request with the correct headers
     geojson_data = requests.post(
-        "http://geo_service:3690/geojson_by_article_ids",
+        "http://api.opol.io/geo-service/geojson_by_article_ids",
         json=article_ids, 
         headers={"Content-Type": "application/json"},
         verify=False

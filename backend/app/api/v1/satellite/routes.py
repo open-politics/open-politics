@@ -22,7 +22,7 @@ import os
 def get_coordinates(location: str):
     try:
         result = requests.get(
-            f"http://geo_service:3690/geocode_location?location={location}&language={language}", 
+            f"http://api.opol.io/geo-service/geocode_location?location={location}&language={language}", 
             verify=False
         )
         logger.info(f"Result: {result.json()}")
