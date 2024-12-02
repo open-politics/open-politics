@@ -13,6 +13,7 @@ const Popups: React.FC = () => {
       const layersWithPopups = [
         { layerId: 'protests-unclustered', getContent: getProtestPopupContent },
         { layerId: 'elections-unclustered', getContent: getElectionPopupContent },
+        { layerId: 'wars-unclustered', getContent: getWarPopupContent },
         // Add more layers as needed
       ];
 
@@ -44,6 +45,11 @@ const Popups: React.FC = () => {
 
   const getElectionPopupContent = (feature: mapboxgl.MapboxGeoJSONFeature) => {
     // Generate HTML content for election popup
+    return `<h3>${feature.properties.title}</h3>`;
+  };
+
+  const getWarPopupContent = (feature: mapboxgl.MapboxGeoJSONFeature) => {
+    // Generate HTML content for war popup
     return `<h3>${feature.properties.title}</h3>`;
   };
 

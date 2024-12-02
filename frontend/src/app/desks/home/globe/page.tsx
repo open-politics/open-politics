@@ -132,7 +132,6 @@ const GlobePage = () => {
               ref={globeRef}
               geojsonUrl={geojsonUrl}
               onLocationClick={handleLocationClick}
-              onCountryZoom={handleLocationZoom}
             />
           </div>
           
