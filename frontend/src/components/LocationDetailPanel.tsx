@@ -41,11 +41,10 @@ const LocationDetailPanel: React.FC<LocationDetailPanelProps> = ({
       </Button> 
       { (searchTerm || results) && ( 
         <IssueAreas 
-          locationName={searchTerm}
+          locationName={searchTerm || ''} // Ensure locationName is always defined
           results={results}
           summary={summary}
           includeSummary={true}
-          activeTab={activeTab}
         />
       )}
     </div>

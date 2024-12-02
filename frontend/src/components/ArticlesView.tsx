@@ -173,7 +173,7 @@ export function ContentsView({ locationName, contents = [], isLoading, error, fe
             <Button
               variant="ghost"
               className={cn(
-                "w-[350px] justify-start text-left font-normal gap-2",
+                "w-[50px] justify-start text-left font-normal gap-2",
                 !dateRange && "text-muted-foreground bg-transparent"
               )}
             >

@@ -12,6 +12,7 @@ import { useCoordinatesStore } from '@/store/useCoordinatesStore';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useArticleTabNameStore } from '@/hooks/useArticleTabNameStore';
 import * as d3 from 'd3';
+import { useLocationData } from '@/hooks/useLocationData';
 
 interface GlobeProps {
   geojsonUrl: string;
@@ -232,7 +233,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
           ];
 
           const features = mapRef.current?.queryRenderedFeatures(bbox, {
-            layers: ['country-boundaries']
+            layers: ['country_boundaries']
           });
 
           if (features && features.length > 0) {
@@ -382,7 +383,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                 'icon-pitch-alignment': 'viewport',
                 'icon-rotation-alignment': 'viewport',
                 'text-field': ['get', 'content_count'],
-                'text-size': 24,
+                'text-size': 18,
                 'text-offset': [0, 1],
                 'text-allow-overlap': false,
                 'text-ignore-placement': false,
@@ -773,12 +774,12 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                         </div>
                         <div class="mt-4 pt-4 border-t text-center">
                           <button 
-                            class="px-4 py-2 text-sm bg-primary text-white-foreground rounded-md hover:bg-primary/90"
+                            class="px-4 py-2 text-sm bg-primary text-black rounded-md hover:bg-primary/90"
                             onclick="window.dispatchEvent(new CustomEvent('zoomToCluster', {
                               detail: {
                                 lng: ${coordinates[0]},
                                 lat: ${coordinates[1]},
-                                zoom: ${Math.min(mapRef.current.getZoom() + 1, 4)}
+                                zoom: ${Math.min(mapRef.current.getZoom() + 8, 4)}
                               }
                             }))"
                           >
@@ -1457,6 +1458,42 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
     );
   }, []);
 
+  const { data, fetchContents, fetchEntities } = useLocationData(null);
+
+  // Function to load data for a specific location
+  const loadLocationData = useCallback(async (locationName: string) => {
+    await fetchContents({ skip: 0 });
+    await fetchEntities(0, 10);
+  }, [fetchContents, fetchEntities]);
+
+  function createPopupContent(locationName: string) {
+    const articles = data.contents.slice(0, 4); // Get up to 4 articles
+    const entities = data.entities.slice(0, 4); // Get up to 4 entities
+
+    return `
+      <div class="popup-content">
+        <h3>${locationName}</h3>
+        <div class="articles">
+          <h4>Articles</h4>
+          ${articles.map(article => `
+            <div>
+              <a href="${article.url}" target="_blank">${article.title}</a>
+              <p>${article.source}</p>
+            </div>
+          `).join('')}
+        </div>
+        <div class="entities">
+          <h4>Entities</h4>
+          ${entities.map(entity => `
+            <div>
+              <span>${entity.name} (${entity.entity_type})</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
   const startRoute = useCallback(async (route) => {
     if (!mapRef.current) return;
 
@@ -1464,8 +1501,12 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
     setIsRoutePlaying(true);
 
     for (const location of route.locations) {
-      const { name, coordinates, description } = location;
+      const { name, coordinates } = location;
 
+      // Fetch data for the current location
+      await loadLocationData(name);
+
+      // Fly to the location
       mapRef.current.flyTo({
         center: coordinates,
         zoom: 5,
@@ -1475,27 +1516,38 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
         essential: true,
       });
 
+      // Wait for the fly animation to complete
       await new Promise((resolve) => {
         mapRef.current.once('moveend', resolve);
       });
 
+      // Create and display a popup with articles and entities
+      const popupContent = createPopupContent(name);
       const popup = new mapboxgl.Popup({
         closeButton: false,
         maxWidth: 'none',
         className: 'custom-popup-container bg-transparent route-popup',
       })
         .setLngLat(coordinates)
-        .setHTML(`<div><strong>${name}</strong><br/>${description}</div>`)
+        .setHTML(popupContent)
         .addTo(mapRef.current);
 
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      // Wait for a few seconds to allow the user to read the popup
+      await new Promise((resolve) => setTimeout(resolve, 5000));
 
+      // Remove the popup before moving to the next location
       popup.remove();
     }
 
     setIsRoutePlaying(false);
+  }, [loadLocationData, createPopupContent]);
 
-  }, []);
+  const [visibleLayers, setVisibleLayers] = useState<Record<string, boolean>>(
+    eventTypes.reduce((acc, eventType) => {
+      acc[eventType.type] = eventType.type === 'War' || eventType.type === 'Politics'; // Preselect War and Politics
+      return acc;
+    }, {} as Record<string, boolean>)
+  );
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -1512,8 +1564,9 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
 
     // Function to render clusters
     const renderClusters = () => {
+      const activeEventTypes = eventTypes.filter(et => visibleLayers[et.type]);
       const clusters = mapRef.current!.queryRenderedFeatures({
-        layers: eventTypes.map(et => `clusters-${et.type}`)
+        layers: activeEventTypes.map(et => `clusters-${et.type}`)
       });
 
       // Bind data to circles
@@ -1523,12 +1576,12 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
       // Enter new circles
       circles.enter()
         .append('circle')
-        .attr('r', d => Math.sqrt(d.properties.point_count) * 2) // Size based on count
+        .attr('r', d => Math.sqrt(d.properties.point_count) * 7) // Size based on count
         .attr('fill', d => {
           const eventType = eventTypes.find(et => et.type === d.layer.id.split('-')[1]);
           return eventType ? eventType.color : '#888';
         })
-        .attr('opacity', 0.6)
+        .attr('opacity', 0.7)
         .attr('transform', d => {
           const coords = mapRef.current!.project(new mapboxgl.LngLat(d.geometry.coordinates[0], d.geometry.coordinates[1]));
           return `translate(${coords.x},${coords.y})`;
@@ -1568,11 +1621,31 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
     return () => {
       if (mapRef.current) {
         mapRef.current.off('move', renderClusters);
-        mapRef.current.off('resize');
+        mapRef.current.off('resize', renderClusters);
       }
       svg.remove();
     };
-  }, [eventTypes]);
+  }, [eventTypes, visibleLayers]);
+
+  const handleLayerToggle = (eventType: string) => {
+    setVisibleLayers((prev) => {
+      const newVisibility = !prev[eventType];
+      toggleLayerVisibility(`clusters-${eventType}`, newVisibility ? 'visible' : 'none');
+      toggleLayerVisibility(`unclustered-point-${eventType}`, newVisibility ? 'visible' : 'none');
+      toggleLayerVisibility(`cluster-count-${eventType}`, newVisibility ? 'visible' : 'none');
+      return { ...prev, [eventType]: newVisibility };
+    });
+  };
+
+  useEffect(() => {
+    if (mapLoaded) {
+      eventTypes.forEach((eventType) => {
+        toggleLayerVisibility(`clusters-${eventType.type}`, visibleLayers[eventType.type] ? 'visible' : 'none');
+        toggleLayerVisibility(`unclustered-point-${eventType.type}`, visibleLayers[eventType.type] ? 'visible' : 'none');
+        toggleLayerVisibility(`cluster-count-${eventType.type}`, visibleLayers[eventType.type] ? 'visible' : 'none');
+      });
+    }
+  }, [mapLoaded, visibleLayers]);
 
   return (
     <div style={{ position: 'relative', height: '100%', width: '100%' }}>
@@ -1684,6 +1757,18 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
           ))}
         </div>
       )}
+      <div className="absolute top-8 right-2 z-10 flex flex-col space-y-2">
+        {eventTypes.map((eventType) => (
+          <label key={eventType.type} className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={visibleLayers[eventType.type]}
+              onChange={() => handleLayerToggle(eventType.type)}
+            />
+            <span>{eventType.type}</span>
+          </label>
+        ))}
+      </div>
     </div>
   );
 });

@@ -27,6 +27,7 @@ const GlobePage = () => {
   const [isMobile, setIsMobile] = useState(false);
   const { setActiveTab: layoutSetActiveTab } = useLayoutStore();
   const { setActiveTab: articleSetActiveTab } = useArticleTabNameStore();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -63,6 +64,15 @@ const GlobePage = () => {
     return () => {
       window.removeEventListener('keydown', handleEscKey);
     };
+  }, []);
+
+  useEffect(() => {
+    // Simulate loading time for geojson data
+    const loadingTimer = setTimeout(() => {
+      setIsLoading(false); // Set loading to false after 3.5 seconds
+    }, 3500);
+
+    return () => clearTimeout(loadingTimer);
   }, []);
 
   const handleLocationClick = async (locationName: string) => {
@@ -123,60 +133,70 @@ const GlobePage = () => {
 
   return (
     <div className="h-screen w-full relative">
-      {/* Main Content Area */}
-      <div className="flex h-full flex-col md:flex-row">
-        {/* Globe Section */}
-        <div className="relative flex-1 h-[calc(100vh-8rem)] min-h-1/2 transition-all duration-300 overflow-hidden">
-          <div className="h-full">
-            <Globe
-              ref={globeRef}
-              geojsonUrl={geojsonUrl}
-              onLocationClick={handleLocationClick}
-            />
-          </div>
-          
-          {/* Search Bar */}
-          <div className="absolute top-3/4 min-w-[40vw] w-1/3 max-w-[80vw] left-[10vw] z-20">
-            <Search
-              setResults={handleSearch}
-              setSummary={handleSummary}
-              globeRef={globeRef}
-            />
+      {isLoading ? (
+        <div className="flex items-center justify-center h-full">
+          <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full text-blue-500" role="status">
+            <span className="visually-hidden">Loading...</span>
           </div>
         </div>
-      </div>
-
-      {/* Overlay Detail Panel */}
-      <AnimatePresence>
-        {hasClicked && isVisible && (
-          <motion.div
-            className="fixed top-[18vh] right-0 min-w-[40vw] w-auto max-w-[40vw] h-3/4 bg-background/90 mr-4 backdrop-blur-lg supports-[backdrop-filter]:bg-background/90 z-50 p-6 rounded-lg shadow-xl"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <motion.div
-              className="rounded-lg w-full h-full overflow-hidden shadow-lg"
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.9 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="overflow-y-auto h-full scrollbar-hide">
-                <LocationDetailPanel
-                  key={locationKey}
-                  location={location}
-                  isVisible={isVisible}
-                  toggleVisibility={toggleVisibility}
-                  results={results}
-                  summary={summary}
+      ) : (
+        <>
+          {/* Main Content Area */}
+          <div className="flex h-full flex-col md:flex-row">
+            {/* Globe Section */}
+            <div className="relative flex-1 h-[calc(100vh-8rem)] min-h-1/2 transition-all duration-300 overflow-hidden">
+              <div className="h-full">
+                <Globe
+                  ref={globeRef}
+                  geojsonUrl={geojsonUrl}
+                  onLocationClick={handleLocationClick}
                 />
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              
+              {/* Search Bar */}
+              <div className="absolute top-1/2 md:top-3/4 w-[80vw] md:w-1/3 left-[10vw] z-20">
+                <Search
+                  setResults={handleSearch}
+                  setSummary={handleSummary}
+                  globeRef={globeRef}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Overlay Detail Panel */}
+          <AnimatePresence>
+            {hasClicked && isVisible && (
+              <motion.div
+                className="fixed top-[18vh] right-0 min-w-[40vw] w-[80vw] md:max-w-[60vw] h-3/4 bg-background/90 mr-4 backdrop-blur-lg supports-[backdrop-filter]:bg-background/90 z-50 p-6 rounded-lg shadow-xl"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <motion.div
+                  className="rounded-lg w-full h-full overflow-hidden shadow-lg"
+                  initial={{ scale: 0.9 }}
+                  animate={{ scale: 1 }}
+                  exit={{ scale: 0.9 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="overflow-y-auto h-full scrollbar-hide">
+                    <LocationDetailPanel
+                      key={locationKey}
+                      location={location}
+                      isVisible={isVisible}
+                      toggleVisibility={toggleVisibility}
+                      results={results}
+                      summary={summary}
+                    />
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </>
+      )}
     </div>
   );
 };
