@@ -150,7 +150,7 @@ const GlobePage = () => {
       <AnimatePresence>
         {hasClicked && isVisible && (
           <motion.div
-            className="fixed top-[18vh] right-0 min-w-[40vw] w-auto max-w-[80vw] h-3/4 bg-background/90 mr-4 backdrop-blur-lg supports-[backdrop-filter]:bg-background/90 z-50 p-6 rounded-lg shadow-xl"
+            className="fixed top-[18vh] right-0 min-w-[40vw] w-auto max-w-[40vw] h-3/4 bg-background/90 mr-4 backdrop-blur-lg supports-[backdrop-filter]:bg-background/90 z-50 p-6 rounded-lg shadow-xl"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

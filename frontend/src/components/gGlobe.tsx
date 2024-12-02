@@ -11,6 +11,7 @@ import MapLegend from './MapLegend';
 import { useCoordinatesStore } from '@/store/useCoordinatesStore'; 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useArticleTabNameStore } from '@/hooks/useArticleTabNameStore';
+import * as d3 from 'd3';
 
 interface GlobeProps {
   geojsonUrl: string;
@@ -72,6 +73,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
   const [currentHighlightedFeature, setCurrentHighlightedFeature] = useState<any>(null);
   const [selectedRoute, setSelectedRoute] = useState<any>(null);
   const [isRoutePlaying, setIsRoutePlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const eventTypes = [
     { type: "Protests", color: "#2196F3", icon: "protest", zIndex: 4 },
@@ -282,6 +284,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
 
   useEffect(() => {
     const loadGeoJSONEventsData = async () => {
+      setIsLoading(true);
       try {
         const promises = eventTypes.map(eventType => {
           return axios.get(`/api/v1/locations/geojson_events`, {
@@ -342,12 +345,11 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
               filter: ['has', 'point_count'],
               paint: {
                 'circle-color': [
-                  'interpolate',
-                  ['linear'],
+                  'step',
                   ['get', 'point_count'],
-                  1, `rgba(${hexToRgb(eventType.color)}, 1)`,
-                  100, `rgba(${hexToRgb(eventType.color)}, 0.8)`,
-                  750, `rgba(${hexToRgb(eventType.color)}, 0.6)`
+                  '#ff7f50', // Coral for small clusters
+                  100, '#ffd700', // Gold for medium clusters
+                  750, '#adff2f' // GreenYellow for large clusters
                 ],
                 'circle-radius': [
                   'step',
@@ -356,10 +358,10 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                   100, 30,
                   750, 40
                 ],
-                'circle-opacity': 0.7,
+                'circle-opacity': 0.9, // High opacity for visibility
                 'circle-stroke-width': 2,
-                'circle-stroke-color': '#fff',
-                'circle-blur': 0.5
+                'circle-stroke-color': '#fff', // White stroke for contrast
+                'circle-blur': 0.1 // Optional: slight blur for effect
               }
             });
 
@@ -379,7 +381,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                 'symbol-sort-key': ['get', 'content_count'],
                 'icon-pitch-alignment': 'viewport',
                 'icon-rotation-alignment': 'viewport',
-                'text-field': ['get', 'content_cozaunt'],
+                'text-field': ['get', 'content_count'],
                 'text-size': 24,
                 'text-offset': [0, 1],
                 'text-allow-overlap': false,
@@ -808,6 +810,8 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
         });
       } catch (error) {
         console.error('Error fetching GeoJSON events data:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -894,11 +898,11 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
   }, []);
 
   const locationButtons = [
-    "Berlin",
-    "Washington D.C.",
+    "Germany",
+    "Japan",
+    "USA",
+    "Ukraine",
     "Israel",
-    "Kyiv",
-    "Tokyo",
     "Taiwan"
   ];
 
@@ -1149,11 +1153,24 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
 
   const spin = useCallback(() => {
     if (!mapRef.current || !isSpinning || isRoutePlaying) return;
-    
+
     const rotationSpeed = 0.0115;
     const currentCenter = mapRef.current.getCenter();
+
+    // Adjust the longitude to spin towards Japan
     currentCenter.lng += rotationSpeed;
-    
+
+    // Adjust the latitude to create a path over the Middle East to Japan
+    if (currentCenter.lng > 13.4050 && currentCenter.lng < 139.6917) {
+      if (currentCenter.lng > 30.0 && currentCenter.lng < 60.0) {
+        currentCenter.lat -= 0.002; // Stronger adjustment over the Middle East
+      } else {
+        currentCenter.lat -= 0.001; // Adjust this value to control the path
+      }
+    } else {
+      currentCenter.lat += 0.001; // Adjust this value to control the path
+    }
+
     mapRef.current.setCenter([currentCenter.lng, currentCenter.lat]);
     spinningRef.current = requestAnimationFrame(spin);
   }, [isSpinning, isRoutePlaying]);
@@ -1341,7 +1358,15 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
 
     if (isSpinning) {
       intervalId = setInterval(() => {
-        const features = mapRef.current.queryRenderedFeatures(undefined, {
+        // Get the current viewport bounds
+        const bounds = mapRef.current.getBounds();
+        const bbox = [
+          [bounds.getWest(), bounds.getSouth()],
+          [bounds.getEast(), bounds.getNorth()]
+        ];
+
+        // Query features within the current viewport
+        const features = mapRef.current.queryRenderedFeatures(bbox, {
           layers: [
             ...eventTypes.map(type => `clusters-${type.type}`),
             ...eventTypes.map(type => `unclustered-point-${type.type}`)
@@ -1352,7 +1377,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
           activePopups.forEach(popup => popup.remove());
           activePopups.length = 0;
 
-          const selectedFeatures = features.slice(0, 3);
+          const selectedFeatures = features.slice(0, 3); // Select top 3 features
 
           selectedFeatures.forEach(feature => {
             const coordinates = (feature.geometry as any).coordinates.slice();
@@ -1374,7 +1399,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                 closeButton: false,
                 maxWidth: 'none',
                 className: 'custom-popup-container spinning-popup bg-transparent',
-                offset: [0, -15]
+                offset: [0, -10]
               })
               .setLngLat(coordinates)
               .setHTML(popupContent)
@@ -1472,8 +1497,91 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
 
   }, []);
 
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    // Create an SVG overlay
+    const svg = d3.select(mapRef.current.getCanvasContainer())
+      .append('svg')
+      .attr('class', 'd3-cluster-overlay')
+      .style('position', 'absolute')
+      .style('top', 0)
+      .style('left', 0)
+      .attr('width', mapRef.current.getCanvas().width)
+      .attr('height', mapRef.current.getCanvas().height);
+
+    // Function to render clusters
+    const renderClusters = () => {
+      const clusters = mapRef.current!.queryRenderedFeatures({
+        layers: eventTypes.map(et => `clusters-${et.type}`)
+      });
+
+      // Bind data to circles
+      const circles = svg.selectAll('circle')
+        .data(clusters, d => d.properties.cluster_id);
+
+      // Enter new circles
+      circles.enter()
+        .append('circle')
+        .attr('r', d => Math.sqrt(d.properties.point_count) * 2) // Size based on count
+        .attr('fill', d => {
+          const eventType = eventTypes.find(et => et.type === d.layer.id.split('-')[1]);
+          return eventType ? eventType.color : '#888';
+        })
+        .attr('opacity', 0.6)
+        .attr('transform', d => {
+          const coords = mapRef.current!.project(new mapboxgl.LngLat(d.geometry.coordinates[0], d.geometry.coordinates[1]));
+          return `translate(${coords.x},${coords.y})`;
+        })
+        .on('click', (event, d) => {
+          // Zoom into cluster on click
+          const clusterId = d.properties.cluster_id;
+          const source = mapRef.current!.getSource(`geojson-events-${d.layer.id.split('-')[1]}`) as mapboxgl.GeoJSONSource;
+          source.getClusterExpansionZoom(clusterId, (err, zoom) => {
+            if (err) return;
+            mapRef.current!.flyTo({ center: d.geometry.coordinates, zoom });
+          });
+        });
+
+      // Update existing circles
+      circles.attr('transform', d => {
+        const coords = mapRef.current!.project(new mapboxgl.LngLat(d.geometry.coordinates[0], d.geometry.coordinates[1]));
+        return `translate(${coords.x},${coords.y})`;
+      });
+
+      // Remove old circles
+      circles.exit().remove();
+    };
+
+    // Initial render
+    renderClusters();
+
+    // Redraw on map movements
+    mapRef.current.on('move', renderClusters);
+    mapRef.current.on('resize', () => {
+      svg.attr('width', mapRef.current!.getCanvas().width)
+         .attr('height', mapRef.current!.getCanvas().height);
+      renderClusters();
+    });
+
+    // Cleanup on unmount
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.off('move', renderClusters);
+        mapRef.current.off('resize');
+      }
+      svg.remove();
+    };
+  }, [eventTypes]);
+
   return (
     <div style={{ position: 'relative', height: '100%', width: '100%' }}>
+      {isLoading && (
+        <div className="loading-spinner">
+          {/* You can use a CSS spinner or a library like react-spinners */}
+          <div className="spinner"></div>
+        </div>
+      )}
       <div ref={mapContainerRef} className="map-container" style={{ height: '100%', padding: '10px', borderRadius: '12px' }}></div>
       <div className={`absolute ${isMobile ? 'top-4 left-2 space-x-2' : 'top-8 left-2 space-x-4'} z-10 flex max-w-[90%] md:max-w-full overflow-x-auto`}>
         <div className="flex w-full min-w-8 max-w-sm items-center space-x-2">
