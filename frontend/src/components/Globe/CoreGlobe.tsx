@@ -16,7 +16,7 @@ const CoreGlobe: React.FC<CoreGlobeProps> = ({ mapContainerRef, onLocationClick,
 
   useEffect(() => {
     if (!mapboxgl.accessToken) {
-      mapboxgl.accessToken = process.env.MAPBOX_ACCESS_TOKEN || '';
+      mapboxgl.accessToken = process.env.MAPBOX_ACCESS_TOKEN || 'pk.eyJ1IjoiamltdnciLCJhIjoiY20xd2U3Z2pqMGprdDJqczV2OXJtMTBoayJ9.hlSx0Nc19j_Z1NRgyX7HHg';
     }
 
     if (mapContainerRef.current && !mapRef.current) {

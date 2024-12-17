@@ -188,7 +188,8 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
         style: 'mapbox://styles/jimvw/cm466rsf0014101sibqumbyfs', 
         projection: 'globe',
         center: [13.4, 52.5],
-        zoom: 3.5
+        zoom: 3.5,
+        minZoom: 1
       });
 
       mapRef.current.on('styleimagemissing', (e) => {
@@ -1047,7 +1048,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
           padding: 50,
           duration: 2000,
           maxZoom: zoomLevel,
-          minZoom: Math.max(2, zoomLevel - 1.5)
+          minZoom: Math.max(1, zoomLevel - 1.5)
         }
       );
     }
@@ -1142,7 +1143,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
               padding: 150,
               duration: 2000,
               maxZoom: calculatedZoom,
-              minZoom: Math.max(2, calculatedZoom - 1)
+              minZoom: Math.max(1, calculatedZoom - 1)
             }
           );
         } else {
@@ -1453,7 +1454,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
         padding: 250,
         duration: 2000,
         maxZoom: 10,
-        minZoom: 2
+        minZoom: 1
       }
     );
   }, []);
