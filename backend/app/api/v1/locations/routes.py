@@ -141,7 +141,7 @@ async def geojson_events_view(event_type: str = Query(...)):
 async def dashboard_view():
     try:
         # Update the URL to point to the correct service name or IP address
-        request = requests.get("http://api.opol.io/main_core_app/", verify=False)
+        request = requests.get("http://api.opol.io/core_app/", verify=False)
         request.raise_for_status()  # Raise an exception for HTTP errors
         
         # Return the raw HTML content

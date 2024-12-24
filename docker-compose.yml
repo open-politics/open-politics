@@ -11,6 +11,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
       - POSTGRES_USER=${POSTGRES_USER?Variable not set}
       - POSTGRES_DB=${POSTGRES_DB?Variable not set}
+      - PGPORT=${POSTGRES_PORT}
 
   adminer:
     image: adminer
@@ -41,7 +42,7 @@ services:
     networks:
       - default
       - traefik-public
-      - ssare-network
+      - opol-app-stack
     depends_on:
       - db
     env_file:
@@ -90,10 +91,11 @@ services:
   redis:
     image: redis:alpine
     ports:
-      - '6379:6379'
+      - '6380:6380'
     volumes:
       - redis_data:/data
-    command: redis-server --appendonly yes
+      - ./misc/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf --appendonly yes
     networks:
       - default
       - traefik-public
@@ -105,6 +107,7 @@ services:
     networks:
       - default
       - traefik-public
+      - opol-app-stack
     volumes:
       - ./searxng-limiter.toml:/etc/searxng/limiter.toml
       - ./searxng-settings.yml:/etc/searxng/settings.yml
@@ -137,11 +140,10 @@ services:
       - SEARXNG_ENGINES=${SEARXNG_ENGINES}
       - SEARXNG_TIME_RANGE=${SEARXNG_TIME_RANGE}
       - SEARXNG_SAFESEARCH=${SEARXNG_SAFESEARCH}
-
     networks:
       - default
       - traefik-public
-      - ssare-network
+      - opol-app-stack
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik-public
@@ -174,5 +176,5 @@ networks:
     external: false
   traefik-public:
     external: true
-  ssare-network:
+  opol-app-stack:
     external: true

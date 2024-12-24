@@ -289,7 +289,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
       setIsLoading(true);
       try {
         const promises = eventTypes.map(eventType => {
-          return axios.get(`/api/v1/locations/geojson_events`, {
+          return axios.get(`/api/v2/geo/geojson_events`, {
             params: {
               event_type: eventType.type
             }

@@ -8,6 +8,7 @@ from app.api.v1.satellite.routes import router as satellite_router
 from app.api.routes.search_history import router as search_history_router
 
 # from app.api.v2.satellite.routes import router as satellite_router_v2
+from app.api.v2.geo import router as geo_router
 
 
 # ROuter
@@ -30,3 +31,4 @@ api_router.include_router(search_history_router, prefix="/search_histories", tag
 
 # V2/ Experimental APIs
 # api_router.include_router(satellite_router_v2, prefix="/satellite", tags=["satellite"])
+api_router.include_router(geo_router, prefix="/geo", tags=["geo"])

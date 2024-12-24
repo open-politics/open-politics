@@ -41,8 +41,10 @@ services:
 
   db:
     restart: "no"
+    env_file:
+      - .env
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:80"
 
   # adminer:
   #   restart: "no"
@@ -63,6 +65,7 @@ services:
     networks:
       - default
       - traefik-public
+      - opol-app-stack
 
   frontend:
     restart: "no"
@@ -71,13 +74,19 @@ services:
       dockerfile: Dockerfile.dev
       args:
         - NODE_ENV=development
-        - NEXT_PUBLIC_API_URL=http://backend:8000
+        - NEXT_PUBLIC_API_URL=http://localhost:8000
     volumes:
       - ./frontend:/app
       - /app/node_modules
+    networks:
+      - default
+      - traefik-public
+      - opol-app-stack
 
 networks:
   default:
     external: false
   traefik-public:
+    external: false
+  opol-app-stack:
     external: true

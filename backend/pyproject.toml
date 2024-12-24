@@ -11,7 +11,6 @@ fastapi = "^0.109.1"
 python-multipart = "^0.0.7"
 email-validator = "^2.1.0.post1"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
-tenacity = "^8.2.3"
 pydantic = ">2.0"
 emails = "^0.6"
 
@@ -32,9 +31,12 @@ marvin = "^2.3.4"
 openai = "^1.30.5"
 sdmx1 = "^2.15.0"
 tavily-python = "^0.3.3"
-gpt-researcher = "^0.6.1"
 sentinelsat = "^1.2.1"
 sentinelhub = "^3.11.1"
+opol = "^0.1.19"
+aiohttp = "^3.11.10"
+google-generativeai = "^0.8.3"
+instructor = "^1.7.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.3"

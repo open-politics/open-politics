@@ -68,9 +68,12 @@ COUNTRY_TO_ISO = {
     "Vietnam": "VNM"
 }
 
+COUNTRY_TO_ISO_LOWER = {k.lower(): v for k, v in COUNTRY_TO_ISO.items()}
+
 @lru_cache(maxsize=128)
 def get_iso_code(state: str) -> str:
-    return COUNTRY_TO_ISO.get(state)
+    state = state.lower()
+    return COUNTRY_TO_ISO_LOWER.get(state)
 
 async def get_econ_data(state: str, indicators: List[str] = Query(["B1GQ+B1GQ"])):
     logger.debug(f"get_econ_data called with state: {state}, indicators: {indicators}")
