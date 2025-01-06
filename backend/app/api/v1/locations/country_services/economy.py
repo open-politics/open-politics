@@ -8,7 +8,7 @@ import aiohttp
 from functools import lru_cache
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Move country_to_iso outside as a constant

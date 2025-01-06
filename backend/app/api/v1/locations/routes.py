@@ -22,6 +22,7 @@ from sentinelhub import SHConfig, DataCollection, SentinelHubRequest, BBox, CRS,
 from io import BytesIO
 from PIL import Image
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
 logging.basicConfig(level=logging.INFO)

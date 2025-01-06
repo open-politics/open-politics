@@ -10,7 +10,7 @@ from sentinelsat import SentinelAPI
 from datetime import date, timedelta
 
 # Configure logging with a higher level of detail
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+# logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
