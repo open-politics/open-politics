@@ -72,7 +72,7 @@ export default function AboutPage() {
               <li>Transparent, open-source development</li>
             </ul>
             <Button variant="link" className="mt-2 p-0">
-              <a href="https://github.com/jimvincentw/ssare" className="text-primary hover:underline">Check out our open-source data engine</a>
+              <a href="https://github.com/jimvincentw/opol" className="text-primary hover:underline">Check out our open-source data engine</a>
             </Button>
           </li>
           <li>

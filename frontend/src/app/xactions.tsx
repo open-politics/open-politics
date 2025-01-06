@@ -31,13 +31,13 @@ export async function generateSummaryFromArticles(results: any, analysisType: st
 
   // Safely extract articles from both sources
   const tavilyArticles = results?.tavilyResults?.results || [];
-  const ssareArticles = results?.ssareResults?.contents || [];
+  const opolArticles = results?.opolResults?.contents || [];
 
   const combinedDescriptions = [
     // Handle Tavily results
     ...tavilyArticles.map((article: any) => article.content?.slice(0, 650) || ''),
-    // Handle SSARE results
-    ...ssareArticles.map((article: any) => {
+    // Handle opol results
+    ...opolArticles.map((article: any) => {
       const content = article.paragraphs || article.content || '';
       return typeof content === 'string' ? content.slice(0, 650) : '';
     })

@@ -69,7 +69,7 @@ const Header = () => {
                       <Code />
                       <span>Webapp</span>
                     </a>
-                    <a href="https://github.com/open-politics/ssare" className="flex items-center space-x-2 py-2 px-3 rounded-md">
+                    <a href="https://github.com/open-politics/opol" className="flex items-center space-x-2 py-2 px-3 rounded-md">
                       <Database />
                       <span>Data Engine</span>
                     </a>

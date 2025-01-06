@@ -2,7 +2,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import { SearchResults, SearchResultItem } from '@/lib/types'
 
-export type SearchProvider = 'tavily' | 'ssare' | 'searxng'
+export type SearchProvider = 'tavily' | 'opol' | 'searxng'
 export type SearchDepth = 'basic' | 'advanced'
 
 interface SearchOptions {
@@ -40,8 +40,8 @@ export function useSearch(options: SearchOptions): UseSearchReturn {
         case 'tavily':
           searchResults = await searchTavily(query)
           break
-        case 'ssare':
-          searchResults = await searchSsare(query)
+        case 'opol':
+          searchResults = await searchopol(query)
           break
         case 'searxng':
           searchResults = await searchSearxng(query)
@@ -79,7 +79,7 @@ export function useSearch(options: SearchOptions): UseSearchReturn {
     }
   }
 
-  async function searchSsare(query: string): Promise<SearchResults> {
+  async function searchopol(query: string): Promise<SearchResults> {
     const response = await axios.get('/api/v1/search/contents', {
       params: {
         search_query: query,

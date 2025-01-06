@@ -20,7 +20,7 @@ interface ResultsProps {
       images?: string[];
       results: any[];
     };
-    ssareResults: ContentCardProps[]; // Update type
+    opolResults: ContentCardProps[]; // Update type
   };
   summary?: string;
   includeSummary: boolean; // New prop for including summary
@@ -43,7 +43,7 @@ const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) =
     // Fetch entities related to the articles
     const fetchEntities = async () => {
       try {
-        const articleIds = results.ssareResults.map(article => article.id);
+        const articleIds = results.opolResults.map(article => article.id);
         const response = await axios.post('/api/v1/search/most_relevant_entities', { article_ids: articleIds });
         setEntities(response.data);
       } catch (error) {
@@ -51,16 +51,16 @@ const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) =
       }
     };
 
-    if (results.ssareResults.length > 0) {
+    if (results.opolResults.length > 0) {
       fetchEntities();
     }
-  }, [results.ssareResults]);
+  }, [results.opolResults]);
 
   if (!results) {
     return null;
   }
 
-  const { tavilyResults, ssareResults } = results;
+  const { tavilyResults, opolResults } = results;
 
   // Update the MarkdownComponents definition
   const MarkdownComponents = {
@@ -180,10 +180,10 @@ const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) =
 
       <div className="flex-1 max-h-[50vh] overflow-y-auto">
         {showArticles && (
-          <Tabs defaultValue="ssare" className="w-full h-full">
+          <Tabs defaultValue="opol" className="w-full h-full">
             <TabsList className="grid w-full grid-cols-2 gap-1">
               <TabsTrigger value="tavily" className="py-1">Tavily Results</TabsTrigger>
-              <TabsTrigger value="ssare" className="py-1">SSARE Results</TabsTrigger>
+              <TabsTrigger value="opol" className="py-1">opol Results</TabsTrigger>
             </TabsList>
             
             <TabsContent value="tavily" className="h-full overflow-y-auto">
@@ -192,9 +192,9 @@ const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) =
               </div>
             </TabsContent>
 
-            <TabsContent value="ssare" className="h-full overflow-y-auto">
+            <TabsContent value="opol" className="h-full overflow-y-auto">
               <div className="flex-grow overflow-auto max-h-full overflow-y-auto max-w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                {renderSsareResults(ssareResults)}
+                {renderopolResults(opolResults)}
               </div>
             </TabsContent>
           </Tabs>
@@ -205,13 +205,13 @@ const Results: React.FC<ResultsProps> = ({ results, summary, includeSummary }) =
 };
 
 // Helper functions to render results
-const renderAllResults = (tavilyResults: any, ssareResults: ContentCardProps[]) => (
+const renderAllResults = (tavilyResults: any, opolResults: ContentCardProps[]) => (
   <>
     <div key="tavily-section">
       {renderTavilyResults(tavilyResults)}
     </div>
-    <div key="ssare-section">
-      {renderSsareResults(ssareResults)}
+    <div key="opol-section">
+      {renderopolResults(opolResults)}
     </div>
   </>
 );
@@ -246,13 +246,13 @@ const renderTavilyResults = (tavilyResults: any) => (
   </>
 );
 
-const renderSsareResults = (ssareResults: ContentCardProps[]) => (
+const renderopolResults = (opolResults: ContentCardProps[]) => (
   <>
-    {ssareResults?.map((result: ContentCardProps, index: number) => {
+    {opolResults?.map((result: ContentCardProps, index: number) => {
       // Create a unique key using ID and index as fallback
       const uniqueKey = result.id ? 
-        `ssare-${result.id}-${index}` : 
-        `ssare-fallback-${index}-${encodeURIComponent(result.url || '')}`;
+        `opol-${result.id}-${index}` : 
+        `opol-fallback-${index}-${encodeURIComponent(result.url || '')}`;
       
       return (
         <ContentCard

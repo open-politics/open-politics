@@ -22,7 +22,7 @@ interface SearchFilters {
 
 interface SearchResults {
   tavilyResults: any;
-  ssareResults: any;
+  opolResults: any;
 }
 
 interface UseSearchReturn {
@@ -87,11 +87,11 @@ export function useSearch(
     }
   };
 
-  const fetchSSAREContents = async (query: string) => {
+  const fetchOPOLContents = async (query: string) => {
     try {
-      const response = await axios.get(`/api/v1/search/contents`, {
+      const response = await axios.get(`/api/v2/articles`, {
         params: {
-          search_query: query,
+          query: query,
           limit: 20,
           skip: 0,
           search_type: searchType,
@@ -109,14 +109,14 @@ export function useSearch(
       }, []);
       return uniqueArticles;
     } catch (error) {
-      console.error('Error fetching SSARE articles:', error);
+      console.error('Error fetching opol articles:', error);
       return [];
     }
   };
 
   const fetchLocationFromNLQuery = async (query: string): Promise<LocationData | null> => {
     try {
-      const response = await axios.get(`/api/v1/locations/location_from_query?query=${query}`);
+      const response = await axios.get(`/api/v2/classification/location_from_query?query=${query}`);
       console.log("Location API response:", response.data);
       if (response.data.error) return null;
       
@@ -176,12 +176,12 @@ export function useSearch(
         }
       }
 
-      const [tavilyResults, ssareResults] = await Promise.all([
+      const [tavilyResults, opolResults] = await Promise.all([
         fetchTavilySearchResults(query),
-        fetchSSAREContents(query)
+        fetchOPOLContents(query)
       ]);
 
-      const combinedResults = { tavilyResults, ssareResults };
+      const combinedResults = { tavilyResults, opolResults };
       setResults(combinedResults);
       setActiveTab('summary');
 

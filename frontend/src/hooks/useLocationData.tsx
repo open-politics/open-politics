@@ -38,7 +38,7 @@ interface LeaderInfo {
 interface Entity {
   name: string;
   entity_type: string;
-  content_count: number;
+  article_count: number;
   total_frequency: number;
   relevance_score: number;
 }
@@ -139,10 +139,14 @@ export function useLocationData(locationName: string | null) {
 
   const fetchData = useCallback(async (dataType: keyof LocationData, url: string) => {
     if (!locationName) return;
-  
+
     setIsLoading(prev => ({ ...prev, [dataType]: true }));
     try {
-      const response = await axios.get(url);
+      const response = await axios.get(url, {
+        params: {
+          query: locationName
+        }
+      });
       if (dataType === 'leaderInfo') {
         const mappedLeaderInfo = mapLeaderInfo(response.data);
         setData(prev => ({ ...prev, leaderInfo: mappedLeaderInfo }));
@@ -150,7 +154,10 @@ export function useLocationData(locationName: string | null) {
         setData(prev => ({ ...prev, [dataType]: response.data }));
       }
     } catch (err) {
-      setError(prev => ({ ...prev, [dataType]: err instanceof Error ? err : new Error(`An error occurred fetching ${dataType}`) }));
+      setError(prev => ({ 
+        ...prev, 
+        [dataType]: err instanceof Error ? err : new Error(`An error occurred fetching ${dataType}`) 
+      }));
     } finally {
       setIsLoading(prev => ({ ...prev, [dataType]: false }));
     }
@@ -161,19 +168,22 @@ export function useLocationData(locationName: string | null) {
     
     setIsLoading((prev) => ({ ...prev, contents: true }));
     try {
-      const response = await fetch(
-        `/api/v1/locations/${locationName}/contents?skip=${skip}&limit=20`
+      const response = await axios.get(
+        `/api/v2/articles/by_location`, 
+        {
+          params: {
+            query: locationName,
+            skip,
+            limit: 20
+          }
+        }
       );
       
-      if (!response.ok) {
-        throw new Error('Failed to fetch contents');
-      }
-
-      const data = await response.json();
+      const data: ContentResponse = response.data;
       
       setData((prev) => ({
         ...prev,
-        contents: skip === 0 ? data : [...prev.contents, ...data],
+        contents: skip === 0 ? data.contents : [...prev.contents, ...data.contents],
       }));
 
       return data;
@@ -188,27 +198,22 @@ export function useLocationData(locationName: string | null) {
     setData((prev) => ({ ...prev, contents: [] }));
   }, []);
 
-  const fetchEntities = useCallback(async (skip: number, limit: number) => {
+  const fetchEntities = useCallback(async (query: string, skip: number, limit: number) => {
     if (!locationName) return;
     setIsLoading((prev) => ({ ...prev, entities: true }));
     try {
-      const response = await fetch(`/api/v1/locations/${locationName}/entities?skip=${skip}&limit=${limit}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch entities');
-      }
-      const data = await response.json();
-      
-      const mappedEntities = data.map((entity: any) => ({
-        name: entity.name,
-        entity_type: entity.type.toUpperCase(),
-        content_count: entity.article_count,
-        total_frequency: entity.total_frequency,
-        relevance_score: entity.relevance_score
-      }));
+      const response = await axios.get(`/api/v2/entities/by_location`, {
+        params: {
+          query: query,
+          skip,
+          limit
+        }
+      });
+      const data: Entity[] = response.data;
 
       setData((prev) => ({
         ...prev,
-        entities: skip === 0 ? mappedEntities : [...prev.entities, ...mappedEntities],
+        entities: skip === 0 ? data : [...prev.entities, ...data],
       }));
     } catch (error) {
       setError((prev) => ({ ...prev, entities: error as Error }));
@@ -219,7 +224,9 @@ export function useLocationData(locationName: string | null) {
 
   const fetchCoordinates = useCallback(async (query: string) => {
     try {
-      const response = await axios.get(`/api/v1/locations/location_from_query?query=${query}`);
+      const response = await axios.get(`/api/v2/classification/location_from_query`, {
+        params: { query }
+      });
       if (response.data.error) {
         return null;
       }
@@ -237,7 +244,7 @@ export function useLocationData(locationName: string | null) {
     if (!locationName) return;
 
     try {
-      const response = await axios.get(`/api/v1/locations/metadata/${locationName}`);
+      const response = await axios.get(`/api/v1/locations/metadata/${encodeURIComponent(locationName)}`);
       setData(prev => ({
         ...prev,
         locationMetadata: response.data
@@ -252,7 +259,7 @@ export function useLocationData(locationName: string | null) {
   
     setIsLoading(prev => ({ ...prev, economic: true }));
     try {
-      const response = await axios.get(`/api/v1/locations/econ_data/${locationName}`);
+      const response = await axios.get(`/api/v1/locations/econ_data/${encodeURIComponent(locationName)}`);
       setData(prev => ({ ...prev, economicData: response.data }));
     } catch (err) {
       setError(prev => ({ 
@@ -272,9 +279,9 @@ export function useLocationData(locationName: string | null) {
     if (locationName) {
       fetchLocationMetadata();
       fetchContents({ skip: 0 });
-      fetchData('legislativeData', `/api/v1/locations/legislation/${locationName}`);
-      fetchData('leaderInfo', `/api/v1/locations/leaders/${locationName}`);
-      fetchEntities(0, 50);
+      fetchData('legislativeData', `/api/v1/locations/legislation/${encodeURIComponent(locationName)}`);
+      fetchData('leaderInfo', `/api/v1/locations/leaders/${encodeURIComponent(locationName)}`);
+      fetchEntities(locationName, 0, 50);
     }
   }, [locationName, fetchContents, fetchData, fetchEntities, fetchLocationMetadata]);
 

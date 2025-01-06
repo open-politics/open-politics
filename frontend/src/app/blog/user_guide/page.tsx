@@ -117,7 +117,7 @@ const ArticlePage: React.FC = () => {
           <p className='mb-4'>The next step is to search for articles that are relevant to your question.</p>
           <ol className='mb-8'>
             <li className='mb-4'>
-              <p><strong>Semantic Search</strong><br /> The custom SSARE (Semantic Search Article Recommendation Engine) data engine scrapes and delivers news from around the world around the clock. It delivers articles by searching for text with similar semantic meaning (a newer, smarter kind of search).</p>
+              <p><strong>Semantic Search</strong><br /> The custom opol (Semantic Search Article Recommendation Engine) data engine scrapes and delivers news from around the world around the clock. It delivers articles by searching for text with similar semantic meaning (a newer, smarter kind of search).</p>
             </li>
             <img src="/images/sem_search.png" alt="Semantic Search" className='mb-4' />
             <li className='mb-4'>
@@ -129,7 +129,7 @@ const ArticlePage: React.FC = () => {
           <p className='mb-4'><strong>Issue Area Extraction</strong> is done with AI. In practice this means retrieved articles (/their summaries) are fed into one prompt where the AI model is asked to extract relevant topics and return them in a structured format.</p>
           <img src="/images/issue_areas.png" alt="Issue Areas" className='mb-2' />
           <p className='text-sm text-gray-500'>This is an old version. The issue area feature will move to the globe interface soon.</p>
-          <p className='mb-8'>You can find the code that does this <a href="https://github.com/JimVincentW/SSARE/open_politics_project/news/views/module_views.py">here</a></p>
+          <p className='mb-8'>You can find the code that does this <a href="https://github.com/JimVincentW/opol/open_politics_project/news/views/module_views.py">here</a></p>
           <h3 className='mt-8 mb-4'>5. Compare</h3>
           <p className='mb-8'>See the results of search fragments on the focus dashboard and stay up to date with what is important to you.</p>
           <img src="/images/dashboard.png" alt="Dashboard" className='mb-8' />

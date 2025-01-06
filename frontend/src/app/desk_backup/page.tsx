@@ -12,7 +12,7 @@ import { Map, FileSearch2, Globe as GlobeIcon, Search as SearchIcon, RefreshCcw 
 import { Settings, HelpCircle } from 'lucide-react';
 import withAuth from '@/hooks/withAuth';
 import LocationDetailPanel from '@/components/LocationDetailPanel';
-import { SSAREDashboard } from '../hq/page';
+import { OPOLDashboard } from '../hq/page';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { ChatWithContext } from '@/components/ChatWithContext';
 import { BookmarkedArticles } from '@/components/BookMarkedArticles';
