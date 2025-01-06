@@ -10,7 +10,7 @@ The mission is to create an open-source data science and AI toolkit to analyse, 
 
 ## Table of Contents
 - [Why Open Politics Exists](#why-open-politics-exists)
-- [Update: SSARE Release](#update-ssare-release)
+- [Update: opol Release](#update-opol-release)
 - [The Webapp](#the-webapp)
 - [Engage! Developer Jour Fixe](#engage-developer-jour-fixe)
 - [Tasks](#tasks)
@@ -34,26 +34,26 @@ As a quick pitch element to get you interested; this is where we are going:
 - This project aims to combine the best of natural language LLM interfacing and classical Data Science methods to build tools that provide a comprehensive overview of political topics, including summaries of news articles, information about political actors, and the relationships between them.
 - The goal of this project is to make politics more accessible and understandable for everyone.
 
-### Update: SSARE Release
-#### [SSARE - (Semantic Search Article Recommendation Engine)](https://github.com/JimVincentW/SSARE)
-SSARE is Open Politics' data aggregation system and vector storage endpoint. It aims to create up-to-date and relevant datasets for the LLMs to work with. A microservice infrastructure continuously scrapes news sites and stores them in a vector storage and a relational database (Postgres). Sources can be added with Python scripts which yield a dataframe with: URL | Headline | Paragraphs | Source. Just clone the service, add your scripts and bring your own data endpoint into production.
+### Update: opol Release
+#### [opol - (Semantic Search Article Recommendation Engine)](https://github.com/JimVincentW/opol)
+opol is Open Politics' data aggregation system and vector storage endpoint. It aims to create up-to-date and relevant datasets for the LLMs to work with. A microservice infrastructure continuously scrapes news sites and stores them in a vector storage and a relational database (Postgres). Sources can be added with Python scripts which yield a dataframe with: URL | Headline | Paragraphs | Source. Just clone the service, add your scripts and bring your own data endpoint into production.
 
 **The methodic layer** 
 1. The webapp integrates multiple APIs among which are Tavily, OECD, Bundestag, etc.
-2. Most work regarding data infrastructure,ingestion, processing, classifications - is done in the SSARE microservices.
-    - Furthermore SSARE concentrates on:
+2. Most work regarding data infrastructure,ingestion, processing, classifications - is done in the opol microservices.
+    - Furthermore opol concentrates on:
         - Search & Retrieval
         - Embedding, Entity & Geocoding Processing
         - OPP's custom dynamic semantic classification system 
             - Along the NLP Codebooks we use to classify content
         - Storage & Orchestration
 
-3. The webapp serves the data to the frontend and our developed interfaceswhile integrating APIs where useful for extending the experience of an open source political intelligence system. However, SSARE is operable and useful as a standalone service.
+3. The webapp serves the data to the frontend and our developed interfaceswhile integrating APIs where useful for extending the experience of an open source political intelligence system. However, opol is operable and useful as a standalone service.
 4. The webapp is a NextJS app using mostly shadcn components - the globe is rendered with mapbox.
 
 
 ## Goal for the Open Politics Webapp
-- SSARE is a data & infrastructure project. This webapp is a project of user interfaces. This distinction becomes valuable so we can avoid integrating new APIs & data sources which are only focused on small features or user experience enhacenments into a our carefully designed data infrastructure.
+- opol is a data & infrastructure project. This webapp is a project of user interfaces. This distinction becomes valuable so we can avoid integrating new APIs & data sources which are only focused on small features or user experience enhacenments into a our carefully designed data infrastructure.
 
 ## Want to engage? Look into our Developer Jour Fixe!
 - Interested in the project? Want to contribute? Share a thought?
