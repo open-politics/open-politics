@@ -2160,13 +2160,13 @@ realtime = ["websockets (>=13,<15)"]
 
 [[package]]
 name = "opol"
-version = "0.1.19"
+version = "0.1.30"
 description = "Main API client to interact with all OPOL services."
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "opol-0.1.19-py3-none-any.whl", hash = "sha256:af731dfb0e328f530bbde3fdd84c40768852872b6dc6f65e4ec98e27bcc1ea1a"},
-    {file = "opol-0.1.19.tar.gz", hash = "sha256:095175bdacfe82cfc45024373e5a9540ad63755af87b51606e1ca31b493b7d08"},
+    {file = "opol-0.1.30-py3-none-any.whl", hash = "sha256:a9a7867b4456c8621dc632a8f5f629d298cd46d8b19357e3b023f90fad4b8dc6"},
+    {file = "opol-0.1.30.tar.gz", hash = "sha256:5e5c5ee130c5d1abe35b3fa396ba44e0a0d55b2206eb44f1003d2b62ad2a931d"},
 ]
 
 [package.dependencies]
@@ -4322,4 +4322,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "b8feb8d55f6c465726fd5b13501c984d34b87c68acec53a522df29edd7ad133c"
+content-hash = "9dd5f0d1cf20e7b45edc449976aa40f47e0b17cf3ca927ed095399b79457c3ed"
