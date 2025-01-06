@@ -13,28 +13,28 @@ services:
       - POSTGRES_DB=${POSTGRES_DB?Variable not set}
       - PGPORT=${POSTGRES_PORT}
 
-  adminer:
-    image: adminer
-    restart: always
-    networks:
-      - traefik-public
-      - default
-    depends_on:
-      - db
-    environment:
-      - ADMINER_DESIGN=pepa-linha-dark
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=traefik-public
-      - traefik.constraint-label=traefik-public
-      - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-http.rule=Host(`adminer.${DOMAIN?Variable not set}`)
-      - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-http.entrypoints=http
-      - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-http.middlewares=https-redirect
-      - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-https.rule=Host(`adminer.${DOMAIN?Variable not set}`)
-      - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-https.entrypoints=https
-      - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-https.tls=true
-      - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-https.tls.certresolver=le
-      - traefik.http.services.${STACK_NAME?Variable not set}-adminer.loadbalancer.server.port=8080
+  # adminer:
+  #   image: adminer
+  #   restart: always
+  #   networks:
+  #     - traefik-public
+  #     - default
+  #   depends_on:
+  #     - db
+  #   environment:
+  #     - ADMINER_DESIGN=pepa-linha-dark
+  #   labels:
+  #     - traefik.enable=true
+  #     - traefik.docker.network=traefik-public
+  #     - traefik.constraint-label=traefik-public
+  #     - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-http.rule=Host(`adminer.${DOMAIN?Variable not set}`)
+  #     - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-http.entrypoints=http
+  #     - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-http.middlewares=https-redirect
+  #     - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-https.rule=Host(`adminer.${DOMAIN?Variable not set}`)
+  #     - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-https.entrypoints=https
+  #     - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-https.tls=true
+  #     - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-https.tls.certresolver=le
+  #     - traefik.http.services.${STACK_NAME?Variable not set}-adminer.loadbalancer.server.port=8080
 
   backend:
     image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
@@ -72,46 +72,46 @@ services:
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
     platform: linux/amd64
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=traefik-public
-      - traefik.http.services.${STACK_NAME?Variable not set}-backend.loadbalancer.server.port=80
-      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.rule=Host(`${DOMAIN?Variable not set}`, `www.${DOMAIN?Variable not set}`) && PathPrefix(`/api`, `/docs`, `/redoc`)
-      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.entrypoints=http
-      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.rule=Host(`${DOMAIN?Variable not set}`, `www.${DOMAIN?Variable not set}`) && PathPrefix(`/api`, `/docs`, `/redoc`)
-      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.entrypoints=https
-      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.tls=true
-      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.tls.certresolver=le
-      - traefik.http.middlewares.${STACK_NAME?Variable not set}-www-redirect.redirectregex.regex=^https?://www\.(.*)
-      - traefik.http.middlewares.${STACK_NAME?Variable not set}-www-redirect.redirectregex.replacement=https://$${1}
-      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect
-      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.middlewares=${STACK_NAME?Variable not set}-www-redirect
+    # labels:
+    #   - traefik.enable=true
+    #   - traefik.docker.network=traefik-public
+    #   - traefik.http.services.${STACK_NAME?Variable not set}-backend.loadbalancer.server.port=80
+    #   - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.rule=Host(`${DOMAIN?Variable not set}`, `www.${DOMAIN?Variable not set}`) && PathPrefix(`/api`, `/docs`, `/redoc`)
+    #   - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.entrypoints=http
+    #   - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.rule=Host(`${DOMAIN?Variable not set}`, `www.${DOMAIN?Variable not set}`) && PathPrefix(`/api`, `/docs`, `/redoc`)
+    #   - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.entrypoints=https
+    #   - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.tls=true
+    #   - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.tls.certresolver=le
+    #   - traefik.http.middlewares.${STACK_NAME?Variable not set}-www-redirect.redirectregex.regex=^https?://www\.(.*)
+    #   - traefik.http.middlewares.${STACK_NAME?Variable not set}-www-redirect.redirectregex.replacement=https://$${1}
+    #   - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-www-redirect
+    #   - traefik.http.routers.${STACK_NAME?Variable not set}-backend-https.middlewares=${STACK_NAME?Variable not set}-www-redirect
     command: /start-reload.sh
 
-  redis:
-    image: redis:alpine
-    ports:
-      - '6380:6380'
-    volumes:
-      - redis_data:/data
-      - ./misc/redis.conf:/usr/local/etc/redis/redis.conf
-    command: redis-server /usr/local/etc/redis/redis.conf --appendonly yes
-    networks:
-      - default
-      - traefik-public
+  # redis:
+  #   image: redis:alpine
+  #   ports:
+  #     - '6380:6380'
+  #   volumes:
+  #     - redis_data:/data
+  #     - ./misc/redis.conf:/usr/local/etc/redis/redis.conf
+  #   command: redis-server /usr/local/etc/redis/redis.conf --appendonly yes
+  #   networks:
+  #     - default
+  #     - traefik-public
 
-  searxng:
-    image: searxng/searxng
-    ports:
-      - '${SEARXNG_PORT:-8060}:8080'
-    networks:
-      - default
-      - traefik-public
-      - opol-app-stack
-    volumes:
-      - ./searxng-limiter.toml:/etc/searxng/limiter.toml
-      - ./searxng-settings.yml:/etc/searxng/settings.yml
-      - searxng_data:/data
+  # searxng:
+  #   image: searxng/searxng
+  #   ports:
+  #     - '${SEARXNG_PORT:-8060}:8080'
+  #   networks:
+  #     - default
+  #     - traefik-public
+  #     - opol-app-stack
+  #   volumes:
+  #     - ./searxng-limiter.toml:/etc/searxng/limiter.toml
+  #     - ./searxng-settings.yml:/etc/searxng/settings.yml
+  #     - searxng_data:/data
 
   frontend:
     build:
@@ -144,27 +144,27 @@ services:
       - default
       - traefik-public
       - opol-app-stack
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=traefik-public
-      - traefik.constraint-label=traefik-public
+    # labels:
+    #   - traefik.enable=true
+    #   - traefik.docker.network=traefik-public
+    #   - traefik.constraint-label=traefik-public
 
-      - traefik.http.services.${STACK_NAME?Variable not set}-frontend.loadbalancer.server.port=3000
+    #   - traefik.http.services.${STACK_NAME?Variable not set}-frontend.loadbalancer.server.port=3000
 
-      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.rule=Host(`${DOMAIN?Variable not set}`, `www.${DOMAIN?Variable not set}`)
-      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.entrypoints=http
+    #   - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.rule=Host(`${DOMAIN?Variable not set}`, `www.${DOMAIN?Variable not set}`)
+    #   - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.entrypoints=http
 
-      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.rule=Host(`${DOMAIN?Variable not set}`, `www.${DOMAIN?Variable not set}`)
-      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.entrypoints=https
-      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.tls=true
-      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.tls.certresolver=le
+    #   - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.rule=Host(`${DOMAIN?Variable not set}`, `www.${DOMAIN?Variable not set}`)
+    #   - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.entrypoints=https
+    #   - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.tls=true
+    #   - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.tls.certresolver=le
 
-      - traefik.http.middlewares.${STACK_NAME?Variable not set}-frontend-www-redirect.redirectregex.regex=^https?://www\.(.*)
-      - traefik.http.middlewares.${STACK_NAME?Variable not set}-frontend-www-redirect.redirectregex.replacement=https://$${1}
-      - traefik.http.middlewares.${STACK_NAME?Variable not set}-frontend-www-redirect.redirectregex.permanent=true
+    #   - traefik.http.middlewares.${STACK_NAME?Variable not set}-frontend-www-redirect.redirectregex.regex=^https?://www\.(.*)
+    #   - traefik.http.middlewares.${STACK_NAME?Variable not set}-frontend-www-redirect.redirectregex.replacement=https://$${1}
+    #   - traefik.http.middlewares.${STACK_NAME?Variable not set}-frontend-www-redirect.redirectregex.permanent=true
 
-      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-frontend-www-redirect
-      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.middlewares=${STACK_NAME?Variable not set}-frontend-www-redirect
+    #   - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.middlewares=https-redirect,${STACK_NAME?Variable not set}-frontend-www-redirect
+    #   - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-https.middlewares=${STACK_NAME?Variable not set}-frontend-www-redirect
 
 volumes:
   app-db-data:

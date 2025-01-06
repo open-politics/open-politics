@@ -54,7 +54,7 @@ services:
   backend:
     restart: "no"
     ports:
-      - "8000:8000"
+      - "8765:80"
     volumes:
       - ./backend/:/app
     build:
@@ -64,7 +64,6 @@ services:
     command: /start-reload.sh
     networks:
       - default
-      - traefik-public
       - opol-app-stack
 
   frontend:
@@ -74,13 +73,12 @@ services:
       dockerfile: Dockerfile.dev
       args:
         - NODE_ENV=development
-        - NEXT_PUBLIC_API_URL=http://localhost:8000
+        - NEXT_PUBLIC_API_URL=http://backend:8000
     volumes:
       - ./frontend:/app
       - /app/node_modules
     networks:
       - default
-      - traefik-public
       - opol-app-stack
 
 networks:
@@ -89,4 +87,5 @@ networks:
   traefik-public:
     external: false
   opol-app-stack:
+    driver: bridge
     external: true
