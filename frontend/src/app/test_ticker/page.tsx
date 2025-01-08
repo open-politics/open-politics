@@ -1,5 +1,5 @@
 import React from 'react';
-import Dashboard from '@/components/Dashboard';
+import Dashboard from '@/components/collection/Dashboard';
 
 const HomePage: React.FC = () => {
   return (

@@ -8,7 +8,6 @@ from .schemas import CountryRequest, CountryResponse, Law
 import logging
 import json
 import requests
-import marvin
 from pathlib import Path
 from typing import List
 from .country_services import legislation, economy

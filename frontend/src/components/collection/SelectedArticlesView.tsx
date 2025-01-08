@@ -3,7 +3,7 @@
 import React, { useContext } from 'react';
 import { ArticleSelectionContext } from '@/contexts/ArticleSelectionContext';
 import { Button } from '@/components/ui/button';
-import { ContentCard } from '@/components/ContentCard';
+import { ContentCard } from '@/components/collection/ContentCard';
 
 export const SelectedArticlesView: React.FC = () => {
   const { selectedArticles, clearSelections } = useContext(ArticleSelectionContext);

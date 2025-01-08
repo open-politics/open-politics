@@ -39,7 +39,7 @@ const nextConfig = {
     return [
       { 
         source: "/api/:path*",
-        destination: `http://backend:80/api/:path*`,
+        destination: `http://backend:${process.env.BACKEND_PORT}/api/:path*`,
       },
       // {
       //   source: "/docs/:path*",
@@ -51,7 +51,7 @@ const nextConfig = {
       }
     ];
   },
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer }) =>  {
     config.resolve.alias['@'] = resolve(__dirname, 'src');
     return config;
   },

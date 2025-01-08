@@ -6,17 +6,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/components/ui/use-toast';
 import { ThemeProvider } from 'next-themes';
 import { Button } from '@/components/ui/button';
-import Search from '@/components/Search';
+import Search from '@/components/collection/Search';
 import { OpenAPI } from 'src/client';
 import { Map, FileSearch2, Globe as GlobeIcon, Search as SearchIcon, RefreshCcw } from 'lucide-react'; // Added RefreshCcw icon
 import { Settings, HelpCircle } from 'lucide-react';
 import withAuth from '@/hooks/withAuth';
-import LocationDetailPanel from '@/components/LocationDetailPanel';
+import LocationDetailPanel from '@/components/collection/LocationDetailPanel';
 import { OPOLDashboard } from '../hq/page';
 import { ChevronUp, ChevronDown } from 'lucide-react';
-import { ChatWithContext } from '@/components/ChatWithContext';
-import { BookmarkedArticles } from '@/components/BookMarkedArticles';
-import Globe from '@/components/gGlobe';
+import { ChatWithContext } from '@/components/collection/ChatWithContext';
+import { BookmarkedArticles } from '@/components/collection/BookMarkedArticles';
+import Globe from '@/components/collection/gGlobe';
 import { useLayoutStore } from '@/store/useLayoutStore'; // Import Zustand store
 import { useArticleTabNameStore } from '@/hooks/useArticleTabNameStore';
 

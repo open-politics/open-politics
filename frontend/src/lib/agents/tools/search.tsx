@@ -2,7 +2,7 @@ import { tool } from 'ai'
 import { createStreamableValue } from 'ai/rsc'
 import Exa from 'exa-js'
 import { searchSchema } from '@/lib/schema/search'
-import { SearchSection } from '@/components/search-section'
+import { SearchSection } from '@/components/collection/search-section'
 import { ToolProps } from '.'
 import { sanitizeUrl } from '@/lib/utils/index'
 import {

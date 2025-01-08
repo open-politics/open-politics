@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Card, CardContent } from "@/components/ui/card";
-import DocsSidebar from "@/components/DocsSidebar";
+import DocsSidebar from "@/components/collection/DocsSidebar";
 import Image from 'next/image';
 
 

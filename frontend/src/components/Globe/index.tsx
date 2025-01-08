@@ -5,7 +5,7 @@ import mapboxgl from 'mapbox-gl';
 import * as d3 from 'd3';
 import CoreGlobe from './CoreGlobe';
 import Popups from './Popups';
-import MapLegend from '../MapLegend';
+import MapLegend from '../collection/MapLegend';
 
 interface GlobeProps {
   onLocationClick: (countryName: string) => void;

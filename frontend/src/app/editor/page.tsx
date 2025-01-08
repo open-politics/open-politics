@@ -1,6 +1,6 @@
 "use client";
 
-import DocStructureEditor from "@/components/DocStructureEditor";
+import DocStructureEditor from "@/components/collection/DocStructureEditor";
 
 export default function EditorPage() {
   return (

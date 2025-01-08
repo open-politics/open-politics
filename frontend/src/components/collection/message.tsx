@@ -1,12 +1,12 @@
 'use client'
 
-import { MemoizedReactMarkdown } from './ui/markdown'
+import { MemoizedReactMarkdown } from '../ui/markdown'
 import rehypeExternalLinks from 'rehype-external-links'
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import 'katex/dist/katex.min.css'
-import { CodeBlock } from './ui/codeblock'
+import { CodeBlock } from '../ui/codeblock'
 
 export function BotMessage({ content }: { content: string }) {
   // Check if the content contains LaTeX patterns

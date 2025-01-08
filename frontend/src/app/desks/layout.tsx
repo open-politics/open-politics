@@ -1,7 +1,7 @@
 'use client'
 
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/AppSidebar"
+import { AppSidebar } from "@/components/collection/AppSidebar"
 import useAuth from "@/hooks/useAuth"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
@@ -51,7 +51,7 @@ export default function DesksLayout({ children }: { children: React.ReactNode })
                 </BreadcrumbList>
               </Breadcrumb>
             </div>
-            {/* {user?.is_superuser && (
+            {user?.is_superuser && (
               <div className="flex-1 flex justify-end gap-2 h-10">
                 {["A1", "A2"].map((item, index) => (
                   <div
@@ -65,7 +65,7 @@ export default function DesksLayout({ children }: { children: React.ReactNode })
                   </div>
                 ))}
               </div>
-            )} */}
+            )}
           </header>
           <main>
             {children}

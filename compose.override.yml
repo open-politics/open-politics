@@ -1,0 +1,55 @@
+services:
+  db:
+    restart: "no"
+    env_file:
+      - .env
+    ports:
+      - "${POSTGRES_PORT}:80"
+
+  # adminer:
+  #   restart: "no"
+  #   ports:
+  #     - "8080:8080"
+
+  backend:
+    restart: "no"
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    volumes:
+      - ./backend/:/app
+    environment:
+      - PORT=${BACKEND_PORT}
+    command: ["bash", "/app/start-reload.sh"]
+    build:
+      context: ./backend
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}  
+    networks:
+      - default
+  
+  frontend:
+    restart: "no"
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://backend:${BACKEND_PORT}
+    env_file:
+      - .env
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - default
+
+networks:
+  default:
+    external: false
+
+volumes:
+  app-db-data:
+  redis_data:
+  searxng_data:

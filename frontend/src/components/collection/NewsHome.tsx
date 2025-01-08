@@ -1,6 +1,6 @@
 import { CircleX } from 'lucide-react';
-import { Card } from './ui/card';
-import { Badge } from './ui/badge';
+import { Card } from '../ui/card';
+import { Badge } from '../ui/badge';
 
 interface NewsHomeProps {
   prompt: string;

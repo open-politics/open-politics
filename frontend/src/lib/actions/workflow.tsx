@@ -2,8 +2,8 @@
 
 import React from 'react'
 import { Spinner } from '@/components/ui/spinner'
-import { Section } from '@/components/section'
-import { FollowupPanel } from '@/components/followup-panel'
+import { Section } from '@/components/collection/section'
+import { FollowupPanel } from '@/components/collection/followup-panel'
 import {
   querySuggestor,
   inquire,

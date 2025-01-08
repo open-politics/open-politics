@@ -8,7 +8,7 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue
-} from './ui/select'
+} from '../ui/select'
 import Image from 'next/image'
 import { Model, models } from '@/lib/types/models'
 import { createModelId } from '@/lib/utils/index'

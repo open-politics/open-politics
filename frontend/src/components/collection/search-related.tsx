@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { Button } from './ui/button'
+import { Button } from '../ui/button'
 import { ArrowRight } from 'lucide-react'
 import {
   StreamableValue,
@@ -9,11 +9,11 @@ import {
   useStreamableValue,
   useUIState
 } from 'ai/rsc'
-import { AI } from '../app/actions'
+import { AI } from '../../app/actions'
 import { UserMessage } from './user-message'
 import { PartialRelated } from '@/lib/schema/related'
 import { Section } from './section'
-import { Skeleton } from './ui/skeleton'
+import { Skeleton } from '../ui/skeleton'
 import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 import { models } from '@/lib/types/models'
 import { getDefaultModelId } from '@/lib/utils/index'

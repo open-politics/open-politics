@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import EntityCard from './EntityCard';
 import { Badge } from "@/components/ui/badge"; 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";

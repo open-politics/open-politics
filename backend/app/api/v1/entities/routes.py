@@ -5,7 +5,6 @@ from ..locations.schemas import CountryRequest, CountryResponse, Law
 import logging
 import json
 import requests
-import marvin
 from pathlib import Path
 from typing import List
 from ..locations.country_services import legislation, economy
@@ -43,21 +42,6 @@ async def get_location_articles(
 
 
 
-@router.get("/country_from_query/")
-async def country_from_query(query: str):
-    country_name = marvin.cast(query, target=str, instructions="Return the country name most relevant to the query.")
-
-    response = requests.get(f"http://api.opol.io/geo-service/call_pelias_api?location={country_name}", verify=False)
-    print(response)
-    try:
-        # return {"country_name": country_name}
-        if response.status_code == 200:
-            coordinates = response.json()
-            return {"country_name": country_name, "latitude": coordinates[0], "longitude": coordinates[1]}
-        else:
-            raise HTTPException(status_code=response.status_code, detail="Unable to fetch geocoding data")
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=500, detail="Error decoding geocoding data")
 
 @router.get("/geojson/")
 async def geojson_view():

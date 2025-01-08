@@ -1,9 +1,9 @@
 import { tool } from 'ai'
 import { retrieveSchema } from '@/lib/schema/retrieve'
 import { ToolProps } from '.'
-import { DefaultSkeleton } from '@/components/default-skeleton'
+import { DefaultSkeleton } from '@/components/collection/default-skeleton'
 import { SearchResults as SearchResultsType } from '@/lib/types'
-import RetrieveSection from '@/components/retrieve-section'
+import RetrieveSection from '@/components/collection/retrieve-section'
 
 const CONTENT_CHARACTER_LIMIT = 10000
 

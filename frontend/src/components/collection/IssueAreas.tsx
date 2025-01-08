@@ -38,7 +38,7 @@ import EntitiesView from "./EntitiesView";
 import WikipediaView from './WikipediaView';
 import ArticlesView from './ArticlesView';
 import DataTable from "./DataTable";
-import Results from '@/components/Results';
+import Results from '@/components/collection/Results';
 import { useArticleTabNameStore } from '@/hooks/useArticleTabNameStore';
 import axios from 'axios';
 

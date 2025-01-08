@@ -250,13 +250,13 @@ export function ContentsView({ locationName, contents = [], isLoading, error, fe
         </Popover>
       </div>
 
-      <div className="w-full">
+      <div className="w-48">
         <Select
           value={sortBy}
           onValueChange={setSortBy}
-          className="w-full"
-        >
+          >
           <SelectTrigger>
+            <p>Sort by</p>
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
           <SelectContent>

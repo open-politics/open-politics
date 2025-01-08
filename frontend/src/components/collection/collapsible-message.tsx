@@ -6,11 +6,11 @@ import {
   CollapsibleTrigger,
   CollapsibleContent
 } from '@radix-ui/react-collapsible'
-import { Button } from './ui/button'
+import { Button } from '../ui/button'
 import { ChevronDown } from 'lucide-react'
 import { StreamableValue, useStreamableValue } from 'ai/rsc'
 import { cn } from '@/lib/utils'
-import { Separator } from './ui/separator'
+import { Separator } from '../ui/separator'
 
 interface CollapsibleMessageProps {
   message: {

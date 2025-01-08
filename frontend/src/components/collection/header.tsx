@@ -1,6 +1,6 @@
 import React from 'react'
 import { ModeToggle } from './mode-toggle'
-import { IconLogo } from './ui/icons'
+import { IconLogo } from '../ui/icons'
 import { cn } from '@/lib/utils'
 import HistoryContainer from './history-container'
 

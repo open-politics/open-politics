@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker"
-import ContentCard from "@/components/ContentCard"
+import ContentCard from "@/components/collection/ContentCard"
 import { useSearch } from "@/hooks/search/search-providers"
 
 

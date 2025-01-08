@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Button } from './ui/button'
+import { Button } from '../ui/button'
 import { Share } from 'lucide-react'
 import {
   Dialog,
@@ -11,11 +11,11 @@ import {
   DialogTrigger,
   DialogDescription,
   DialogTitle
-} from './ui/dialog'
+} from '../ui/dialog'
 import { shareChat } from '@/lib/actions/chat'
 import { toast } from 'sonner'
 import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard'
-import { Spinner } from './ui/spinner'
+import { Spinner } from '../ui/spinner'
 
 interface ChatShareProps {
   chatId: string

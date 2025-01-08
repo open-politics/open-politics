@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import ArticlesView from '@/components/ArticlesView';
+import ArticlesView from '@/components/collection/ArticlesView';
 
 interface Article {
   id: string;

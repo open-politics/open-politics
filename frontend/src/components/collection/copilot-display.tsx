@@ -2,8 +2,8 @@
 
 import React from 'react'
 import { Check } from 'lucide-react'
-import { Card } from './ui/card'
-import { IconLogo } from './ui/icons'
+import { Card } from '../ui/card'
+import { IconLogo } from '../ui/icons'
 
 interface CopilotDisplayProps {
   content: string

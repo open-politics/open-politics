@@ -11,6 +11,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useBookMarkStore } from '@/hooks/useBookMarkStore';
@@ -78,7 +79,6 @@ export function ContentCard({
   ...props 
 }: ContentCardProps) {
   const { bookmarks, addBookmark, removeBookmark } = useBookMarkStore();
-  const [isTextExpanded, setIsTextExpanded] = useState(false);
 
   const isBookmarked = bookmarks.some(bookmark => bookmark.url === url);
 
@@ -143,7 +143,7 @@ export function ContentCard({
         </Card>
       </DialogTrigger>
 
-      <DialogContent className="max-h-[90vh] bg-transparent max-w-[100vw] md:max-w-[50vw] flex flex-col">
+      <DialogContent className="max-h-[90vh] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 max-w-[95vw] md:max-w-[75vw] lg:max-w-[65vw] xl:max-w-[70vw] p-6 rounded-lg shadow-lg flex flex-col gap-4">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
@@ -161,10 +161,7 @@ export function ContentCard({
           
           <div className="mt-auto">
             <div 
-              className={cn(
-                "relative transition-all duration-300 ease-in-out",
-                !isTextExpanded ? "max-h-[100px] overflow-hidden" : "max-h-[1000px]"
-              )}
+              className="relative transition-all duration-300 ease-in-out max-h-[1000px]"
               style={{ 
                 transition: 'max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1)' 
               }}
@@ -176,31 +173,21 @@ export function ContentCard({
           </div>
         </div>
 
+        <DialogFooter>
         <div className="flex flex-col items-center gap-4 mt-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsTextExpanded(!isTextExpanded)}
-            className="rounded-full h-8 w-8 p-0 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-          >
-            {isTextExpanded ? (
-              <ChevronUp className="h-5 w-5" />
-            ) : (
-              <ChevronDown className="h-5 w-5" />
-            )}
-          </Button>
-          
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            onClick={() => window.open(url, '_blank')}
-          >
-            <span>Read full article</span>
-            <ExternalLink className="h-4 w-4" />
-          </Button>
-        </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => window.open(url, '_blank')}
+              >
+              <span>Read full article</span>
+                <ExternalLink className="h-4 w-4" />
+            </Button>
+          </div>
+        </DialogFooter>
       </DialogContent>
+
     </Dialog>
   );
 }
@@ -282,13 +269,13 @@ function getColorClass(value: number | null, isNegative: boolean = false): strin
   if (value === null || value === undefined) return 'text-gray-500';
   
   if (isNegative) {
-    if (value < 3.33) return 'text-green-500';
-    if (value < 6.66) return 'text-yellow-500';
-    return 'text-red-500';
-  } else {
     if (value < 3.33) return 'text-red-500';
     if (value < 6.66) return 'text-yellow-500';
     return 'text-green-500';
+  } else {
+    if (value < 3.33) return 'text-green-500';
+    if (value < 6.66) return 'text-yellow-500';
+    return 'text-red-500';
   }
 }
 

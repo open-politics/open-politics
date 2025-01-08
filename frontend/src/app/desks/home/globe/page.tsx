@@ -3,10 +3,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/components/ui/use-toast';
 import { RefreshCcw } from 'lucide-react';
-import Globe from '@/components/gGlobe';
-import Search from '@/components/Search';
-import LocationDetailPanel from '@/components/LocationDetailPanel';
-import { BookmarkedArticles } from '@/components/BookMarkedArticles';
+import Globe from '@/components/collection/gGlobe';
+import Search from '@/components/collection/Search';
+import LocationDetailPanel from '@/components/collection/LocationDetailPanel';
+import { BookmarkedArticles } from '@/components/collection/BookMarkedArticles';
 import { useLayoutStore } from '@/store/useLayoutStore';
 import { useArticleTabNameStore } from '@/hooks/useArticleTabNameStore';
 
