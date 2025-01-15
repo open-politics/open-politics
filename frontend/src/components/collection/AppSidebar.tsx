@@ -34,9 +34,8 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import HistoryList from "./history-list"
+import HistoryList from "@/components/ui/SearchHistory"
 
-import { Chat } from "./chat"
 
 // This is sample data.
 const data = {

@@ -1,6 +1,6 @@
 import React from 'react'
-import { History } from './history'
-import { HistoryList } from './history-list'
+import { History } from '../ui/history'
+import HistoryList from '@/components/ui/SearchHistory'
 
 type HistoryContainerProps = {
   location: 'sidebar' | 'header'

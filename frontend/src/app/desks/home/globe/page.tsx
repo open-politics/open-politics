@@ -9,6 +9,7 @@ import LocationDetailPanel from '@/components/collection/LocationDetailPanel';
 import { BookmarkedArticles } from '@/components/collection/BookMarkedArticles';
 import { useLayoutStore } from '@/store/useLayoutStore';
 import { useArticleTabNameStore } from '@/hooks/useArticleTabNameStore';
+import { Announcement } from '@/components/collection/announcement';
 
 const GlobePage = () => {
   const geojsonUrl = '/api/v1/locations/geojson/';
@@ -152,7 +153,7 @@ const GlobePage = () => {
               </div>
               
               {/* Search Bar */}
-              <div className="absolute top-1/2 md:top-3/4 w-[80vw] md:w-1/3 left-[10vw] z-20">
+              <div className="absolute bottom-10 md:bottom-1 w-[80vw] md:max-w-[40vw] left-1 z-20">
                 <Search
                   setResults={handleSearch}
                   setSummary={handleSummary}
@@ -166,20 +167,20 @@ const GlobePage = () => {
           <AnimatePresence>
             {hasClicked && isVisible && (
               <motion.div
-                className="fixed top-[18vh] right-0 min-w-[40vw] w-[80vw] md:max-w-[60vw] h-3/4 bg-background/90 mr-4 backdrop-blur-lg supports-[backdrop-filter]:bg-background/90 z-50 p-6 rounded-lg shadow-xl"
+                className="absolute top-1 right-1 w-full h-[calc(100vh-8.625em)] sm:w-3/4 lg:w-1/2 bg-background/90 backdrop-blur-lg supports-[backdrop-filter]:bg-background/90 z-50 p-6 rounded-lg shadow-xl"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
               >
                 <motion.div
-                  className="rounded-lg w-full h-full overflow-hidden shadow-lg"
+                  className="rounded-lg w-full h-full shadow-lg"
                   initial={{ scale: 0.9 }}
                   animate={{ scale: 1 }}
                   exit={{ scale: 0.9 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="overflow-y-auto h-full scrollbar-hide">
+                  <div className="h-full">
                     <LocationDetailPanel
                       key={locationKey}
                       location={location}

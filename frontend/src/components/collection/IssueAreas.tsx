@@ -222,7 +222,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
   const showSummaryContent = results?.tavilyResults && summary;
 
   return (
-    <div className="h-full md:max-h-[calc(100vh-10rem)]">
+    <div className="h-full flex flex-col">
       <Tabs 
         value={activeTab} 
         onValueChange={(value) => {
@@ -230,7 +230,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
         }} 
         className="w-full"
       >
-        <TabsList className="max-w-[80%] md:max-w-[calc(100%-60px)] overflow-y-auto flex justify-start scroll-snap-type-x scrollbar-hide mandatory bg-transparent">
+        <TabsList className="flex-shrink-0 max-w-[80%] md:max-w-[calc(100%-60px)] overflow-x-auto flex justify-start scrollbar-hide bg-transparent">
           <TabsTrigger value="articles" className="scroll-snap-align-start">Articles</TabsTrigger>
           {data.locationMetadata.isOECDCountry && (
             <TabsTrigger 
@@ -248,15 +248,14 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
             </TabsTrigger>
           )}
           <TabsTrigger value="wikipedia" className="scroll-snap-align-start">Wikipedia</TabsTrigger>
-          {/* Only show summary tab if we have content */}
           {showSummaryContent && (
             <TabsTrigger value="summary" className="scroll-snap-align-start">
               Summary
             </TabsTrigger>
           )}
         </TabsList>
-        <div className="flex-grow h-full md:max-h-[calc(100vh-10rem)] mt-4 scrollbar-hide overflow-y-auto">
-          <TabsContent value="articles" className="h-full overflow-y-auto">
+        <div className="flex-grow max-h-128 overflow-y-auto mt-4 scrollbar-hide">
+          <TabsContent value="articles" className="h-full">
             <Card 
               className="h-full w-/6 h-1/4 flex flex-col bg-no-repeat transition-transform duration-200"
               style={{

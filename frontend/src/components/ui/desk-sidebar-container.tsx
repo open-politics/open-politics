@@ -1,4 +1,4 @@
-import HistoryContainer from './history-container'
+import HistoryContainer from '@/components/ui/SearchHistory'
 
 export async function Sidebar() {
   return (

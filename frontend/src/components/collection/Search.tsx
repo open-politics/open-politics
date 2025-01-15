@@ -10,23 +10,16 @@ import {
 } from '@/components/ui/command';
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import axios from 'axios';
-import { generateSummaryFromArticles } from '@/app/actions';
-import { readStreamableValue } from 'ai/rsc';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from "@/components/ui/button"
-import SpinningBrainLoader from './SpinningImageLoader';
 import LottieLoader from './LottieLoader';
-import { useLocationData } from '@/hooks/useLocationData';
-import { useCoordinatesStore } from '@/store/useCoordinatesStore'; // Import the store
 import { useSearch } from '@/hooks/useSearch';
 
 interface SearchProps {
@@ -173,7 +166,7 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
             placeholder="e.g. Economy of Oman"
             style={{ fontSize: '16px' }}
           />
-          <Button onClick={() => search(inputValue)} className="absolute right-2 top-1/2 transform -translate-y-1/2" size="sm">Search</Button>
+          <Button onClick={() => search(inputValue)} className="absolute right-2 bottom-2 transform -translate-y-1/2" size="sm">Search</Button>
         </div>
         <CommandList>
           <div className="hidden md:block">
