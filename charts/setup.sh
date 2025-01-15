@@ -1,73 +1,41 @@
 #!/bin/bash
-
-# Path: open-politics/charts/boot.sh
 set -e
 
-# Apply Gateway API
-kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml
+# Path: open-politics/charts/setup.sh
 
-# Define GatewayClass and Gateway
-cat <<EOF | kubectl apply -f -
----
-apiVersion: gateway.networking.k8s.io/v1
-kind: GatewayClass
-metadata:
-  name: kong
-  annotations:
-    konghq.com/gatewayclass-unmanaged: 'true'
+# 1. Update and upgrade the system
+sudo apt update && sudo apt upgrade -y
 
-spec:
-  controllerName: konghq.com/kic-gateway-controller
----
-apiVersion: gateway.networking.k8s.io/v1
-kind: Gateway
-metadata:
-  name: kong
-spec:
-  gatewayClassName: kong
-  listeners:
-  - name: proxy
-    port: 80
-    protocol: HTTP
-    allowedRoutes:
-      namespaces:
-        from: All
-EOF
+# 2. Install prerequisites
+sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
 
-# Add the Jetstack Helm repository (if not already added)
-helm repo add jetstack https://charts.jetstack.io || true
+# 3. Install Docker from Official Repository
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io
+sudo systemctl enable docker
+sudo systemctl start docker
+
+# 4. Install k3s with proper kubeconfig permissions
+curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644
+
+# 5. Wait for k3s to initialize
+echo "Waiting for k3s to initialize..."
+sleep 10
+
+# 6. Configure kubectl for the current user
+mkdir -p ~/.kube
+sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+sudo chown $(id -u):$(id -g) ~/.kube/config
+
+# 7. Install Helm
+curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
+# 8. Add required Helm repositories
+helm repo add jetstack https://charts.jetstack.io
+helm repo add kong https://charts.konghq.com
 helm repo update
 
-# Create the cert-manager namespace
-kubectl create namespace cert-manager || true
-
-# Install cert-manager using Helm
-helm install \
-  cert-manager jetstack/cert-manager \
-  --namespace cert-manager \
-  --create-namespace \
-  --version v1.16.2 \
-  --set installCRDs=true \
-  --set global.leaderElection.namespace=cert-manager
-
-# Create the kong namespace
-kubectl create namespace kong || true
-
-# Install Kong using Helm
-helm install kong kong/kong --namespace kong --create-namespace
-
-# Create the open-politics namespace
-kubectl create namespace open-politics || true
-
-# Install Open Politics Webapp using Helm
-helm install open-politics open-politics-webapp --namespace open-politics --create-namespace
-
-# Export PROXY_IP
-PROXY_IP=$(kubectl get svc --namespace kong kong-kong-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}' || true)
-
-if [ -z "$PROXY_IP" ]; then
-  echo "PROXY_IP not found. Ensure the Kong proxy service has an external IP."
-else
-  echo "Proxy IP: $PROXY_IP"
-  curl -i http://$PROXY_IP
-fi
+# 9. Run the boot.sh script to deploy the application
+bash open-politics/charts/boot.sh
