@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: "{{ .Values.image.redis.image }}:{{ .Values.image.redis.tag }}"
+          ports:
+            - containerPort: {{ .Values.redis.service.port }}
+          command: ["redis-server", "/usr/local/etc/redis/redis.conf", "--appendonly", "yes"]
+          volumeMounts:
+            - name: redis-config
+              mountPath: /usr/local/etc/redis
+            - name: redis-storage
+              mountPath: /data
+      volumes:
+        - name: redis-config
+          configMap:
+            name: redis-config
+        - name: redis-storage
+          emptyDir: {}

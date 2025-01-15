@@ -1,0 +1,8 @@
+apiVersion: v2
+icon: https://open-politics.org/favicon.ico
+name: open-politics-webapp
+description: A Helm chart for deploying the Open Politics Project - Webapp
+type: application
+version: 0.1.0
+appVersion: "1.0"
+email: "engage@open-politics.org"
