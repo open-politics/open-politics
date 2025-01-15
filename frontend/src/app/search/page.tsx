@@ -1,4 +1,4 @@
-import { Chat } from '@/components/collection/chat'
+import { Chat } from '@/components/ui/chat'
 import { generateId } from 'ai'
 import { AI } from '@/app/actions'
 import { redirect } from 'next/navigation'

@@ -1,4 +1,4 @@
-import { Copilot } from '@/components/collection/copilot'
+import { Copilot } from '@/components/ui/copilot'
 import { createStreamableUI, createStreamableValue } from 'ai/rsc'
 import { CoreMessage, streamObject } from 'ai'
 import { PartialInquiry, inquirySchema } from '@/lib/schema/inquiry'

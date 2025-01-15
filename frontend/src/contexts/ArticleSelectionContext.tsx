@@ -2,11 +2,11 @@
 'use client'
 
 import React, { createContext, useState } from 'react';
-import { ArticleCardProps } from '@/components/collection/ContentCard';
+import { ContentCardProps } from '@/components/collection/ContentCard';
 
 interface ArticleSelectionContextType {
-  selectedArticles: ArticleCardProps[];
-  toggleArticleSelection: (article: ArticleCardProps) => void;
+  selectedArticles: ContentCardProps[];
+  toggleArticleSelection: (article: ContentCardProps) => void;
   clearSelections: () => void;
 }
 
@@ -17,9 +17,9 @@ export const ArticleSelectionContext = createContext<ArticleSelectionContextType
 });
 
 export const ArticleSelectionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [selectedArticles, setSelectedArticles] = useState<ArticleCardProps[]>([]);
+  const [selectedArticles, setSelectedArticles] = useState<ContentCardProps[]>([]);
 
-  const toggleArticleSelection = (article: ArticleCardProps) => {
+  const toggleArticleSelection = (article: ContentCardProps) => {
     setSelectedArticles(prev => {
       if (prev.some(a => a.id === article.id)) {
         return prev.filter(a => a.id !== article.id);

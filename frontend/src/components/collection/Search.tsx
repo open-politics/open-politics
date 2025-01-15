@@ -25,7 +25,7 @@ import { useSearch } from '@/hooks/useSearch';
 interface SearchProps {
   setResults: (results: any) => void;
   setCountry?: (country: string | null) => void;
-  setSummary: (summary: string) => void;
+  setSummary?: (summary: string) => void;
   globeRef: React.RefObject<any>;
 }
 import { ContentCardProps } from '@/components/collection/ContentCard';
