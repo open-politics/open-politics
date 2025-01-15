@@ -37,14 +37,10 @@ const nextConfig = {
   },
   async rewrites() {
     return [
-      { 
+      {
         source: "/api/:path*",
-        destination: `http://backend:${process.env.BACKEND_PORT}/api/:path*`,
+        destination: `http://backend:${process.env.BACKEND_PORT ? process.env.BACKEND_PORT : 8022}/api/:path*`,
       },
-      // {
-      //   source: "/docs/:path*",
-      //   destination: `http://backend:8000/docs/:path*`
-      // },
       {
         source: "/api/v1/editor/mdx/:folder/:filename",
         destination: `http://backend:8000/api/v1/editor/mdx/:folder/:filename`
@@ -58,19 +54,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // async headers() {
-  //   return [
-  //     {
-  //       source: '/:path*',
-  //       headers: [
-  //         {
-  //           key: 'Content-Security-Policy',
-  //           value: "upgrade-insecure-requests",
-  //         },
-  //       ],
-  //     },
-  //   ]
-  // },
 };
 
 const withMDX = createMDX({
