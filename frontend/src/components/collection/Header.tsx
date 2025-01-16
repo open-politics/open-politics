@@ -1,4 +1,5 @@
 'use client'
+
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { FaGithub } from "react-icons/fa6";
@@ -8,9 +9,21 @@ import { useTheme } from "next-themes";
 import useAuth from '@/hooks/useAuth';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Code, Database } from "lucide-react"; 
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { ModeSwitcher } from "@/components/ui/mode-switcher"
+import { ModeSwitcher } from "@/components/ui/mode-switcher";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarFooter,
+  SidebarMenu,
+  SidebarProvider,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarTrigger
+} from "@/components/ui/sidebar"; // Import Sidebar components
+import { NavUser } from '../ui/nav-user';
+
 
 const Header = () => {
   const { theme, setTheme, systemTheme } = useTheme();
@@ -101,57 +114,98 @@ const Header = () => {
 
             {/* Mobile Navigation */}
             <div className="md:hidden">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
-                    </svg>
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="right">
-                  <nav className="flex flex-col space-y-4">
-                    <Button variant="ghost" asChild>
-                      <Link href="/blog/about">About</Link>
-                    </Button>
-                    <Button variant="ghost" asChild>
-                      <Link href="https://docs.open-politics.org">Documentation</Link>
-                    </Button>
-                    <Button variant="ghost" asChild>
-                      <a href="mailto:engage@open-politics.org">Contact</a>
-                    </Button>
-                    
-                    {isLoggedIn ? (
-                      <>
-                        <Button variant="ghost" asChild>
-                          <Link href="/desks/home">Desk</Link>
-                        </Button>
-                        {user?.is_superuser && (
-                          <Button variant="ghost" asChild>
-                            <Link href="/admin/users">Admin</Link>
-                          </Button>
-                        )}
-                        <Button variant="ghost" onClick={logout}>Logout</Button>
-                        <Button variant="ghost" asChild>
-                          <Link href="/home">Home</Link>
-                        </Button>
-                      </>
-                    ) : (
-                      <Button variant="default" asChild>
-                        <Link href="/login">Login</Link>
-                      </Button>
-                    )}
+                <SidebarTrigger/>
+                <Sidebar collapsible="icon" side="right" variant="floating" className='md:hidden' >
+                  <SidebarHeader className="h-16 flex items-center px-4 border-b">
+                    <SidebarMenu>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton size="lg" asChild>
+                          <a href="/desks" className="flex items-center space-x-2">
+                            <span className="font-semibold">Open Politics</span>
+                          </a>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </SidebarHeader>
+                  
+                  <SidebarContent className="flex-1 px-4 py-2">
+                    <SidebarMenu>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild className="flex items-center space-x-2 w-full">
+                          <a href="/blog/about">
+                            <span>About</span>
+                          </a>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild className="flex items-center space-x-2 w-full">
+                          <a href="https://docs.open-politics.org">
+                            <span>Documentation</span>
+                          </a>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild className="flex items-center space-x-2 w-full">
+                          <a href="mailto:engage@open-politics.org">
+                            <span>Contact</span>
+                          </a>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      
+                      {isLoggedIn ? (
+                        <>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild className="flex items-center space-x-2 w-full">
+                              <a href="/desks/home">
+                                <span>Desk</span>
+                              </a>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          {user?.is_superuser && (
+                            <SidebarMenuItem>
+                              <SidebarMenuButton asChild className="flex items-center space-x-2 w-full">
+                                <a href="/admin/users">
+                                  <span>Admin</span>
+                                </a>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                          )}
+                          <SidebarMenuItem>
+                            <SidebarMenuButton onClick={logout} className="w-full">
+                              Logout
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        </>
+                      ) : (
+                        <SidebarMenuItem>
+                          <SidebarMenuButton asChild className="flex items-center space-x-2 w-full">
+                            <a href="/login">
+                              <span>Login</span>
+                            </a>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      )}
+                      
+                      <div className="flex items-center justify-between py-4 border-t">
+                        <span>Dark Mode</span>
+                        <Switch
+                          checked={theme === 'dark'}
+                          onCheckedChange={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                        />
+                      </div>
+                    </SidebarMenu>
+                  </SidebarContent>
 
-                    <div className="flex items-center justify-between py-4 border-t">
-                      <span>Dark Mode</span>
-                      <Switch
-                        checked={theme === 'dark'}
-                        onCheckedChange={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                      />
-                    </div>
-                  </nav>
-                </SheetContent>
-              </Sheet>
+                  <SidebarFooter className="border-t p-4">
+                    {isLoggedIn && (
+                      <NavUser user={{
+                        name: user.username || 'User',
+                        email: user.email || '',
+                        avatar: user.avatar || '',
+                      }} />
+                    )}
+                  </SidebarFooter>
+                </Sidebar>
             </div>
           </div>
         </div>

@@ -9,6 +9,7 @@ import Header from '@/components/collection/Header';
 import Footer from '@/components/collection/Footer';
 import { AppStateProvider } from '@/lib/utils/app-state'
 import { AI } from './xactions';
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
@@ -21,17 +22,22 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
             fontMono.variable
           )}
         >
+
           <AppStateProvider>
             <AI>
-              <ClientWrapper>
-                <BlurredDots />
-                <Header />
-                <ToastProvider>
-                  {children}
-                  <ToastViewport />
-                </ToastProvider>
-                {/* <Footer /> */}
-              </ClientWrapper>
+          <SidebarProvider>
+              <SidebarInset>
+                <ClientWrapper>
+                  <BlurredDots />
+                  <Header />
+                  <ToastProvider>
+                    {children}
+                    <ToastViewport />
+                  </ToastProvider>
+                  {/* <Footer /> */}
+                </ClientWrapper>
+              </SidebarInset>
+          </SidebarProvider>
             </AI>
           </AppStateProvider>
       </body>
