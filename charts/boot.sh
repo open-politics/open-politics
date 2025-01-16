@@ -50,7 +50,7 @@ helm install \
   --namespace cert-manager \
   --create-namespace \
   --version v1.16.2 \
-  --set installCRDs=true \
+  --set crds.enabled=true \
   --set global.leaderElection.namespace=cert-manager || true
 
 # 6. Install Kong using Helm

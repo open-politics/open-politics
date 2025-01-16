@@ -6,16 +6,16 @@ set -e
 # 1. Update and upgrade the system
 sudo apt update && sudo apt upgrade -y
 
-# 2. Install prerequisites
-sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
+# # 2. Install prerequisites
+# sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
 
-# 3. Install Docker from Official Repository
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-sudo apt update
-sudo apt install -y docker-ce docker-ce-cli containerd.io
-sudo systemctl enable docker
-sudo systemctl start docker
+# # 3. Install Docker from Official Repository
+# curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+# sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+# sudo apt update
+# sudo apt install -y docker-ce docker-ce-cli containerd.io
+# sudo systemctl enable docker
+# sudo systemctl start docker
 
 # 4. Install k3s with proper kubeconfig permissions
 curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644

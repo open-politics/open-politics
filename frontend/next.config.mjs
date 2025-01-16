@@ -39,7 +39,7 @@ const nextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: `http://backend:${process.env.BACKEND_PORT ? process.env.BACKEND_PORT : 8022}/api/:path*`,
+        destination: `http://backend:${process.env.NODE_ENV === 'development' ? process.env.BACKEND_PORT : 8022}/api/:path*`,
       },
       {
         source: "/api/v1/editor/mdx/:folder/:filename",

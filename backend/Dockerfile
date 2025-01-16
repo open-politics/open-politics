@@ -14,6 +14,8 @@ RUN uv pip install --no-cache-dir -r requirements.txt
 
 ENV PYTHONPATH=/app
 
+COPY ./app /app/app
+
 COPY ./scripts/ /app/
 
 COPY ./alembic.ini /app/
@@ -22,8 +24,10 @@ COPY ./prestart.sh /app/
 
 COPY ./start-reload.sh /app/
 
+COPY ./start.sh /app/
+
 COPY ./tests-start.sh /app/
 
-RUN chmod +x /app/start-reload.sh
+RUN chmod +x /app/start-reload.sh /app/start.sh /app/tests-start.sh
 
-COPY ./app /app/app
+

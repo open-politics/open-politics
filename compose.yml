@@ -18,6 +18,7 @@ services:
     restart: always
     networks:
       - default
+      - opol-app-stack
     depends_on:
       - db
     env_file:
@@ -98,3 +99,5 @@ volumes:
 networks:
   default:
     external: false
+  opol-app-stack:
+    external: true

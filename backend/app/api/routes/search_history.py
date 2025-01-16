@@ -10,21 +10,21 @@ from app.models import SearchHistory, SearchHistoryCreate, SearchHistoriesOut
 router = APIRouter()
 
 
-@router.post("/", response_model=SearchHistory)
+@router.post("/create", response_model=SearchHistory)
 def create_search_history(
     *, session: SessionDep, current_user: CurrentUser, search_history_in: SearchHistoryCreate
 ) -> Any:
     """
     Create a new search history entry.
     """
-    search_history = SearchHistory.from_orm(search_history_in, update={"user_id": current_user.id})
+    search_history = SearchHistory.model_validate(search_history_in, update={"user_id": current_user.id})
     session.add(search_history)
     session.commit()
     session.refresh(search_history)
     return search_history
 
 
-@router.get("/", response_model=SearchHistoriesOut)
+@router.get("/read", response_model=SearchHistoriesOut)
 def read_search_histories(
     *, session: SessionDep, current_user: CurrentUser, skip: int = 0, limit: int = 100
 ) -> Any:
