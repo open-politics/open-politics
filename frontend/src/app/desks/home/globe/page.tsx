@@ -112,7 +112,7 @@ const GlobePage = () => {
 
   const handleLocationZoom = (latitude: number, longitude: number, locationName: string) => {
     if (globeRef.current) {
-      globeRef.current.zoomToCountry(latitude, longitude, locationName);
+      globeRef.current.zoomToLocation(latitude, longitude, locationName);
     }
   };
 
@@ -143,17 +143,18 @@ const GlobePage = () => {
           {/* Main Content Area */}
           <div className="flex h-full flex-col md:flex-row">
             {/* Globe Section */}
-            <div className="relative flex-1 h-[calc(100vh-8rem)] min-h-1/2 transition-all duration-300 overflow-hidden">
+            <div className="relative flex-1 max-h-screen overflow-hidden">
               <div className="h-full">
                 <Globe
                   ref={globeRef}
                   geojsonUrl={geojsonUrl}
                   onLocationClick={handleLocationClick}
+                  isVisible={isVisible}
                 />
               </div>
               
               {/* Search Bar */}
-              <div className="absolute bottom-10 md:bottom-1 w-[80vw] md:max-w-[40vw] left-1 z-20">
+              <div className="fixed bottom-0 md:bottom-2 w-[100vw] md:max-w-[40vw] z-20 md:ml-2">
                 <Search
                   setResults={handleSearch}
                   setSummary={handleSummary}

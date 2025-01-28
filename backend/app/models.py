@@ -1,6 +1,8 @@
 from sqlmodel import Field, Relationship, SQLModel
 from typing import List, Optional
 from datetime import datetime
+from sqlalchemy import Column, ARRAY, Text, JSON
+from datetime import timezone
 
 
 # Shared properties
@@ -48,6 +50,7 @@ class User(UserBase, table=True):
     hashed_password: str
     items: List["Item"] = Relationship(back_populates="owner")
     search_histories: List["SearchHistory"] = Relationship(back_populates="user")
+    workspaces: List["Workspace"] = Relationship(back_populates="owner")
 
 
 # Properties to return via API, id is always required
@@ -139,4 +142,78 @@ class SearchHistoryRead(SearchHistoryBase):
 
 class SearchHistoriesOut(SQLModel):
     data: List[SearchHistoryRead]
+    count: int
+
+
+class ClassificationSchemeBase(SQLModel):
+    name: str
+    description: Optional[str] = None
+    type: str  # "minimal" or "comprehensive"
+    expected_datatype: str
+    prompt: Optional[str] = None
+    input_text: Optional[str] = None
+    field_annotations: Optional[List[str]] = Field(
+        default=None, sa_column=Column(JSON)
+    )
+    model_annotations: Optional[str] = None
+
+
+class ClassificationScheme(ClassificationSchemeBase, table=True):
+    id: int = Field(default=None, primary_key=True)
+    workspace_id: int = Field(foreign_key="workspace.uid")
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    workspace: Optional["Workspace"] = Relationship(
+        back_populates="classification_schemes"
+    )
+
+
+class ClassificationSchemeCreate(ClassificationSchemeBase):
+    pass
+
+
+class ClassificationSchemeUpdate(ClassificationSchemeBase):
+    pass
+
+
+class ClassificationSchemeRead(ClassificationSchemeBase):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class ClassificationSchemesOut(SQLModel):
+    data: List[ClassificationSchemeRead]
+    count: int
+
+
+class WorkspaceBase(SQLModel):
+    name: str
+    description: Optional[str] = None
+    sources: Optional[List[str]] = Field(default=None, sa_column=Column(ARRAY(Text)))
+
+
+class Workspace(WorkspaceBase, table=True):
+    uid: Optional[int] = Field(default=None, primary_key=True)
+    user_id_ownership: int = Field(foreign_key="user.id")
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    owner: Optional[User] = Relationship(back_populates="workspaces")
+    classification_schemes: List[ClassificationScheme] = Relationship(back_populates="workspace")
+
+
+class WorkspaceCreate(WorkspaceBase):
+    pass
+
+
+class WorkspaceUpdate(WorkspaceBase):
+    pass
+
+class WorkspaceRead(WorkspaceBase):
+    uid: int
+    created_at: datetime
+    updated_at: datetime
+
+class WorkspacesOut(SQLModel):
+    data: List[WorkspaceRead]
     count: int

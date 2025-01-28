@@ -6,7 +6,7 @@ import { useEffect, useState, useRef } from 'react';
 const BlurredDot = ({ color, x, y, size }) => {
   return (
     <motion.div
-      className="fixed rounded-full blur-[100px] opacity-30"
+      className="fixed rounded-full blur-[100px] opacity-40 dark:opacity-20"
       style={{
         backgroundColor: color,
         width: size,
@@ -21,28 +21,32 @@ const BlurredDot = ({ color, x, y, size }) => {
 
 const dotsConfig = {
   '/': [
-    { color: '#00FFFF', size: '30vw' },
-    { color: '#FF00FF', size: '40vw' },
+    { color: '#7AEFFF', size: '30vw' }, // Light blue at 0%
+    { color: '#7CFF7A', size: '40vw' }, // Light green at 18%
   ],
   '/blog': [
-    { color: '#00FFFF', size: '35vw' },
-    { color: '#FFD700', size: '30vw' },
+    { color: '#FEEC90', size: '35vw' }, // Light yellow at 40%
+    { color: '#FFC978', size: '30vw' }, // Light orange at 60%
   ],
-  '/blog/about': [
-    { color: '#00FFFF', size: '35vw' },
-    { color: '#DDA0DD', size: '30vw' },
+  '/webpages/about': [
+    { color: '#E478FF', size: '35vw' }, // Light purple at 92%
+    { color: '#7AEFFF', size: '30vw' }, // Light blue at 0%
   ],
   '/login': [
-    { color: '#800080', size: '40vw' },
-    { color: '#008000', size: '20vw' },
+    { color: '#7CFF7A', size: '40vw' }, // Light green at 18%
+    { color: '#FEEC90', size: '20vw' }, // Light yellow at 40%
   ],
   '/documentation': [
-    { color: '#800080', size: '40vw' },
-    { color: '#008000', size: '20vw' },
+    { color: '#FFC978', size: '40vw' }, // Light orange at 60%
+    { color: '#E478FF', size: '20vw' }, // Light purple at 92%
   ],
   '/desk_synthese': [
-    { color: '#4169E1', size: '40vw' },
-    { color: '#008000', size: '20vw' },
+    { color: '#7AEFFF', size: '40vw' }, // Light blue at 0%
+    { color: '#7CFF7A', size: '20vw' }, // Light green at 18%
+  ],
+  '/webpages/*': [
+    { color: '#FEEC90', size: '40vw' }, // Light yellow at 40%
+    { color: '#FFC978', size: '20vw' }, // Light orange at 60%
   ],
 };
 

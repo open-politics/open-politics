@@ -17,8 +17,11 @@ services:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
     volumes:
       - ./backend/:/app
+      - ./backend/openapi.json:/app/openapi.json
+      - /home/jimvincentwagner/fullstack/opol/opol/python-client/opol:/app/opol
     environment:
       - PORT=${BACKEND_PORT}
+      - OPOL_DEV_MODE=true
     command: ["bash", "/app/start-reload.sh"]
     build:
       context: ./backend
@@ -32,6 +35,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
+    depends_on:
+      - backend
     ports:
       - "3000:3000"
     environment:
@@ -42,6 +47,7 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
+      - ./backend/openapi.json:/app/openapi.json
     networks:
       - default
 

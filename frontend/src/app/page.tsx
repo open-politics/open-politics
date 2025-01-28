@@ -3,6 +3,11 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import LandingLayout from './landing_layout';
+import { Announcement } from '@/components/collection/announcement';
+import { Play } from 'lucide-react';
+import { FaMicrophone } from 'react-icons/fa6';
+
+
 
 const sleep = (time: number) => new Promise((resolve) => setTimeout(resolve, time));
 
@@ -63,39 +68,71 @@ const HomePage: React.FC<HiProps> = () => {
 
   return (
     <LandingLayout>
-      <div className="p-8 flex flex-col items-center justify-center min-h-screen">
-        <div className="text-center mb-8">
-      {/* <div className="text-sm text-gray-500 sticky top-16 left-0 p-2 z-50 w-full">
-        <p>Public Maintenance Notice: Scheduled downtime on July 13, 2024</p>
-      </div> */}
-        <h1 className="text-4xl md:text-6xl font-bold leading-none dark:text-white">
-          <div className="flex flex-col items-center">
-            <span style={{ letterSpacing: '0.1em' }}>What are you</span>
-            <div className="flex items-center">
-              <span id="shimmer-ast" className="shimmer mt-2" style={{ letterSpacing: '0.1em' }}>*</span>
-              <TypeAsync words={words} />
-            </div>
-            <span className="" style={{ letterSpacing: '0.1em' }}>for?</span>
+      <div className="flex flex-col mt-36 md:mt-0 md:min-h-screen justify-between">
+        {/* Main Content Section */}
+        <section className="flex flex-col items-center justify-end flex-grow p-8">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl md:text-6xl font-bold leading-none dark:text-white">
+              <div className="flex flex-col items-center">
+                <span style={{ letterSpacing: '0.1em' }}>What are you</span>
+                <div className="flex items-center">
+                  <span id="shimmer-ast" className="shimmer mt-2" style={{ letterSpacing: '0.1em' }}>*</span>
+                  <TypeAsync words={words} />
+                </div>
+                <span style={{ letterSpacing: '0.1em' }}>for?</span>
+              </div>
+            </h1>
           </div>
-        </h1>
-      </div>
 
-      <div className="mt-2 text-center">
-      <p className="text-blue-500 font-bold mb-3">Open Source Political Intelligence.</p>
-        {/* <p className="mb-3 font-bold">Navigate news with next-gen tools.</p> */}
+         {/* Main Buttons */}
+          <div className="mt-2 text-center">
+            <p className="text-blue-500 font-bold mb-3">Open Source Political Intelligence.</p>
+            <div className="space-x-2">
+              <Button asChild variant="outline" className="border border-blue-500">
+                <Link href="https://github.com/JimVincentW/open-politics">
+                  Project on GitHub
+                </Link>
+              </Button>
+              <Button asChild>
+                <Link href="https://zu61ygkfc3v.typeform.com/to/KHZeedk3">
+                  Join the waitlist
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </section>
 
-        <div className="space-x-2">
-          <Button asChild variant="outline" className="border border-blue-500">
-            <Link href="https://github.com/JimVincentW/open-politics">
-              Project on GitHub
-            </Link>
-          </Button>
-          <Button asChild>
-            <Link href="https://zu61ygkfc3v.typeform.com/to/KHZeedk3">
-              Join the waitlist
-            </Link>
-          </Button>
-        </div>
+        {/* Announcements Section */}
+        <section className="p-8 bg-transparent max-w-screen-md mx-auto">
+            <span className="text-xl font-bold mb-4 block">What's new?</span>
+            <div className="grid grid-cols-1 gap-4">
+              <div className=" rounded-lg shadow-md bg-secondary/80 hover:bg-secondary/60 transition-all duration-300 hover:cursor-pointer hover:shadow-md">
+                <Announcement 
+                  title="24.01.2025: We are (slowly) coming online !" 
+                  main_icon={<Play className="ml-1 h-4 w-4" />}
+                  text="Our public beta geospatial (Globe UI) and search modules are launching soon. Stay tuned."
+                  href="https://github.com/open-politics/opol"
+                  hide_arrow={true}
+                  // links={[
+                  //   { href: 'https://github.com/open-politics/open-politics', title: 'Read more', event_icon: <FileText className="ml-1 h-4 w-4" /> },
+                  // ]}
+                />
+              </div>
+              <div className=" rounded-lg shadow-md bg-secondary/80 hover:bg-secondary/60 transition-all duration-300 hover:cursor-pointer hover:shadow-md">
+                <Announcement 
+                  title="05.02.2025: Open Politics @ Chaos Computer Club Berlin" 
+                  text="We are inviting you to a talk on Open Politics at the Chaos Computer Club Berlin on February 05th, 2025."
+                  href="https://berlin.ccc.de/datengarten/111/"
+                  main_icon={<FaMicrophone className="ml-1 h-4 w-4" />}
+                  hide_arrow={true}
+                  orientation="left"
+                  events={[
+                    { name: 'Open Politics @ Chaos Computer Club Berlin, Datengarten #111', location: 'Marienstraße 11, Berlin', dateTime: 'February 05th, 2025' },
+                  ]}
+                />
+              </div>
+            </div>
+        </section>
       </div>
 
       <style jsx>{`
@@ -113,7 +150,6 @@ const HomePage: React.FC<HiProps> = () => {
           100% { color: violet; }
         }
       `}</style>
-      </div>
     </LandingLayout>
   );
 };

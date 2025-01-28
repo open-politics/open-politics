@@ -3,7 +3,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.routing import APIRoute
 from starlette.middleware.cors import CORSMiddleware
 
-from app.api.main import api_router
+from app.api.main import api_router_v1
+from app.api.main import api_router_v2
 from app.core.config import settings
 
 
@@ -29,7 +30,7 @@ if settings.BACKEND_CORS_ORIGINS:
         allow_headers=["*"],
     )
 
-app.include_router(api_router, prefix=settings.API_V1_STR)
-app.include_router(api_router, prefix=settings.API_V2_STR)
+app.include_router(api_router_v1, prefix=settings.API_V1_STR)
+app.include_router(api_router_v2, prefix=settings.API_V2_STR)
 # app.mount("/static/docs", StaticFiles(directory="app/docs"), name="static-docs")
 

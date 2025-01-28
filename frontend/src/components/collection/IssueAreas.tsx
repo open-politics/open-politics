@@ -254,8 +254,8 @@ export function IssueAreas({ locationName, results, summary, includeSummary }: I
             </TabsTrigger>
           )}
         </TabsList>
-        <div className="flex-grow max-h-128 overflow-y-auto mt-4 scrollbar-hide">
-          <TabsContent value="articles" className="h-full">
+        <div className="max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-hide">
+          <TabsContent value="articles" className="">
             <Card 
               className="h-full w-/6 h-1/4 flex flex-col bg-no-repeat transition-transform duration-200"
               style={{

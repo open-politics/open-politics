@@ -1,3 +1,4 @@
+import os
 import secrets
 import warnings
 from typing import Annotated, Any, Literal
@@ -34,6 +35,9 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     DOMAIN: str = "localhost"
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"
+    OPOL_DEV_MODE: bool = os.environ.get("OPOL_DEV_MODE", "False") == "True"
+    if OPOL_DEV_MODE:
+        os.environ["PYTHONPATH"] = "/app/opol:/app"
 
     @computed_field  # type: ignore[misc]
     @property

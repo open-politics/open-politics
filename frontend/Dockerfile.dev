@@ -12,6 +12,9 @@ COPY package.json package-lock.json* ./
 # Install dependencies
 RUN npm install
 
+# Install bash
+RUN apk add --no-cache bash
+
 # Copy the rest of your app's source code
 COPY . .
 

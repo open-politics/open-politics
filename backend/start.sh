@@ -5,7 +5,7 @@ set -x
 
 HOST=${HOST:-0.0.0.0}
 PORT=${BACKEND_PORT:-8022}
-LOG_LEVEL=${LOG_LEVEL:-info}
+LOG_LEVEL=${LOG_LEVEL:-debug}
 
 bash prestart.sh
 

@@ -1,11 +1,10 @@
-
+import Footer from "@/components/collection/Footer"
 
 export default function MdxLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex relative z-20 pt-16">
+    <div className="flex flex-col relative z-20 pt-16">
       <div className="
         flex-1
-        xl:p-8
         container mx-auto
         px-4 sm:px-6 lg:px-8
         max-w-3xl
@@ -31,6 +30,7 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
       ">
         {children}
       </div>
+      <Footer />
     </div>
   )
 }

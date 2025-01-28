@@ -59,8 +59,13 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
   };
 
   return (
-    <div className="relative w-full bg-white dark:bg-black bg-opacity-50 dark:bg-opacity-50 backdrop-blur-lg rounded-xl p-2">
-      <h2 className="text-xl font-bold text-blue-500 dark:text-green-200 mb-2 text-left ml-1">Search News and all things Politics</h2>
+    <div className="relative w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-xl p-2">
+      <h2 className="text-xl mb-2 text-left ml-1">Search News and all things Politics</h2>
+      {loading && (
+          <div className="absolute left-1/4 right-0 flex justify-center top-0">
+            <LottieLoader />
+          </div>
+        )}
       <Command className="mx-auto bg-transparent p-4 rounded-lg">
         <div className="relative">
           <CommandInput
@@ -80,16 +85,12 @@ const Search: React.FC<SearchProps> = ({ setResults, setCountry, setSummary, glo
               e.preventDefault();
               search(inputValue);
             }} 
-            className="absolute bg-[#BED4FF] dark:bg-sky-700 dark:bg-[#D2FFD9] right-2 top-1/4 sm:top-1 h-8 md:h-8 h-6 md:text-base text-xs"
+            className="absolute right-2 top-1/4 sm:top-1 h-8 md:h-8 h-6"
           >
             Search
           </Button>
         </div>
-        {loading && (
-          <div className="absolute left-0 right-0 flex justify-center mb-12">
-            <LottieLoader />
-          </div>
-        )}
+        
         <div className="absolute right-2 top-1 md:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

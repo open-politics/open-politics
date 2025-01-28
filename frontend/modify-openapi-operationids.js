@@ -1,8 +1,9 @@
 import * as fs from "node:fs"
 
-async function modifyOpenAPIFile(filePath) {
-  try {
-    const data = await fs.promises.readFile(filePath)
+const filePath = "./openapi.json"
+
+fs.promises.readFile(filePath)
+  .then(data => {
     const openapiContent = JSON.parse(data)
 
     const paths = openapiContent.paths
@@ -22,15 +23,14 @@ async function modifyOpenAPIFile(filePath) {
       }
     }
 
-    await fs.promises.writeFile(
+    return fs.promises.writeFile(
       filePath,
       JSON.stringify(openapiContent, null, 2),
     )
+  })
+  .then(() => {
     console.log("File successfully modified")
-  } catch (err) {
+  })
+  .catch(err => {
     console.error("Error:", err)
-  }
-}
-
-const filePath = "./openapi.json"
-modifyOpenAPIFile(filePath)
+  })

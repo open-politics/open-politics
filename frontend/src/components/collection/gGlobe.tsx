@@ -8,11 +8,12 @@ import { ChevronUp, ChevronDown, Locate, List, MapPin } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapLegend from './MapLegend'; 
-import { useCoordinatesStore } from '@/store/useCoordinatesStore'; 
+import { useCoordinatesStore } from '@/store/useCoordinatesStore';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useArticleTabNameStore } from '@/hooks/useArticleTabNameStore';
 import * as d3 from 'd3';
 import { useLocationData } from '@/hooks/useLocationData';
+import { useTheme } from "next-themes";
 
 interface GlobeProps {
   geojsonUrl: string;
@@ -60,6 +61,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const { geocodeLocation, loading, error } = useGeocode();
   const [inputLocation, setInputLocation] = useState('');
   const [showLegend, setShowLegend] = useState(false);
@@ -75,6 +77,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
   const [selectedRoute, setSelectedRoute] = useState<any>(null);
   const [isRoutePlaying, setIsRoutePlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { theme } = useTheme();
 
   const eventTypes = [
     { type: "Protests", color: "#2196F3", icon: "protest", zIndex: 4 },
@@ -183,9 +186,13 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
     document.head.appendChild(styleSheet);
 
     if (!mapRef.current && mapContainerRef.current) {
+      const mapStyle = theme === 'dark' 
+        ? 'mapbox://styles/jimvw/cm466rsf0014101sibqumbyfs' 
+        : 'mapbox://styles/jimvw/cm237n93v000601qp9tts27w9';
+
       mapRef.current = new mapboxgl.Map({
         container: mapContainerRef.current,
-        style: 'mapbox://styles/jimvw/cm466rsf0014101sibqumbyfs', 
+        style: mapStyle,
         projection: 'globe',
         center: [13.4, 52.5],
         zoom: 3.5,
@@ -276,7 +283,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
       resizeObserver.disconnect();
       styleSheet.remove();
     };
-  }, []);
+  }, [theme]);
 
   const toggleLayerVisibility = useCallback((layerId: string, visibility: 'visible' | 'none') => {
     if (mapRef.current && mapRef.current.getLayer(layerId)) {
@@ -423,14 +430,14 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                 });
 
                 let popupContent = `
-                  <div class="w-[250px] p-0 bg-transparent text-white">
-                    <div class="bg-transparent">
+                  <div class="w-[250px] p-0">
+                    <div class="">
                       <div class="flex flex-col space-y-1.5 p-3">
                         <div class="flex items-center justify-between">
                           <h3 class="font-semibold tracking-tight text-sm">
                             ${eventType.type} Cluster
                           </h3>
-                          <span class="text-xs text-white">
+                          <span class="text-xs ">
                             ${clusterCount} locations
                           </span>
                         </div>
@@ -444,14 +451,14 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                             return `
                               <div class="mb-2 last:mb-0 text-sm">
                                 <div class="flex items-center justify-between">
-                                  <span class="text-white">📍${locationName}</span>
+                                  <span class="">📍${locationName}</span>
                                   <span class="text-xs text-green-500">${contentCount} items</span>
                                 </div>
                               </div>
                             `;
                           }).join('')}
                           ${clusterCount > 3 ? `
-                            <div class="text-xs text-white mt-2 pt-2 border-t">
+                            <div class="text-xs  mt-2 pt-2 border-t">
                               And ${clusterCount - 3} more locations...
                             </div>
                           ` : ''}
@@ -551,13 +558,13 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                     : [];
 
                   let popupContent = `
-                    <div class="w-[300px] p-0 border-none bg-transparent text-white">
-                      <div class="rounded-xl bg-transparent">
+                    <div class="w-[300px] p-0 border-none">
+                      <div class="rounded-xl">
                         <div class="flex flex-col space-y-1.5 p-4">
                           <div class="flex items-center justify-between">
                             <h3 class="font-semibold tracking-tight">
                               <a href="#" 
-                                 class="text-white hover:underline cursor-pointer"
+                                 class=" hover:underline cursor-pointer"
                                  onclick="window.dispatchEvent(new CustomEvent('setLocation', {detail:'${countryName}'}))"
                               >
                                 ${eventTypeName} @ 📍 ${countryName}
@@ -575,10 +582,10 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                                     <div class="mb-3 last:mb-0 border-b border-border pb-2 last:border-0 last:pb-0">
                                       <a href="${content.url}" 
                                          target="_blank" 
-                                         class="text-sm text-white hover:underline block">
+                                         class="text-sm  hover:underline block">
                                         ${content.title}
                                       </a>
-                                      <div class="flex items-center gap-2 mt-1 text-xs text-white">
+                                      <div class="flex items-center gap-2 mt-1 text-xs ">
                                         <span>${new Date(content.insertion_date).toLocaleDateString()}</span>
                                         ${content.source ? `
                                           <span class="inline-flex items-center">
@@ -589,7 +596,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                                       </div>
                                     </div>
                                   `).join('')
-                                : '<div class="text-sm text-white py-2">No content available</div>'
+                                : '<div class="text-sm  py-2">No content available</div>'
                               }
                             </div>
                           </div>
@@ -658,7 +665,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                       if (err) return;
 
                       const coordinates = (features[0].geometry as any).coordinates;
-                      const offset: [number, number] = [0, -(mapRef.current!.getContainer().offsetHeight * 0.2)];
+                      const offset: [number, number] = [isVisible ? 0 : -(mapRef.current!.getContainer().offsetWidth * 0.2), -(mapRef.current!.getContainer().offsetHeight * 0.2)];
                       
                       const limitedZoom = Math.min(zoom, 6);
                       
@@ -714,14 +721,14 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                 });
 
                 const popupContent = `
-                  <div class="w-[350px] p-0 bg-transparent text-white">
-                    <div class="rounded-xl bg-transparent">
+                  <div class="w-[350px] p-0 ">
+                    <div class="rounded-xl ">
                       <div class="flex flex-col space-y-1.5 p-4">
                         <div class="flex items-center justify-between">
                           <h3 class="font-semibold tracking-tight">
                             ${eventType.type} Cluster
                           </h3>
-                          <span class="text-sm text-white">
+                          <span class="text-sm ">
                             ${features[0].properties.point_count} locations
                           </span>
                         </div>
@@ -738,22 +745,22 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                                 <div class="flex items-center justify-between mb-2">
                                   <h4 class="font-medium text-sm">
                                     <a href="#" 
-                                       class="text-white hover:underline cursor-pointer"
+                                       class=" hover:underline cursor-pointer"
                                        onclick="window.dispatchEvent(new CustomEvent('setLocation', {detail:'${locationName}'}))"
                                     >
                                       📍${locationName}
                                     </a>
                                   </h4>
-                                  <span class="text-xs text-white">${contentCount} items</span>
+                                  <span class="text-xs ">${contentCount} items</span>
                                 </div>
                                 ${Array.isArray(contents) ? contents.slice(0, 2).map(content => `
                                   <div class="ml-2 mb-2 last:mb-0 text-sm">
                                     <a href="${content.url}" 
                                        target="_blank" 
-                                       class="text-white hover:underline block">
+                                       class=" hover:underline block">
                                       ${content.title}
                                     </a>
-                                    <div class="flex items-center gap-2 mt-1 text-xs text-white">
+                                    <div class="flex items-center gap-2 mt-1 text-xs ">
                                       <span>${new Date(content.insertion_date).toLocaleDateString()}</span>
                                       ${content.source ? `
                                         <span class="inline-flex items-center">
@@ -765,7 +772,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                                   </div>
                                 `).join('') : ''}
                                 ${Array.isArray(contents) && contents.length > 2 ? `
-                                  <div class="ml-2 text-xs text-white">
+                                  <div class="ml-2 text-xs ">
                                     And ${contents.length - 2} more...
                                   </div>
                                 ` : ''}
@@ -775,7 +782,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                         </div>
                         <div class="mt-4 pt-4 border-t text-center">
                           <button 
-                            class="px-4 py-2 text-sm bg-primary text-black rounded-md hover:bg-primary/90"
+                            class="px-4 py-2 text-sm bg-primary rounded-md hover:bg-primary/90"
                             onclick="window.dispatchEvent(new CustomEvent('zoomToCluster', {
                               detail: {
                                 lng: ${coordinates[0]},
@@ -795,7 +802,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                 new mapboxgl.Popup({
                   closeButton: true,
                   maxWidth: 'none',
-                  className: 'custom-popup-container bg-transparent cluster-popup'
+                  className: 'custom-popup-container cluster-popup'
                 })
                   .setLngLat(coordinates)
                   .setHTML(popupContent)
@@ -822,8 +829,8 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
     }
   }, [mapLoaded]);
 
-  const handleToggleLayer = (eventType: string, isVisible: boolean) => {
-    const visibility = isVisible ? 'visible' : 'none';
+  const handleToggleLayer = (eventType: string, isLayerVisible: boolean) => {
+    const visibility = isLayerVisible ? 'visible' : 'none';
     toggleLayerVisibility(`clusters-${eventType}`, visibility);
     toggleLayerVisibility(`unclustered-point-${eventType}`, visibility);
     toggleLayerVisibility(`cluster-count-${eventType}`, visibility);
@@ -1060,27 +1067,18 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
   }, [onBboxChange]);
 
   React.useImperativeHandle(ref, () => ({
-    zoomToCountry: (
+    zoomToLocation: (
       latitude: number, 
       longitude: number, 
-      country: string, 
       bbox?: string[] | number[],
       locationType: 'continent' | 'country' | 'locality' = 'country',
       dynamicZoom?: number
     ) => {
       if (isNaN(latitude) || isNaN(longitude)) {
-        console.error('Invalid coordinates in zoomToCountry:', { latitude, longitude });
+        console.error('Invalid coordinates in zoomToLocation:', { latitude, longitude });
         return;
       }
 
-      console.log('zoomToCountry called with:', { 
-        latitude, 
-        longitude, 
-        country, 
-        bbox, 
-        locationType,
-        dynamicZoom 
-      });
 
       if (mapRef.current) {
         if (bbox && bbox.length === 4) {
@@ -1235,8 +1233,8 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
           if (err) reject(err);
 
           let popupContent = `
-            <div class="w-[250px] p-0 bg-transparent">
-              <div class="rounded-lg bg-transparent">
+            <div class="w-[250px] p-0">
+              <div class="rounded-lg">
                 <div class="flex flex-col space-y-1.5 p-3">
                   <div class="flex items-center justify-between">
                     <h3 class="font-semibold tracking-tight text-sm">
@@ -1303,8 +1301,8 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
       : [];
 
     let popupContent = `
-      <div class="w-[300px] p-0 bg-transparent text-white">
-        <div class="rounded-lg bg-transparent ">
+      <div class="w-[300px] p-0 ">
+        <div class="rounded-lg">
           <div class="flex flex-col space-y-1.5 p-4">
             <div class="flex items-center justify-between">
               <h3 class="tracking-tight">
@@ -1327,10 +1325,10 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                       <div class="mb-3 last:mb-0 pb-2 last:border-0 last:pb-0">
                         <a href="${content.url}" 
                            target="_blank" 
-                           class="text-sm text-white hover:underline block">
+                           class="text-sm  hover:underline block">
                           ${content.title}
                         </a>
-                        <div class="flex items-center gap-2 mt-1 text-xs text-white">
+                        <div class="flex items-center gap-2 mt-1 text-xs ">
                           <span>${new Date(content.insertion_date).toLocaleDateString()}</span>
                           ${content.source ? `
                             <span class="inline-flex items-center">
@@ -1341,7 +1339,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
                         </div>
                       </div>
                     `).join('')
-                  : '<div class="text-sm text-white py-2">No content available</div>'
+                  : '<div class="text-sm  py-2">No content available</div>'
                 }
               </div>
             </div>
@@ -1400,7 +1398,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
               const popup = new mapboxgl.Popup({
                 closeButton: false,
                 maxWidth: 'none',
-                className: 'custom-popup-container spinning-popup bg-transparent',
+                className: 'custom-popup-container spinning-popup',
                 offset: [0, -10]
               })
               .setLngLat(coordinates)
@@ -1527,7 +1525,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
       const popup = new mapboxgl.Popup({
         closeButton: false,
         maxWidth: 'none',
-        className: 'custom-popup-container bg-transparent route-popup',
+        className: 'custom-popup-container route-popup',
       })
         .setLngLat(coordinates)
         .setHTML(popupContent)
@@ -1660,7 +1658,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
       <div className={`absolute ${isMobile ? 'top-4 left-2 space-x-2' : 'top-8 left-2 space-x-4'} z-10 flex max-w-[90%] md:max-w-full overflow-x-auto`}>
         <div className="flex w-full min-w-8 max-w-sm items-center space-x-2">
           <Input
-            className='location-input min-w-12 text-white dark:bg-black'
+            className='location-input min-w-12  dark:bg-black'
             type="text"
             value={inputLocation}
             onChange={(e) => setInputLocation(e.target.value)}
@@ -1702,7 +1700,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
         )}
         <div className="flex items-center space-x-2">
           <select
-            className="text-white dark:bg-black"
+            className=" dark:bg-black"
             value={selectedRoute ? selectedRoute.name : ''}
             onChange={(e) => {
               const routeName = e.target.value;
@@ -1747,7 +1745,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, onLocationClick, 
         </div>
       )}
       {isMobile && menuOpen && (
-        <div className="absolute top-32 z-[52] left-4 text-white dark:bg-black p-4 rounded shadow-lg space-y-2">
+        <div className="absolute top-32 z-[52] left-4  dark:bg-black p-4 rounded shadow-lg space-y-2">
           {locationButtons.map(locationName => (
             <Button 
               key={locationName}

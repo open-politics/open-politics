@@ -280,7 +280,7 @@ export function ContentsView({ locationName, contents = [], isLoading, error, fe
           <p className="mt-4">Loading contents...</p>
         </div>
       ) : (
-        <div className="lex-grow px-4">
+        <div className="flex-grow">
           <div className="space-y-6">
             {Object.entries(groupedContents).map(([date, contents]) => (
               <div key={date} className="space-y-2">

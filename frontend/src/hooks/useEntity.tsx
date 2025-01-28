@@ -95,21 +95,26 @@ export function useEntityData(entityName: string | null, isSelected: boolean) {
     setIsLoading((prev) => ({ ...prev, contents: true }));
     try {
       const url = selectedDate
-        ? `/api/v1/locations/${encodeURIComponent(entityName)}/entities/contents?skip=${skip}&limit=${limit}&date=${encodeURIComponent(selectedDate)}`
-        : `/api/v1/locations/${encodeURIComponent(entityName)}/entities/contents?skip=${skip}&limit=${limit}`;
+        ? `/api/v2/articles/by_entity?entity=${encodeURIComponent(entityName)}&skip=${skip}&limit=${limit}&date=${encodeURIComponent(selectedDate)}`
+        : `/api/v2/articles/by_entity?entity=${encodeURIComponent(entityName)}&skip=${skip}&limit=${limit}`;
       const response = await fetch(url);
+
       if (!response.ok) {
         throw new Error('Failed to fetch contents');
       }
+
       const fetchedData = await response.json();
+
       setData((prev) => ({
         ...prev,
-        contents: skip === 0 ? fetchedData : [...prev.contents, ...fetchedData],
+        contents: skip === 0 
+          ? fetchedData.data 
+          : [...prev.contents, ...fetchedData.data],
       }));
     } catch (error) {
       setError((prev) => ({ ...prev, contents: error as Error }));
     } finally {
-      setIsLoading((prev) => ({ ...prev, contents: false })); 
+      setIsLoading((prev) => ({ ...prev, contents: false }));
     }
   }, [entityName, isSelected]);
 
@@ -139,12 +144,9 @@ export function useEntityData(entityName: string | null, isSelected: boolean) {
         timeframeTo: defaultTimeframe.to 
       });
 
-      const response = await fetch(
-        `/api/v1/entities/score_over_time/${encodeURIComponent(entityName)}?` + 
-        `score_type=${encodeURIComponent(scoreType)}` +
-        `&timeframe_from=${encodeURIComponent(defaultTimeframe.from)}` +
-        `&timeframe_to=${encodeURIComponent(defaultTimeframe.to)}`
-      );
+      const url = `/api/v2/scores/by_entity?entity=${encodeURIComponent(entityName)}&timeframe_from=${encodeURIComponent(defaultTimeframe.from)}&timeframe_to=${encodeURIComponent(defaultTimeframe.to)}`;
+
+      const response = await fetch(url);
 
       if (!response.ok) throw new Error('Failed to fetch entity scores');
       const fetchedData = await response.json();

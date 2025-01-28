@@ -20,6 +20,10 @@ from datetime import date, timedelta, datetime
 from sentinelhub import SHConfig, DataCollection, SentinelHubRequest, BBox, CRS, MimeType
 from io import BytesIO
 from PIL import Image
+from opol import OPOL
+import os
+
+opol = OPOL(mode="remote", api_key=os.getenv("OPOL_API_KEY"))
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
@@ -39,10 +43,7 @@ async def get_location_contents(
     Get articles related to a location with basic pagination.
     """
     try:
-        response = requests.get(
-            f"https://api.opol.io/postgres-service/contents_by_location/{location}?skip={skip}&limit={limit}",
-            verify=False
-        )
+        response = opol.articles.by_location(location, skip, limit)
         response.raise_for_status()
         
         return JSONResponse(content=response.json(), status_code=200)
@@ -67,11 +68,7 @@ async def get_location_entities_contents(
     Get articles related to a location with basic pagination.
     """
     try:
-        response = requests.get(
-            f"https://api.opol.io/postgres-service/contents_by_entity/{location}?skip={skip}&limit={limit}",
-            verify=False
-        )
-        response.raise_for_status()
+        response = opol.articles.by_entity(location, skip, limit)
         
         return JSONResponse(content=response.json(), status_code=200)
         
@@ -231,30 +228,15 @@ async def get_tavily_data():
     result = tavily.get_tavily_data()
     return JSONResponse(content=result, status_code=200)
 
-@router.get("/get_coordinates/")
+@router.get("/get_coordinates")
 async def get_coordinates(location: str, language: str = "en"):
     """
     Fetches the coordinates, bounding box, and location type for a given location.
     """
     try:
-        result = requests.get(
-            f"http://api.opol.io/geo-service/geocode_location?location={location}&language={language}", 
-            verify=False
-        )
-        logger.info(f"Result: {result.json()}")
-        if result.status_code == 200:
-            data = result.json()
-            coordinates = data.get('coordinates')
-            if coordinates and len(coordinates) == 2:
-                return {
-                    "location": location,
-                    "longitude": coordinates[0],
-                    "latitude": coordinates[1],
-                    "bbox": data.get('bbox'),  # Include bbox if available
-                    "location_type": data.get('location_type', 'locality')  # Include location type
-                }
-        
-        raise HTTPException(status_code=404, detail="Coordinates not found for the given location")
+        result = opol.geo.code(location)
+        print(result)
+        return result
     except Exception as e:
         logger.error(f"Error fetching coordinates for location {location}: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")

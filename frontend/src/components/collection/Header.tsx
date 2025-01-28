@@ -23,6 +23,7 @@ import {
   SidebarTrigger
 } from "@/components/ui/sidebar"; // Import Sidebar components
 import { NavUser } from '../ui/nav-user';
+import Image from 'next/image';
 
 
 const Header = () => {
@@ -48,11 +49,12 @@ const Header = () => {
 
   return (
     <nav className="fixed top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="w-full">
-        <div className="flex h-14 items-center justify-between mx-auto px-6">
+      <div className="w-full mx-auto px-2">
+        <div className="flex h-14 items-center justify-between mx-auto">
           {/* Logo */}
-          <Link href="/" className="flex items-center">
-            <span>Open Politics Project</span>
+          <Link href="/" className="flex items-center space-x-1">
+            <Image src="/logos/zen45.png" alt="Open Politics Project" width={50} height={50} />
+            <span className="text-lg font-semibold text-primary">Open Politics Project</span>
           </Link>
 
           {/* Navigation Links and Icons */}
@@ -60,7 +62,7 @@ const Header = () => {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-1">
               <Button variant="ghost" asChild>
-                <Link href="/blog/about">About</Link>
+                <Link href="/webpages/about">About</Link>
               </Button>
               <Button variant="ghost" asChild>
                 <Link href="https://docs.open-politics.org">Documentation</Link>
@@ -132,7 +134,7 @@ const Header = () => {
                     <SidebarMenu>
                       <SidebarMenuItem>
                         <SidebarMenuButton asChild className="flex items-center space-x-2 w-full">
-                          <a href="/blog/about">
+                          <a href="/webpages/about">
                             <span>About</span>
                           </a>
                         </SidebarMenuButton>

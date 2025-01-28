@@ -129,7 +129,7 @@ const Desk: React.FC = () => {
 
   const handleLocationZoom = (latitude: number, longitude: number, locationName: string) => {
     if (globeRef.current) {
-      globeRef.current.zoomToCountry(latitude, longitude, locationName);
+      globeRef.current.zoomToLocation(latitude, longitude, locationName);
     }
   };
 

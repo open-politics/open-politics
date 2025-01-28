@@ -20,16 +20,8 @@ const withAuth = (WrappedComponent: React.ComponentType) => {
       }
     }, [isLoading, isLoggedIn, router]);
 
-    if (!isClient) {
-      return null; // Return null on server-side
-    }
-
-    if (isLoading) {
+    if (!isClient || isLoading) {
       return <LottiePlaceholder />;
-    }
-
-    if (!isLoggedIn) {
-      return null;
     }
 
     return <WrappedComponent {...props} />;

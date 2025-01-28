@@ -29,7 +29,7 @@ export interface DocLink {
   export const docsLinks: DocLink[] = [
     {
       label: "About Open Politics",
-      href: "/blog/about",
+      href: "/webpages/about",
       isPublished: true,
       description: "Learn about the vision and mission of Open Politics.",
       isHighlighted: true,

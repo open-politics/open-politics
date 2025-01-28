@@ -43,7 +43,7 @@ export function DeskSidebar() {
     <Sidebar 
       variant="inset" 
       className="w-64 flex-none h-full border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
-    >
+    z>
       <SidebarHeader className="h-16 flex items-center px-4 border-b">
         <SidebarMenu>
           <SidebarMenuItem>

@@ -89,7 +89,7 @@ export function useSearch(
 
   const fetchOPOLContents = async (query: string) => {
     try {
-      const response = await axios.get(`/api/v2/articles`, {
+      const response = await axios.get(`/api/v2/articles/basic/`, {
         params: {
           query: query,
           limit: 20,
@@ -158,13 +158,13 @@ export function useSearch(
           
           const locationType = locationData.location_type || 'country';
           
-          if (globeRef?.current?.zoomToCountry) {
+          if (globeRef?.current?.zoomToLocation) {
             let dynamicZoom = 4;
             if (locationData.bbox) {
               dynamicZoom = calculateZoomLevel(locationData.bbox);
             }
             
-            globeRef.current.zoomToCountry(
+            globeRef.current.zoomToLocation(
               locationData.coordinates.latitude,
               locationData.coordinates.longitude,
               locationData.country_name,

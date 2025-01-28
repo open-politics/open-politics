@@ -11,10 +11,7 @@ interface LocationData {
     total: number;
     statistics: ContentStatistics;
   };
-  locationMetadata: {
-    isOECDCountry: boolean;
-    isLegislativeEnabled: boolean;
-  };
+  locationMetadata: LocationMetadata;
 }
 
 interface ContentStatistics {
@@ -54,15 +51,21 @@ interface Content {
   publication_date: string | null;
   content_language?: string | null;
   author?: string | null;
-  relevance_metrics: {
-    entity_count: number;
-    location_mentions: number;
-    total_frequency: number;
-    relevance_score: number;
-  };
+  relevance_metrics: RelevanceMetrics;
   entities: Entity[];
   tags: Tag[];
   evaluation: ContentEvaluation;
+}
+
+interface RelevanceMetrics {
+  entity_count: number;
+  location_mentions: number;
+  total_frequency: number;
+  relevance_score: number;
+}
+
+interface Tag {
+  // Define tag properties
 }
 
 interface ContentEvaluation {
@@ -94,6 +97,11 @@ interface FetchContentsParams {
   minRelevance?: number;
 }
 
+interface LocationMetadata {
+  isOECDCountry: boolean;
+  isLegislativeEnabled: boolean;
+}
+
 export function useLocationData(locationName: string | null) {
   const [data, setData] = useState<LocationData>({
     legislativeData: [],
@@ -103,11 +111,11 @@ export function useLocationData(locationName: string | null) {
     entities: [],
     locationMetadata: {
       isOECDCountry: false,
-      isLegislativeEnabled: false
-    }
+      isLegislativeEnabled: false,
+    },
   });
 
-  const [isLoading, setIsLoading] = useState({
+  const [isLoading, setIsLoading] = useState<Record<string, boolean>>({
     legislative: false,
     economic: false,
     leaderInfo: false,
@@ -115,13 +123,7 @@ export function useLocationData(locationName: string | null) {
     entities: false,
   });
 
-  const [error, setError] = useState<{
-    legislative: Error | null;
-    economic: Error | null;
-    leaderInfo: Error | null;
-    contents: Error | null;
-    entities: Error | null;
-  }>({
+  const [error, setError] = useState<Record<string, Error | null>>({
     legislative: null,
     economic: null,
     leaderInfo: null,
@@ -137,105 +139,99 @@ export function useLocationData(locationName: string | null) {
     headOfGovernmentImage: rawData['Head of Government Image'],
   });
 
-  const fetchData = useCallback(async (dataType: keyof LocationData, url: string) => {
-    if (!locationName) return;
+  const genericFetch = useCallback(
+    async <T,>(dataType: keyof LocationData, url: string, mapper?: (data: any) => T) => {
+      if (!locationName) return;
 
-    setIsLoading(prev => ({ ...prev, [dataType]: true }));
-    try {
-      const response = await axios.get(url, {
-        params: {
-          query: locationName
-        }
-      });
-      if (dataType === 'leaderInfo') {
-        const mappedLeaderInfo = mapLeaderInfo(response.data);
-        setData(prev => ({ ...prev, leaderInfo: mappedLeaderInfo }));
-      } else {
-        setData(prev => ({ ...prev, [dataType]: response.data }));
+      setIsLoading((prev) => ({ ...prev, [dataType]: true }));
+      try {
+        const response = await axios.get(url, {
+          params: { query: locationName },
+        });
+        const fetchedData: T = mapper ? mapper(response.data) : response.data;
+        setData((prev) => ({ ...prev, [dataType]: fetchedData }));
+      } catch (err) {
+        setError((prev) => ({
+          ...prev,
+          [dataType]: err instanceof Error ? err : new Error(`Error fetching ${dataType}`),
+        }));
+      } finally {
+        setIsLoading((prev) => ({ ...prev, [dataType]: false }));
       }
-    } catch (err) {
-      setError(prev => ({ 
-        ...prev, 
-        [dataType]: err instanceof Error ? err : new Error(`An error occurred fetching ${dataType}`) 
-      }));
-    } finally {
-      setIsLoading(prev => ({ ...prev, [dataType]: false }));
-    }
-  }, [locationName]);
+    },
+    [locationName]
+  );
 
-  const fetchContents = useCallback(async ({ skip = 0 }: { skip?: number }) => {
-    if (!locationName) return;
-    
-    setIsLoading((prev) => ({ ...prev, contents: true }));
-    try {
-      const response = await axios.get(
-        `/api/v2/articles/by_location`, 
-        {
+  const fetchContents = useCallback(
+    async ({ skip = 0 }: FetchContentsParams = {}) => {
+      if (!locationName) return;
+
+      setIsLoading((prev) => ({ ...prev, contents: true }));
+      try {
+        const response = await axios.get<ContentResponse>('/api/v2/articles/by_entity/', {
           params: {
-            query: locationName,
+            entity: encodeURIComponent(locationName),
             skip,
-            limit: 20
-          }
-        }
-      );
-      
-      const data: ContentResponse = response.data;
-      
-      setData((prev) => ({
-        ...prev,
-        contents: skip === 0 ? data.contents : [...prev.contents, ...data.contents],
-      }));
+            limit: 20,
+          },
+        });
 
-      return data;
-    } catch (error) {
-      setError((prev) => ({ ...prev, contents: error as Error }));
-    } finally {
-      setIsLoading((prev) => ({ ...prev, contents: false }));
-    }
-  }, [locationName]);
+        setData((prev) => ({
+          ...prev,
+          contents: skip === 0 ? response.data.contents : [...prev.contents, ...response.data.contents],
+          contentMetadata: response.data.statistics ? { statistics: response.data.statistics, total: response.data.total_results } : prev.contentMetadata,
+        }));
+
+        return response.data;
+      } catch (err) {
+        setError((prev) => ({ ...prev, contents: err as Error }));
+      } finally {
+        setIsLoading((prev) => ({ ...prev, contents: false }));
+      }
+    },
+    [locationName]
+  );
 
   const resetContents = useCallback(() => {
     setData((prev) => ({ ...prev, contents: [] }));
   }, []);
 
-  const fetchEntities = useCallback(async (query: string, skip: number, limit: number) => {
-    if (!locationName) return;
-    setIsLoading((prev) => ({ ...prev, entities: true }));
-    try {
-      const response = await axios.get(`/api/v2/entities/by_location`, {
-        params: {
-          query: query,
-          skip,
-          limit
-        }
-      });
-      const data: Entity[] = response.data;
+  const fetchEntities = useCallback(
+    async (query: string, skip: number, limit: number) => {
+      if (!locationName) return;
 
-      setData((prev) => ({
-        ...prev,
-        entities: skip === 0 ? data : [...prev.entities, ...data],
-      }));
-    } catch (error) {
-      setError((prev) => ({ ...prev, entities: error as Error }));
-    } finally {
-      setIsLoading((prev) => ({ ...prev, entities: false }));
-    }
-  }, [locationName]);
+      setIsLoading((prev) => ({ ...prev, entities: true }));
+      try {
+        const response = await axios.get('/api/v2/entities/by_entity', {
+          params: {
+            entity: encodeURIComponent(query),
+            skip,
+            limit
+          },
+        });
+
+        setData((prev) => ({
+          ...prev,
+          entities: skip === 0 ? response.data : [...prev.entities, ...response.data],
+        }));
+      } catch (err) {
+        setError((prev) => ({ ...prev, entities: err as Error }));
+      } finally {
+        setIsLoading((prev) => ({ ...prev, entities: false }));
+      }
+    },
+    [locationName]
+  );
 
   const fetchCoordinates = useCallback(async (query: string) => {
     try {
-      const response = await axios.get(`/api/v2/classification/location_from_query`, {
-        params: { query }
+      const response = await axios.get('/api/v2/classification/location_from_query', {
+        params: { query },
       });
-      if (response.data.error) {
-        return null;
-      }
-      return {
-        longitude: response.data.longitude,
-        latitude: response.data.latitude
-      };
-    } catch (error) {
-      console.error('Error fetching coordinates:', error);
+      if (response.data.error) return null;
+      return { longitude: response.data.longitude, latitude: response.data.latitude };
+    } catch (err) {
+      console.error('Error fetching coordinates:', err);
       return null;
     }
   }, []);
@@ -244,11 +240,8 @@ export function useLocationData(locationName: string | null) {
     if (!locationName) return;
 
     try {
-      const response = await axios.get(`/api/v1/locations/metadata/${encodeURIComponent(locationName)}`);
-      setData(prev => ({
-        ...prev,
-        locationMetadata: response.data
-      }));
+      const response = await axios.get<LocationMetadata>(`/api/v1/locations/metadata/${encodeURIComponent(locationName)}`);
+      setData((prev) => ({ ...prev, locationMetadata: response.data }));
     } catch (err) {
       console.error('Error fetching location metadata:', err);
     }
@@ -256,34 +249,19 @@ export function useLocationData(locationName: string | null) {
 
   const fetchEconomicData = useCallback(async () => {
     if (!locationName || !data.locationMetadata.isOECDCountry) return;
-  
-    setIsLoading(prev => ({ ...prev, economic: true }));
-    try {
-      const response = await axios.get(`/api/v1/locations/econ_data/${encodeURIComponent(locationName)}`);
-      setData(prev => ({ ...prev, economicData: response.data }));
-    } catch (err) {
-      setError(prev => ({ 
-        ...prev, 
-        economic: err instanceof Error ? err : new Error('An error occurred fetching economic data') 
-      }));
-    } finally {
-      setIsLoading(prev => ({ ...prev, economic: false }));
-    }
-  }, [locationName, data.locationMetadata.isOECDCountry]);
 
-  const getContentStatistics = useCallback(() => {
-    return data.contentMetadata?.statistics || null;
-  }, [data.contentMetadata]);
+    await genericFetch<any[]>('economicData', `/api/v1/locations/econ_data/${encodeURIComponent(locationName)}`);
+  }, [locationName, data.locationMetadata.isOECDCountry, genericFetch]);
 
   useEffect(() => {
     if (locationName) {
       fetchLocationMetadata();
       fetchContents({ skip: 0 });
-      fetchData('legislativeData', `/api/v1/locations/legislation/${encodeURIComponent(locationName)}`);
-      fetchData('leaderInfo', `/api/v1/locations/leaders/${encodeURIComponent(locationName)}`);
+      genericFetch('legislativeData', `/api/v1/locations/legislation/${encodeURIComponent(locationName)}`);
+      genericFetch('leaderInfo', `/api/v1/locations/leaders/${encodeURIComponent(locationName)}`, mapLeaderInfo);
       fetchEntities(locationName, 0, 50);
     }
-  }, [locationName, fetchContents, fetchData, fetchEntities, fetchLocationMetadata]);
+  }, [locationName, fetchContents, genericFetch, fetchEntities, fetchLocationMetadata]);
 
   return {
     data,
@@ -294,19 +272,15 @@ export function useLocationData(locationName: string | null) {
     fetchEntities,
     fetchCoordinates,
     fetchEconomicData,
-    getContentStatistics,
+    getContentStatistics: useCallback(() => data.contentMetadata?.statistics || null, [data.contentMetadata]),
   };
 }
 
 export function mapLabelToStatus(label: string): string {
-  switch (label) {
-    case 'red':
-      return 'rejected';
-    case 'yellow':
-      return 'pending';
-    case 'green':
-      return 'accepted';
-    default:
-      return 'unknown';
-  }
+  const statusMap: Record<string, string> = {
+    red: 'rejected',
+    yellow: 'pending',
+    green: 'accepted',
+  };
+  return statusMap[label] || 'unknown';
 }

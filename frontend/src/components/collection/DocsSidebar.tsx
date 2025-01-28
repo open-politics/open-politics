@@ -1,87 +1,58 @@
-'use client';
+'use client'
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { NotebookText, ChevronRight, ChevronDown } from 'lucide-react';
-import { docsLinks } from "@/data/docLinks";
+import { Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar"
+import Link from "next/link"
 
-const DocsSidebar = () => {
+const docs = [
+  {
+    title: "Documentation 1",
+    url: "/docs/doc1",
+  },
+  {
+    title: "Documentation 2",
+    url: "/docs/doc2",
+  },
+  {
+    title: "Documentation 3",
+    url: "/docs/doc3",
+  },
+]
+
+export function DocsSidebar() {
   return (
-    <>
-      {/* Mobile Sidebar */}
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button variant="outline" size="icon" className="fixed top-16 bg-opacity-75 left-4 z-40 xl:hidden">
-            <NotebookText className="h-4 w-4" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-          <SidebarContent />
-        </SheetContent>
-      </Sheet>
+    <Sidebar 
+      variant="floating" 
+      className="bg-transparent"
+    >
+      <SidebarHeader className="h-16 flex items-center px-4 border-b">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <Link href="/docs" className="flex items-center space-x-2">
+                <span className="font-semibold">Public Docs</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+      
+      <SidebarContent className="flex-1 px-4 py-2">
+        <SidebarMenu>
+          {docs.map((doc) => (
+            <SidebarMenuItem key={doc.title}>
+              <SidebarMenuButton asChild className="flex items-center space-x-2 w-full">
+                <Link href={doc.url}>
+                  <span>{doc.title}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarContent>
 
-      {/* Desktop Sidebar */}
-      <aside id="desktop-sidebar" className="hidden xl:block w-96 sticky top-0 left-2 h-screen overflow-y-auto">
-        <div className="pl-8 pr-4">
-          <SidebarContent />
-        </div>
-      </aside>
-    </>
-  );
-};
-
-const SidebarContent = () => {
-  return (
-    <div className="flex flex-col h-full">
-      <div className="flex-shrink-0 py-6 border-b">
-        <Link href="/documentation" className="text-lg relative hover:underline">Documentation</Link>
-      </div>
-      <ScrollArea className="flex-grow">  
-        <nav className="py-2">
-          <div className="space-y-1">
-            {docsLinks
-              .filter(doc => !doc.isTimeline)
-              .map((doc) => (
-                doc.isPublished && (
-                  <div key={doc.href}>
-                    <Link href={doc.href} className="block py-2 px-3 rounded-md  transition-colors hover:text-blue-500">
-                      {doc.label}
-                    </Link>
-                    {doc.topics && (
-                      <div className="ml-4">
-                        {doc.topics.map((topic) => (
-                          topic.isPublished && (
-                            <div key={topic.href}>
-                              <Link href={topic.href} className="block py-1 px-3 rounded-md  transition-colors hover:text-blue-500">
-                                {topic.label}
-                              </Link>
-                              {topic.subtopics && (
-                                <div className="ml-4">
-                                  {topic.subtopics.map((subtopic) => (
-                                    subtopic.isPublished && (
-                                      <Link key={subtopic.href} href={subtopic.href} className="block py-1 px-3 rounded-md  transition-colors hover:text-blue-500">
-                                        {subtopic.label}
-                                      </Link>
-                                    )
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          )
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )
-              ))}
-          </div>
-        </nav>
-      </ScrollArea>
-    </div>
-  );
-};
-
-export default DocsSidebar;
+      <SidebarFooter className="border-t p-4">
+        {/* Optional footer content */}
+      </SidebarFooter>
+    </Sidebar>
+  )
+}

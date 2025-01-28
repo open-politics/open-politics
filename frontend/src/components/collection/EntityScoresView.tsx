@@ -28,6 +28,7 @@ interface EntityScoresViewProps {
   scoreData: EntityScoreData | null;
   isLoading: boolean;
   onDateSelect?: (date: string) => void;
+  scoreError?: Error | null;
 }
 
 const SCORE_TYPES = [
@@ -86,7 +87,8 @@ export function EntityScoresView({
   fetchEntityScores, 
   scoreData, 
   isLoading,
-  onDateSelect 
+  onDateSelect,
+  scoreError
 }: EntityScoresViewProps) {
   const [selectedScoreType, setSelectedScoreType] = useState(SCORE_TYPES[0].value);
   const [selectedTimeRange, setSelectedTimeRange] = useState('30d');
@@ -224,6 +226,12 @@ export function EntityScoresView({
               </Button>
             </div>
 
+            {scoreError && (
+              <p className="text-center text-red-500">
+                {scoreError.message || 'An unexpected error occurred.'}
+              </p>
+            )}
+
             {scoreData && scoreData.scores && scoreData.scores.length > 0 ? (
               <div className="highlight-bar-charts" style={{ userSelect: 'none', width: '100%', maxWidth: '100%' }}>
                 <ResponsiveContainer width="100%" height={300}>
@@ -237,7 +245,7 @@ export function EntityScoresView({
                     }}
                     onClick={handleChartClick}
                   >
-                    <CartesianGrid strokeDasharray="3 3" />
+                    {/* <CartesianGrid strokeDasharray="0 0" /> */}
                     <XAxis 
                       dataKey="date" 
                       tickFormatter={(date) => format(parseISO(date), 'MM/dd/yyyy')}
@@ -258,7 +266,7 @@ export function EntityScoresView({
                       dataKey="max_score"
                       stroke="#82ca9d"
                       strokeWidth={1}
-                      strokeDasharray="3 3"
+                      strokeDasharray="0 0"
                       dot={false}
                     />
                     <Line
@@ -266,14 +274,14 @@ export function EntityScoresView({
                       dataKey="min_score"
                       stroke="#ff7f7f"
                       strokeWidth={1}
-                      strokeDasharray="3 3"
+                      strokeDasharray="0 0"
                       dot={false}
                     />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
             ) : (
-              <p className="text-center text-gray-500">No metrics available for the selected range and score type.</p>
+              !scoreError && <p className="text-center text-gray-500">No metrics available for the selected range and score type.</p>
             )}
           </CardContent>
         </Card>

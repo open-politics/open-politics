@@ -484,7 +484,7 @@ const Globe = React.forwardRef<any, GlobeProps>(({ geojsonUrl, setArticleContent
     loadGeoJSONEvents: (eventType: string) => {
       fetchGeoJSONEventsData([eventType]);
     },
-    zoomToCountry: (latitude: number, longitude: number, countryName: string) => {
+    zoomToLocation: (latitude: number, longitude: number, countryName: string) => {
       handleCountryZoom(latitude, longitude, countryName);
     }
   }));

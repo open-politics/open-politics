@@ -2,9 +2,6 @@
 
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/collection/AppSidebar"
-import useAuth from "@/hooks/useAuth"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,18 +10,22 @@ import {
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb"
 import LottiePlaceholder from "@/components/ui/lottie-placeholder"
+import useAuth from "@/hooks/useAuth"
+import { useRouter } from "next/navigation"
+import { useEffect } from "react"
 
 export default function DesksLayout({ children }: { children: React.ReactNode }) {
-  const { user, isLoggedIn, isLoading } = useAuth()
-  const router = useRouter()
+  const { user, isLoading, isLoggedIn } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     if (!isLoading && !isLoggedIn) {
       router.push('/login')
     }
+
   }, [isLoading, isLoggedIn, router])
 
-  if (isLoading) {
+  if (typeof window === 'undefined' || isLoading) {
     return <LottiePlaceholder />
   }
 
@@ -33,7 +34,7 @@ export default function DesksLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="h-screen flex flex-col md:flex-row overflow-hidden">
+    <div className="h-full max-h-screen flex flex-col md:flex-row overflow-hidden">
       <SidebarProvider>
         <AppSidebar className="fixed md:relative h-full md:h-auto" />
         <SidebarInset className="flex-1 flex flex-col pt-16">

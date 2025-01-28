@@ -1,37 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import Lottie from 'lottie-react';
+'use client'
 
+import React, { useState, useEffect } from 'react';
+import Lottie, { useLottie } from "lottie-react";
+import animationData from "public/animations/lottie-globe-loader.json"
 
 const LottiePlaceholder: React.FC = () => {
-  const [animationData, setAnimationData] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
+  const options = {
+    animationData: animationData,
+    loop: true,
+    speed: 4.5
+  };
 
-  useEffect(() => {
-    fetch('/animations/lottie-globe.lottie')
-      .then(response => response.json())
-      .then(data => setAnimationData(data))
-      .catch(err => {
-        console.error('Error loading animation:', err);
-        setError('Failed to load animation');
-      });
-  }, []);
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (!animationData) {
-    return <div>Loading...</div>;
-  }
+  const { View } = useLottie(options);
 
   return (
-    <Lottie
-      animationData={animationData}
-      loop={true}
-      autoplay={true}
-      style={{ width: '100%', height: '100%' }}
-    />
+    <div className="w-full h-full flex justify-center items-center">
+      {View}
+    </div>
   );
 };
+
 
 export default LottiePlaceholder;

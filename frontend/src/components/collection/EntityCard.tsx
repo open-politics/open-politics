@@ -68,8 +68,10 @@ const EntityCard: React.FC<EntityCardProps> = ({ entity, isSelected, onSelect })
   };
 
   const filteredContents = useMemo(() => {
-    if (!selectedDate || !data.contents) return data.contents;
-
+    if (!data.contents) return [];  // return an empty array if data.contents is falsey
+    if (!selectedDate) {
+      return data.contents;        // assume data.contents is guaranteed to be an array
+    }
     const selectedDateTime = parseISO(selectedDate);
     return data.contents.filter(content => {
       const contentDate = getContentDate(content);

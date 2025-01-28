@@ -154,7 +154,7 @@ const EntitiesView: React.FC<EntitiesViewProps> = ({ leaderInfo, entities, varia
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 h-full overflow-y-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 h-full overflow-y-auto">
           {entities && entities
             .filter((entity, index, self) => 
               index === self.findIndex((t) => (

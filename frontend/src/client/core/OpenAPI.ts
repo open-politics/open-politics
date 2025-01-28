@@ -38,36 +38,21 @@ export type OpenAPIConfig = {
 	USERNAME?: string | Resolver<string> | undefined;
 	VERSION: string;
 	WITH_CREDENTIALS: boolean;
-	interceptors: {
-	  request: Interceptors<AxiosRequestConfig>;
-	  response: Interceptors<AxiosResponse>;
-	};
-  };
-  
-  export const OpenAPI: OpenAPIConfig = {
+	interceptors: {request: Interceptors<AxiosRequestConfig>;
+		response: Interceptors<AxiosResponse>;};
+};
+
+export const OpenAPI: OpenAPIConfig = {
 	BASE: '',
 	CREDENTIALS: 'include',
 	ENCODE_PATH: undefined,
-	HEADERS: async () => {
-	  // Dynamically get the token for each request
-	  const token = typeof window !== 'undefined' 
-		? localStorage.getItem('access_token') 
-		: null;
-	  
-	  // Return the headers object
-	  return {
-		'Authorization': token ? `Bearer ${token}` : '',
-		'Content-Type': 'application/json',
-	  };
-	},
+	HEADERS: undefined,
 	PASSWORD: undefined,
 	RESULT: 'body',
 	TOKEN: undefined,
 	USERNAME: undefined,
 	VERSION: '0.1.0',
 	WITH_CREDENTIALS: false,
-	interceptors: {
-	  request: new Interceptors(),
-	  response: new Interceptors(),
+	interceptors: {request: new Interceptors(),response: new Interceptors(),
 	},
-  };
+};

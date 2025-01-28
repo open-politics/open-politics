@@ -2,24 +2,953 @@ import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
 
-import type { Body_login_login_access_token,Message,NewPassword,Token,UserOut,UpdatePassword,UserCreate,UserCreateOpen,UsersOut,UserUpdate,UserUpdateMe,ItemCreate,ItemOut,ItemsOut,ItemUpdate } from './models';
+import type { Request,MostRelevantEntitiesRequest,SearchType,Body_login_login_access_token,Message,NewPassword,Token,UserOut,UpdatePassword,UserCreate,UserCreateOpen,UsersOut,UserUpdate,UserUpdateMe,ItemCreate,ItemOut,ItemsOut,ItemUpdate,SearchHistoriesOut,SearchHistory,SearchHistoryCreate,WorkspaceCreate,WorkspaceRead,WorkspacesOut,ClassificationSchemeCreate,ClassificationSchemeRead,ClassificationSchemeUpdate,ArticleResponse } from './models';
 
-export type TDataLoginAccessToken = {
-                formData: Body_login_login_access_token
-                
-            }
-export type TDataRecoverPassword = {
-                email: string
-                
-            }
-export type TDataResetPassword = {
-                requestBody: NewPassword
-                
-            }
-export type TDataRecoverPasswordHtmlContent = {
-                email: string
-                
-            }
+export type AppData = {
+        
+    }
+
+export type LocationsData = {
+        GetLocationContents: {
+                    limit?: number
+location: string
+skip?: number
+                    
+                };
+GetLocationEntitiesContents: {
+                    limit?: number
+location: string
+skip?: number
+                    
+                };
+LocationFromQuery: {
+                    query: string
+                    
+                };
+GeojsonEventsView: {
+                    eventType: string
+                    
+                };
+GetLocationEntities: {
+                    limit?: number
+locationName: string
+minRelevance?: number
+skip?: number
+                    
+                };
+GetLeaderInfo: {
+                    state: string
+                    
+                };
+GetLegislationData: {
+                    state: string
+                    
+                };
+GetEconData: {
+                    indicators?: Array<string>
+state: string
+                    
+                };
+GetCoordinates: {
+                    language?: string
+location: string
+                    
+                };
+GetGeojsonForArticleIds: {
+                    requestBody: Array<string>
+                    
+                };
+GetLocationMetadata: {
+                    location: string
+                    
+                };
+ChannelRoute: {
+                    path: string
+requestBody: Request
+serviceName: string
+                    
+                };
+    }
+
+export type SearchData = {
+        GetContents: {
+                    classificationScores?: string | null
+entities?: Array<string> | null
+excludeKeywords?: Array<string> | null
+keyword?: string | null
+keywordWeights?: string | null
+limit?: number
+locations?: Array<string> | null
+newsCategory?: string | null
+searchQuery?: string | null
+searchType?: SearchType
+secondaryCategories?: Array<string> | null
+skip?: number
+topics?: Array<string> | null
+                    
+                };
+GetMostRelevantEntities: {
+                    requestBody: MostRelevantEntitiesRequest
+                    
+                };
+SearchSynthesizer: {
+                    searchQuery: string
+                    
+                };
+    }
+
+export type EntitiesData = {
+        SearchEntities: {
+                    /**
+ * Maximum number of records to return
+ */
+limit?: number
+/**
+ * Search query for entities
+ */
+query: string
+/**
+ * Number of records to skip
+ */
+skip?: number
+                    
+                };
+GetEntityDetails: {
+                    /**
+ * Entity for details
+ */
+entity: string
+/**
+ * Maximum number of records to return
+ */
+limit?: number
+/**
+ * Number of records to skip
+ */
+skip?: number
+                    
+                };
+SearchEntities1: {
+                    /**
+ * Maximum number of records to return
+ */
+limit?: number
+/**
+ * Search query for entities
+ */
+query: string
+/**
+ * Number of records to skip
+ */
+skip?: number
+                    
+                };
+GetEntityDetails1: {
+                    /**
+ * Entity for details
+ */
+entity: string
+/**
+ * Maximum number of records to return
+ */
+limit?: number
+/**
+ * Number of records to skip
+ */
+skip?: number
+                    
+                };
+    }
+
+export type LoginData = {
+        LoginAccessToken: {
+                    formData: Body_login_login_access_token
+                    
+                };
+RecoverPassword: {
+                    email: string
+                    
+                };
+ResetPassword: {
+                    requestBody: NewPassword
+                    
+                };
+RecoverPasswordHtmlContent: {
+                    email: string
+                    
+                };
+    }
+
+export type UsersData = {
+        ReadUsers: {
+                    limit?: number
+skip?: number
+                    
+                };
+CreateUser: {
+                    requestBody: UserCreate
+                    
+                };
+UpdateUserMe: {
+                    requestBody: UserUpdateMe
+                    
+                };
+UpdatePasswordMe: {
+                    requestBody: UpdatePassword
+                    
+                };
+CreateUserOpen: {
+                    requestBody: UserCreateOpen
+                    
+                };
+ReadUserById: {
+                    userId: number
+                    
+                };
+UpdateUser: {
+                    requestBody: UserUpdate
+userId: number
+                    
+                };
+DeleteUser: {
+                    userId: number
+                    
+                };
+    }
+
+export type UtilsData = {
+        TestEmail: {
+                    emailTo: string
+                    
+                };
+    }
+
+export type ItemsData = {
+        ReadItems: {
+                    limit?: number
+skip?: number
+                    
+                };
+CreateItem: {
+                    requestBody: ItemCreate
+                    
+                };
+ReadItem: {
+                    id: number
+                    
+                };
+UpdateItem: {
+                    id: number
+requestBody: ItemUpdate
+                    
+                };
+DeleteItem: {
+                    id: number
+                    
+                };
+    }
+
+export type SearchHistoryData = {
+        CreateSearchHistory: {
+                    requestBody: SearchHistoryCreate
+                    
+                };
+ReadSearchHistories: {
+                    limit?: number
+skip?: number
+                    
+                };
+    }
+
+export type WorkspacesData = {
+        CreateWorkspace: {
+                    requestBody: WorkspaceCreate
+                    
+                };
+ReadWorkspaces: {
+                    limit?: number
+skip?: number
+                    
+                };
+ReadWorkspaceById: {
+                    workspaceId: number
+                    
+                };
+DeleteWorkspace: {
+                    workspaceId: number
+                    
+                };
+UpdateWorkspace: {
+                    requestBody: WorkspaceCreate
+workspaceId: number
+                    
+                };
+    }
+
+export type ClassificationSchemesData = {
+        CreateClassificationScheme: {
+                    requestBody: ClassificationSchemeCreate
+workspaceId: number
+                    
+                };
+ReadClassificationSchemes: {
+                    limit?: number
+skip?: number
+workspaceId: number
+                    
+                };
+ReadClassificationScheme: {
+                    schemeId: number
+workspaceId: number
+                    
+                };
+UpdateClassificationScheme: {
+                    requestBody: ClassificationSchemeUpdate
+schemeId: number
+workspaceId: number
+                    
+                };
+DeleteClassificationScheme: {
+                    schemeId: number
+workspaceId: number
+                    
+                };
+    }
+
+export type GeoData = {
+        GeojsonEventsView: {
+                    eventType: string
+                    
+                };
+    }
+
+export type ArticlesData = {
+        GetArticles: {
+                    /**
+ * Maximum number of articles to return
+ */
+limit?: number
+/**
+ * Search query for articles
+ */
+query: string
+/**
+ * Number of articles to skip
+ */
+skip?: number
+                    
+                };
+ArticlesByEntity: {
+                    /**
+ * Date for articles
+ */
+date?: string
+/**
+ * Entity for articles
+ */
+entity: string
+/**
+ * Maximum number of articles to return
+ */
+limit?: number
+/**
+ * Number of articles to skip
+ */
+skip?: number
+                    
+                };
+    }
+
+export type ClassificationData = {
+        GetLocationFromQuery: {
+                    query: string
+                    
+                };
+    }
+
+export type FlowsData = {
+        Report: {
+                    query: string
+                    
+                };
+    }
+
+export type ReportData = {
+        Report: {
+                    query: string
+                    
+                };
+    }
+
+export type TasksData = {
+        QueryExpansion: {
+                    query: string
+                    
+                };
+    }
+
+export type ScoresData = {
+        GetEntityScoresInTimeframe: {
+                    entity: string
+timeframeFrom?: string
+timeframeTo?: string
+                    
+                };
+    }
+
+export class AppService {
+
+	/**
+	 * Readyz
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static readyz(): CancelablePromise<unknown> {
+				return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/healthz/readiness',
+		});
+	}
+
+	/**
+	 * Liveness
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static liveness(): CancelablePromise<unknown> {
+				return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/healthz/liveness',
+		});
+	}
+
+	/**
+	 * Healthz
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static healthz(): CancelablePromise<unknown> {
+				return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/healthz/healthz',
+		});
+	}
+
+}
+
+export class LocationsService {
+
+	/**
+	 * Get Location Contents
+	 * Get articles related to a location with basic pagination.
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static getLocationContents(data: LocationsData['GetLocationContents']): CancelablePromise<unknown> {
+		const {
+location,
+skip = 0,
+limit = 20,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/locations/{location}/contents',
+			path: {
+				location
+			},
+			query: {
+				skip, limit
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Get Location Entities Contents
+	 * Get articles related to a location with basic pagination.
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static getLocationEntitiesContents(data: LocationsData['GetLocationEntitiesContents']): CancelablePromise<unknown> {
+		const {
+location,
+skip = 0,
+limit = 20,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/locations/{location}/entities/contents',
+			path: {
+				location
+			},
+			query: {
+				skip, limit
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Location From Query
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static locationFromQuery(data: LocationsData['LocationFromQuery']): CancelablePromise<unknown> {
+		const {
+query,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/locations/location_from_query',
+			query: {
+				query
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Geojson View
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static geojsonView(): CancelablePromise<unknown> {
+				return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/locations/geojson/',
+		});
+	}
+
+	/**
+	 * Geojson Events View
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static geojsonEventsView(data: LocationsData['GeojsonEventsView']): CancelablePromise<unknown> {
+		const {
+eventType,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/locations/geojson_events',
+			query: {
+				event_type: eventType
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Dashboard View
+	 * @returns string Successful Response
+	 * @throws ApiError
+	 */
+	public static dashboardView(): CancelablePromise<string> {
+				return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/locations/dashboard',
+		});
+	}
+
+	/**
+	 * Get Location Entities
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static getLocationEntities(data: LocationsData['GetLocationEntities']): CancelablePromise<unknown> {
+		const {
+locationName,
+skip = 0,
+limit = 50,
+minRelevance = 0,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/locations/{location_name}/entities',
+			path: {
+				location_name: locationName
+			},
+			query: {
+				skip, limit, min_relevance: minRelevance
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Get Leader Info
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static getLeaderInfo(data: LocationsData['GetLeaderInfo']): CancelablePromise<unknown> {
+		const {
+state,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/locations/leaders/{state}',
+			path: {
+				state
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Get Legislation Data
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static getLegislationData(data: LocationsData['GetLegislationData']): CancelablePromise<unknown> {
+		const {
+state,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/locations/legislation/{state}',
+			path: {
+				state
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Get Econ Data
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static getEconData(data: LocationsData['GetEconData']): CancelablePromise<unknown> {
+		const {
+state,
+indicators = [
+    "GDP",
+    "GDP_GROWTH"
+],
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/locations/econ_data/{state}',
+			path: {
+				state
+			},
+			query: {
+				indicators
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Update Leaders
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static updateLeaders(): CancelablePromise<unknown> {
+				return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/locations/update_leaders/',
+		});
+	}
+
+	/**
+	 * Get Tavily Data
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static getTavilyData(): CancelablePromise<unknown> {
+				return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/locations/get_articles',
+		});
+	}
+
+	/**
+	 * Get Coordinates
+	 * Fetches the coordinates, bounding box, and location type for a given location.
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static getCoordinates(data: LocationsData['GetCoordinates']): CancelablePromise<unknown> {
+		const {
+location,
+language = 'en',
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/locations/get_coordinates',
+			query: {
+				location, language
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Get Geojson For Article Ids
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static getGeojsonForArticleIds(data: LocationsData['GetGeojsonForArticleIds']): CancelablePromise<unknown> {
+		const {
+requestBody,
+} = data;
+		return __request(OpenAPI, {
+			method: 'POST',
+			url: '/api/v1/locations/get_geojson_for_article_ids',
+			body: requestBody,
+			mediaType: 'application/json',
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Get Location Metadata
+	 * Get metadata about a location including supported features
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static getLocationMetadata(data: LocationsData['GetLocationMetadata']): CancelablePromise<unknown> {
+		const {
+location,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/locations/metadata/{location}',
+			path: {
+				location
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Channel Route
+	 * A channel route that forwards requests to a specified service.
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static channelRoute(data: LocationsData['ChannelRoute']): CancelablePromise<unknown> {
+		const {
+serviceName,
+path,
+requestBody,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/locations/channel/{service_name}/{path}',
+			path: {
+				service_name: serviceName, path
+			},
+			body: requestBody,
+			mediaType: 'application/json',
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+}
+
+export class SearchService {
+
+	/**
+	 * Get Contents
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static getContents(data: SearchData['GetContents'] = {}): CancelablePromise<unknown> {
+		const {
+searchQuery,
+searchType = 'semantic',
+skip = 0,
+limit = 20,
+newsCategory,
+secondaryCategories,
+keyword,
+entities,
+locations,
+topics,
+classificationScores,
+keywordWeights,
+excludeKeywords,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/search/contents',
+			query: {
+				search_query: searchQuery, search_type: searchType, skip, limit, news_category: newsCategory, secondary_categories: secondaryCategories, keyword, entities, locations, topics, classification_scores: classificationScores, keyword_weights: keywordWeights, exclude_keywords: excludeKeywords
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Get Most Relevant Entities
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static getMostRelevantEntities(data: SearchData['GetMostRelevantEntities']): CancelablePromise<unknown> {
+		const {
+requestBody,
+} = data;
+		return __request(OpenAPI, {
+			method: 'POST',
+			url: '/api/v1/search/most_relevant_entities',
+			body: requestBody,
+			mediaType: 'application/json',
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Search Synthesizer
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static searchSynthesizer(data: SearchData['SearchSynthesizer']): CancelablePromise<unknown> {
+		const {
+searchQuery,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/search/search_synthesizer',
+			query: {
+				search_query: searchQuery
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+}
+
+export class EntitiesService {
+
+	/**
+	 * Search Entities
+	 * Search and paginate through entities based on a query.
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static searchEntities(data: EntitiesData['SearchEntities']): CancelablePromise<unknown> {
+		const {
+query,
+skip = 0,
+limit = 50,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/entities/',
+			query: {
+				query, skip, limit
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Get Entity Details
+	 * Retrieve detailed information about a specific entity.
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static getEntityDetails(data: EntitiesData['GetEntityDetails']): CancelablePromise<unknown> {
+		const {
+entity,
+skip = 0,
+limit = 50,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/entities/by_entity',
+			query: {
+				entity, skip, limit
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Search Entities
+	 * Search and paginate through entities based on a query.
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static searchEntities1(data: EntitiesData['SearchEntities1']): CancelablePromise<unknown> {
+		const {
+query,
+skip = 0,
+limit = 50,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v2/entities/',
+			query: {
+				query, skip, limit
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Get Entity Details
+	 * Retrieve detailed information about a specific entity.
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static getEntityDetails1(data: EntitiesData['GetEntityDetails1']): CancelablePromise<unknown> {
+		const {
+entity,
+skip = 0,
+limit = 50,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v2/entities/by_entity',
+			query: {
+				entity, skip, limit
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+}
 
 export class LoginService {
 
@@ -29,7 +958,7 @@ export class LoginService {
 	 * @returns Token Successful Response
 	 * @throws ApiError
 	 */
-	public static loginAccessToken(data: TDataLoginAccessToken): CancelablePromise<Token> {
+	public static loginAccessToken(data: LoginData['LoginAccessToken']): CancelablePromise<Token> {
 		const {
 formData,
 } = data;
@@ -63,7 +992,7 @@ formData,
 	 * @returns Message Successful Response
 	 * @throws ApiError
 	 */
-	public static recoverPassword(data: TDataRecoverPassword): CancelablePromise<Message> {
+	public static recoverPassword(data: LoginData['RecoverPassword']): CancelablePromise<Message> {
 		const {
 email,
 } = data;
@@ -85,7 +1014,7 @@ email,
 	 * @returns Message Successful Response
 	 * @throws ApiError
 	 */
-	public static resetPassword(data: TDataResetPassword): CancelablePromise<Message> {
+	public static resetPassword(data: LoginData['ResetPassword']): CancelablePromise<Message> {
 		const {
 requestBody,
 } = data;
@@ -106,7 +1035,7 @@ requestBody,
 	 * @returns string Successful Response
 	 * @throws ApiError
 	 */
-	public static recoverPasswordHtmlContent(data: TDataRecoverPasswordHtmlContent): CancelablePromise<string> {
+	public static recoverPasswordHtmlContent(data: LoginData['RecoverPasswordHtmlContent']): CancelablePromise<string> {
 		const {
 email,
 } = data;
@@ -124,41 +1053,6 @@ email,
 
 }
 
-export type TDataReadUsers = {
-                limit?: number
-skip?: number
-                
-            }
-export type TDataCreateUser = {
-                requestBody: UserCreate
-                
-            }
-export type TDataUpdateUserMe = {
-                requestBody: UserUpdateMe
-                
-            }
-export type TDataUpdatePasswordMe = {
-                requestBody: UpdatePassword
-                
-            }
-export type TDataCreateUserOpen = {
-                requestBody: UserCreateOpen
-                
-            }
-export type TDataReadUserById = {
-                userId: number
-                
-            }
-export type TDataUpdateUser = {
-                requestBody: UserUpdate
-userId: number
-                
-            }
-export type TDataDeleteUser = {
-                userId: number
-                
-            }
-
 export class UsersService {
 
 	/**
@@ -167,10 +1061,10 @@ export class UsersService {
 	 * @returns UsersOut Successful Response
 	 * @throws ApiError
 	 */
-	public static readUsers(data: TDataReadUsers = {}): CancelablePromise<UsersOut> {
+	public static readUsers(data: UsersData['ReadUsers'] = {}): CancelablePromise<UsersOut> {
 		const {
-limit = 100,
 skip = 0,
+limit = 100,
 } = data;
 		return __request(OpenAPI, {
 			method: 'GET',
@@ -190,7 +1084,7 @@ skip = 0,
 	 * @returns UserOut Successful Response
 	 * @throws ApiError
 	 */
-	public static createUser(data: TDataCreateUser): CancelablePromise<UserOut> {
+	public static createUser(data: UsersData['CreateUser']): CancelablePromise<UserOut> {
 		const {
 requestBody,
 } = data;
@@ -224,7 +1118,7 @@ requestBody,
 	 * @returns UserOut Successful Response
 	 * @throws ApiError
 	 */
-	public static updateUserMe(data: TDataUpdateUserMe): CancelablePromise<UserOut> {
+	public static updateUserMe(data: UsersData['UpdateUserMe']): CancelablePromise<UserOut> {
 		const {
 requestBody,
 } = data;
@@ -245,7 +1139,7 @@ requestBody,
 	 * @returns Message Successful Response
 	 * @throws ApiError
 	 */
-	public static updatePasswordMe(data: TDataUpdatePasswordMe): CancelablePromise<Message> {
+	public static updatePasswordMe(data: UsersData['UpdatePasswordMe']): CancelablePromise<Message> {
 		const {
 requestBody,
 } = data;
@@ -266,7 +1160,7 @@ requestBody,
 	 * @returns UserOut Successful Response
 	 * @throws ApiError
 	 */
-	public static createUserOpen(data: TDataCreateUserOpen): CancelablePromise<UserOut> {
+	public static createUserOpen(data: UsersData['CreateUserOpen']): CancelablePromise<UserOut> {
 		const {
 requestBody,
 } = data;
@@ -287,7 +1181,7 @@ requestBody,
 	 * @returns UserOut Successful Response
 	 * @throws ApiError
 	 */
-	public static readUserById(data: TDataReadUserById): CancelablePromise<UserOut> {
+	public static readUserById(data: UsersData['ReadUserById']): CancelablePromise<UserOut> {
 		const {
 userId,
 } = data;
@@ -309,10 +1203,10 @@ userId,
 	 * @returns UserOut Successful Response
 	 * @throws ApiError
 	 */
-	public static updateUser(data: TDataUpdateUser): CancelablePromise<UserOut> {
+	public static updateUser(data: UsersData['UpdateUser']): CancelablePromise<UserOut> {
 		const {
-requestBody,
 userId,
+requestBody,
 } = data;
 		return __request(OpenAPI, {
 			method: 'PATCH',
@@ -334,7 +1228,7 @@ userId,
 	 * @returns Message Successful Response
 	 * @throws ApiError
 	 */
-	public static deleteUser(data: TDataDeleteUser): CancelablePromise<Message> {
+	public static deleteUser(data: UsersData['DeleteUser']): CancelablePromise<Message> {
 		const {
 userId,
 } = data;
@@ -352,11 +1246,6 @@ userId,
 
 }
 
-export type TDataTestEmail = {
-                emailTo: string
-                
-            }
-
 export class UtilsService {
 
 	/**
@@ -365,7 +1254,7 @@ export class UtilsService {
 	 * @returns Message Successful Response
 	 * @throws ApiError
 	 */
-	public static testEmail(data: TDataTestEmail): CancelablePromise<Message> {
+	public static testEmail(data: UtilsData['TestEmail']): CancelablePromise<Message> {
 		const {
 emailTo,
 } = data;
@@ -381,30 +1270,43 @@ emailTo,
 		});
 	}
 
-}
+	/**
+	 * Healthz
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static healthz(): CancelablePromise<unknown> {
+				return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/utils/healthz',
+		});
+	}
 
-export type TDataReadItems = {
-                limit?: number
-skip?: number
-                
-            }
-export type TDataCreateItem = {
-                requestBody: ItemCreate
-                
-            }
-export type TDataReadItem = {
-                id: number
-                
-            }
-export type TDataUpdateItem = {
-                id: number
-requestBody: ItemUpdate
-                
-            }
-export type TDataDeleteItem = {
-                id: number
-                
-            }
+	/**
+	 * Readyz
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static readyz(): CancelablePromise<unknown> {
+				return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/utils/healthz/readiness',
+		});
+	}
+
+	/**
+	 * Liveness
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static liveness(): CancelablePromise<unknown> {
+				return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/utils/healthz/liveness',
+		});
+	}
+
+}
 
 export class ItemsService {
 
@@ -414,10 +1316,10 @@ export class ItemsService {
 	 * @returns ItemsOut Successful Response
 	 * @throws ApiError
 	 */
-	public static readItems(data: TDataReadItems = {}): CancelablePromise<ItemsOut> {
+	public static readItems(data: ItemsData['ReadItems'] = {}): CancelablePromise<ItemsOut> {
 		const {
-limit = 100,
 skip = 0,
+limit = 100,
 } = data;
 		return __request(OpenAPI, {
 			method: 'GET',
@@ -437,7 +1339,7 @@ skip = 0,
 	 * @returns ItemOut Successful Response
 	 * @throws ApiError
 	 */
-	public static createItem(data: TDataCreateItem): CancelablePromise<ItemOut> {
+	public static createItem(data: ItemsData['CreateItem']): CancelablePromise<ItemOut> {
 		const {
 requestBody,
 } = data;
@@ -458,7 +1360,7 @@ requestBody,
 	 * @returns ItemOut Successful Response
 	 * @throws ApiError
 	 */
-	public static readItem(data: TDataReadItem): CancelablePromise<ItemOut> {
+	public static readItem(data: ItemsData['ReadItem']): CancelablePromise<ItemOut> {
 		const {
 id,
 } = data;
@@ -480,7 +1382,7 @@ id,
 	 * @returns ItemOut Successful Response
 	 * @throws ApiError
 	 */
-	public static updateItem(data: TDataUpdateItem): CancelablePromise<ItemOut> {
+	public static updateItem(data: ItemsData['UpdateItem']): CancelablePromise<ItemOut> {
 		const {
 id,
 requestBody,
@@ -505,7 +1407,7 @@ requestBody,
 	 * @returns Message Successful Response
 	 * @throws ApiError
 	 */
-	public static deleteItem(data: TDataDeleteItem): CancelablePromise<Message> {
+	public static deleteItem(data: ItemsData['DeleteItem']): CancelablePromise<Message> {
 		const {
 id,
 } = data;
@@ -523,188 +1425,389 @@ id,
 
 }
 
-export type TDataCountryFromQuery = {
-                query: string
-                
-            }
-export type TDataGetLeaderInfo = {
-                state: string
-                
-            }
-export type TDataGetLegislationData = {
-                state: string
-                
-            }
-export type TDataGetEconData = {
-                state: string
-                
-            }
-
-export class CountriesService {
+export class SearchHistoryService {
 
 	/**
-	 * Country From Query
-	 * @returns unknown Successful Response
+	 * Create Search History
+	 * Create a new search history entry.
+	 * @returns SearchHistory Successful Response
 	 * @throws ApiError
 	 */
-	public static countryFromQuery(data: TDataCountryFromQuery): CancelablePromise<unknown> {
+	public static createSearchHistory(data: SearchHistoryData['CreateSearchHistory']): CancelablePromise<SearchHistory> {
 		const {
-query,
+requestBody,
+} = data;
+		return __request(OpenAPI, {
+			method: 'POST',
+			url: '/api/v1/search_histories/create',
+			body: requestBody,
+			mediaType: 'application/json',
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Read Search Histories
+	 * Retrieve search histories for the current user.
+	 * @returns SearchHistoriesOut Successful Response
+	 * @throws ApiError
+	 */
+	public static readSearchHistories(data: SearchHistoryData['ReadSearchHistories'] = {}): CancelablePromise<SearchHistoriesOut> {
+		const {
+skip = 0,
+limit = 100,
 } = data;
 		return __request(OpenAPI, {
 			method: 'GET',
-			url: '/api/v1/locations/location_from_query/',
+			url: '/api/v1/search_histories/read',
 			query: {
-				query
+				skip, limit
 			},
 			errors: {
 				422: `Validation Error`,
 			},
-		});
-	}
-
-	/**
-	 * Geojson View
-	 * @returns unknown Successful Response
-	 * @throws ApiError
-	 */
-	public static geojsonView(): CancelablePromise<unknown> {
-		return __request(OpenAPI, {
-			method: 'GET',
-			url: '/api/v1/locations/geojson/',
-		});
-	}
-
-	
-	/**  
-	 * geojson_eventsView
-	 * 
-	 */
-
-	public static geojsonEventsView(eventType: string): CancelablePromise<unknown> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/api/v1/locations/geojson_events/',
-            query: {
-                event_type: eventType
-            },
-            errors: {
-                422: `Validation Error`,
-            },
-        });
-    }
-	/**
-	 * Get Leader Info
-	 * @returns unknown Successful Response
-	 * @throws ApiError
-	 */
-	public static getLeaderInfo(data: TDataGetLeaderInfo): CancelablePromise<unknown> {
-		const {
-state,
-} = data;
-		return __request(OpenAPI, {
-			method: 'GET',
-			url: '/api/v1/locations/leaders/{state}',
-			path: {
-				state
-			},
-			errors: {
-				422: `Validation Error`,
-			},
-		});
-	}
-
-	/**
-	 * Get Legislation Data
-	 * @returns unknown Successful Response
-	 * @throws ApiError
-	 */
-	public static getLegislationData(data: TDataGetLegislationData): CancelablePromise<unknown> {
-		const {
-state,
-} = data;
-		return __request(OpenAPI, {
-			method: 'GET',
-			url: '/api/v1/locations/legislation/{state}',
-			path: {
-				state
-			},
-			errors: {
-				422: `Validation Error`,
-			},
-		});
-	}
-
-	/**
-	 * Get Econ Data
-	 * @returns unknown Successful Response
-	 * @throws ApiError
-	 */
-	public static getEconData(data: TDataGetEconData): CancelablePromise<unknown> {
-		const {
-state,
-} = data;
-		return __request(OpenAPI, {
-			method: 'GET',
-			url: '/api/v1/locations/econ_data/{state}',
-			path: {
-				state
-			},
-			errors: {
-				422: `Validation Error`,
-			},
-		});
-	}
-
-	/**
-	 * Update Leaders
-	 * @returns unknown Successful Response
-	 * @throws ApiError
-	 */
-	public static updateLeaders(): CancelablePromise<unknown> {
-				return __request(OpenAPI, {
-			method: 'GET',
-			url: '/api/v1/locations/update_leaders/',
-		});
-	}
-
-	/**
-	 * Get Tavily Data
-	 * @returns unknown Successful Response
-	 * @throws ApiError
-	 */
-	public static getTavilyData(): CancelablePromise<unknown> {
-				return __request(OpenAPI, {
-			method: 'GET',
-			url: '/api/v1/locations/get_articles',
 		});
 	}
 
 }
 
-export type TDataGetTavilyData = {
-                query: string
-                
-            }
-export type TDataGetReport = {
-                query: string
-                
-            }
-
-export class SearchService {
+export class WorkspacesService {
 
 	/**
-	 * Get Tavily Data
+	 * Create Workspace
+	 * Create a new workspace.
+ * Only accessible by superusers.
+	 * @returns WorkspaceRead Successful Response
+	 * @throws ApiError
+	 */
+	public static createWorkspace(data: WorkspacesData['CreateWorkspace']): CancelablePromise<WorkspaceRead> {
+		const {
+requestBody,
+} = data;
+		return __request(OpenAPI, {
+			method: 'POST',
+			url: '/api/v1/workspaces/create',
+			body: requestBody,
+			mediaType: 'application/json',
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Read Workspaces
+	 * Retrieve all workspaces.
+ * Only accessible by superusers.
+	 * @returns WorkspacesOut Successful Response
+	 * @throws ApiError
+	 */
+	public static readWorkspaces(data: WorkspacesData['ReadWorkspaces'] = {}): CancelablePromise<WorkspacesOut> {
+		const {
+skip = 0,
+limit = 100,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/workspaces/read',
+			query: {
+				skip, limit
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Read Workspace By Id
+	 * Get a specific workspace by ID.
+ * Only accessible by superusers.
+	 * @returns WorkspaceRead Successful Response
+	 * @throws ApiError
+	 */
+	public static readWorkspaceById(data: WorkspacesData['ReadWorkspaceById']): CancelablePromise<WorkspaceRead> {
+		const {
+workspaceId,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/workspaces/{workspace_id}',
+			path: {
+				workspace_id: workspaceId
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Delete Workspace
+	 * Delete a workspace.
+ * Only accessible by superusers.
 	 * @returns unknown Successful Response
 	 * @throws ApiError
 	 */
-	public static getTavilyData(data: TDataGetTavilyData): CancelablePromise<unknown> {
+	public static deleteWorkspace(data: WorkspacesData['DeleteWorkspace']): CancelablePromise<unknown> {
+		const {
+workspaceId,
+} = data;
+		return __request(OpenAPI, {
+			method: 'DELETE',
+			url: '/api/v1/workspaces/{workspace_id}',
+			path: {
+				workspace_id: workspaceId
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Update Workspace
+	 * Update an existing workspace.
+ * Only accessible by superusers.
+	 * @returns WorkspaceRead Successful Response
+	 * @throws ApiError
+	 */
+	public static updateWorkspace(data: WorkspacesData['UpdateWorkspace']): CancelablePromise<WorkspaceRead> {
+		const {
+workspaceId,
+requestBody,
+} = data;
+		return __request(OpenAPI, {
+			method: 'PATCH',
+			url: '/api/v1/workspaces/update/{workspace_id}',
+			path: {
+				workspace_id: workspaceId
+			},
+			body: requestBody,
+			mediaType: 'application/json',
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+}
+
+export class ClassificationSchemesService {
+
+	/**
+	 * Create Classification Scheme
+	 * @returns ClassificationSchemeRead Successful Response
+	 * @throws ApiError
+	 */
+	public static createClassificationScheme(data: ClassificationSchemesData['CreateClassificationScheme']): CancelablePromise<ClassificationSchemeRead> {
+		const {
+workspaceId,
+requestBody,
+} = data;
+		return __request(OpenAPI, {
+			method: 'POST',
+			url: '/api/v1/classification_schemes/{workspace_id}',
+			path: {
+				workspace_id: workspaceId
+			},
+			body: requestBody,
+			mediaType: 'application/json',
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Read Classification Schemes
+	 * @returns ClassificationSchemeRead Successful Response
+	 * @throws ApiError
+	 */
+	public static readClassificationSchemes(data: ClassificationSchemesData['ReadClassificationSchemes']): CancelablePromise<Array<ClassificationSchemeRead>> {
+		const {
+workspaceId,
+skip = 0,
+limit = 100,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/classification_schemes/{workspace_id}',
+			path: {
+				workspace_id: workspaceId
+			},
+			query: {
+				skip, limit
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Read Classification Scheme
+	 * @returns ClassificationSchemeRead Successful Response
+	 * @throws ApiError
+	 */
+	public static readClassificationScheme(data: ClassificationSchemesData['ReadClassificationScheme']): CancelablePromise<ClassificationSchemeRead> {
+		const {
+workspaceId,
+schemeId,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/classification_schemes/{workspace_id}/{scheme_id}',
+			path: {
+				workspace_id: workspaceId, scheme_id: schemeId
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Update Classification Scheme
+	 * @returns ClassificationSchemeRead Successful Response
+	 * @throws ApiError
+	 */
+	public static updateClassificationScheme(data: ClassificationSchemesData['UpdateClassificationScheme']): CancelablePromise<ClassificationSchemeRead> {
+		const {
+workspaceId,
+schemeId,
+requestBody,
+} = data;
+		return __request(OpenAPI, {
+			method: 'PATCH',
+			url: '/api/v1/classification_schemes/{workspace_id}/{scheme_id}',
+			path: {
+				workspace_id: workspaceId, scheme_id: schemeId
+			},
+			body: requestBody,
+			mediaType: 'application/json',
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Delete Classification Scheme
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static deleteClassificationScheme(data: ClassificationSchemesData['DeleteClassificationScheme']): CancelablePromise<unknown> {
+		const {
+workspaceId,
+schemeId,
+} = data;
+		return __request(OpenAPI, {
+			method: 'DELETE',
+			url: '/api/v1/classification_schemes/{workspace_id}/{scheme_id}',
+			path: {
+				workspace_id: workspaceId, scheme_id: schemeId
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+}
+
+export class GeoService {
+
+	/**
+	 * Geojson Events View
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static geojsonEventsView(data: GeoData['GeojsonEventsView']): CancelablePromise<unknown> {
+		const {
+eventType,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v2/geo/geojson_events',
+			query: {
+				event_type: eventType
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+}
+
+export class ArticlesService {
+
+	/**
+	 * Get Articles
+	 * @returns ArticleResponse Successful Response
+	 * @throws ApiError
+	 */
+	public static getArticles(data: ArticlesData['GetArticles']): CancelablePromise<ArticleResponse> {
+		const {
+query,
+skip = 0,
+limit = 20,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v2/articles/basic',
+			query: {
+				query, skip, limit
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Articles By Entity
+	 * @returns ArticleResponse Successful Response
+	 * @throws ApiError
+	 */
+	public static articlesByEntity(data: ArticlesData['ArticlesByEntity']): CancelablePromise<ArticleResponse> {
+		const {
+entity,
+skip = 0,
+limit = 20,
+date,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v2/articles/by_entity',
+			query: {
+				entity, skip, limit, date
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+}
+
+export class ClassificationService {
+
+	/**
+	 * Get Location From Query
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static getLocationFromQuery(data: ClassificationData['GetLocationFromQuery']): CancelablePromise<unknown> {
 		const {
 query,
 } = data;
 		return __request(OpenAPI, {
 			method: 'GET',
-			url: '/api/v1/search/get_articles',
+			url: '/api/v2/classification/location_from_query',
 			query: {
 				query
 			},
@@ -714,20 +1817,101 @@ query,
 		});
 	}
 
+}
+
+export class FlowsService {
+
 	/**
-	 * Get Report
+	 * Report
 	 * @returns unknown Successful Response
 	 * @throws ApiError
 	 */
-	public static getReport(data: TDataGetReport): CancelablePromise<Record<string, unknown>> {
+	public static report(data: FlowsData['Report']): CancelablePromise<unknown> {
 		const {
 query,
 } = data;
 		return __request(OpenAPI, {
-			method: 'GET',
-			url: '/api/v1/search/report/{query}',
-			path: {
+			method: 'POST',
+			url: '/api/v2/flows/report',
+			query: {
 				query
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+}
+
+export class ReportService {
+
+	/**
+	 * Report
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static report(data: ReportData['Report']): CancelablePromise<unknown> {
+		const {
+query,
+} = data;
+		return __request(OpenAPI, {
+			method: 'POST',
+			url: '/api/v2/flows/report',
+			query: {
+				query
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+}
+
+export class TasksService {
+
+	/**
+	 * Query Expansion
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static queryExpansion(data: TasksData['QueryExpansion']): CancelablePromise<unknown> {
+		const {
+query,
+} = data;
+		return __request(OpenAPI, {
+			method: 'POST',
+			url: '/api/v2/tasks/query_expansion',
+			query: {
+				query
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+}
+
+export class ScoresService {
+
+	/**
+	 * Get Entity Scores In Timeframe
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static getEntityScoresInTimeframe(data: ScoresData['GetEntityScoresInTimeframe']): CancelablePromise<unknown> {
+		const {
+entity,
+timeframeFrom = '2000-01-01',
+timeframeTo = '2025-01-28',
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v2/scores/by_entity',
+			query: {
+				entity, timeframe_from: timeframeFrom, timeframe_to: timeframeTo
 			},
 			errors: {
 				422: `Validation Error`,
