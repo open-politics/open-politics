@@ -1,7 +1,6 @@
 #### 🚧 UNDER CONSTRUCTION 🚧
 # 🌐 Open Politics 
 ## Open Source Political Intelligence
-![Open Politics Political Intelligence Vision](assets/images/political_intelligence.png)
 
 ### Onboarding:
 Open Politics' vision is to democratise political intelligence. 
