@@ -80,7 +80,7 @@ export function useSearch(options: SearchOptions): UseSearchReturn {
   }
 
   async function searchopol(query: string): Promise<SearchResults> {
-    const response = await axios.get('/api/v1/search/contents', {
+    const response = await axios.get('/api/v2/search/contents', {
       params: {
         search_query: query,
         limit: options.maxResults || 20,

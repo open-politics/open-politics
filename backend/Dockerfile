@@ -28,6 +28,9 @@ COPY ./start.sh /app/
 
 COPY ./tests-start.sh /app/
 
+RUN mkdir -p /app/app/alembic/versions && \
+    chown -R ${UID:-1000}:${GID:-1000} /app/app/alembic/versions
+
 RUN chmod +x /app/start-reload.sh /app/start.sh /app/tests-start.sh
 
 

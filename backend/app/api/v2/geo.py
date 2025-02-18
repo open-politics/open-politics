@@ -8,9 +8,8 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-os.environ["OPOL_MODE"] = "remote"
-
-opol = OPOL(mode="remote", api_key=os.environ["OPOL_API_KEY"])
+opol = OPOL(mode=os.getenv("OPOL_MODE"), api_key=os.getenv("OPOL_API_KEY"))
+# opol = OPOL(mode="container", api_key=os.getenv("OPOL_API_KEY"))
 
 @router.get("/geojson_events")
 async def geojson_events_view(event_type: str = Query(...)):

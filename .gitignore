@@ -17,5 +17,11 @@ run_backup.sh
 2docker-compose.staging.yml
 .idea
 values.yaml
+.store/
 
 charts/
+minio/
+misc/
+
+# Docker
+.dockerignore

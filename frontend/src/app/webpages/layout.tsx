@@ -1,4 +1,6 @@
-import Footer from "@/components/collection/Footer"
+'use client'
+
+import Footer from "@/components/collection/unsorted/Footer"
 
 export default function MdxLayout({ children }: { children: React.ReactNode }) {
   return (

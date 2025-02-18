@@ -10,7 +10,7 @@ import time
 
 router = APIRouter()
 
-opol = OPOL(mode="container")
+opol = OPOL(mode=os.getenv("OPOL_MODE"), api_key=os.getenv("OPOL_API_KEY"))
 
 fastclass = opol.classification(provider="Google", 
                                 model_name="models/gemini-1.5-flash-latest", 

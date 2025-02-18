@@ -5,7 +5,8 @@ from typing import Optional, List
 from pydantic import BaseModel
 from datetime import datetime
 
-opol = OPOL(mode='container', api_key=os.getenv("OPOL_API_KEY", ""))
+opol = OPOL(mode=os.getenv("OPOL_MODE"), api_key=os.getenv("OPOL_API_KEY"))
+
 router = APIRouter()
 
 @router.get("/by_entity")

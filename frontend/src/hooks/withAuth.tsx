@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Lottie from 'lottie-react'; 
+import { useRouter, usePathname } from 'next/navigation';
+import Lottie from 'lottie-react';
 import useAuth from '@/hooks/useAuth';
 import LottiePlaceholder from '@/components/ui/lottie-placeholder';
 
@@ -8,6 +8,7 @@ const withAuth = (WrappedComponent: React.ComponentType) => {
   return (props: any) => {
     const { isLoggedIn, isLoading } = useAuth();
     const router = useRouter();
+    const pathname = usePathname();
     const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
@@ -16,9 +17,11 @@ const withAuth = (WrappedComponent: React.ComponentType) => {
 
     useEffect(() => {
       if (!isLoading && !isLoggedIn) {
-        router.push('/login');
+        if (pathname !== '/login') {
+          router.push('/login');
+        }
       }
-    }, [isLoading, isLoggedIn, router]);
+    }, [isLoading, isLoggedIn, router, pathname]);
 
     if (!isClient || isLoading) {
       return <LottiePlaceholder />;

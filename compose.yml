@@ -50,7 +50,10 @@ services:
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
     platform: linux/amd64
-
+    user: "${UID:-1000}:${GID:-1000}"
+    volumes:
+      - ./backend:/app
+      - ./backend/app/alembic/versions:/app/app/alembic/versions
   redis:
     image: redis:alpine
     ports:
@@ -101,3 +104,4 @@ networks:
     external: false
   opol-app-stack:
     external: true
+  

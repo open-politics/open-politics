@@ -1,16 +1,14 @@
 # Use the official Node.js image as the base image
-FROM node:20-alpine
+FROM oven/bun:alpine
 
 # Set the working directory
 WORKDIR /app
-
-RUN npm install -g pnpm
 
 # Copy package.json and package-lock.json (or yarn.lock)
 COPY package.json package-lock.json* ./
 
 # Install dependencies
-RUN npm install
+RUN bun install
 
 # Install bash
 RUN apk add --no-cache bash
@@ -22,4 +20,5 @@ COPY . .
 EXPOSE 3000
 
 # Command to run the app in development mode
-CMD ["npm", "run", "dev"]
+CMD ["bun", "run", "dev", "--turbo"]
+# CMD ["bun", "run", "dev"]

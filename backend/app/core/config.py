@@ -38,6 +38,7 @@ class Settings(BaseSettings):
     OPOL_DEV_MODE: bool = os.environ.get("OPOL_DEV_MODE", "False") == "True"
     if OPOL_DEV_MODE:
         os.environ["PYTHONPATH"] = "/app/opol:/app"
+    
 
     @computed_field  # type: ignore[misc]
     @property
@@ -101,6 +102,13 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER_PASSWORD: str
     USERS_OPEN_REGISTRATION: bool = False
 
+    # MinIO Configuration
+    MINIO_ENDPOINT: str = os.environ.get("MINIO_ENDPOINT", "minio:9000")
+    MINIO_ROOT_USER: str = os.environ.get("MINIO_ROOT_USER", "app_user")
+    MINIO_ROOT_PASSWORD: str = os.environ.get("MINIO_ROOT_PASSWORD", "app_user_password")
+    MINIO_BUCKET_NAME: str = os.environ.get("MINIO_BUCKET_NAME", "webapp-dev-user-documents")
+    MINIO_SECURE: bool = os.environ.get("MINIO_SECURE", "False").lower() == "true"
+
     def _check_default_secret(self, var_name: str, value: str | None) -> None:
         if value == "changethis":
             message = (
@@ -119,6 +127,8 @@ class Settings(BaseSettings):
         self._check_default_secret(
             "FIRST_SUPERUSER_PASSWORD", self.FIRST_SUPERUSER_PASSWORD
         )
+        self._check_default_secret("MINIO_ROOT_PASSWORD", self.MINIO_ROOT_PASSWORD)
+        self._check_default_secret("MINIO_ROOT_USER", self.MINIO_ROOT_USER)
 
         return self
 

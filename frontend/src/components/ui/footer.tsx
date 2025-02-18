@@ -12,7 +12,7 @@ const Footer: React.FC = () => {
           size={'icon'}
           className="text-muted-foreground/50"
         >
-          <Link href="https://discord.gg/zRxaseCuGq" target="_blank">
+          <Link href="https://discord.gg/AhqmEUr99T" target="_blank">
             <SiDiscord size={18} />
           </Link>
         </Button>

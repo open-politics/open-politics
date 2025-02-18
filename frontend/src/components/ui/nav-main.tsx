@@ -17,7 +17,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
-
+import { Button } from "@/components/ui/button"
 export function NavMain({
   items,
 }: {
@@ -25,11 +25,14 @@ export function NavMain({
     title: string
     url: string
     icon?: LucideIcon
+    isButton?: boolean
     color?: string
     isActive?: boolean
     items?: {
       title: string
       url: string
+      onClick?: () => void
+      icon?: LucideIcon
     }[]
   }[]
 }) {
@@ -60,17 +63,31 @@ export function NavMain({
                     />
                   )}
                   <span>{item.title}</span>
-                  <ChevronRight className="ml-auto transition-transform border-none duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  {item.items && item.items.length > 0 && (
+                    <ChevronRight className="ml-auto transition-transform border-none duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  )}
                 </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <a href={subItem.url}>
-                          <span>{subItem.title}</span>
-                        </a>
+                      <SidebarMenuSubButton 
+                        asChild
+                        size="sm"
+                        className="pl-8"
+                      >
+                        {item.isButton ? (
+                          <Button asChild onClick={subItem.onClick}>
+                            {subItem.icon && <subItem.icon className="size-4" />}
+                            <span>{subItem.title}</span>
+                          </Button>
+                        ) : (
+                          <a href={subItem.url}>
+                            {subItem.icon && <subItem.icon className="size-4" />}
+                            <span>{subItem.title}</span>
+                          </a>
+                        )}
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   ))}

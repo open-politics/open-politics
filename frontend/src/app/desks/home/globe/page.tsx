@@ -3,13 +3,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/components/ui/use-toast';
 import { RefreshCcw } from 'lucide-react';
-import Globe from '@/components/collection/gGlobe';
-import Search from '@/components/collection/Search';
-import LocationDetailPanel from '@/components/collection/LocationDetailPanel';
-import { BookmarkedArticles } from '@/components/collection/BookMarkedArticles';
-import { useLayoutStore } from '@/store/useLayoutStore';
+import Globe from '@/components/collection/unsorted/gGlobe';
+import Search from '@/components/collection/unsorted/Search';
+import LocationDetailPanel from '@/components/collection/unsorted/LocationDetailPanel';
+import { BookmarkedArticles } from '@/components/collection/unsorted/BookMarkedArticles';
+import { useLayoutStore } from '@/zustand_stores/storeLayout';
 import { useArticleTabNameStore } from '@/hooks/useArticleTabNameStore';
-import { Announcement } from '@/components/collection/announcement';
+import { Announcement } from '@/components/collection/unsorted/announcement';
+import { FileText } from 'lucide-react';
+import DocumentsOverlay from '@/components/collection/workspaces/documents/DocumentsOverlay';
+import { useDocumentStore } from '@/zustand_stores/storeDocuments';
 
 const GlobePage = () => {
   const geojsonUrl = '/api/v1/locations/geojson/';
@@ -29,6 +32,8 @@ const GlobePage = () => {
   const { setActiveTab: layoutSetActiveTab } = useLayoutStore();
   const { setActiveTab: articleSetActiveTab } = useArticleTabNameStore();
   const [isLoading, setIsLoading] = useState(true);
+  const [isDocumentsOpen, setIsDocumentsOpen] = useState(false);
+  const { documents } = useDocumentStore();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -149,7 +154,6 @@ const GlobePage = () => {
                   ref={globeRef}
                   geojsonUrl={geojsonUrl}
                   onLocationClick={handleLocationClick}
-                  isVisible={isVisible}
                 />
               </div>
               
@@ -168,8 +172,8 @@ const GlobePage = () => {
           <AnimatePresence>
             {hasClicked && isVisible && (
               <motion.div
-                className="absolute top-1 right-1 w-full h-[calc(100vh-8.625em)] sm:w-3/4 lg:w-1/2 bg-background/90 backdrop-blur-lg supports-[backdrop-filter]:bg-background/90 z-50 p-6 rounded-lg shadow-xl"
                 initial={{ opacity: 0 }}
+                className="absolute w-full h-full md:h-[calc(100vh-8.625em)] top-0 left-0 md:left-1/2 inset-2 sm:w-3/4 lg:w-1/2 bg-background/90 backdrop-blur-lg supports-[backdrop-filter]:bg-background/90 z-50 p-2 md:p-6 md:inset-4 rounded-lg right-0 shadow-xl"
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
@@ -195,6 +199,26 @@ const GlobePage = () => {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Add the DocumentsOverlay component */}
+          <DocumentsOverlay
+            open={isDocumentsOpen}
+            onClose={() => setIsDocumentsOpen(false)}
+            onDocumentSelect={() => {}}
+          />
+
+          {/* Add a button to open the documents overlay */}
+          <button
+            onClick={() => setIsDocumentsOpen(true)}
+            className="fixed bottom-4 right-4 p-3 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
+          >
+            <FileText className="w-6 h-6" />
+            {documents.length > 0 && (
+              <span className="bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+                {documents.length}
+              </span>
+            )}
+          </button>
         </>
       )}
     </div>

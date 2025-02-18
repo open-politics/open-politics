@@ -22,7 +22,7 @@ sdmx1
 tavily-python
 sentinelsat
 sentinelhub
-opol==0.1.49
+opol
 aiohttp
 google-generativeai
 instructor
@@ -31,3 +31,7 @@ mypy
 ruff
 pre-commit
 types-passlib
+minio
+bson
+python-multipart
+pymupdf

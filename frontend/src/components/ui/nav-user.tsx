@@ -24,9 +24,19 @@ import {
 import useAuth from "@/hooks/useAuth"
 import { useState, useEffect } from 'react'
 
-export function NavUser() {
+export interface NavUserProps {
+  user: {
+    name: string | undefined;
+    email: string | undefined;
+    avatar: string | undefined;
+    is_superuser: boolean | undefined;
+    full_name: string | undefined;
+  };
+}
+
+export function NavUser({ user }: NavUserProps) {
   const { isMobile } = useSidebar()
-  const { user, logout } = useAuth()
+  const { logout } = useAuth()
   const [opacity, setOpacity] = useState(1)
 
   useEffect(() => {

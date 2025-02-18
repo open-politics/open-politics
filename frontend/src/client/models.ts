@@ -4,6 +4,29 @@ export type ArticleResponse = {
 
 
 
+export type Body_documents_create_document = {
+	title: string;
+	url?: string | null;
+	content_type?: string;
+	source?: string | null;
+	text_content?: string | null;
+	summary?: string | null;
+	top_image?: string | null;
+	insertion_date?: string | null;
+	files?: Array<Blob | File> | null;
+};
+
+
+
+export type Body_filestorage_file_upload = {
+	/**
+	 * File to upload
+	 */
+	file: Blob | File;
+};
+
+
+
 export type Body_login_login_access_token = {
 	grant_type?: string | null;
 	username: string;
@@ -15,44 +38,167 @@ export type Body_login_login_access_token = {
 
 
 
+export type Body_utils_extract_pdf_text = {
+	file: Blob | File;
+};
+
+
+
+export type ClassificationResultCreate = {
+	document_id: number;
+	scheme_id: number;
+	value?: Record<string, unknown>;
+	timestamp?: string | null;
+	run_name?: string | null;
+	run_description?: string | null;
+};
+
+
+
+export type ClassificationResultRead = {
+	document_id: number;
+	scheme_id: number;
+	value?: Record<string, unknown>;
+	timestamp: string;
+	run_name?: string | null;
+	run_description?: string | null;
+	id: number;
+	document: DocumentRead;
+	scheme: ClassificationSchemeRead;
+};
+
+
+
 export type ClassificationSchemeCreate = {
 	name: string;
-	description?: string | null;
+	description: string;
+	/**
+	 * Type of classification scheme
+	 */
 	type: string;
-	expected_datatype: string;
-	prompt?: string | null;
-	input_text?: string | null;
-	field_annotations?: Array<string> | null;
-	model_annotations?: string | null;
+	scale_min?: number | null;
+	scale_max?: number | null;
+	is_set_of_labels?: boolean | null;
+	max_labels?: number | null;
+	labels?: Array<string> | null;
+	dict_keys?: Array<Record<string, string>> | null;
+	model_instructions?: string | null;
+	validation_rules?: Record<string, unknown> | null;
 };
 
 
 
 export type ClassificationSchemeRead = {
 	name: string;
-	description?: string | null;
+	description: string;
+	/**
+	 * Type of classification scheme
+	 */
 	type: string;
-	expected_datatype: string;
-	prompt?: string | null;
-	input_text?: string | null;
-	field_annotations?: Array<string> | null;
-	model_annotations?: string | null;
+	scale_min?: number | null;
+	scale_max?: number | null;
+	is_set_of_labels?: boolean | null;
+	max_labels?: number | null;
+	labels?: Array<string> | null;
+	dict_keys?: Array<Record<string, string>> | null;
+	model_instructions?: string | null;
+	validation_rules?: Record<string, unknown> | null;
 	id: number;
 	created_at: string;
 	updated_at: string;
+	classification_count?: number | null;
+	document_count?: number | null;
 };
 
 
 
 export type ClassificationSchemeUpdate = {
 	name: string;
-	description?: string | null;
+	description: string;
+	/**
+	 * Type of classification scheme
+	 */
 	type: string;
-	expected_datatype: string;
-	prompt?: string | null;
-	input_text?: string | null;
-	field_annotations?: Array<string> | null;
-	model_annotations?: string | null;
+	scale_min?: number | null;
+	scale_max?: number | null;
+	is_set_of_labels?: boolean | null;
+	max_labels?: number | null;
+	labels?: Array<string> | null;
+	dict_keys?: Array<Record<string, string>> | null;
+	model_instructions?: string | null;
+	validation_rules?: Record<string, unknown> | null;
+};
+
+
+
+export type DocumentRead = {
+	title: string;
+	url?: string | null;
+	content_type?: string | null;
+	source?: string | null;
+	top_image?: string | null;
+	text_content?: string | null;
+	summary?: string | null;
+	insertion_date: string;
+	id: number;
+	workspace_id: number;
+	user_id: number;
+	files?: Array<FileRead>;
+};
+
+
+
+export type DocumentUpdate = {
+	title: string;
+	url?: string | null;
+	content_type?: string | null;
+	source?: string | null;
+	top_image?: string | null;
+	text_content?: string | null;
+	summary?: string | null;
+	insertion_date?: string;
+};
+
+
+
+export type EnhancedClassificationResultRead = {
+	document_id: number;
+	scheme_id: number;
+	value?: Record<string, unknown>;
+	timestamp: string;
+	run_name?: string | null;
+	run_description?: string | null;
+	id: number;
+	document: DocumentRead;
+	scheme: ClassificationSchemeRead;
+	display_value?: number | string | Record<string, unknown> | null;
+};
+
+
+
+export type FileRead = {
+	name: string;
+	filetype?: string | null;
+	size?: number | null;
+	url?: string | null;
+	caption?: string | null;
+	media_type?: string | null;
+	top_image?: string | null;
+	id: number;
+	document_id: number;
+};
+
+
+
+export type FileUploadResponse = {
+	/**
+	 * Uploaded filename
+	 */
+	filename: string;
+	/**
+	 * Storage ID
+	 */
+	storage_id: string;
 };
 
 
@@ -128,6 +274,27 @@ export type Request = {
 
 
 
+export type SavedResultSetCreate = {
+	name: string;
+	document_ids?: Array<number>;
+	scheme_ids?: Array<number>;
+};
+
+
+
+export type SavedResultSetRead = {
+	name: string;
+	document_ids?: Array<number>;
+	scheme_ids?: Array<number>;
+	id: number;
+	workspace_id: number;
+	created_at: string;
+	updated_at: string;
+	results?: Array<ClassificationResultRead>;
+};
+
+
+
 export type SearchHistoriesOut = {
 	data: Array<SearchHistoryRead>;
 	count: number;
@@ -157,10 +324,6 @@ export type SearchHistoryRead = {
 	id: number;
 	user_id: number;
 };
-
-
-
-export type SearchType = 'text' | 'semantic' | 'structured';
 
 
 
@@ -242,6 +405,7 @@ export type WorkspaceCreate = {
 	name: string;
 	description?: string | null;
 	sources?: Array<string> | null;
+	icon?: string | null;
 };
 
 
@@ -250,16 +414,26 @@ export type WorkspaceRead = {
 	name: string;
 	description?: string | null;
 	sources?: Array<string> | null;
+	icon?: string | null;
 	uid: number;
-	user_id_ownership: number;
 	created_at: string;
 	updated_at: string;
 };
 
 
 
-export type WorkspacesOut = {
-	data: Array<WorkspaceRead>;
-	count: number;
+export type WorkspaceUpdate = {
+	name: string;
+	description?: string | null;
+	sources?: Array<string> | null;
+	icon?: string | null;
 };
+
+
+
+export type app__api__v1__entities__routes__SearchType = 'text' | 'semantic';
+
+
+
+export type app__api__v1__search__routes__SearchType = 'text' | 'semantic' | 'structured';
 

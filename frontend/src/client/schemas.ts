@@ -14,13 +14,98 @@ export const $ArticleResponse = {
 	},
 } as const;
 
+export const $Body_documents_create_document = {
+	properties: {
+		title: {
+	type: 'string',
+	isRequired: true,
+},
+		url: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		content_type: {
+	type: 'string',
+	default: 'article',
+},
+		source: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		text_content: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		summary: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		top_image: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		insertion_date: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+	format: 'date-time',
+}, {
+	type: 'null',
+}],
+},
+		files: {
+	type: 'any-of',
+	contains: [{
+	type: 'array',
+	contains: {
+	type: 'binary',
+	format: 'binary',
+},
+}, {
+	type: 'null',
+}],
+},
+	},
+} as const;
+
+export const $Body_filestorage_file_upload = {
+	properties: {
+		file: {
+	type: 'binary',
+	description: `File to upload`,
+	isRequired: true,
+	format: 'binary',
+},
+	},
+} as const;
+
 export const $Body_login_login_access_token = {
 	properties: {
 		grant_type: {
 	type: 'any-of',
 	contains: [{
 	type: 'string',
-	pattern: 'password',
+	pattern: '^password$',
 }, {
 	type: 'null',
 }],
@@ -56,6 +141,114 @@ export const $Body_login_login_access_token = {
 	},
 } as const;
 
+export const $Body_utils_extract_pdf_text = {
+	properties: {
+		file: {
+	type: 'binary',
+	isRequired: true,
+	format: 'binary',
+},
+	},
+} as const;
+
+export const $ClassificationResultCreate = {
+	properties: {
+		document_id: {
+	type: 'number',
+	isRequired: true,
+},
+		scheme_id: {
+	type: 'number',
+	isRequired: true,
+},
+		value: {
+	type: 'dictionary',
+	contains: {
+	properties: {
+	},
+},
+},
+		timestamp: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+	format: 'date-time',
+}, {
+	type: 'null',
+}],
+},
+		run_name: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		run_description: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+	},
+} as const;
+
+export const $ClassificationResultRead = {
+	properties: {
+		document_id: {
+	type: 'number',
+	isRequired: true,
+},
+		scheme_id: {
+	type: 'number',
+	isRequired: true,
+},
+		value: {
+	type: 'dictionary',
+	contains: {
+	properties: {
+	},
+},
+},
+		timestamp: {
+	type: 'string',
+	isRequired: true,
+	format: 'date-time',
+},
+		run_name: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		run_description: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		id: {
+	type: 'number',
+	isRequired: true,
+},
+		document: {
+	type: 'DocumentRead',
+	isRequired: true,
+},
+		scheme: {
+	type: 'ClassificationSchemeRead',
+	isRequired: true,
+},
+	},
+} as const;
+
 export const $ClassificationSchemeCreate = {
 	properties: {
 		name: {
@@ -63,38 +256,47 @@ export const $ClassificationSchemeCreate = {
 	isRequired: true,
 },
 		description: {
-	type: 'any-of',
-	contains: [{
 	type: 'string',
-}, {
-	type: 'null',
-}],
+	isRequired: true,
 },
 		type: {
 	type: 'string',
+	description: `Type of classification scheme`,
 	isRequired: true,
 },
-		expected_datatype: {
-	type: 'string',
-	isRequired: true,
-},
-		prompt: {
+		scale_min: {
 	type: 'any-of',
 	contains: [{
-	type: 'string',
+	type: 'number',
 }, {
 	type: 'null',
 }],
 },
-		input_text: {
+		scale_max: {
 	type: 'any-of',
 	contains: [{
-	type: 'string',
+	type: 'number',
 }, {
 	type: 'null',
 }],
 },
-		field_annotations: {
+		is_set_of_labels: {
+	type: 'any-of',
+	contains: [{
+	type: 'boolean',
+}, {
+	type: 'null',
+}],
+},
+		max_labels: {
+	type: 'any-of',
+	contains: [{
+	type: 'number',
+}, {
+	type: 'null',
+}],
+},
+		labels: {
 	type: 'any-of',
 	contains: [{
 	type: 'array',
@@ -105,10 +307,36 @@ export const $ClassificationSchemeCreate = {
 	type: 'null',
 }],
 },
-		model_annotations: {
+		dict_keys: {
+	type: 'any-of',
+	contains: [{
+	type: 'array',
+	contains: {
+	type: 'dictionary',
+	contains: {
+	type: 'string',
+},
+},
+}, {
+	type: 'null',
+}],
+},
+		model_instructions: {
 	type: 'any-of',
 	contains: [{
 	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		validation_rules: {
+	type: 'any-of',
+	contains: [{
+	type: 'dictionary',
+	contains: {
+	properties: {
+	},
+},
 }, {
 	type: 'null',
 }],
@@ -123,38 +351,47 @@ export const $ClassificationSchemeRead = {
 	isRequired: true,
 },
 		description: {
-	type: 'any-of',
-	contains: [{
 	type: 'string',
-}, {
-	type: 'null',
-}],
+	isRequired: true,
 },
 		type: {
 	type: 'string',
+	description: `Type of classification scheme`,
 	isRequired: true,
 },
-		expected_datatype: {
-	type: 'string',
-	isRequired: true,
-},
-		prompt: {
+		scale_min: {
 	type: 'any-of',
 	contains: [{
-	type: 'string',
+	type: 'number',
 }, {
 	type: 'null',
 }],
 },
-		input_text: {
+		scale_max: {
 	type: 'any-of',
 	contains: [{
-	type: 'string',
+	type: 'number',
 }, {
 	type: 'null',
 }],
 },
-		field_annotations: {
+		is_set_of_labels: {
+	type: 'any-of',
+	contains: [{
+	type: 'boolean',
+}, {
+	type: 'null',
+}],
+},
+		max_labels: {
+	type: 'any-of',
+	contains: [{
+	type: 'number',
+}, {
+	type: 'null',
+}],
+},
+		labels: {
 	type: 'any-of',
 	contains: [{
 	type: 'array',
@@ -165,10 +402,36 @@ export const $ClassificationSchemeRead = {
 	type: 'null',
 }],
 },
-		model_annotations: {
+		dict_keys: {
+	type: 'any-of',
+	contains: [{
+	type: 'array',
+	contains: {
+	type: 'dictionary',
+	contains: {
+	type: 'string',
+},
+},
+}, {
+	type: 'null',
+}],
+},
+		model_instructions: {
 	type: 'any-of',
 	contains: [{
 	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		validation_rules: {
+	type: 'any-of',
+	contains: [{
+	type: 'dictionary',
+	contains: {
+	properties: {
+	},
+},
 }, {
 	type: 'null',
 }],
@@ -187,6 +450,22 @@ export const $ClassificationSchemeRead = {
 	isRequired: true,
 	format: 'date-time',
 },
+		classification_count: {
+	type: 'any-of',
+	contains: [{
+	type: 'number',
+}, {
+	type: 'null',
+}],
+},
+		document_count: {
+	type: 'any-of',
+	contains: [{
+	type: 'number',
+}, {
+	type: 'null',
+}],
+},
 	},
 } as const;
 
@@ -197,38 +476,47 @@ export const $ClassificationSchemeUpdate = {
 	isRequired: true,
 },
 		description: {
-	type: 'any-of',
-	contains: [{
 	type: 'string',
-}, {
-	type: 'null',
-}],
+	isRequired: true,
 },
 		type: {
 	type: 'string',
+	description: `Type of classification scheme`,
 	isRequired: true,
 },
-		expected_datatype: {
-	type: 'string',
-	isRequired: true,
-},
-		prompt: {
+		scale_min: {
 	type: 'any-of',
 	contains: [{
-	type: 'string',
+	type: 'number',
 }, {
 	type: 'null',
 }],
 },
-		input_text: {
+		scale_max: {
 	type: 'any-of',
 	contains: [{
-	type: 'string',
+	type: 'number',
 }, {
 	type: 'null',
 }],
 },
-		field_annotations: {
+		is_set_of_labels: {
+	type: 'any-of',
+	contains: [{
+	type: 'boolean',
+}, {
+	type: 'null',
+}],
+},
+		max_labels: {
+	type: 'any-of',
+	contains: [{
+	type: 'number',
+}, {
+	type: 'null',
+}],
+},
+		labels: {
 	type: 'any-of',
 	contains: [{
 	type: 'array',
@@ -239,13 +527,330 @@ export const $ClassificationSchemeUpdate = {
 	type: 'null',
 }],
 },
-		model_annotations: {
+		dict_keys: {
+	type: 'any-of',
+	contains: [{
+	type: 'array',
+	contains: {
+	type: 'dictionary',
+	contains: {
+	type: 'string',
+},
+},
+}, {
+	type: 'null',
+}],
+},
+		model_instructions: {
 	type: 'any-of',
 	contains: [{
 	type: 'string',
 }, {
 	type: 'null',
 }],
+},
+		validation_rules: {
+	type: 'any-of',
+	contains: [{
+	type: 'dictionary',
+	contains: {
+	properties: {
+	},
+},
+}, {
+	type: 'null',
+}],
+},
+	},
+} as const;
+
+export const $DocumentRead = {
+	properties: {
+		title: {
+	type: 'string',
+	isRequired: true,
+},
+		url: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		content_type: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		source: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		top_image: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		text_content: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		summary: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		insertion_date: {
+	type: 'string',
+	isRequired: true,
+	format: 'date-time',
+},
+		id: {
+	type: 'number',
+	isRequired: true,
+},
+		workspace_id: {
+	type: 'number',
+	isRequired: true,
+},
+		user_id: {
+	type: 'number',
+	isRequired: true,
+},
+		files: {
+	type: 'array',
+	contains: {
+		type: 'FileRead',
+	},
+	default: [],
+},
+	},
+} as const;
+
+export const $DocumentUpdate = {
+	properties: {
+		title: {
+	type: 'string',
+	isRequired: true,
+},
+		url: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		content_type: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		source: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		top_image: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		text_content: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		summary: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		insertion_date: {
+	type: 'string',
+	format: 'date-time',
+},
+	},
+} as const;
+
+export const $EnhancedClassificationResultRead = {
+	properties: {
+		document_id: {
+	type: 'number',
+	isRequired: true,
+},
+		scheme_id: {
+	type: 'number',
+	isRequired: true,
+},
+		value: {
+	type: 'dictionary',
+	contains: {
+	properties: {
+	},
+},
+},
+		timestamp: {
+	type: 'string',
+	isRequired: true,
+	format: 'date-time',
+},
+		run_name: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		run_description: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		id: {
+	type: 'number',
+	isRequired: true,
+},
+		document: {
+	type: 'DocumentRead',
+	isRequired: true,
+},
+		scheme: {
+	type: 'ClassificationSchemeRead',
+	isRequired: true,
+},
+		display_value: {
+	type: 'any-of',
+	contains: [{
+	type: 'number',
+}, {
+	type: 'string',
+}, {
+	type: 'dictionary',
+	contains: {
+	properties: {
+	},
+},
+}, {
+	type: 'null',
+}],
+},
+	},
+} as const;
+
+export const $FileRead = {
+	properties: {
+		name: {
+	type: 'string',
+	isRequired: true,
+},
+		filetype: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		size: {
+	type: 'any-of',
+	contains: [{
+	type: 'number',
+}, {
+	type: 'null',
+}],
+},
+		url: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		caption: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		media_type: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		top_image: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		id: {
+	type: 'number',
+	isRequired: true,
+},
+		document_id: {
+	type: 'number',
+	isRequired: true,
+},
+	},
+} as const;
+
+export const $FileUploadResponse = {
+	properties: {
+		filename: {
+	type: 'string',
+	description: `Uploaded filename`,
+	isRequired: true,
+},
+		storage_id: {
+	type: 'string',
+	description: `Storage ID`,
+	isRequired: true,
 },
 	},
 } as const;
@@ -397,6 +1002,76 @@ export const $Request = {
 	},
 } as const;
 
+export const $SavedResultSetCreate = {
+	properties: {
+		name: {
+	type: 'string',
+	isRequired: true,
+},
+		document_ids: {
+	type: 'array',
+	contains: {
+	type: 'number',
+},
+	default: [],
+},
+		scheme_ids: {
+	type: 'array',
+	contains: {
+	type: 'number',
+},
+	default: [],
+},
+	},
+} as const;
+
+export const $SavedResultSetRead = {
+	properties: {
+		name: {
+	type: 'string',
+	isRequired: true,
+},
+		document_ids: {
+	type: 'array',
+	contains: {
+	type: 'number',
+},
+	default: [],
+},
+		scheme_ids: {
+	type: 'array',
+	contains: {
+	type: 'number',
+},
+	default: [],
+},
+		id: {
+	type: 'number',
+	isRequired: true,
+},
+		workspace_id: {
+	type: 'number',
+	isRequired: true,
+},
+		created_at: {
+	type: 'string',
+	isRequired: true,
+	format: 'date-time',
+},
+		updated_at: {
+	type: 'string',
+	isRequired: true,
+	format: 'date-time',
+},
+		results: {
+	type: 'array',
+	contains: {
+		type: 'ClassificationResultRead',
+	},
+},
+	},
+} as const;
+
 export const $SearchHistoriesOut = {
 	properties: {
 		data: {
@@ -470,11 +1145,6 @@ export const $SearchHistoryRead = {
 	isRequired: true,
 },
 	},
-} as const;
-
-export const $SearchType = {
-	type: 'Enum',
-	enum: ['text','semantic','structured',],
 } as const;
 
 export const $Token = {
@@ -706,6 +1376,14 @@ export const $WorkspaceCreate = {
 	type: 'null',
 }],
 },
+		icon: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
 	},
 } as const;
 
@@ -734,11 +1412,15 @@ export const $WorkspaceRead = {
 	type: 'null',
 }],
 },
-		uid: {
-	type: 'number',
-	isRequired: true,
+		icon: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
 },
-		user_id_ownership: {
+		uid: {
 	type: 'number',
 	isRequired: true,
 },
@@ -755,18 +1437,48 @@ export const $WorkspaceRead = {
 	},
 } as const;
 
-export const $WorkspacesOut = {
+export const $WorkspaceUpdate = {
 	properties: {
-		data: {
+		name: {
+	type: 'string',
+	isRequired: true,
+},
+		description: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+		sources: {
+	type: 'any-of',
+	contains: [{
 	type: 'array',
 	contains: {
-		type: 'WorkspaceRead',
-	},
-	isRequired: true,
+	type: 'string',
 },
-		count: {
-	type: 'number',
-	isRequired: true,
+}, {
+	type: 'null',
+}],
+},
+		icon: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
 },
 	},
+} as const;
+
+export const $app__api__v1__entities__routes__SearchType = {
+	type: 'Enum',
+	enum: ['text','semantic',],
+} as const;
+
+export const $app__api__v1__search__routes__SearchType = {
+	type: 'Enum',
+	enum: ['text','semantic','structured',],
 } as const;

@@ -1,7 +1,7 @@
 'use client'
 
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/collection/AppSidebar"
+import { AppSidebar } from "@/components/collection/unsorted/AppSidebar"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,26 +11,14 @@ import {
 } from "@/components/ui/breadcrumb"
 import LottiePlaceholder from "@/components/ui/lottie-placeholder"
 import useAuth from "@/hooks/useAuth"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { useWorkspaceStore } from "@/zustand_stores/storeWorkspace"
 
 export default function DesksLayout({ children }: { children: React.ReactNode }) {
-  const { user, isLoading, isLoggedIn } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isLoading && !isLoggedIn) {
-      router.push('/login')
-    }
-
-  }, [isLoading, isLoggedIn, router])
+  const { user, isLoading } = useAuth();  
+  const activeWorkspace = useWorkspaceStore.getState().activeWorkspace;
 
   if (typeof window === 'undefined' || isLoading) {
     return <LottiePlaceholder />
-  }
-
-  if (!isLoggedIn) {
-    return null
   }
 
   return (
@@ -40,14 +28,12 @@ export default function DesksLayout({ children }: { children: React.ReactNode })
         <SidebarInset className="flex-1 flex flex-col pt-16">
           <header className="flex h-12 shrink-0 items-center gap-2 px-4">
             <div className="flex items-center gap-2">
-              <SidebarTrigger className="md:-ml-4 " />
               <Breadcrumb className="pr-6 md:pr-2">
                 <BreadcrumbList>
                   <BreadcrumbItem>
-                    <BreadcrumbLink href="/desks">Desks</BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>Globe</BreadcrumbPage>
+                    <BreadcrumbLink href="#">
+                      <SidebarTrigger className="size-4" />
+                    </BreadcrumbLink>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>

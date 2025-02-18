@@ -1,6 +1,6 @@
 import logging
 
-from sqlalchemy import Engine
+from sqlalchemy import Engine, text
 from sqlmodel import Session, select
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 
@@ -24,6 +24,9 @@ def init(db_engine: Engine) -> None:
         with Session(db_engine) as session:
             # Try to create session to check if DB is awake
             session.exec(select(1))
+            # Delete the alembic version table
+            # session.exec(text("DROP TABLE IF EXISTS alembic_version"))
+
     except Exception as e:
         logger.error(e)
         raise e

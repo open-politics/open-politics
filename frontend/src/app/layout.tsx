@@ -3,10 +3,10 @@ import { cn } from "@/lib/utils";
 import { fontSans, fontMono } from "@/lib/fonts";
 import { ReactNode } from 'react';
 import ClientWrapper from './ClientWrapper';
-import BlurredDots from '@/components/collection/BlurredDots';
+import BlurredDots from '@/components/collection/unsorted/BlurredDots';
 import { ToastProvider, ToastViewport } from '@/components/ui/toast';
-import Header from '@/components/collection/Header';
-import Footer from '@/components/collection/Footer';
+import Header from '@/components/collection/unsorted/Header';
+import Footer from '@/components/collection/unsorted/Footer';
 import { AppStateProvider } from '@/lib/utils/app-state'
 import { AI } from './xactions';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"

@@ -1,0 +1,130 @@
+import React, { useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useWorkspaceStore } from "@/zustand_stores/storeWorkspace";
+import { IconPickerDialog } from "@/components/collection/workspaces/utilities/icons/IconPickerOverlay";
+import { IconRenderer } from "@/components/collection/workspaces/utilities/icons/icon-picker";
+
+interface EditWorkSpaceOverlayProps {
+  open: boolean;
+  onClose: () => void;
+  workspaceId: number;
+  defaultName?: string | undefined;
+  defaultDescription?: string | undefined;
+  defaultSources?: string[] | undefined;
+  defaultIcon?: string | undefined;
+}
+
+/**
+ * Displays an overlay (dialog) allowing the user to edit an existing workspace.
+ * Update logic is handled via the useWorkspaceDataStore.
+ */
+export default function EditWorkSpaceOverlay({
+  open,
+  onClose,
+  workspaceId,
+  defaultName,
+  defaultDescription,
+  defaultSources,
+  defaultIcon,
+}: EditWorkSpaceOverlayProps) {
+  const [name, setName] = useState(defaultName || "");
+  const [description, setDescription] = useState(defaultDescription || "");
+  const [sources, setSources] = useState(defaultSources?.join(", ") || "");
+  const [icon, setIcon] = useState(defaultIcon || "");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const { updateWorkspace } = useWorkspaceStore();
+
+  useEffect(() => {
+    setName(defaultName || "");
+    setDescription(defaultDescription || "");
+    setSources(defaultSources?.join(", ") || "");
+    setIcon(defaultIcon || "");
+  }, [defaultName, defaultDescription, defaultSources, defaultIcon]);
+
+  const handleSave = async () => {
+    setErrorMessage("");
+    try {
+      await updateWorkspace(workspaceId, {
+        name,
+        description,
+        sources: sources.split(",").map((s) => s.trim()),
+        icon,
+      });
+      onClose();
+    } catch (error) {
+      setErrorMessage("Failed to update workspace. Please try again.");
+      console.error("Error updating workspace:", error);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="rounded-lg shadow-xl bg-primary-900 m-4 max-w-xl">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-bold text-secondary-500">
+            <div className="flex items-center justify-start gap-2 p-2 pl-0"> 
+              <IconRenderer className="size-6" icon={icon} />
+              <span className="text-blue-800 dark:text-green-500">{name}</span>
+            </div>
+          </DialogTitle>
+          <DialogDescription>
+            Use this dialog to edit the workspace details.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex flex-col space-y-4 mt-4">
+          <div>
+            <label className="block text-sm text-secondary-300 mb-1">Name</label>
+            <Input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full p-3 bg-primary-800 border border-secondary-700 rounded-xl shadow-inner"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm text-secondary-300 mb-1">Description</label>
+            <Input
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full p-3 bg-primary-800 border border-secondary-700 rounded-xl shadow-inner"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm text-secondary-300 mb-1">Sources</label>
+            <Input
+              type="text"
+              value={sources}
+              onChange={(e) => setSources(e.target.value)}
+              className="w-full p-3 bg-primary-800 border border-secondary-700 rounded-xl shadow-inner"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm text-secondary-300 mb-1">Icon</label>
+            <div className="flex items-center justify-start gap-2 p-2 pl-0">
+              <IconPickerDialog onIconSelect={setIcon} defaultIcon={icon} />
+            </div>
+          </div>
+
+          {errorMessage && <p className="text-red-400">{errorMessage}</p>}
+
+          <div className="flex justify-end space-x-2 pt-2">
+            <Button variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button onClick={handleSave} className="bg-green-600 hover:bg-green-500 text-primary-950">
+              Save
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}

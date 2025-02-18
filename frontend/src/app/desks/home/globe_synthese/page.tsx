@@ -4,12 +4,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/components/ui/use-toast';
-import Globe from '@/components/Globe/index';
-import Search from '@/components/collection/Search';
-import LocationDetailPanel from '@/components/collection/LocationDetailPanel';
-import { useLayoutStore } from '@/store/useLayoutStore';
+import Globe from '@/components/collection/globes/index';
+import Search from '@/components/collection/unsorted/Search';
+import LocationDetailPanel from '@/components/collection/unsorted/LocationDetailPanel';
+import { useLayoutStore } from '@/zustand_stores/storeLayout';
 import { useArticleTabNameStore } from '@/hooks/useArticleTabNameStore';
-import { useFocusStore } from '@/store/useFocusStore';
+import { useFocusStore } from '@/zustand_stores/storeFocus';
 
 const GlobePage = () => {
   const [results, setResults] = useState(null);

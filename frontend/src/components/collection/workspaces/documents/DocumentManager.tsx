@@ -1,0 +1,250 @@
+'use client';
+
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import useAuth from "@/hooks/useAuth";
+import { Separator } from "@/components/ui/separator";
+import { Search, Plus } from "lucide-react"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { formatDistanceToNow } from "date-fns"
+import { cn } from "@/lib/utils"
+import { Switch } from "@/components/ui/switch"
+import { TooltipProvider } from "@/components/ui/tooltip"
+import { FileRead } from '@/client/models';
+import CreateDocumentDialog from './CreateDocumentsDialog';
+import DocumentsTable from '@/components/collection/workspaces/tables/documents/page';
+import DocumentDetailView from './DocumentsDetailView';
+import Image from 'next/image';
+import {
+  Tabs,
+  TabsContent,
+} from "@/components/ui/tabs"
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable"
+import { Badge } from "@/components/ui/badge"
+import { useWorkspaceStore } from '@/zustand_stores/storeWorkspace';
+import { useDocumentStore } from '@/zustand_stores/storeDocuments';
+import EditDocumentOverlay from './EditDocumentOverlay';
+import { DocumentRead, WorkspaceRead } from '@/client/models';
+import { useClassificationSchemeStore } from '@/zustand_stores/storeSchemas';
+
+interface DocumentListProps {
+  items: DocumentRead[];
+  onDocumentSelect: (documentId: number) => void;
+  selectedDocumentId: number | null;
+}
+
+const DocumentCardComponent: React.FC<DocumentListProps> = React.memo(({ items, onDocumentSelect, selectedDocumentId }) => {
+  return (
+    <ScrollArea className="h-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-2">
+        {items.map((item) => (
+          <Card
+            key={item.id}
+            className={cn(
+              "flex flex-col border border-gray-900 items-start gap-1 rounded-lg p-1 text-left text-sm transition-all hover:bg-accent",
+              selectedDocumentId === item.id && "bg-muted"
+            )}
+            onClick={() => onDocumentSelect(item.id)}
+          >
+            <CardHeader className="w-full p-2">
+              <div className="grid grid-cols-[1fr,auto] gap-2">
+                <div className="flex flex-col">
+                  <CardTitle className="text-base">{item.title}</CardTitle>
+                  <div className="text-xs text-muted-foreground">{item.content_type}</div>
+                </div>
+                {item.top_image && (
+                  <div className="w-16 h-16 relative">
+                    <Image 
+                      src={item.top_image} 
+                      alt={item.title || 'Document'} 
+                      fill 
+                      className="object-cover rounded"
+                    />
+                  </div>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="w-full p-2">
+              <div className="line-clamp-2 text-xs text-muted-foreground mb-2">
+                {item.text_content?.substring(0, 150)}
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {(item.files || [])?.slice(0, 2).map((file: FileRead) => (
+                  <Badge key={file.id} variant="outline" className="text-xs">
+                    {file.name}
+                  </Badge>
+                ))}
+                {(item.files?.length || 0) > 2 && (
+                  <Badge variant="outline" className="text-xs">
+                    +{(item.files?.length || 0) - 2} more
+                  </Badge>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </ScrollArea>
+  );
+});
+
+
+export default function DocumentManager() {
+  const { documents, fetchDocuments } = useDocumentStore();
+  const { activeWorkspace } = useWorkspaceStore();
+  const { classificationSchemes, fetchClassificationSchemes } = useClassificationSchemeStore();
+
+  const { isLoggedIn } = useAuth();
+
+  const [isCreateDocumentOpen, setIsCreateDocumentOpen] = useState(false);
+  const [isCardView, setIsCardView] = useState(false);
+  const [selectedDocumentId, setSelectedDocumentId] = useState<number | null>(null);
+  const [newlyInsertedDocumentIds, setNewlyInsertedDocumentIds] = useState<number[]>([]);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [documentToEdit, setDocumentToEdit] = useState<DocumentRead | null>(null);
+
+  // Use a ref to prevent multiple fetches
+  const fetchingRef = useRef(false);
+
+  const handleDocumentSelect = (documentId: number) => {
+    setSelectedDocumentId(documentId);
+  };
+
+  const handleEdit = (document: DocumentRead) => {
+    setDocumentToEdit(document);
+    setIsEditOpen(true);
+  };
+
+  const memoizedDocumentToEditProps = useMemo(() => ({
+    open: isEditOpen,
+    onClose: () => setIsEditOpen(false),
+    documentId: documentToEdit?.id || 0,
+    defaultTitle: documentToEdit?.title || '',
+    defaultTopImage: documentToEdit?.top_image || '',
+    defaultContentType: documentToEdit?.content_type || 'article',
+    defaultSource: documentToEdit?.source || '',
+    defaultTextContent: documentToEdit?.text_content || '',
+    defaultSummary: documentToEdit?.summary || '',
+    defaultInsertionDate: documentToEdit?.insertion_date || new Date().toISOString(),
+  }), [isEditOpen, documentToEdit]);
+
+  useEffect(() => {
+    if (activeWorkspace && !fetchingRef.current) {
+      fetchingRef.current = true;
+      setSelectedDocumentId(null);
+      fetchDocuments();
+      fetchClassificationSchemes(activeWorkspace.uid);
+    }
+  }, [activeWorkspace?.uid]); // Only depend on the ID
+
+  if (!activeWorkspace) {
+    return (
+      <p className="text-center text-red-400">
+        Please select a workspace to manage documents.
+      </p>
+    );
+  }
+
+  return (
+    <TooltipProvider delayDuration={0}>
+      <div className="flex flex-col h-full w-full max-w-screen-2xl max-h-[80%] mx-auto px-2 sm:px-4">
+        {/* Header Section - Made more compact on mobile */}
+        <div className="flex-none p-2 sm:p-4">
+          <div className="flex items-center justify-between">
+            <Button variant="outline" onClick={() => setIsCreateDocumentOpen(true)} className="h-9">
+              <Plus className="h-4 w-4" />
+              <span className="ml-2 sr-only sm:not-sr-only sm:inline">New Document</span>
+            </Button>
+          </div>
+          <Separator className="my-2" />
+        </div>
+
+        {/* Main Content Area - Adjusted for responsive layout */}
+        <div className="flex-1 min-h-0 flex flex-col">
+          <ResizablePanelGroup
+            direction="horizontal"
+            className="h-full w-full border rounded-lg overflow-hidden"
+          >
+            <ResizablePanel 
+              defaultSize={50} 
+              minSize={30}
+              className="min-w-[300px] bg-background"
+            >
+              <div className="flex flex-col h-full">
+                <div className="flex-none p-2 sm:p-4">
+                  <div className="flex items-center justify-between">
+                    <h1 className="text-lg sm:text-xl font-bold">Documents</h1>
+                  </div>
+                  <div className="mt-2">
+                    <div className="relative">
+                      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input placeholder="Search" className="pl-8 h-9" />
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2 mt-2">
+                    <Switch id="card-view" checked={isCardView} onCheckedChange={setIsCardView} />
+                    <label htmlFor="card-view" className="text-sm font-medium">
+                      Card View
+                    </label>
+                  </div>
+                </div>
+
+                {/* Document List - Adjusted grid for mobile */}
+                <div className="flex-1 min-h-0 overflow-hidden">
+                  <Tabs defaultValue="all" className="h-full">
+                    <TabsContent value="all" className="h-full m-0">
+                      {isCardView ? (
+                        <DocumentCardComponent
+                          items={documents as DocumentRead[]}
+                          onDocumentSelect={handleDocumentSelect}
+                          selectedDocumentId={selectedDocumentId}
+                        />
+                      ) : (
+                        <div className="h-full overflow-x-auto">
+                          <DocumentsTable onDocumentSelect={handleDocumentSelect} />
+                        </div>
+                      )}
+                    </TabsContent>
+                  </Tabs>
+                </div>
+              </div>
+            </ResizablePanel>
+
+            <ResizableHandle withHandle className="hidden sm:flex bg-border" />
+
+            <ResizablePanel 
+              defaultSize={50} 
+              minSize={30}
+              className="min-w-[300px] bg-background border-l"
+            >
+              <div className="h-full overflow-hidden">
+                <DocumentDetailView 
+                  selectedDocumentId={selectedDocumentId} 
+                  documents={documents as DocumentRead[]} 
+                  newlyInsertedDocumentIds={newlyInsertedDocumentIds}
+                  onEdit={handleEdit}
+                  schemes={classificationSchemes}
+                />
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </div>
+
+        {/* Modals */}
+        <CreateDocumentDialog
+          open={isCreateDocumentOpen}
+          onClose={() => setIsCreateDocumentOpen(false)}
+        />
+        <EditDocumentOverlay
+          {...memoizedDocumentToEditProps}
+        />
+      </div>
+    </TooltipProvider>
+  );
+}

@@ -1,11 +1,10 @@
 import { useState, useCallback } from 'react';
-import axios from 'axios';
-import { generateSummaryFromArticles } from '../app/xactions';
-import { readStreamableValue } from 'ai/rsc';
+import { ArticlesService, ClassificationService } from '@/client/services';
 import { useLocationData } from './useLocationData';
-import { useCoordinatesStore } from '@/store/useCoordinatesStore';
+import { useCoordinatesStore } from '@/zustand_stores/storeCoordinates';
 import { useArticleTabNameStore } from './useArticleTabNameStore';
-
+import { generateText } from 'ai';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
 export type SearchType = 'text' | 'semantic' | 'structured';
 
 interface SearchFilters {
@@ -31,6 +30,9 @@ interface UseSearchReturn {
   error: Error | null;
   results: SearchResults | null;
   summary: string;
+  setFilters: React.Dispatch<React.SetStateAction<SearchFilters>>;
+  setSearchType: React.Dispatch<React.SetStateAction<SearchType>>;
+  setAnalysisType: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const calculateZoomLevel = (bbox: number[]): number => {
@@ -48,61 +50,44 @@ const calculateZoomLevel = (bbox: number[]): number => {
   return 7;
 };
 
+type LocationData = {
+  country_name: string;
+  coordinates: {
+    latitude: number;
+    longitude: number;
+  };
+  bbox: number[];
+  area: number;
+  location_type: string;
+};
+
 export function useSearch(
   setResults: (results: any) => void,
   setCountry?: (country: string | null) => void,
   setSummary?: (summary: string) => void,
   globeRef?: React.RefObject<any>
-) {
+): UseSearchReturn {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [searchType, setSearchType] = useState<SearchType>('semantic');
   const [filters, setFilters] = useState<SearchFilters>({});
   const [analysisType, setAnalysisType] = useState('Conflict Analysis');
-
   const { fetchCoordinates } = useLocationData(null);
   const setCoordinates = useCoordinatesStore((state) => state.setCoordinates);
   const setActiveTab = useArticleTabNameStore((state) => state.setActiveTab);
 
-  const fetchTavilySearchResults = async (query: string) => {
-    const apiKey = "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";
-    const payload = {
-      api_key: apiKey,
-      query: query,
-      search_depth: "advanced",
-      include_answer: false,
-      include_images: true,
-      include_raw_content: false,
-      max_results: 5,
-      include_domains: [],
-      exclude_domains: []
-    };
-
+  const fetchOPOLContents = useCallback(async (query: string) => {
     try {
-      const response = await axios.post('https://api.tavily.com/search', payload);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching Tavily search results:', error);
-      return null;
-    }
-  };
-
-  const fetchOPOLContents = async (query: string) => {
-    try {
-      const response = await axios.get(`/api/v2/articles/basic/`, {
-        params: {
-          query: query,
-          limit: 20,
-          skip: 0,
-          search_type: searchType,
-          ...filters
-        }
+      const data = await ArticlesService.getArticles({
+        query: query,
+        limit: 20,
+        skip: 0,
       });
-      const uniqueArticles = response.data.reduce((acc: any[], article: any) => {
+      const uniqueArticles = data.contents.reduce((acc: any[], article: any) => {
         if (!acc.find((a: any) => a.id === article.id)) {
           acc.push({
             ...article,
-            paragraphs: article.paragraphs || article.content || ''
+            paragraphs: article.paragraphs || article.content || '',
           });
         }
         return acc;
@@ -112,109 +97,143 @@ export function useSearch(
       console.error('Error fetching opol articles:', error);
       return [];
     }
-  };
+  }, []);
 
-  const fetchLocationFromNLQuery = async (query: string): Promise<LocationData | null> => {
-    try {
-      const response = await axios.get(`/api/v2/classification/location_from_query?query=${query}`);
-      console.log("Location API response:", response.data);
-      if (response.data.error) return null;
-      
-      const { coordinates, country_name, bbox, area, location_type } = response.data;
-      const locationData = {
-        country_name,
-        coordinates: {
-          latitude: coordinates[1],
-          longitude: coordinates[0]
-        },
-        bbox,
-        area,
-        location_type: location_type || 'country'
-      };
-      console.log("Processed location data:", locationData);
-      return locationData;
-    } catch (error) {
-      console.error("Error in fetchLocationFromNLQuery:", error);
-      return null;
-    }
-  };
+  const fetchLocationFromNLQuery = useCallback(
+    async (query: string): Promise<LocationData | null> => {
+      try {
+        const response = await ClassificationService.getLocationFromQuery({
+          query: query,
+        });
 
-  const search = useCallback(async (query: string) => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const locationData = await fetchLocationFromNLQuery(query);
-      console.log("Location API response:", locationData);
-      
-      if (locationData) {
-        if (setCountry) {
-          setCountry(locationData.country_name);
-          setActiveTab('summary');
+        if (response?.data) {
+          const { coordinates, country_name, bbox, area, location_type } =
+            response.data;
+          const locationData = {
+            country_name,
+            coordinates: {
+              latitude: coordinates[1],
+              longitude: coordinates[0],
+            },
+            bbox,
+            area,
+            location_type: location_type || 'country',
+          };
+          console.log('Processed location data:', locationData);
+          return locationData;
+        } else {
+          console.warn('Location data is undefined in response:', response);
+          return null;
         }
-        
-        if (locationData.coordinates) {
-          setCoordinates(locationData.coordinates.longitude, locationData.coordinates.latitude);
-          
-          const locationType = locationData.location_type || 'country';
-          
-          if (globeRef?.current?.zoomToLocation) {
-            let dynamicZoom = 4;
-            if (locationData.bbox) {
-              dynamicZoom = calculateZoomLevel(locationData.bbox);
-            }
-            
-            globeRef.current.zoomToLocation(
-              locationData.coordinates.latitude,
+      } catch (error) {
+        console.error('Error in fetchLocationFromNLQuery:', error);
+        return null;
+      }
+    },
+    []
+  );
+
+  const search = useCallback(
+    async (query: string) => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const [locationData, opolResults] = await Promise.all([
+          fetchLocationFromNLQuery(query),
+          fetchOPOLContents(query),
+        ]);
+
+        console.log('Location API response:', locationData);
+        setActiveTab('summary');
+
+        if (locationData) {
+          if (setCountry) {
+            setCountry(locationData.country_name);
+            setActiveTab('summary');
+          }
+
+          if (locationData.coordinates) {
+            setCoordinates(
               locationData.coordinates.longitude,
-              locationData.country_name,
-              locationData.bbox,
-              locationType as 'continent' | 'country' | 'locality',
-              dynamicZoom
+              locationData.coordinates.latitude
             );
+
+            const locationType = locationData.location_type || 'country';
+
+            if (globeRef?.current?.zoomToLocation) {
+              let dynamicZoom = 4;
+              if (locationData.bbox) {
+                dynamicZoom = calculateZoomLevel(locationData.bbox);
+              }
+
+              globeRef.current.zoomToLocation(
+                locationData.coordinates.latitude,
+                locationData.coordinates.longitude,
+                locationData.country_name,
+                locationData.bbox,
+                locationType as 'continent' | 'country' | 'locality',
+                dynamicZoom
+              );
+            }
           }
         }
-      }
 
-      const [tavilyResults, opolResults] = await Promise.all([
-        fetchTavilySearchResults(query),
-        fetchOPOLContents(query)
-      ]);
+        const combinedResults = { opolResults };
+        setResults(combinedResults);
 
-      const combinedResults = { tavilyResults, opolResults };
-      setResults(combinedResults);
-      setActiveTab('summary');
-
-      if (setSummary) {
-        try {
-          const summaryResult = await generateSummaryFromArticles(combinedResults, analysisType);
-          let fullSummary = '';
-          
-          for await (const delta of readStreamableValue(summaryResult.output)) {
-            fullSummary += delta;
-            setSummary(fullSummary);
+        if (setSummary) {
+          try {
+            const google = createGoogleGenerativeAI();
+            const llmResult = await generateText({
+              model: google('gemini-1.5-pro-latest'),
+              prompt: `Generate a summary of the following articles: ${opolResults
+                .map((article) => article.paragraphs)
+                .join('\n')}. Analysis Type: ${analysisType}`,
+              system:
+                'You are a helpful assistant that generates concise summaries of news articles.',
+            });
+            setSummary(llmResult.text);
+          } catch (summaryError) {
+            console.error('Error generating summary:', summaryError);
+            setSummary('Failed to generate summary.');
           }
-        } catch (summaryError) {
-          console.error("Error generating summary:", summaryError);
-          setSummary('Failed to generate summary.');
         }
+      } catch (err) {
+        console.error('Error in search:', err);
+        setError(
+          err instanceof Error
+            ? err
+            : new Error('An error occurred during search')
+        );
+        setActiveTab('articles');
+      } finally {
+        setLoading(false);
       }
-
-    } catch (err) {
-      console.error("Error in search:", err);
-      setError(err instanceof Error ? err : new Error('An error occurred during search'));
-      setActiveTab('articles');
-    } finally {
-      setLoading(false);
-    }
-  }, [setResults, setSummary, setCountry, globeRef, filters, searchType, analysisType, setActiveTab, setCoordinates]);
+    },
+    [
+      setResults,
+      setSummary,
+      setCountry,
+      globeRef,
+      filters,
+      searchType,
+      analysisType,
+      setActiveTab,
+      setCoordinates,
+      fetchLocationFromNLQuery,
+      fetchOPOLContents,
+    ]
+  );
 
   return {
     search,
     loading,
     error,
+    results: null,
+    summary: '',
     setFilters,
     setSearchType,
-    setAnalysisType
+    setAnalysisType,
   };
 }

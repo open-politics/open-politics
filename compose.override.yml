@@ -18,7 +18,7 @@ services:
     volumes:
       - ./backend/:/app
       - ./backend/openapi.json:/app/openapi.json
-      - /home/jimvincentwagner/fullstack/opol/opol/python-client/opol:/app/opol
+      - ~/fullstack/opol/opol/python-client/opol:/app/opol
     environment:
       - PORT=${BACKEND_PORT}
       - OPOL_DEV_MODE=true
@@ -51,6 +51,18 @@ services:
     networks:
       - default
 
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+    env_file:
+      - .env
+    command: ["minio", "server", "/data", "--console-address", ":9001"]
+    volumes:
+      - ./.store/minio:/data
+    networks:
+      - default
+
 networks:
   default:
     external: false
@@ -59,3 +71,4 @@ volumes:
   app-db-data:
   redis_data:
   searxng_data:
+  minio:

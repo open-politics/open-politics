@@ -45,7 +45,7 @@ const useAuth = () => {
   }, []);
 
   // This query runs only if isLoggedIn() is true
-  const { data: user, isLoading } = useQuery<User | null, Error>({
+  const { data: user, isLoading } = useQuery<UserOut | null, Error>({
     queryKey: ["CurrentUser"],
     queryFn: UsersService.readUserMe,
     enabled: isLoggedIn(),
@@ -78,9 +78,8 @@ const useAuth = () => {
   const logout = () => {
     console.log('Logging out, removing access token.');
     localStorage.removeItem('access_token');
-    queryClient.invalidateQueries({ queryKey: ['CurrentUser'] });
-    setError(null);
     router.push('/login');
+    setError(null);
   };
 
   return {

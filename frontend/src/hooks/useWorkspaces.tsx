@@ -1,74 +1,72 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { WorkspacesService } from "@/client/services";
-import { WorkspaceCreate, WorkspaceRead, WorkspacesOut } from "@/client/models";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-// Fetch all workspaces
-const fetchWorkspaces = async (): Promise<WorkspacesOut> => {
+import {
+  WorkspaceCreate,
+  WorkspaceRead,
+  WorkspaceUpdate,
+} from '@/client/models';
+import { WorkspacesService } from '@/client/services';
+import { useWorkspaceStore } from '@/zustand_stores/storeWorkspace';
+
+const fetchWorkspaces = async (): Promise<WorkspaceRead[]> => {
   const response = await WorkspacesService.readWorkspaces({});
   return response;
 };
 
-// Create a new workspace
-const createWorkspace = async (workspace: WorkspaceCreate): Promise<WorkspaceRead> => {
-  const response = await WorkspacesService.createWorkspace({ requestBody: workspace });
+const createWorkspace = async (
+  workspace: WorkspaceCreate
+): Promise<WorkspaceRead> => {
+  const response = await WorkspacesService.createWorkspace({
+    requestBody: workspace,
+  });
   return response;
 };
 
-// Delete a workspace
 const deleteWorkspace = async (workspaceId: number): Promise<void> => {
   await WorkspacesService.deleteWorkspace({ workspaceId });
 };
 
-// New function to update a workspace
 const updateWorkspace = async ({
   workspaceId,
   data,
 }: {
   workspaceId: number;
-  data: WorkspaceCreate;
+  data: WorkspaceUpdate;
 }): Promise<WorkspaceRead> => {
-  // This assumes your autogen client has an updateWorkspace method, 
-  // otherwise you could use fetch or axios.
   const response = await WorkspacesService.updateWorkspace({
     workspaceId,
-    requestBody: data
+    requestBody: data,
   });
   return response;
 };
 
 const useWorkspaces = () => {
   const queryClient = useQueryClient();
+  const { setActiveWorkspace } = useWorkspaceStore();
 
   const workspacesQuery = useQuery({
-    queryKey: ["workspaces"],
+    queryKey: ['workspaces'],
     queryFn: fetchWorkspaces,
-    onSuccess: (data) => {
-      // Set the first workspace as active if none is set
-      if (!activeWorkspace && data?.data?.length > 0) {
-        setActiveWorkspace(data.data[0]);
-      }
-    },
   });
 
   const createWorkspaceMutation = useMutation({
     mutationFn: createWorkspace,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workspaces"] });
+      queryClient.invalidateQueries({ queryKey: ['workspaces'] });
     },
   });
 
   const deleteWorkspaceMutation = useMutation({
     mutationFn: deleteWorkspace,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workspaces"] });
+      queryClient.invalidateQueries({ queryKey: ['workspaces'] });
     },
   });
 
-  // Add the new update mutation
   const updateWorkspaceMutation = useMutation({
     mutationFn: updateWorkspace,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workspaces"] });
+      queryClient.invalidateQueries({ queryKey: ['workspaces'] });
     },
   });
 

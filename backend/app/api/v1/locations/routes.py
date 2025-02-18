@@ -23,7 +23,7 @@ from PIL import Image
 from opol import OPOL
 import os
 
-opol = OPOL(mode="remote", api_key=os.getenv("OPOL_API_KEY"))
+opol = OPOL(mode=os.getenv("OPOL_MODE"), api_key=os.getenv("OPOL_API_KEY"))
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent

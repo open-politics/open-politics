@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import LandingLayout from './landing_layout';
-import { Announcement } from '@/components/collection/announcement';
+import { Announcement } from '@/components/collection/unsorted/announcement';
 import { Play } from 'lucide-react';
 import { FaMicrophone } from 'react-icons/fa6';
 
@@ -108,9 +108,9 @@ const HomePage: React.FC<HiProps> = () => {
             <div className="grid grid-cols-1 gap-4">
               <div className=" rounded-lg shadow-md bg-secondary/80 hover:bg-secondary/60 transition-all duration-300 hover:cursor-pointer hover:shadow-md">
                 <Announcement 
-                  title="24.01.2025: We are (slowly) coming online !" 
+                  title="01.02.2025: We are (slowly) coming online !" 
                   main_icon={<Play className="ml-1 h-4 w-4" />}
-                  text="Our public beta geospatial (Globe UI) and search modules are launching soon. Stay tuned."
+                  text="Preparations in full swing. Our public beta geospatial (Globe UI) and search modules are launching soon. Stay tuned."
                   href="https://github.com/open-politics/opol"
                   hide_arrow={true}
                   // links={[
@@ -118,7 +118,7 @@ const HomePage: React.FC<HiProps> = () => {
                   // ]}
                 />
               </div>
-              <div className=" rounded-lg shadow-md bg-secondary/80 hover:bg-secondary/60 transition-all duration-300 hover:cursor-pointer hover:shadow-md">
+              {/* <div className=" rounded-lg shadow-md bg-secondary/80 hover:bg-secondary/60 transition-all duration-300 hover:cursor-pointer hover:shadow-md">
                 <Announcement 
                   title="05.02.2025: Open Politics @ Chaos Computer Club Berlin" 
                   text="We are inviting you to a talk on Open Politics at the Chaos Computer Club Berlin on February 05th, 2025."
@@ -130,7 +130,7 @@ const HomePage: React.FC<HiProps> = () => {
                     { name: 'Open Politics @ Chaos Computer Club Berlin, Datengarten #111', location: 'Marienstraße 11, Berlin', dateTime: 'February 05th, 2025' },
                   ]}
                 />
-              </div>
+              </div> */}
             </div>
         </section>
       </div>

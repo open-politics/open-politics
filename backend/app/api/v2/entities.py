@@ -4,7 +4,8 @@ from fastapi import APIRouter, Query, HTTPException
 from typing import Optional, List
 from pydantic import BaseModel
 
-opol = OPOL(mode='container', api_key=os.getenv("OPOL_API_KEY", ""))
+opol = OPOL(mode=os.getenv("OPOL_MODE"), api_key=os.getenv("OPOL_API_KEY"))
+
 router = APIRouter()
 
 class Entity(BaseModel):
