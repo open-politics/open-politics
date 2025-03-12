@@ -2318,6 +2318,89 @@
         }
       }
     },
+    "/api/v1/utils/utils/extract-pdf-metadata": {
+      "post": {
+        "tags": [
+          "utils",
+          "Utilities"
+        ],
+        "summary": "Extract Pdf Metadata",
+        "description": "Extract metadata from PDF including title, author, etc.",
+        "operationId": "extract_pdf_metadata",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_utils-extract_pdf_metadata"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/utils/utils/scrape_article": {
+      "get": {
+        "tags": [
+          "utils",
+          "Utilities"
+        ],
+        "summary": "Scrape Article",
+        "description": "Scrape article content from a URL using the centralized OPOL instance.\n\nArgs:\n    url: The URL of the article to scrape\n    \nReturns:\n    The scraped article content",
+        "operationId": "scrape_article",
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Url"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/items/": {
       "get": {
         "tags": [
@@ -3203,7 +3286,7 @@
         }
       }
     },
-    "/api/v1/workspaces/{workspace_id}/classification_schemes/": {
+    "/api/v1/workspaces/{workspace_id}/classification_schemes": {
       "post": {
         "tags": [
           "classification-schemes"
@@ -3374,7 +3457,7 @@
         }
       }
     },
-    "/api/v1/workspaces/{workspace_id}/classification_schemes": {
+    "/api/v1/workspaces/{workspace_id}/classification_schemes/": {
       "post": {
         "tags": [
           "classification-schemes"
@@ -4164,6 +4247,68 @@
                     "$ref": "#/components/schemas/EnhancedClassificationResultRead"
                   },
                   "title": "Response Classification-Results-List Classification Results"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/classification_results/by_run/{run_id}": {
+      "get": {
+        "tags": [
+          "classification-results",
+          "ClassificationResults"
+        ],
+        "summary": "Get Results By Run",
+        "description": "Retrieve all classification results for a specific run ID.",
+        "operationId": "get_results_by_run",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Workspace Id"
+            }
+          },
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClassificationResultRead"
+                  },
+                  "title": "Response Classification-Results-Get Results By Run"
                 }
               }
             }
@@ -4996,6 +5141,111 @@
         }
       }
     },
+    "/api/v1/workspaces/{workspace_id}/documents/bulk-upload": {
+      "post": {
+        "tags": [
+          "documents"
+        ],
+        "summary": "Bulk Upload Documents",
+        "description": "Bulk upload multiple PDF documents with optional metadata autofill.\n\nIf autofill is True, the system will attempt to extract metadata from each PDF.",
+        "operationId": "bulk_upload_documents",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Workspace Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_documents-bulk_upload_documents"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentRead"
+                  },
+                  "title": "Response Documents-Bulk Upload Documents"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/documents/extract-pdf-metadata": {
+      "post": {
+        "tags": [
+          "documents"
+        ],
+        "summary": "Extract Document Metadata From Pdf",
+        "description": "Extract metadata from a PDF file to pre-fill document creation form.\nReturns title, text content, summary, etc. extracted from the PDF.",
+        "operationId": "extract_document_metadata_from_pdf",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_documents-extract_document_metadata_from_pdf"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Response Documents-Extract Document Metadata From Pdf"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/files/": {
       "post": {
         "tags": [
@@ -5423,6 +5673,25 @@
         }
       }
     },
+    "/api/v2/classification/available_providers": {
+      "get": {
+        "tags": [
+          "classification"
+        ],
+        "summary": "Get Providers",
+        "operationId": "get_providers",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v2/classification/location_from_query": {
       "get": {
         "tags": [
@@ -5493,6 +5762,104 @@
               "type": "integer",
               "title": "Document Id"
             }
+          },
+          {
+            "name": "provider",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "Google",
+              "title": "Provider"
+            }
+          },
+          {
+            "name": "model",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "gemini-2.0-flash-exp",
+              "title": "Model"
+            }
+          },
+          {
+            "name": "run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "run_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Run Name"
+            }
+          },
+          {
+            "name": "run_description",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Run Description"
+            }
+          },
+          {
+            "name": "X-API-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
           }
         ],
         "responses": {
@@ -5543,6 +5910,22 @@
             "schema": {
               "type": "integer",
               "title": "Scheme Id"
+            }
+          },
+          {
+            "name": "X-API-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
             }
           }
         ],
@@ -5741,7 +6124,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "default": "2025-02-14",
+              "default": "2025-03-03",
               "title": "Timeframe To"
             }
           }
@@ -5786,6 +6169,44 @@
           "contents"
         ],
         "title": "ArticleResponse"
+      },
+      "Body_documents-bulk_upload_documents": {
+        "properties": {
+          "autofill": {
+            "type": "boolean",
+            "title": "Autofill",
+            "default": false
+          },
+          "files": {
+            "items": {
+              "type": "string",
+              "format": "binary"
+            },
+            "type": "array",
+            "title": "Files"
+          },
+          "content_type": {
+            "type": "string",
+            "title": "Content Type",
+            "default": "Document"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          }
+        },
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "title": "Body_documents-bulk_upload_documents"
       },
       "Body_documents-create_document": {
         "properties": {
@@ -5887,6 +6308,20 @@
         ],
         "title": "Body_documents-create_document"
       },
+      "Body_documents-extract_document_metadata_from_pdf": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_documents-extract_document_metadata_from_pdf"
+      },
       "Body_filestorage-file_upload": {
         "properties": {
           "file": {
@@ -5959,6 +6394,20 @@
         ],
         "title": "Body_login-login_access_token"
       },
+      "Body_utils-extract_pdf_metadata": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_utils-extract_pdf_metadata"
+      },
       "Body_utils-extract_pdf_text": {
         "properties": {
           "file": {
@@ -5973,8 +6422,95 @@
         ],
         "title": "Body_utils-extract_pdf_text"
       },
+      "ClassificationFieldCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "type": {
+            "$ref": "#/components/schemas/FieldType"
+          },
+          "scale_min": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scale Min"
+          },
+          "scale_max": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scale Max"
+          },
+          "is_set_of_labels": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Set Of Labels"
+          },
+          "labels": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Labels"
+          },
+          "dict_keys": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/DictKeyDefinition"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dict Keys"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "description",
+          "type"
+        ],
+        "title": "ClassificationFieldCreate"
+      },
       "ClassificationResultCreate": {
         "properties": {
+          "run_id": {
+            "type": "integer",
+            "title": "Run Id"
+          },
           "document_id": {
             "type": "integer",
             "title": "Document Id"
@@ -6024,6 +6560,7 @@
         },
         "type": "object",
         "required": [
+          "run_id",
           "document_id",
           "scheme_id"
         ],
@@ -6031,6 +6568,10 @@
       },
       "ClassificationResultRead": {
         "properties": {
+          "run_id": {
+            "type": "integer",
+            "title": "Run Id"
+          },
           "document_id": {
             "type": "integer",
             "title": "Document Id"
@@ -6083,6 +6624,7 @@
         },
         "type": "object",
         "required": [
+          "run_id",
           "document_id",
           "scheme_id",
           "timestamp",
@@ -6101,89 +6643,6 @@
           "description": {
             "type": "string",
             "title": "Description"
-          },
-          "type": {
-            "type": "string",
-            "title": "Type",
-            "description": "Type of classification scheme"
-          },
-          "scale_min": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Scale Min",
-            "default": 0
-          },
-          "scale_max": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Scale Max",
-            "default": 10
-          },
-          "is_set_of_labels": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Is Set Of Labels",
-            "default": false
-          },
-          "max_labels": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Max Labels"
-          },
-          "labels": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Labels"
-          },
-          "dict_keys": {
-            "anyOf": [
-              {
-                "items": {
-                  "additionalProperties": {
-                    "type": "string"
-                  },
-                  "type": "object"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Dict Keys"
           },
           "model_instructions": {
             "anyOf": [
@@ -6206,13 +6665,20 @@
               }
             ],
             "title": "Validation Rules"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/ClassificationFieldCreate"
+            },
+            "type": "array",
+            "title": "Fields"
           }
         },
         "type": "object",
         "required": [
           "name",
           "description",
-          "type"
+          "fields"
         ],
         "title": "ClassificationSchemeCreate"
       },
@@ -6225,89 +6691,6 @@
           "description": {
             "type": "string",
             "title": "Description"
-          },
-          "type": {
-            "type": "string",
-            "title": "Type",
-            "description": "Type of classification scheme"
-          },
-          "scale_min": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Scale Min",
-            "default": 0
-          },
-          "scale_max": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Scale Max",
-            "default": 10
-          },
-          "is_set_of_labels": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Is Set Of Labels",
-            "default": false
-          },
-          "max_labels": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Max Labels"
-          },
-          "labels": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Labels"
-          },
-          "dict_keys": {
-            "anyOf": [
-              {
-                "items": {
-                  "additionalProperties": {
-                    "type": "string"
-                  },
-                  "type": "object"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Dict Keys"
           },
           "model_instructions": {
             "anyOf": [
@@ -6345,6 +6728,13 @@
             "format": "date-time",
             "title": "Updated At"
           },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/ClassificationFieldCreate"
+            },
+            "type": "array",
+            "title": "Fields"
+          },
           "classification_count": {
             "anyOf": [
               {
@@ -6372,10 +6762,10 @@
         "required": [
           "name",
           "description",
-          "type",
           "id",
           "created_at",
-          "updated_at"
+          "updated_at",
+          "fields"
         ],
         "title": "ClassificationSchemeRead"
       },
@@ -6388,89 +6778,6 @@
           "description": {
             "type": "string",
             "title": "Description"
-          },
-          "type": {
-            "type": "string",
-            "title": "Type",
-            "description": "Type of classification scheme"
-          },
-          "scale_min": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Scale Min",
-            "default": 0
-          },
-          "scale_max": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Scale Max",
-            "default": 10
-          },
-          "is_set_of_labels": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Is Set Of Labels",
-            "default": false
-          },
-          "max_labels": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Max Labels"
-          },
-          "labels": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Labels"
-          },
-          "dict_keys": {
-            "anyOf": [
-              {
-                "items": {
-                  "additionalProperties": {
-                    "type": "string"
-                  },
-                  "type": "object"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Dict Keys"
           },
           "model_instructions": {
             "anyOf": [
@@ -6493,15 +6800,40 @@
               }
             ],
             "title": "Validation Rules"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/ClassificationFieldCreate"
+            },
+            "type": "array",
+            "title": "Fields"
           }
         },
         "type": "object",
         "required": [
           "name",
           "description",
-          "type"
+          "fields"
         ],
         "title": "ClassificationSchemeUpdate"
+      },
+      "DictKeyDefinition": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "type"
+        ],
+        "title": "DictKeyDefinition"
       },
       "DocumentRead": {
         "properties": {
@@ -6699,6 +7031,10 @@
       },
       "EnhancedClassificationResultRead": {
         "properties": {
+          "run_id": {
+            "type": "integer",
+            "title": "Run Id"
+          },
           "document_id": {
             "type": "integer",
             "title": "Document Id"
@@ -6768,6 +7104,7 @@
         },
         "type": "object",
         "required": [
+          "run_id",
           "document_id",
           "scheme_id",
           "timestamp",
@@ -6776,6 +7113,16 @@
           "scheme"
         ],
         "title": "EnhancedClassificationResultRead"
+      },
+      "FieldType": {
+        "type": "string",
+        "enum": [
+          "int",
+          "str",
+          "List[str]",
+          "List[Dict[str, any]]"
+        ],
+        "title": "FieldType"
       },
       "FileRead": {
         "properties": {

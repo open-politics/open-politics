@@ -4,8 +4,10 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import LandingLayout from './landing_layout';
 import { Announcement } from '@/components/collection/unsorted/announcement';
-import { Play } from 'lucide-react';
-import { FaMicrophone } from 'react-icons/fa6';
+import { Play, NewspaperIcon, Globe2, ZoomIn } from 'lucide-react';
+import TextWriter from "@/components/ui/extra-animated-base-components/text-writer";
+
+import useAuth from '@/hooks/useAuth';
 
 
 
@@ -58,12 +60,15 @@ const TypeAsync: React.FC<TypeAsyncProps> = ({ words = [] }) => {
 
 interface HiProps {
   user?: {
-    name: string;
-    groups: string[];
+    full_name: string;
+    email: string;
+    avatar?: string;
+    is_superuser?: boolean;
   };
 }
 
 const HomePage: React.FC<HiProps> = () => {
+  const { user, isLoggedIn } = useAuth();
   const words = ['looking', 'researching', 'rooting', 'developing', 'asking', '']; 
 
   return (
@@ -85,6 +90,7 @@ const HomePage: React.FC<HiProps> = () => {
           </div>
 
          {/* Main Buttons */}
+         {!isLoggedIn ? (
           <div className="mt-2 text-center">
             <p className="text-blue-500 font-bold mb-3">Open Source Political Intelligence.</p>
             <div className="space-x-2">
@@ -100,6 +106,31 @@ const HomePage: React.FC<HiProps> = () => {
               </Button>
             </div>
           </div>
+         ) : (
+          <div className="mt-2 text-center">
+            <p className="text-blue-500 font-bold mb-3">Welcome back{user?.full_name ? `, ${user?.full_name}` : ''  }!</p>
+            <Button 
+              variant="ghost" 
+              asChild 
+              className="group relative overflow-hidden ring-1 ring-blue-500 ring-offset-0 px-6 rounded-lg transition-all duration-300"
+            >
+              <Link href="/desks/home">
+                <TextWriter
+                  text={<div className="flex items-center gap-1 relative z-10">
+                    <NewspaperIcon className="w-4 h-4" />
+                    <Globe2 className="w-4 h-4" />
+                    <ZoomIn className="w-4 h-4" />
+                    <span>Desk</span>
+                  </div>}
+                  typingDelay={100}
+                  startDelay={500}
+                  className="animate-shimmer-once"
+                  cursorColor="transparent"
+                />
+              </Link>
+            </Button>
+          </div>
+         )}
         </section>
 
         {/* Announcements Section */}
@@ -148,6 +179,19 @@ const HomePage: React.FC<HiProps> = () => {
           60% { color: green; }
           80% { color: blue; }
           100% { color: violet; }
+        }
+
+        .group:hover .absolute {
+          animation: rainbow-shimmer 2s linear infinite;
+          background-size: 200% 200%;
+        }
+        
+        @keyframes rainbow-shimmer {
+          0% { background-position: 0% 50%; background-image: linear-gradient(to right, rgba(239, 68, 68, 0.3), rgba(249, 115, 22, 0.3), rgba(234, 179, 8, 0.3)); }
+          25% { background-position: 50% 50%; background-image: linear-gradient(to right, rgba(234, 179, 8, 0.3), rgba(34, 197, 94, 0.3), rgba(59, 130, 246, 0.3)); }
+          50% { background-position: 100% 50%; background-image: linear-gradient(to right, rgba(59, 130, 246, 0.3), rgba(139, 92, 246, 0.3), rgba(239, 68, 68, 0.3)); }
+          75% { background-position: 50% 50%; background-image: linear-gradient(to right, rgba(139, 92, 246, 0.3), rgba(239, 68, 68, 0.3), rgba(249, 115, 22, 0.3)); }
+          100% { background-position: 0% 50%; background-image: linear-gradient(to right, rgba(239, 68, 68, 0.3), rgba(249, 115, 22, 0.3), rgba(234, 179, 8, 0.3)); }
         }
       `}</style>
     </LandingLayout>

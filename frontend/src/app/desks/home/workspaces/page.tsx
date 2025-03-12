@@ -9,7 +9,6 @@ import WorkspaceManager from '@/components/collection/workspaces/management/Work
 import ClassificationSchemeManager from '@/components/collection/workspaces/classifications/ClassificationSchemeManager';
 import DocumentManager from '@/components/collection/workspaces/documents/DocumentManager';
 import ClassificationRunner from '@/components/collection/workspaces/classifications/ClassificationRunner';
-import SavedResultsPanel from '@/components/collection/workspaces/documents/SavedResultsPanel';
 
 export default function WorkspaceDashboardPage() {
   const { activeWorkspace } = useWorkspaceStore();
@@ -27,12 +26,6 @@ export default function WorkspaceDashboardPage() {
             {/* Classification Runner */}
             <div className="col-span-1">
               <ClassificationRunner />
-            </div>
-
-            
-            {/* Saved Results Panel */}
-            <div className="col-span-1">
-              <SavedResultsPanel />
             </div>
           </div>
         </div>

@@ -18,30 +18,26 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { useClassificationSchemeStore } from '@/zustand_stores/storeSchemas';
+import { useSchemes } from '@/hooks/useSchemes';
 import { ClassificationSchemesService } from '@/client/services';
 import { useWorkspaceStore } from '@/zustand_stores/storeWorkspace';
 import { cn } from '@/lib/utils';
 import { SchemeForm } from '@/components/collection/workspaces/schemes/SchemeForm';
-import { SchemeFormData } from '@/lib/abstract-classification-schema';
+import { SchemeFormData } from '@/lib/classification/types';
 import { useTutorialStore } from '@/zustand_stores/storeTutorial';
 import { Switch } from "@/components/ui/switch"
 import FixedCard from '@/components/collection/wrapper/fixed-card';
 import ClassificationSchemeEditor from './ClassificationSchemeEditor';
-import { transformFormDataToApi } from '@/lib/abstract-classification-schema';
-
-
-
-
+import { transformFormDataToApi } from '@/lib/classification/service';
 
 export default function ClassificationSchemeManager() {
   const { activeWorkspace } = useWorkspaceStore();
   const {
-    createClassificationScheme,
-    deleteClassificationScheme,
-    fetchClassificationSchemes,
-    classificationSchemes,
-  } = useClassificationSchemeStore();
+    createScheme,
+    deleteScheme,
+    schemes,
+    loadSchemes
+  } = useSchemes();
 
   // State variables
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -51,13 +47,7 @@ export default function ClassificationSchemeManager() {
   const [formData, setFormData] = useState<SchemeFormData>({
     name: '',
     description: '',
-    type: 'str',
-    scale_min: 0,
-    scale_max: 10,
-    is_set_of_labels: false,
-    max_labels: null,
-    labels: [],
-    dict_keys: [],
+    fields: [],
     model_instructions: '',
     validation_rules: {}
   });
@@ -79,23 +69,14 @@ export default function ClassificationSchemeManager() {
     if (!activeWorkspace?.uid) return;
 
     try {
-      const apiData = transformFormDataToApi(formData);
-      
-      await createClassificationScheme(
-        apiData,
-        activeWorkspace.uid
+      await createScheme(
+        formData,
       );
 
       setFormData({
         name: '',
         description: '',
-        type: 'str',
-        scale_min: null,
-        scale_max: null,
-        is_set_of_labels: false,
-        max_labels: null,
-        labels: [],
-        dict_keys: [],
+        fields: [],
         model_instructions: '',
         validation_rules: {}
       });
@@ -111,7 +92,7 @@ export default function ClassificationSchemeManager() {
     if (!activeWorkspace?.uid) return;
     if (confirm('Are you sure you want to delete this classification scheme?')) {
       try {
-        await deleteClassificationScheme(schemeId, activeWorkspace.uid);
+        await deleteScheme(schemeId);
         alert('Classification scheme deleted successfully');
       } catch (error) {
         console.error('Error deleting classification scheme:', error);
@@ -146,9 +127,9 @@ export default function ClassificationSchemeManager() {
   // Effects
   useEffect(() => {
     if (activeWorkspace?.uid) {
-      fetchClassificationSchemes(activeWorkspace.uid);
+      loadSchemes(activeWorkspace.uid);
     }
-  }, [activeWorkspace?.uid, fetchClassificationSchemes]);
+  }, [activeWorkspace?.uid, loadSchemes]);
 
   if (!activeWorkspace) {
     return (
@@ -158,7 +139,7 @@ export default function ClassificationSchemeManager() {
     );
   }
 
-  console.log(classificationSchemes);
+  console.log(schemes);
 
   return (
     <div className="grid grid-cols-1 gap-4 w-full">
@@ -210,12 +191,7 @@ export default function ClassificationSchemeManager() {
         defaultValues={{
           name: '',
           description: '',
-          type: 'int',
-          scale_min: 0,
-          scale_max: 10,
-          is_set_of_labels: false,
-          labels: [],
-          dict_keys: [],
+          fields: [],
           model_instructions: '',
           validation_rules: {}
         }}

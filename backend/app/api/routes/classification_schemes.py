@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
-from app.models import Document,ClassificationScheme, ClassificationSchemeCreate, ClassificationSchemeRead, ClassificationSchemeUpdate, Workspace, ClassificationResult, ClassificationResultCreate, ClassificationResultRead, SavedResultSet, SavedResultSetCreate, SavedResultSetRead, DocumentRead, FileRead
+from app.models import Document,ClassificationScheme, ClassificationSchemeCreate, ClassificationSchemeRead, ClassificationSchemeUpdate, Workspace, ClassificationResult, ClassificationResultCreate, ClassificationResultRead, SavedResultSet, SavedResultSetCreate, SavedResultSetRead, DocumentRead, FileRead, ClassificationField, FieldType
 from sqlmodel import Session, select, func
 from app.api.deps import SessionDep, CurrentUser
-from typing import List, Any
+from typing import List, Any, Dict
 from datetime import datetime, timezone
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, create_model
 import os
-from app.api.v2.classification import opol
+from app.core.opol_config import opol
 from sqlalchemy.orm import joinedload
 from sqlalchemy import distinct
 
@@ -65,8 +65,8 @@ def read_saved_result_sets(
         for rs in result_sets
     ]
 
-@router.post("", response_model=ClassificationSchemeRead)
 @router.post("/", response_model=ClassificationSchemeRead)
+@router.post("", response_model=ClassificationSchemeRead)
 def create_classification_scheme(
     *,
     session: SessionDep,
@@ -74,30 +74,72 @@ def create_classification_scheme(
     workspace_id: int,
     scheme_in: ClassificationSchemeCreate
 ) -> ClassificationSchemeRead:
-    # Remove int_type validation and fix scale validation
-    if scheme_in.type == "int":
-        if scheme_in.scale_min is None or scheme_in.scale_max is None:
-            raise HTTPException(400, "scale_min and scale_max are required for integer schemes")
-        if scheme_in.scale_min >= scheme_in.scale_max:
-            raise HTTPException(400, "scale_min must be less than scale_max")
-
-    # Update list type validation
-    if scheme_in.type == "List[str]" and scheme_in.is_set_of_labels:
-        if not scheme_in.labels or len(scheme_in.labels) < 2:
-            raise HTTPException(400, "At least 2 labels required for list-based scheme")
-
     workspace = session.get(Workspace, workspace_id)
     if not workspace or workspace.user_id_ownership != current_user.id:
         raise HTTPException(status_code=404, detail="Workspace not found")
 
-    # TEMP FIX !
+    # Validate fields
+    for field in scheme_in.fields:
+        if field.type == FieldType.INT:
+            if field.scale_min is None or field.scale_max is None:
+                raise HTTPException(
+                    400, 
+                    f"Field '{field.name}': scale_min and scale_max are required for integer fields"
+                )
+            if field.scale_min >= field.scale_max:
+                raise HTTPException(
+                    400, 
+                    f"Field '{field.name}': scale_min must be less than scale_max"
+                )
+
+        elif field.type == FieldType.LIST_STR and field.is_set_of_labels:
+            if not field.labels or len(field.labels) < 2:
+                raise HTTPException(
+                    400, 
+                    f"Field '{field.name}': at least 2 labels required for list-based fields"
+                )
+
+        elif field.type == FieldType.LIST_DICT:
+            if not field.dict_keys or len(field.dict_keys) < 1:
+                raise HTTPException(
+                    400,
+                    f"Field '{field.name}': dict_keys required for structured data fields"
+                )
+            valid_types = {'str', 'int', 'float', 'bool'}
+            for key_def in field.dict_keys:
+                if key_def.type not in valid_types:
+                    raise HTTPException(
+                        400,
+                        f"Field '{field.name}': Invalid type '{key_def.type}' for key '{key_def.name}'. Must be one of: {', '.join(valid_types)}"
+                    )
+
+    # Create scheme
     scheme = ClassificationScheme(
-        **scheme_in.model_dump(exclude={"workspace_id", "user_id"}),
+        name=scheme_in.name,
+        description=scheme_in.description,
+        model_instructions=scheme_in.model_instructions,
+        validation_rules=scheme_in.validation_rules,
         workspace_id=workspace_id,
         user_id=current_user.id
     )
-    
     session.add(scheme)
+    session.flush()  # Get scheme.id without committing
+
+    # Create fields
+    for field_data in scheme_in.fields:
+        field = ClassificationField(
+            scheme_id=scheme.id,
+            name=field_data.name,
+            description=field_data.description,
+            type=field_data.type,
+            scale_min=field_data.scale_min,
+            scale_max=field_data.scale_max,
+            is_set_of_labels=field_data.is_set_of_labels,
+            labels=field_data.labels,
+            dict_keys=field_data.dict_keys
+        )
+        session.add(field)
+
     session.commit()
     session.refresh(scheme)
     return scheme
@@ -117,13 +159,14 @@ def read_classification_schemes(
     if not workspace or workspace.user_id_ownership != current_user.id:
         raise HTTPException(status_code=404, detail="Workspace not found")
 
-    # Corrected query with proper result handling
+    # Updated query to include fields relationship
     stmt = (
         select(
             ClassificationScheme,
             func.count(ClassificationResult.id).label('classification_count'),
             func.count(distinct(ClassificationResult.document_id)).label('document_count')
         )
+        .options(joinedload(ClassificationScheme.fields))
         .join(ClassificationResult, ClassificationResult.scheme_id == ClassificationScheme.id, isouter=True)
         .where(ClassificationScheme.workspace_id == workspace_id)
         .group_by(ClassificationScheme.id)
@@ -131,15 +174,17 @@ def read_classification_schemes(
         .limit(limit)
     )
 
-    results = session.exec(stmt).all()
+    # Add .unique() to handle the collection joinedload
+    results = session.exec(stmt).unique().all()
 
     return [
         ClassificationSchemeRead(
             **scheme.model_dump(),
             classification_count=classification_count,
             document_count=document_count,
+            fields=scheme.fields
         )
-        for scheme, classification_count, document_count in results  # Now unpacking 3 values
+        for scheme, classification_count, document_count in results
     ]
 
 @router.get("/{scheme_id}", response_model=ClassificationSchemeRead)
@@ -234,19 +279,54 @@ def classify_document(
     # Prepare text for classification
     classification_text = f"{document.title}: {document.text_content[:200]}" if document.text_content else document.title
     
-    # Create dynamic Pydantic model based on scheme
-    class DynamicClassification(BaseModel):
-        score: float = Field(..., ge=0, le=10, description=scheme.description or "Classification score")
+    # Create dynamic Pydantic model based on all scheme fields
+    if not scheme.fields:
+        raise HTTPException(status_code=400, detail="Classification scheme has no fields defined")
+    
+    field_definitions = {}
+    for field in scheme.fields:
+        if field.type == FieldType.INT:
+            field_definitions[field.name] = (
+                float,
+                Field(
+                    ...,
+                    ge=field.scale_min if field.scale_min is not None else 0,
+                    le=field.scale_max if field.scale_max is not None else 10,
+                    description=field.description
+                )
+            )
+        elif field.type == FieldType.STR:
+            field_definitions[field.name] = (
+                str,
+                Field(..., description=field.description)
+            )
+        elif field.type == FieldType.LIST_STR:
+            if field.is_set_of_labels and field.labels:
+                field_definitions[field.name] = (
+                    List[str],
+                    Field(..., description=field.description)
+                )
+        elif field.type == FieldType.LIST_DICT:
+            if field.dict_keys:
+                field_definitions[field.name] = (
+                    List[Dict[str, Any]],
+                    Field(..., description=field.description)
+                )
+
+    DynamicClassification = create_model(
+        'DynamicClassification',
+        **field_definitions
+    )
     
     # Run classification
     fastclass = opol.classification(
         provider="Google",
-        model_name="models/gemini-1.5-flash-latest",
+        model_name="gemini-2.0-flash-exp",
         llm_api_key=os.getenv("GOOGLE_API_KEY")
     )
     
     try:
-        result = fastclass.classify(DynamicClassification, scheme.prompt or "", classification_text)
+        result = fastclass.classify(DynamicClassification, scheme.model_instructions or "", classification_text)
         score = result.score
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Classification failed: {str(e)}")

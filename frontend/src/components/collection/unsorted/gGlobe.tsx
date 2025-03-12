@@ -607,7 +607,7 @@ const Globe = forwardRef<any, GlobeProps>(
           mapRef.current.on("click", `clusters-${eventType.type}`, async (e) => {
             if (!mapRef.current || !e.features || e.features.length === 0) return;
             const feature = e.features[0];
-            const coords = (feature.geometry as any)?.coordinates;
+            const coords = (feature.geometry as any)?.coordinates as [number, number] | undefined;
 
             if (coords) {
               const clusterId = feature.properties?.cluster_id;
@@ -620,8 +620,9 @@ const Globe = forwardRef<any, GlobeProps>(
                   return;
                 }
 
-                const typeMap: Record<string, { count: number; color: string }> = {};
-                leafFeatures.forEach((lf: any) => {
+                // Collect all contents from the cluster leaves
+                let allContents: any[] = [];
+                leafFeatures?.forEach((lf: any) => {
                   let contents = lf.properties?.contents || lf.properties?.properties?.contents;
                   if (typeof contents === "string") {
                     try {
@@ -630,56 +631,39 @@ const Globe = forwardRef<any, GlobeProps>(
                       contents = [];
                     }
                   }
-                  contents = contents || [];
-                  contents.forEach((eo: any) => {
-                    const localType = eo.classification?.event_type || eventType.type;
-                    if (!typeMap[localType]) {
-                      const colorEntry = eventTypes.find((et) => et.type === localType)?.color;
-                      typeMap[localType] = {
-                        count: 0,
-                        color: colorEntry || "#777",
-                      };
-                    }
-                    typeMap[localType].count += 1;
-                  });
+                  if (Array.isArray(contents)) {
+                    allContents = allContents.concat(contents);
+                  }
                 });
 
+                // Create a simple list of articles
                 const popupContainer = document.createElement("div");
                 popupContainer.className = "p-2";
-                popupContainer.innerHTML = `<h3 class="font-semibold mb-2 text-sm">Cluster Breakdown</h3>`;
+                popupContainer.innerHTML = `<h3 class="font-semibold mb-2 text-sm">Articles in Cluster</h3>`;
 
-                const spikeChart = createClusterSpikeChart(
-                  typeMap,
-                  leafFeatures?.map((lf: any) => {
-                    let contentArr = lf.properties?.contents || lf.properties?.properties?.contents;
-                    if (typeof contentArr === "string") {
-                      try {
-                        contentArr = JSON.parse(contentArr);
-                      } catch {
-                        contentArr = [];
-                      }
-                    }
-                    return contentArr;
-                  })
-                );
-                popupContainer.appendChild(spikeChart);
-
-                // Just some info about each leaf
-                const leavesInfo = leafFeatures
-                  ?.map((lf) => {
-                    const locationName =
-                      lf.properties?.location_name ||
-                      lf.properties?.properties?.location_name ||
-                      "Unknown Location";
-                    const contentCount =
-                      lf.properties?.content_count ||
-                      lf.properties?.properties?.content_count ||
-                      0;
-                    return `<div>${locationName}: ${contentCount} items</div>`;
-                  })
-                  .join("");
-
-                popupContainer.innerHTML += `<div>${leavesInfo}</div>`;
+                if (allContents.length > 0) {
+                  const articleList = document.createElement("ul");
+                  articleList.className = "list-disc pl-5";
+                  allContents.slice(0, 10).forEach((content: any) => { // Limit to 10 articles
+                    const listItem = document.createElement("li");
+                    listItem.className = "text-sm";
+                    const link = document.createElement("a");
+                    link.href = "#";
+                    link.textContent = content.title;
+                    link.className = "hover:underline";
+                    link.onclick = () => {
+                      onLocationClick(content.location_name, eventType.type); // Assuming location_name exists
+                    };
+                    listItem.appendChild(link);
+                    articleList.appendChild(listItem);
+                  });
+                  popupContainer.appendChild(articleList);
+                  if (allContents.length > 10) {
+                    popupContainer.innerHTML += `<div class="text-xs mt-2">...and ${allContents.length - 10} more.</div>`;
+                  }
+                } else {
+                  popupContainer.innerHTML += `<div class="text-sm">No articles available in this cluster.</div>`;
+                }
 
                 new mapboxgl.Popup({ closeButton: true, maxWidth: "none" })
                   .setLngLat(coords ?? [0, 0])
@@ -867,7 +851,7 @@ const Globe = forwardRef<any, GlobeProps>(
           mapRef.current.removeSource("bbox");
         }
 
-        const bboxPolygon = {
+        const bboxPolygon: mapboxgl.GeoJSONSourceOptions["data"] = {
           type: "Feature",
           geometry: {
             type: "Polygon",
@@ -1333,7 +1317,7 @@ const Globe = forwardRef<any, GlobeProps>(
         padding: 0 !important;
         border-radius: 0.75rem;
         backdrop-filter: blur(3px);
-        background: rgba(255, 255, 255, 0.2) !important;
+        background: rgba(59, 51, 51, 0.2) !important;
       }
       .custom-popup-container .mapboxgl-popup-close-button {
         padding: 0.5rem;
@@ -1583,7 +1567,7 @@ const Globe = forwardRef<any, GlobeProps>(
         )}
 
         {error && (
-          <div className="absolute top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded">
+          <div className="absolute top-4 right-4 bg-highlighted border border-red-400 text-red-700 px-4 py-2 rounded">
             {error}
           </div>
         )}

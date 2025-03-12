@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -21,12 +21,12 @@ const GlowingCard: React.FC<GlowingCardProps> = ({
   width = "100%",
   height = "100%",
   children,
-  background = "linear-gradient(to right, #e2e8f0, #cbd5e0)",
-  darkBackground = "linear-gradient(to right, #4a5568, #2d3748)",
-  glowIntensity = 0.15,
-  glowSize = 70,
-  glowColor = "255, 255, 255",
-  darkGlowColor = "255, 255, 255",
+  background = "var(--gradient-primary-light)",
+  darkBackground = "var(--gradient-primary-dark)",
+  glowIntensity = 0.9,
+  glowSize = 80,
+  glowColor = "122, 239, 255",
+  darkGlowColor = "228, 120, 255",
 }) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -94,43 +94,39 @@ const GlowingCard: React.FC<GlowingCardProps> = ({
   };
 
   return (
-    <div className={cn("w-full h-full perspective-1000", className)}>
+    <div className={cn("w-full h-full relative perspective-1000", className)}>
       <motion.div
         {...sharedMotionProps}
-        className={`${sharedMotionProps.className} dark:hidden`}
+        className={`${sharedMotionProps.className} dark:hidden absolute inset-0`}
         style={{ 
           ...sharedMotionProps.style,
           backgroundImage: glowBackground,
-          backgroundColor: 'transparent'
+          transition: 'transform 0.2s ease-out, background-image 0.3s ease-out, opacity 0.4s ease-out',
+          willChange: 'transform, background-image, opacity',
         }}
         initial={{ 
-          backgroundImage: `radial-gradient(
-            circle at 50% 50%,
-            rgba(${glowColor}, ${glowIntensity}) 0%,
-            rgba(${glowColor}, 0) ${glowSize}%
-          ),
-          ${background}`
+          backgroundImage: background,
+          opacity: 0.7
         }}
+        animate={{ opacity: 1 }}
       >
         {children}
       </motion.div>
 
       <motion.div
         {...sharedMotionProps}
-        className={`${sharedMotionProps.className} hidden dark:block`}
+        className={`${sharedMotionProps.className} hidden dark:block absolute inset-0`}
         style={{ 
           ...sharedMotionProps.style,
           backgroundImage: glowDarkBackground,
-          backgroundColor: 'transparent'
+          transition: 'transform 2.2s ease-out, background-image 4.2s ease-out, opacity 0s ease-out',
+          willChange: 'transform, background-image, opacity',
         }}
         initial={{ 
-          backgroundImage: `radial-gradient(
-            circle at 50% 50%,
-            rgba(${darkGlowColor}, ${glowIntensity}) 0%,
-            rgba(${darkGlowColor}, 0) ${glowSize}%
-          ),
-          ${darkBackground}`
+          backgroundImage: darkBackground,
+          opacity: 0.7
         }}
+        animate={{ opacity: 1 }}
       >
         {children}
       </motion.div>

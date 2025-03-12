@@ -9,15 +9,17 @@ import { IconRenderer } from "@/components/collection/workspaces/utilities/icons
 interface EditWorkSpaceOverlayProps {
   open: boolean;
   onClose: () => void;
-  workspaceId: number;
+  workspaceId?: number;
   defaultName?: string | undefined;
   defaultDescription?: string | undefined;
   defaultSources?: string[] | undefined;
   defaultIcon?: string | undefined;
+  isCreating?: boolean;
+  onCreateWorkspace?: (name: string, description: string, sources: string[], icon: string) => Promise<void>;
 }
 
 /**
- * Displays an overlay (dialog) allowing the user to edit an existing workspace.
+ * Displays an overlay (dialog) allowing the user to edit an existing workspace or create a new one.
  * Update logic is handled via the useWorkspaceDataStore.
  */
 export default function EditWorkSpaceOverlay({
@@ -28,11 +30,13 @@ export default function EditWorkSpaceOverlay({
   defaultDescription,
   defaultSources,
   defaultIcon,
+  isCreating = false,
+  onCreateWorkspace,
 }: EditWorkSpaceOverlayProps) {
   const [name, setName] = useState(defaultName || "");
   const [description, setDescription] = useState(defaultDescription || "");
   const [sources, setSources] = useState(defaultSources?.join(", ") || "");
-  const [icon, setIcon] = useState(defaultIcon || "");
+  const [icon, setIcon] = useState(defaultIcon || "Boxes");
   const [errorMessage, setErrorMessage] = useState("");
 
   const { updateWorkspace } = useWorkspaceStore();
@@ -41,24 +45,45 @@ export default function EditWorkSpaceOverlay({
     setName(defaultName || "");
     setDescription(defaultDescription || "");
     setSources(defaultSources?.join(", ") || "");
-    setIcon(defaultIcon || "");
+    setIcon(defaultIcon || "Boxes");
   }, [defaultName, defaultDescription, defaultSources, defaultIcon]);
 
   const handleSave = async () => {
     setErrorMessage("");
+    
+    if (!name.trim()) {
+      setErrorMessage("Workspace name is required");
+      return;
+    }
+    
     try {
-      await updateWorkspace(workspaceId, {
-        name,
-        description,
-        sources: sources.split(",").map((s) => s.trim()),
-        icon,
-      });
+      if (isCreating && onCreateWorkspace) {
+        await onCreateWorkspace(
+          name,
+          description,
+          sources.split(",").map((s) => s.trim()).filter(s => s),
+          icon
+        );
+      } else if (workspaceId) {
+        await updateWorkspace(workspaceId, {
+          name,
+          description,
+          sources: sources.split(",").map((s) => s.trim()).filter(s => s),
+          icon,
+        });
+      }
       onClose();
     } catch (error) {
-      setErrorMessage("Failed to update workspace. Please try again.");
-      console.error("Error updating workspace:", error);
+      setErrorMessage(isCreating ? "Failed to create workspace. Please try again." : "Failed to update workspace. Please try again.");
+      console.error(isCreating ? "Error creating workspace:" : "Error updating workspace:", error);
     }
   };
+
+  const dialogTitle = isCreating ? "Create New Workspace" : "Edit Workspace";
+  const dialogDescription = isCreating 
+    ? "Create a new workspace and switch to it immediately." 
+    : "Use this dialog to edit the workspace details.";
+  const buttonText = isCreating ? "Create & Switch" : "Save";
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -67,11 +92,11 @@ export default function EditWorkSpaceOverlay({
           <DialogTitle className="text-xl font-bold text-secondary-500">
             <div className="flex items-center justify-start gap-2 p-2 pl-0"> 
               <IconRenderer className="size-6" icon={icon} />
-              <span className="text-blue-800 dark:text-green-500">{name}</span>
+              <span className="text-blue-800 dark:text-green-500">{isCreating ? dialogTitle : name}</span>
             </div>
           </DialogTitle>
           <DialogDescription>
-            Use this dialog to edit the workspace details.
+            {dialogDescription}
           </DialogDescription>
         </DialogHeader>
 
@@ -83,6 +108,7 @@ export default function EditWorkSpaceOverlay({
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full p-3 bg-primary-800 border border-secondary-700 rounded-xl shadow-inner"
+              placeholder="Workspace Name"
             />
           </div>
 
@@ -93,6 +119,7 @@ export default function EditWorkSpaceOverlay({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="w-full p-3 bg-primary-800 border border-secondary-700 rounded-xl shadow-inner"
+              placeholder="Workspace Description"
             />
           </div>
 
@@ -103,6 +130,7 @@ export default function EditWorkSpaceOverlay({
               value={sources}
               onChange={(e) => setSources(e.target.value)}
               className="w-full p-3 bg-primary-800 border border-secondary-700 rounded-xl shadow-inner"
+              placeholder="http://example.com, http://another.com"
             />
           </div>
 
@@ -120,7 +148,7 @@ export default function EditWorkSpaceOverlay({
               Cancel
             </Button>
             <Button onClick={handleSave} className="bg-green-600 hover:bg-green-500 text-primary-950">
-              Save
+              {buttonText}
             </Button>
           </div>
         </div>

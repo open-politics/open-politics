@@ -4,6 +4,8 @@ import { persist } from 'zustand/middleware';
 interface TutorialState {
   showSchemaBuilderTutorial: boolean;
   toggleSchemaBuilderTutorial: () => void;
+  showClassificationRunnerTutorial: boolean;
+  toggleClassificationRunnerTutorial: () => void;
   // Add more tutorial flags as needed
 }
 
@@ -14,6 +16,11 @@ export const useTutorialStore = create<TutorialState>()(
       toggleSchemaBuilderTutorial: () => 
         set((state) => ({ 
           showSchemaBuilderTutorial: !state.showSchemaBuilderTutorial 
+        })),
+      showClassificationRunnerTutorial: true, // Default to showing tutorial
+      toggleClassificationRunnerTutorial: () => 
+        set((state) => ({ 
+          showClassificationRunnerTutorial: !state.showClassificationRunnerTutorial 
         })),
     }),
     {

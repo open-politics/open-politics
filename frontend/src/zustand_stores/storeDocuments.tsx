@@ -8,6 +8,8 @@ interface DocumentState {
   documents: DocumentRead[];
   error: string | null;
   selectedDocumentId: number | null;
+  isDetailOpen: boolean;
+  newlyInsertedDocumentIds: number[];
   extractingPdfIds: Set<number>;
   extractedPdfIds: Set<number>;
   fetchDocuments: () => Promise<void>;
@@ -18,12 +20,16 @@ interface DocumentState {
   extractPdfContent: (documentId: number, fileId: number) => Promise<void>;
   isExtractingPdf: (fileId: number) => boolean;
   isExtractedPdf: (fileId: number) => boolean;
+  openDocumentDetail: (id: number) => void;
+  closeDocumentDetail: () => void;
 }
 
 export const useDocumentStore = create<DocumentState>((set, get) => ({
   documents: [],
   error: null,
   selectedDocumentId: null,
+  isDetailOpen: false,
+  newlyInsertedDocumentIds: [],
   extractingPdfIds: new Set<number>(),
   extractedPdfIds: new Set<number>(),
   
@@ -131,5 +137,13 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
         return { extractingPdfIds: newSet };
       });
     }
+  },
+
+  openDocumentDetail: (id: number) => {
+    set({ selectedDocumentId: id, isDetailOpen: true });
+  },
+  
+  closeDocumentDetail: () => {
+    set({ isDetailOpen: false });
   },
 })); 

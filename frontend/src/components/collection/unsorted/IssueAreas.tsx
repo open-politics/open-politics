@@ -44,6 +44,17 @@ import axios from 'axios';
 import Image from 'next/image';
 import ContentsView from './ContentsView';
 
+// Entity interface that matches the one expected by EntitiesView
+interface Entity {
+  id: string;
+  name: string;
+  entity_type: string;
+  locations: any[];
+  article_count?: number;
+  total_frequency?: number;
+  relevance_score?: number;
+}
+
 interface IssueAreasProps {
   locationName: string;
   results: any;
@@ -222,8 +233,16 @@ export function IssueAreas({ locationName, results, summary, includeSummary, hig
   // Add a check for showing summary content
   const showSummaryContent = results?.tavilyResults && summary;
 
+  // Adapter function to convert fetchContents to the expected signature
+  const handleFetchContents = useCallback((searchQuery: string) => {
+    fetchContents({ skip: 0 });
+  }, [fetchContents]);
+
   return (
     <div className="h-full flex flex-col">
+      <div className="flex justify-between mb-2">
+      <span className="text-green-500 font-medium">{locationName}</span>
+      </div>
       <Tabs 
         value={activeTab} 
         onValueChange={(value) => {
@@ -258,16 +277,13 @@ export function IssueAreas({ locationName, results, summary, includeSummary, hig
         <div className="max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-hide">
           <TabsContent value="articles" className="">
             <Card className="h-full w-full flex flex-col relative transition-transform duration-200">
-              <CardHeader className="p-4">
-                <CardTitle>Articles for <span className="text-green-500">{locationName}</span></CardTitle>
-                <CardDescription>
-                  Articles related to <span className="text-green-500">{locationName}</span>.
-                </CardDescription>
-              </CardHeader>
+              {/* <CardHeader className="p-4">
+                <CardTitle>Articles</CardTitle>
+              </CardHeader> */}
               <CardContent className="flex-grow overflow-hidden p-4 px-1 pt-7 relative">
                 {/* Image Section */}
                 {backgroundImage && (
-                  <div className="absolute top-1 right-1 w-44 h-44">
+                  <div className="absolute -top-0 right-1 w-40 h-20">
                     <img 
                       src={backgroundImage} 
                       alt={locationName} 
@@ -282,9 +298,10 @@ export function IssueAreas({ locationName, results, summary, includeSummary, hig
                     contents={data.contents}
                     isLoading={isLoading.contents}
                     error={error.contents}
-                    fetchContents={fetchContents}
+                    fetchContents={handleFetchContents}
                     resetContents={resetContents}
                     highlightedEventType={highlightedEventType}
+                    loadMore={() => fetchContents({ skip: data.contents.length })}
                   />
                 </div>
               </CardContent>
@@ -294,10 +311,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary, hig
             <TabsContent value="legislative">
               <Card>
                 <CardHeader>
-                  <CardTitle>Legislation for <span className="text-green-500">{locationName}</span></CardTitle>
-                  <CardDescription>
-                    Recent legislative activities and proposals.
-                  </CardDescription>
+                  <CardTitle>Legislation</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -330,11 +344,11 @@ export function IssueAreas({ locationName, results, summary, includeSummary, hig
                          <p className="mt-4">Legislative data is loading...</p>
                        </div>
                     ) : error.legislative ? (
-                      <p>No legislative data available for <span className="text-green-500">{locationName}</span>. Currently only available for Germany.</p>
+                      <p>No legislative data available for this location. Currently only available for Germany.</p>
                     ) : filteredLegislativeData.length > 0 ? (
                       <DataTable columns={legislationColumns} data={filteredLegislativeData} />
                     ) : (
-                      <p>No legislative data available for <span className="text-green-500">{locationName}</span>. Currently only available for Germany.</p>
+                      <p>No legislative data available for this location. Currently only available for Germany.</p>
                     )}
                   </div>
                 </CardContent>
@@ -344,10 +358,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary, hig
           <TabsContent value="economic-data">
             <Card>
               <CardHeader>
-                <CardTitle>Economic Data for <span className="text-green-500">{locationName}</span></CardTitle>
-                <CardDescription>
-                  Key economic indicators and market trends. (Only OECD Data)
-                </CardDescription>
+                <CardTitle>Economic Data</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 {isLoading.economic ? (
@@ -383,10 +394,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary, hig
           <TabsContent value="leader-info">
             <Card>
               <CardHeader>
-                <CardTitle>Leaders and Entities for <span className="text-green-500">{locationName}</span></CardTitle>
-                <CardDescription>
-                  Current leadership, key political figures, and relevant entities.
-                </CardDescription>
+                <CardTitle>Entities</CardTitle>
               </CardHeader>
               <CardContent>
                 {isLoading.leaderInfo || isLoading.entities ? (
@@ -394,12 +402,12 @@ export function IssueAreas({ locationName, results, summary, includeSummary, hig
                     <DotLoader color="#000" size={50} />
                     <p className="mt-4">Loading information...</p>
                   </div>
-                ) : error.entities ? ( // Only show error if there's an issue with entities
+                ) : error.entities ? (
                   <p>Failed to load entity information.</p>
                 ) : (
                   <EntitiesView 
-                    leaderInfo={error.leaderInfo ? null : data.leaderInfo} // Pass null if there's an error with leaderInfo
-                    entities={data.entities} 
+                    leaderInfo={error.leaderInfo ? null : data.leaderInfo}
+                    entities={data.entities as Entity[] | null} 
                   />
                 )}
               </CardContent>
@@ -408,10 +416,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary, hig
           <TabsContent value="wikipedia">
             <Card>
               <CardHeader>
-                <CardTitle>Wikipedia Information for <span className="text-green-500">{locationName}</span></CardTitle>
-                <CardDescription>
-                  General information from Wikipedia.
-                </CardDescription>
+                <CardTitle>Wikipedia</CardTitle>
               </CardHeader>
               <CardContent>
                 <WikipediaView locationName={locationName} />
@@ -422,9 +427,6 @@ export function IssueAreas({ locationName, results, summary, includeSummary, hig
             <Card>
               <CardHeader>
                 <CardTitle>Summary</CardTitle>
-                <CardDescription>
-                  Data Fragments & A Summary
-                </CardDescription>
               </CardHeader>
               <CardContent>
                 {showSummaryContent ? (

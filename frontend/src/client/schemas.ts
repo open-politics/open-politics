@@ -14,6 +14,35 @@ export const $ArticleResponse = {
 	},
 } as const;
 
+export const $Body_documents_bulk_upload_documents = {
+	properties: {
+		autofill: {
+	type: 'boolean',
+	default: false,
+},
+		files: {
+	type: 'array',
+	contains: {
+	type: 'binary',
+	format: 'binary',
+},
+	isRequired: true,
+},
+		content_type: {
+	type: 'string',
+	default: 'Document',
+},
+		source: {
+	type: 'any-of',
+	contains: [{
+	type: 'string',
+}, {
+	type: 'null',
+}],
+},
+	},
+} as const;
+
 export const $Body_documents_create_document = {
 	properties: {
 		title: {
@@ -88,6 +117,16 @@ export const $Body_documents_create_document = {
 	},
 } as const;
 
+export const $Body_documents_extract_document_metadata_from_pdf = {
+	properties: {
+		file: {
+	type: 'binary',
+	isRequired: true,
+	format: 'binary',
+},
+	},
+} as const;
+
 export const $Body_filestorage_file_upload = {
 	properties: {
 		file: {
@@ -141,6 +180,16 @@ export const $Body_login_login_access_token = {
 	},
 } as const;
 
+export const $Body_utils_extract_pdf_metadata = {
+	properties: {
+		file: {
+	type: 'binary',
+	isRequired: true,
+	format: 'binary',
+},
+	},
+} as const;
+
 export const $Body_utils_extract_pdf_text = {
 	properties: {
 		file: {
@@ -151,8 +200,75 @@ export const $Body_utils_extract_pdf_text = {
 	},
 } as const;
 
+export const $ClassificationFieldCreate = {
+	properties: {
+		name: {
+	type: 'string',
+	isRequired: true,
+},
+		description: {
+	type: 'string',
+	isRequired: true,
+},
+		type: {
+	type: 'FieldType',
+	isRequired: true,
+},
+		scale_min: {
+	type: 'any-of',
+	contains: [{
+	type: 'number',
+}, {
+	type: 'null',
+}],
+},
+		scale_max: {
+	type: 'any-of',
+	contains: [{
+	type: 'number',
+}, {
+	type: 'null',
+}],
+},
+		is_set_of_labels: {
+	type: 'any-of',
+	contains: [{
+	type: 'boolean',
+}, {
+	type: 'null',
+}],
+},
+		labels: {
+	type: 'any-of',
+	contains: [{
+	type: 'array',
+	contains: {
+	type: 'string',
+},
+}, {
+	type: 'null',
+}],
+},
+		dict_keys: {
+	type: 'any-of',
+	contains: [{
+	type: 'array',
+	contains: {
+		type: 'DictKeyDefinition',
+	},
+}, {
+	type: 'null',
+}],
+},
+	},
+} as const;
+
 export const $ClassificationResultCreate = {
 	properties: {
+		run_id: {
+	type: 'number',
+	isRequired: true,
+},
 		document_id: {
 	type: 'number',
 	isRequired: true,
@@ -198,6 +314,10 @@ export const $ClassificationResultCreate = {
 
 export const $ClassificationResultRead = {
 	properties: {
+		run_id: {
+	type: 'number',
+	isRequired: true,
+},
 		document_id: {
 	type: 'number',
 	isRequired: true,
@@ -259,68 +379,6 @@ export const $ClassificationSchemeCreate = {
 	type: 'string',
 	isRequired: true,
 },
-		type: {
-	type: 'string',
-	description: `Type of classification scheme`,
-	isRequired: true,
-},
-		scale_min: {
-	type: 'any-of',
-	contains: [{
-	type: 'number',
-}, {
-	type: 'null',
-}],
-},
-		scale_max: {
-	type: 'any-of',
-	contains: [{
-	type: 'number',
-}, {
-	type: 'null',
-}],
-},
-		is_set_of_labels: {
-	type: 'any-of',
-	contains: [{
-	type: 'boolean',
-}, {
-	type: 'null',
-}],
-},
-		max_labels: {
-	type: 'any-of',
-	contains: [{
-	type: 'number',
-}, {
-	type: 'null',
-}],
-},
-		labels: {
-	type: 'any-of',
-	contains: [{
-	type: 'array',
-	contains: {
-	type: 'string',
-},
-}, {
-	type: 'null',
-}],
-},
-		dict_keys: {
-	type: 'any-of',
-	contains: [{
-	type: 'array',
-	contains: {
-	type: 'dictionary',
-	contains: {
-	type: 'string',
-},
-},
-}, {
-	type: 'null',
-}],
-},
 		model_instructions: {
 	type: 'any-of',
 	contains: [{
@@ -341,6 +399,13 @@ export const $ClassificationSchemeCreate = {
 	type: 'null',
 }],
 },
+		fields: {
+	type: 'array',
+	contains: {
+		type: 'ClassificationFieldCreate',
+	},
+	isRequired: true,
+},
 	},
 } as const;
 
@@ -353,68 +418,6 @@ export const $ClassificationSchemeRead = {
 		description: {
 	type: 'string',
 	isRequired: true,
-},
-		type: {
-	type: 'string',
-	description: `Type of classification scheme`,
-	isRequired: true,
-},
-		scale_min: {
-	type: 'any-of',
-	contains: [{
-	type: 'number',
-}, {
-	type: 'null',
-}],
-},
-		scale_max: {
-	type: 'any-of',
-	contains: [{
-	type: 'number',
-}, {
-	type: 'null',
-}],
-},
-		is_set_of_labels: {
-	type: 'any-of',
-	contains: [{
-	type: 'boolean',
-}, {
-	type: 'null',
-}],
-},
-		max_labels: {
-	type: 'any-of',
-	contains: [{
-	type: 'number',
-}, {
-	type: 'null',
-}],
-},
-		labels: {
-	type: 'any-of',
-	contains: [{
-	type: 'array',
-	contains: {
-	type: 'string',
-},
-}, {
-	type: 'null',
-}],
-},
-		dict_keys: {
-	type: 'any-of',
-	contains: [{
-	type: 'array',
-	contains: {
-	type: 'dictionary',
-	contains: {
-	type: 'string',
-},
-},
-}, {
-	type: 'null',
-}],
 },
 		model_instructions: {
 	type: 'any-of',
@@ -450,6 +453,13 @@ export const $ClassificationSchemeRead = {
 	isRequired: true,
 	format: 'date-time',
 },
+		fields: {
+	type: 'array',
+	contains: {
+		type: 'ClassificationFieldCreate',
+	},
+	isRequired: true,
+},
 		classification_count: {
 	type: 'any-of',
 	contains: [{
@@ -479,68 +489,6 @@ export const $ClassificationSchemeUpdate = {
 	type: 'string',
 	isRequired: true,
 },
-		type: {
-	type: 'string',
-	description: `Type of classification scheme`,
-	isRequired: true,
-},
-		scale_min: {
-	type: 'any-of',
-	contains: [{
-	type: 'number',
-}, {
-	type: 'null',
-}],
-},
-		scale_max: {
-	type: 'any-of',
-	contains: [{
-	type: 'number',
-}, {
-	type: 'null',
-}],
-},
-		is_set_of_labels: {
-	type: 'any-of',
-	contains: [{
-	type: 'boolean',
-}, {
-	type: 'null',
-}],
-},
-		max_labels: {
-	type: 'any-of',
-	contains: [{
-	type: 'number',
-}, {
-	type: 'null',
-}],
-},
-		labels: {
-	type: 'any-of',
-	contains: [{
-	type: 'array',
-	contains: {
-	type: 'string',
-},
-}, {
-	type: 'null',
-}],
-},
-		dict_keys: {
-	type: 'any-of',
-	contains: [{
-	type: 'array',
-	contains: {
-	type: 'dictionary',
-	contains: {
-	type: 'string',
-},
-},
-}, {
-	type: 'null',
-}],
-},
 		model_instructions: {
 	type: 'any-of',
 	contains: [{
@@ -560,6 +508,26 @@ export const $ClassificationSchemeUpdate = {
 }, {
 	type: 'null',
 }],
+},
+		fields: {
+	type: 'array',
+	contains: {
+		type: 'ClassificationFieldCreate',
+	},
+	isRequired: true,
+},
+	},
+} as const;
+
+export const $DictKeyDefinition = {
+	properties: {
+		name: {
+	type: 'string',
+	isRequired: true,
+},
+		type: {
+	type: 'string',
+	isRequired: true,
 },
 	},
 } as const;
@@ -708,6 +676,10 @@ export const $DocumentUpdate = {
 
 export const $EnhancedClassificationResultRead = {
 	properties: {
+		run_id: {
+	type: 'number',
+	isRequired: true,
+},
 		document_id: {
 	type: 'number',
 	isRequired: true,
@@ -773,6 +745,11 @@ export const $EnhancedClassificationResultRead = {
 }],
 },
 	},
+} as const;
+
+export const $FieldType = {
+	type: 'Enum',
+	enum: ['int','str','List[str]','List[Dict[str, any]]',],
 } as const;
 
 export const $FileRead = {

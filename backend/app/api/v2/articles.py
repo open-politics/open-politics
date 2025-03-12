@@ -1,10 +1,8 @@
 import os
-from opol import OPOL
 from fastapi import APIRouter, Query
 from typing import Optional, List, Dict
 from pydantic import BaseModel
-
-opol = OPOL(mode=os.getenv("OPOL_MODE"), api_key=os.getenv("OPOL_API_KEY"))
+from app.core.opol_config import opol
 
 router = APIRouter()
 

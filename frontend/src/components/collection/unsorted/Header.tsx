@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { FaGithub } from "react-icons/fa6";
 import { Switch } from "@/components/ui/switch";
-import { Moon, Sun } from "lucide-react";
+import { NewspaperIcon, Globe2, ZoomIn } from "lucide-react";
 import { useTheme } from "next-themes";
 import useAuth from '@/hooks/useAuth';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -21,10 +21,10 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarTrigger
-} from "@/components/ui/sidebar"; // Import Sidebar components
+} from "@/components/ui/sidebar"; 
 import { NavUser } from '../../ui/nav-user';
 import Image from 'next/image';
-
+import TextWriter from "@/components/ui/extra-animated-base-components/text-writer";
 
 const Header = () => {
   const { theme, setTheme, systemTheme } = useTheme();
@@ -93,21 +93,29 @@ const Header = () => {
               </Popover>
 
               {/* Auth Navigation */}
-              {isLoggedIn ? (
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" asChild>
-                    <Link href="/desks/home">Desk</Link>
+              {isLoggedIn  ? (
+                <div className="flex items-center space-x-2">
+                  <Button variant="ghost" asChild className="ring-1 ring-blue-500 ring-offset-0 px-6 rounded-lg">
+                    <Link href="/desks/home">
+                      <TextWriter
+                        text={<div className="flex items-center gap-1">
+                          <NewspaperIcon className="w-4 h-4" />
+                          <Globe2 className="w-4 h-4" />
+                          <ZoomIn className="w-4 h-4" />
+                          <span>Desk</span>
+                        </div>}
+                        typingDelay={100}
+                        startDelay={500}
+                        className="animate-shimmer-once"
+                        cursorColor="transparent"
+                      />
+                    </Link>
                   </Button>
-                  {user?.is_superuser && (
-                    <Button variant="ghost" asChild>
-                      <Link href="/admin/users">Admin</Link>
-                    </Button>
-                  )}
                   <Button variant="ghost" onClick={logout}>Logout</Button>
                 </div>
               ) : (
                 <Button variant="ghost" asChild>
-                  <Link href="/login">Login</Link>
+                  <Link href="/accounts/login">Login</Link>
                 </Button>
               )}
 
@@ -122,9 +130,9 @@ const Header = () => {
                     <SidebarMenu>
                       <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                          <a href="/desks" className="flex items-center space-x-2">
+                          <Link href="/desks/home" className="flex items-center space-x-2">
                             <span className="font-semibold">Open Politics</span>
-                          </a>
+                          </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     </SidebarMenu>
@@ -134,16 +142,16 @@ const Header = () => {
                     <SidebarMenu>
                       <SidebarMenuItem>
                         <SidebarMenuButton asChild className="flex items-center space-x-2 w-full">
-                          <a href="/webpages/about">
+                          <Link href="/webpages/about">
                             <span>About</span>
-                          </a>
+                          </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                       <SidebarMenuItem>
                         <SidebarMenuButton asChild className="flex items-center space-x-2 w-full">
-                          <a href="https://docs.open-politics.org">
+                          <Link href="https://docs.open-politics.org">
                             <span>Documentation</span>
-                          </a>
+                          </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                       <SidebarMenuItem>
@@ -158,17 +166,17 @@ const Header = () => {
                         <>
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild className="flex items-center space-x-2 w-full">
-                              <a href="/desks/home">
+                              <Link href="/desks/home">
                                 <span>Desk</span>
-                              </a>
+                              </Link>
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                           {user?.is_superuser && (
                             <SidebarMenuItem>
                               <SidebarMenuButton asChild className="flex items-center space-x-2 w-full">
-                                <a href="/admin/users">
+                                <Link href="/accounts/admin/users">
                                   <span>Admin</span>
-                                </a>
+                                </Link>
                               </SidebarMenuButton>
                             </SidebarMenuItem>
                           )}
@@ -181,9 +189,9 @@ const Header = () => {
                       ) : (
                         <SidebarMenuItem>
                           <SidebarMenuButton asChild className="flex items-center space-x-2 w-full">
-                            <a href="/login">
+                            <Link href="/accounts/login">
                               <span>Login</span>
-                            </a>
+                            </Link>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
                       )}
@@ -201,9 +209,11 @@ const Header = () => {
                   <SidebarFooter className="border-t p-4">
                     {isLoggedIn && (
                       <NavUser user={{
-                        name: user.username || 'User',
-                        email: user.email || '',
-                        avatar: user.avatar || '',
+                        name: user?.full_name || 'User',
+                        email: user?.email || '',
+                        avatar: user?.avatar || '',
+                        is_superuser: user?.is_superuser || false,
+                        full_name: user?.full_name || '',
                       }} />
                     )}
                   </SidebarFooter>

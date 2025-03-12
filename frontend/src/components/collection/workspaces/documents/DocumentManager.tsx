@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import useAuth from "@/hooks/useAuth";
 import { Separator } from "@/components/ui/separator";
-import { Search, Plus } from "lucide-react"
+import { Search, Plus, FileText, Upload, LinkIcon } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { formatDistanceToNow } from "date-fns"
 import { cn } from "@/lib/utils"
@@ -31,8 +31,10 @@ import { useWorkspaceStore } from '@/zustand_stores/storeWorkspace';
 import { useDocumentStore } from '@/zustand_stores/storeDocuments';
 import EditDocumentOverlay from './EditDocumentOverlay';
 import { DocumentRead, WorkspaceRead } from '@/client/models';
-import { useClassificationSchemeStore } from '@/zustand_stores/storeSchemas';
-
+import { useSchemes } from '@/hooks/useSchemes';
+import DocumentDetailProvider from './DocumentDetailProvider';
+import DocumentDetailWrapper from './DocumentDetailWrapper';
+import { schemesToSchemeReads } from '@/lib/classification/adapters';
 interface DocumentListProps {
   items: DocumentRead[];
   onDocumentSelect: (documentId: number) => void;
@@ -94,15 +96,19 @@ const DocumentCardComponent: React.FC<DocumentListProps> = React.memo(({ items, 
   );
 });
 
+interface DocumentManagerProps {
+  onLoadIntoRunner?: (runId: number, runName: string) => void;
+}
 
-export default function DocumentManager() {
+export default function DocumentManager({ onLoadIntoRunner }: DocumentManagerProps) {
   const { documents, fetchDocuments } = useDocumentStore();
   const { activeWorkspace } = useWorkspaceStore();
-  const { classificationSchemes, fetchClassificationSchemes } = useClassificationSchemeStore();
+  const { schemes, loadSchemes } = useSchemes();
 
   const { isLoggedIn } = useAuth();
 
   const [isCreateDocumentOpen, setIsCreateDocumentOpen] = useState(false);
+  const [createDocumentMode, setCreateDocumentMode] = useState<'single' | 'bulk' | 'scrape'>('single');
   const [isCardView, setIsCardView] = useState(false);
   const [selectedDocumentId, setSelectedDocumentId] = useState<number | null>(null);
   const [newlyInsertedDocumentIds, setNewlyInsertedDocumentIds] = useState<number[]>([]);
@@ -119,6 +125,11 @@ export default function DocumentManager() {
   const handleEdit = (document: DocumentRead) => {
     setDocumentToEdit(document);
     setIsEditOpen(true);
+  };
+
+  const openCreateDocument = (mode: 'single' | 'bulk' | 'scrape') => {
+    setCreateDocumentMode(mode);
+    setIsCreateDocumentOpen(true);
   };
 
   const memoizedDocumentToEditProps = useMemo(() => ({
@@ -139,7 +150,7 @@ export default function DocumentManager() {
       fetchingRef.current = true;
       setSelectedDocumentId(null);
       fetchDocuments();
-      fetchClassificationSchemes(activeWorkspace.uid);
+      loadSchemes(activeWorkspace.uid);
     }
   }, [activeWorkspace?.uid]); // Only depend on the ID
 
@@ -152,99 +163,115 @@ export default function DocumentManager() {
   }
 
   return (
-    <TooltipProvider delayDuration={0}>
-      <div className="flex flex-col h-full w-full max-w-screen-2xl max-h-[80%] mx-auto px-2 sm:px-4">
-        {/* Header Section - Made more compact on mobile */}
-        <div className="flex-none p-2 sm:p-4">
-          <div className="flex items-center justify-between">
-            <Button variant="outline" onClick={() => setIsCreateDocumentOpen(true)} className="h-9">
-              <Plus className="h-4 w-4" />
-              <span className="ml-2 sr-only sm:not-sr-only sm:inline">New Document</span>
-            </Button>
-          </div>
-          <Separator className="my-2" />
-        </div>
+    <DocumentDetailProvider>
+      <DocumentDetailWrapper onLoadIntoRunner={onLoadIntoRunner}>
+        <TooltipProvider delayDuration={0}>
+          <div className="flex flex-col h-full w-full max-w-screen-2xl max-h-[80%] mx-auto px-2 sm:px-4">
+            {/* Header Section - Made more compact on mobile */}
+            <div className="flex-none p-2 sm:p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="outline" onClick={() => openCreateDocument('single')} className="h-9 flex items-center">
+                    <FileText className="h-4 w-4 mr-2" />
+                    <span className="sr-only sm:not-sr-only">New Document</span>
+                  </Button>
+                  <Button variant="outline" onClick={() => openCreateDocument('bulk')} className="h-9 flex items-center">
+                    <Upload className="h-4 w-4 mr-2" />
+                    <span className="sr-only sm:not-sr-only">Bulk Upload</span>
+                  </Button>
+                  <Button variant="outline" onClick={() => openCreateDocument('scrape')} className="h-9 flex items-center">
+                    <LinkIcon className="h-4 w-4 mr-2" />
+                    <span className="sr-only sm:not-sr-only">Scrape URL</span>
+                  </Button>
+                </div>
+              </div>
+              <Separator className="my-2" />
+            </div>
 
-        {/* Main Content Area - Adjusted for responsive layout */}
-        <div className="flex-1 min-h-0 flex flex-col">
-          <ResizablePanelGroup
-            direction="horizontal"
-            className="h-full w-full border rounded-lg overflow-hidden"
-          >
-            <ResizablePanel 
-              defaultSize={50} 
-              minSize={30}
-              className="min-w-[300px] bg-background"
-            >
-              <div className="flex flex-col h-full">
-                <div className="flex-none p-2 sm:p-4">
-                  <div className="flex items-center justify-between">
-                    <h1 className="text-lg sm:text-xl font-bold">Documents</h1>
-                  </div>
-                  <div className="mt-2">
-                    <div className="relative">
-                      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input placeholder="Search" className="pl-8 h-9" />
+            {/* Main Content Area - Adjusted for responsive layout */}
+            <div className="flex-1 min-h-0 flex flex-col">
+              <ResizablePanelGroup
+                direction="horizontal"
+                className="h-full w-full border rounded-lg overflow-hidden"
+              >
+                <ResizablePanel 
+                  defaultSize={50} 
+                  minSize={30}
+                  className="min-w-[300px] bg-background"
+                >
+                  <div className="flex flex-col h-full">
+                    <div className="flex-none p-2 sm:p-4">
+                      <div className="flex items-center justify-between">
+                        <h1 className="text-lg sm:text-xl font-bold">Documents</h1>
+                      </div>
+                      <div className="mt-2">
+                        <div className="relative">
+                          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input placeholder="Search" className="pl-8 h-9" />
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2 mt-2">
+                        <Switch id="card-view" checked={isCardView} onCheckedChange={setIsCardView} />
+                        <label htmlFor="card-view" className="text-sm font-medium">
+                          Card View
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Document List - Adjusted grid for mobile */}
+                    <div className="flex-1 min-h-0 overflow-hidden">
+                      <Tabs defaultValue="all" className="h-full">
+                        <TabsContent value="all" className="h-full m-0">
+                          {isCardView ? (
+                            <DocumentCardComponent
+                              items={documents as DocumentRead[]}
+                              onDocumentSelect={handleDocumentSelect}
+                              selectedDocumentId={selectedDocumentId}
+                            />
+                          ) : (
+                            <div className="h-full overflow-x-auto">
+                              <DocumentsTable onDocumentSelect={handleDocumentSelect} />
+                            </div>
+                          )}
+                        </TabsContent>
+                      </Tabs>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2 mt-2">
-                    <Switch id="card-view" checked={isCardView} onCheckedChange={setIsCardView} />
-                    <label htmlFor="card-view" className="text-sm font-medium">
-                      Card View
-                    </label>
+                </ResizablePanel>
+
+                <ResizableHandle withHandle className="hidden sm:flex bg-border" />
+
+                <ResizablePanel 
+                  defaultSize={50} 
+                  minSize={30}
+                  className="min-w-[300px] bg-background border-l"
+                >
+                  <div className="h-full overflow-hidden">
+                    <DocumentDetailView 
+                      selectedDocumentId={selectedDocumentId} 
+                      documents={documents as DocumentRead[]} 
+                      newlyInsertedDocumentIds={newlyInsertedDocumentIds}
+                      onEdit={handleEdit}
+                      schemes={schemesToSchemeReads(schemes)}
+                      onLoadIntoRunner={onLoadIntoRunner}
+                    />
                   </div>
-                </div>
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            </div>
 
-                {/* Document List - Adjusted grid for mobile */}
-                <div className="flex-1 min-h-0 overflow-hidden">
-                  <Tabs defaultValue="all" className="h-full">
-                    <TabsContent value="all" className="h-full m-0">
-                      {isCardView ? (
-                        <DocumentCardComponent
-                          items={documents as DocumentRead[]}
-                          onDocumentSelect={handleDocumentSelect}
-                          selectedDocumentId={selectedDocumentId}
-                        />
-                      ) : (
-                        <div className="h-full overflow-x-auto">
-                          <DocumentsTable onDocumentSelect={handleDocumentSelect} />
-                        </div>
-                      )}
-                    </TabsContent>
-                  </Tabs>
-                </div>
-              </div>
-            </ResizablePanel>
-
-            <ResizableHandle withHandle className="hidden sm:flex bg-border" />
-
-            <ResizablePanel 
-              defaultSize={50} 
-              minSize={30}
-              className="min-w-[300px] bg-background border-l"
-            >
-              <div className="h-full overflow-hidden">
-                <DocumentDetailView 
-                  selectedDocumentId={selectedDocumentId} 
-                  documents={documents as DocumentRead[]} 
-                  newlyInsertedDocumentIds={newlyInsertedDocumentIds}
-                  onEdit={handleEdit}
-                  schemes={classificationSchemes}
-                />
-              </div>
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        </div>
-
-        {/* Modals */}
-        <CreateDocumentDialog
-          open={isCreateDocumentOpen}
-          onClose={() => setIsCreateDocumentOpen(false)}
-        />
-        <EditDocumentOverlay
-          {...memoizedDocumentToEditProps}
-        />
-      </div>
-    </TooltipProvider>
+            {/* Modals */}
+            <CreateDocumentDialog
+              open={isCreateDocumentOpen}
+              onClose={() => setIsCreateDocumentOpen(false)}
+              initialMode={createDocumentMode}
+            />
+            <EditDocumentOverlay
+              {...memoizedDocumentToEditProps}
+            />
+          </div>
+        </TooltipProvider>
+      </DocumentDetailWrapper>
+    </DocumentDetailProvider>
   );
 }

@@ -1,13 +1,13 @@
 import logging
 import io
 import os
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Dict
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Response
-from sqlalchemy.orm import joinedload
+import fitz  # PyMuPDF
 from sqlmodel import Session, select
+from sqlalchemy.orm import joinedload
 from pydantic import BaseModel
-import fitz  
 
 from app.models import Document, DocumentRead, DocumentUpdate, Workspace, User, File as FileModel, FileRead
 from app.api.deps import SessionDep, CurrentUser
@@ -115,6 +115,13 @@ async def create_document(
 
         logging.info(f"Creating document for workspace {workspace_id} by user {current_user.id}")
         logging.info(f"Document data: title={title}, top_image={top_image}, url={url}, content_type={content_type}, source={source}, files={files}")
+
+        # Clean text content and summary to remove NULL bytes and handle encoding issues
+        if text_content:
+            text_content = text_content.replace('\x00', '').encode('utf-8', errors='ignore').decode('utf-8')
+        
+        if summary:
+            summary = summary.replace('\x00', '').encode('utf-8', errors='ignore').decode('utf-8')
 
         document_data_dict = {
             "title": title,
@@ -237,6 +244,14 @@ def update_document(
         raise HTTPException(status_code=404, detail="Document not found")
 
     update_data = document_in.model_dump(exclude_unset=True)
+    
+    # Clean text content and summary if they are being updated
+    if 'text_content' in update_data and update_data['text_content']:
+        update_data['text_content'] = update_data['text_content'].replace('\x00', '').encode('utf-8', errors='ignore').decode('utf-8')
+    
+    if 'summary' in update_data and update_data['summary']:
+        update_data['summary'] = update_data['summary'].replace('\x00', '').encode('utf-8', errors='ignore').decode('utf-8')
+    
     for field, value in update_data.items():
         setattr(document, field, value)
 
@@ -470,8 +485,8 @@ async def extract_pdf_content(
         with fitz.open(stream=pdf_data, filetype="pdf") as doc:
             text_content = ""
             for page in doc:
-                # Clean the text by removing NULL bytes and other problematic characters
                 page_text = page.get_text()
+                # Clean the text by removing NULL bytes and other problematic characters
                 cleaned_text = page_text.replace('\x00', '').encode('utf-8', errors='ignore').decode('utf-8')
                 text_content += cleaned_text + "\n"
 
@@ -486,4 +501,206 @@ async def extract_pdf_content(
     except Exception as e:
         logging.error(f"Error extracting PDF content with PyMuPDF: {e}")
         raise HTTPException(status_code=500, detail="Failed to extract PDF content")
+
+@router.post("/bulk-upload", response_model=List[DocumentRead])
+async def bulk_upload_documents(
+    *,
+    session: SessionDep,
+    current_user: CurrentUser,
+    workspace_id: int,
+    autofill: bool = Form(False),
+    files: List[UploadFile] = File(...),
+    content_type: str = Form("Document"),
+    source: Optional[str] = Form(None),
+) -> Any:
+    """
+    Bulk upload multiple PDF documents with optional metadata autofill.
     
+    If autofill is True, the system will attempt to extract metadata from each PDF.
+    """
+    logging.info(f"Bulk uploading {len(files)} documents to workspace {workspace_id}")
+    
+    try:
+        # Verify workspace exists and user has access
+        workspace = session.get(Workspace, workspace_id)
+        if not workspace or workspace.user_id_ownership != current_user.id:
+            raise HTTPException(status_code=404, detail="Workspace not found")
+        
+        created_documents = []
+        
+        for file in files:
+            try:
+                # Default values
+                title = file.filename
+                text_content = None
+                summary = None
+                
+                # If autofill is enabled and file is PDF, extract metadata
+                if autofill and file.filename.lower().endswith('.pdf'):
+                    # Reset file position to beginning
+                    await file.seek(0)
+                    
+                    # Call the metadata extraction endpoint
+                    contents = await file.read()
+                    
+                    with fitz.open(stream=contents, filetype="pdf") as doc:
+                        # Extract metadata
+                        metadata = doc.metadata
+                        
+                        # Extract first page text for potential title extraction
+                        first_page_text = ""
+                        if doc.page_count > 0:
+                            first_page = doc[0]
+                            first_page_text = first_page.get_text()
+                        
+                        # Try to extract title from metadata or first page
+                        extracted_title = metadata.get("title", "")
+                        if not extracted_title and first_page_text:
+                            # If no title in metadata, try to extract from first page
+                            # Get first non-empty line that's not too long (likely a title)
+                            lines = [line.strip() for line in first_page_text.split('\n') if line.strip()]
+                            if lines and len(lines[0]) < 100:  # Assume title is not extremely long
+                                extracted_title = lines[0]
+                        
+                        if extracted_title:
+                            title = extracted_title
+                        
+                        # Extract text content from all pages
+                        text_content = ""
+                        for page in doc:
+                            page_text = page.get_text()
+                            # Clean the text by removing NULL bytes and other problematic characters
+                            cleaned_text = page_text.replace('\x00', '').encode('utf-8', errors='ignore').decode('utf-8')
+                            text_content += cleaned_text + "\n"
+                        
+                        # Create a summary from the first few paragraphs
+                        paragraphs = [p for p in text_content.split('\n\n') if p.strip()]
+                        if paragraphs:
+                            # Use first paragraph or first 500 chars as summary
+                            summary_text = paragraphs[0][:500] + ("..." if len(paragraphs[0]) > 500 else "")
+                            # Clean the summary text
+                            summary = summary_text.replace('\x00', '').encode('utf-8', errors='ignore').decode('utf-8')
+                    
+                    # Reset file position for later upload
+                    await file.seek(0)
+                
+                # Create document
+                document_data = {
+                    "title": title,
+                    "content_type": content_type,
+                    "source": source,
+                    "text_content": text_content,
+                    "summary": summary,
+                    "insertion_date": datetime.now(timezone.utc),
+                    "workspace_id": workspace_id,
+                    "user_id": current_user.id
+                }
+                
+                document = Document(**document_data)
+                session.add(document)
+                session.flush()  # Flush to get the document ID
+                
+                # Upload file to MinIO
+                try:
+                    object_name = f"{document.id}/{file.filename}"
+                    minio_client = MinioClient()
+                    await minio_client.upload_file(file, object_name)
+                    
+                    # Create file record
+                    file_model = FileModel(
+                        name=file.filename, 
+                        filetype=file.content_type, 
+                        size=file.size, 
+                        document_id=document.id
+                    )
+                    session.add(file_model)
+                    
+                except Exception as e:
+                    logging.error(f"Error uploading file {file.filename}: {e}")
+                    # Continue with next file even if this one fails
+                
+                created_documents.append(document)
+                
+            except Exception as e:
+                logging.error(f"Error processing file {file.filename}: {e}")
+                # Continue with next file even if this one fails
+        
+        # Commit all successful documents
+        session.commit()
+        
+        # Refresh all documents to get their complete data
+        for doc in created_documents:
+            session.refresh(doc)
+        
+        return created_documents
+        
+    except Exception as e:
+        logging.error(f"Error in bulk upload: {e}")
+        session.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+    
+
+@router.post("/extract-pdf-metadata", response_model=Dict[str, Any])
+async def extract_document_metadata_from_pdf(
+    *,
+    file: UploadFile = File(...),
+) -> Any:
+    """
+    Extract metadata from a PDF file to pre-fill document creation form.
+    Returns title, text content, summary, etc. extracted from the PDF.
+    """
+    if not file.filename.lower().endswith('.pdf'):
+        raise HTTPException(status_code=400, detail="Only PDF files are supported")
+    
+    try:
+        contents = await file.read()
+        
+        with fitz.open(stream=contents, filetype="pdf") as doc:
+            # Extract metadata
+            metadata = doc.metadata
+            
+            # Extract first page text for potential title extraction
+            first_page_text = ""
+            if doc.page_count > 0:
+                first_page = doc[0]
+                first_page_text = first_page.get_text()
+            
+            # Try to extract title from metadata or first page
+            title = metadata.get("title", "")
+            if not title and first_page_text:
+                # If no title in metadata, try to extract from first page
+                # Get first non-empty line that's not too long (likely a title)
+                lines = [line.strip() for line in first_page_text.split('\n') if line.strip()]
+                if lines and len(lines[0]) < 100:  # Assume title is not extremely long
+                    title = lines[0]
+            
+            # Extract text content from all pages
+            text_content = ""
+            for page in doc:
+                page_text = page.get_text()
+                # Clean the text by removing NULL bytes and other problematic characters
+                cleaned_text = page_text.replace('\x00', '').encode('utf-8', errors='ignore').decode('utf-8')
+                text_content += cleaned_text + "\n"
+            
+            # Create a summary from the first few paragraphs
+            summary = ""
+            paragraphs = [p for p in text_content.split('\n\n') if p.strip()]
+            if paragraphs:
+                # Use first paragraph or first 500 chars as summary
+                summary_text = paragraphs[0][:500] + ("..." if len(paragraphs[0]) > 500 else "")
+                # Clean the summary text
+                summary = summary_text.replace('\x00', '').encode('utf-8', errors='ignore').decode('utf-8')
+            
+            return {
+                "title": title or file.filename.replace(".pdf", ""),
+                "author": metadata.get("author", ""),
+                "subject": metadata.get("subject", ""),
+                "keywords": metadata.get("keywords", ""),
+                "text_content": text_content,
+                "summary": summary,
+                "page_count": doc.page_count
+            }
+            
+    except Exception as e:
+        logging.error(f"Error extracting PDF metadata: {e}")
+        raise HTTPException(status_code=500, detail=f"PDF processing failed: {str(e)}")

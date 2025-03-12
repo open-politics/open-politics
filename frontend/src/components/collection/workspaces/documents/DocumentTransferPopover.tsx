@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, CopyIcon, FolderInput } from 'lucide-react';
+import { Check, CopyIcon, FolderIcon, FolderInput} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -40,7 +40,7 @@ export function DocumentTransferPopover({
     
     setIsLoading(true);
     try {
-      const response = await DocumentsService.transferDocuments({
+      await DocumentsService.transferDocuments({
         workspaceId: activeWorkspace.uid,
         targetWorkspaceId: parseInt(targetWorkspaceId),
         requestBody: selectedDocumentIds,
@@ -98,15 +98,16 @@ export function DocumentTransferPopover({
             <Button
               variant="outline"
               size="sm"
-              className={!isCopy ? "bg-primary" : ""}
+              className={!isCopy ? "" : ""}
               onClick={() => setIsCopy(false)}
             >
+              <FolderIcon className="h-4 w-4 mr-2" />
               Move
             </Button>
             <Button
               variant="outline"
               size="sm"
-              className={isCopy ? "bg-primary" : ""}
+              className={isCopy ? "" : ""}
               onClick={() => setIsCopy(true)}
             >
               <CopyIcon className="h-4 w-4 mr-2" />

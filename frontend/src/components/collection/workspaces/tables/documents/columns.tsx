@@ -4,17 +4,22 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { Download, FileText } from "lucide-react"
 import { DocumentRead, FileRead } from '@/client/models';
-import { useClassificationResultStore } from '@/zustand_stores/storeClassificationResults';
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useState } from "react"
 import ClassificationResultDisplay from "../../classifications/ClassificationResultDisplay"
 import { format } from "date-fns"
+import DocumentLink from '../../documents/DocumentLink';
 
 export const columns: ColumnDef<DocumentRead>[] = [
   {
     accessorKey: 'title',
     header: 'Title',
+    cell: ({ row }) => (
+      <DocumentLink documentId={row.original.id}>
+        {row.original.title || `Document ${row.original.id}`}
+      </DocumentLink>
+    ),
   },
   {
     accessorKey: 'content_type',
@@ -90,7 +95,12 @@ export const columns: ColumnDef<DocumentRead>[] = [
           >
             <div className="flex items-center space-x-2 min-w-0">
               <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-              <span className="truncate text-sm">{file.name}</span>
+              <DocumentLink 
+                documentId={row.original.id}
+                className="truncate text-sm"
+              >
+                {file.name}
+              </DocumentLink>
             </div>
             <Button
               variant="ghost"

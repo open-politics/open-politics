@@ -2,7 +2,7 @@ import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
 
-import type { Request,app__api__v1__search__routes__SearchType,MostRelevantEntitiesRequest,app__api__v1__entities__routes__SearchType,Body_login_login_access_token,Message,NewPassword,Token,UserOut,UpdatePassword,UserCreate,UserCreateOpen,UsersOut,UserUpdate,UserUpdateMe,Body_utils_extract_pdf_text,ItemCreate,ItemOut,ItemsOut,ItemUpdate,SearchHistoriesOut,SearchHistory,SearchHistoryCreate,WorkspaceCreate,WorkspaceRead,WorkspaceUpdate,ClassificationResultRead,ClassificationSchemeCreate,ClassificationSchemeRead,ClassificationSchemeUpdate,SavedResultSetCreate,SavedResultSetRead,ClassificationResultCreate,EnhancedClassificationResultRead,Body_documents_create_document,DocumentRead,DocumentUpdate,FileRead,Body_filestorage_file_upload,FileUploadResponse,ArticleResponse } from './models';
+import type { Request,app__api__v1__search__routes__SearchType,MostRelevantEntitiesRequest,app__api__v1__entities__routes__SearchType,Body_login_login_access_token,Message,NewPassword,Token,UserOut,UpdatePassword,UserCreate,UserCreateOpen,UsersOut,UserUpdate,UserUpdateMe,Body_utils_extract_pdf_metadata,Body_utils_extract_pdf_text,ItemCreate,ItemOut,ItemsOut,ItemUpdate,SearchHistoriesOut,SearchHistory,SearchHistoryCreate,WorkspaceCreate,WorkspaceRead,WorkspaceUpdate,ClassificationResultRead,ClassificationSchemeCreate,ClassificationSchemeRead,ClassificationSchemeUpdate,SavedResultSetCreate,SavedResultSetRead,ClassificationResultCreate,EnhancedClassificationResultRead,Body_documents_bulk_upload_documents,Body_documents_create_document,Body_documents_extract_document_metadata_from_pdf,DocumentRead,DocumentUpdate,FileRead,Body_filestorage_file_upload,FileUploadResponse,ArticleResponse } from './models';
 
 export type AppData = {
         
@@ -248,6 +248,14 @@ ExtractPdfText: {
                     formData: Body_utils_extract_pdf_text
                     
                 };
+ExtractPdfMetadata: {
+                    formData: Body_utils_extract_pdf_metadata
+                    
+                };
+ScrapeArticle: {
+                    url: string
+                    
+                };
     }
 
 export type UtilitiesData = {
@@ -257,6 +265,14 @@ export type UtilitiesData = {
                 };
 ExtractPdfText: {
                     formData: Body_utils_extract_pdf_text
+                    
+                };
+ExtractPdfMetadata: {
+                    formData: Body_utils_extract_pdf_metadata
+                    
+                };
+ScrapeArticle: {
+                    url: string
                     
                 };
     }
@@ -460,6 +476,16 @@ skip?: number
 workspaceId: number
                     
                 };
+GetResultsByRun: {
+                    runId: number
+workspaceId: number
+                    
+                };
+GetResultsByRun1: {
+                    runId: number
+workspaceId: number
+                    
+                };
     }
 
 export type DocumentsData = {
@@ -533,6 +559,15 @@ ExtractPdfContent: {
                     documentId: number
 fileId: number
 workspaceId: number
+                    
+                };
+BulkUploadDocuments: {
+                    formData: Body_documents_bulk_upload_documents
+workspaceId: number
+                    
+                };
+ExtractDocumentMetadataFromPdf: {
+                    formData: Body_documents_extract_document_metadata_from_pdf
                     
                 };
     }
@@ -623,12 +658,19 @@ export type ClassificationData = {
                 };
 ClassifyDocument: {
                     documentId: number
+model?: string | null
+provider?: string | null
+runDescription?: string | null
+runId?: number | null
+runName?: string | null
 schemeId: number
+xApiKey?: string | null
                     
                 };
 Classify: {
                     schemeId: number
 text: string
+xApiKey?: string | null
                     
                 };
     }
@@ -1736,6 +1778,55 @@ formData,
 		});
 	}
 
+	/**
+	 * Extract Pdf Metadata
+	 * Extract metadata from PDF including title, author, etc.
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static extractPdfMetadata(data: UtilsData['ExtractPdfMetadata']): CancelablePromise<unknown> {
+		const {
+formData,
+} = data;
+		return __request(OpenAPI, {
+			method: 'POST',
+			url: '/api/v1/utils/utils/extract-pdf-metadata',
+			formData: formData,
+			mediaType: 'multipart/form-data',
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Scrape Article
+	 * Scrape article content from a URL using the centralized OPOL instance.
+ * 
+ * Args:
+ * url: The URL of the article to scrape
+ * 
+ * Returns:
+ * The scraped article content
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static scrapeArticle(data: UtilsData['ScrapeArticle']): CancelablePromise<unknown> {
+		const {
+url,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/utils/utils/scrape_article',
+			query: {
+				url
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
 }
 
 export class UtilitiesService {
@@ -1813,6 +1904,55 @@ formData,
 			url: '/api/v1/utils/utils/extract-pdf-text',
 			formData: formData,
 			mediaType: 'multipart/form-data',
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Extract Pdf Metadata
+	 * Extract metadata from PDF including title, author, etc.
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static extractPdfMetadata(data: UtilitiesData['ExtractPdfMetadata']): CancelablePromise<unknown> {
+		const {
+formData,
+} = data;
+		return __request(OpenAPI, {
+			method: 'POST',
+			url: '/api/v1/utils/utils/extract-pdf-metadata',
+			formData: formData,
+			mediaType: 'multipart/form-data',
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Scrape Article
+	 * Scrape article content from a URL using the centralized OPOL instance.
+ * 
+ * Args:
+ * url: The URL of the article to scrape
+ * 
+ * Returns:
+ * The scraped article content
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static scrapeArticle(data: UtilitiesData['ScrapeArticle']): CancelablePromise<unknown> {
+		const {
+url,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/utils/utils/scrape_article',
+			query: {
+				url
+			},
 			errors: {
 				422: `Validation Error`,
 			},
@@ -2224,7 +2364,7 @@ requestBody,
 } = data;
 		return __request(OpenAPI, {
 			method: 'POST',
-			url: '/api/v1/workspaces/{workspace_id}/classification_schemes/',
+			url: '/api/v1/workspaces/{workspace_id}/classification_schemes',
 			path: {
 				workspace_id: workspaceId
 			},
@@ -2249,7 +2389,7 @@ limit = 100,
 } = data;
 		return __request(OpenAPI, {
 			method: 'GET',
-			url: '/api/v1/workspaces/{workspace_id}/classification_schemes/',
+			url: '/api/v1/workspaces/{workspace_id}/classification_schemes',
 			path: {
 				workspace_id: workspaceId
 			},
@@ -2273,7 +2413,7 @@ workspaceId,
 } = data;
 		return __request(OpenAPI, {
 			method: 'DELETE',
-			url: '/api/v1/workspaces/{workspace_id}/classification_schemes/',
+			url: '/api/v1/workspaces/{workspace_id}/classification_schemes',
 			path: {
 				workspace_id: workspaceId
 			},
@@ -2295,7 +2435,7 @@ requestBody,
 } = data;
 		return __request(OpenAPI, {
 			method: 'POST',
-			url: '/api/v1/workspaces/{workspace_id}/classification_schemes',
+			url: '/api/v1/workspaces/{workspace_id}/classification_schemes/',
 			path: {
 				workspace_id: workspaceId
 			},
@@ -2320,7 +2460,7 @@ limit = 100,
 } = data;
 		return __request(OpenAPI, {
 			method: 'GET',
-			url: '/api/v1/workspaces/{workspace_id}/classification_schemes',
+			url: '/api/v1/workspaces/{workspace_id}/classification_schemes/',
 			path: {
 				workspace_id: workspaceId
 			},
@@ -2344,7 +2484,7 @@ workspaceId,
 } = data;
 		return __request(OpenAPI, {
 			method: 'DELETE',
-			url: '/api/v1/workspaces/{workspace_id}/classification_schemes',
+			url: '/api/v1/workspaces/{workspace_id}/classification_schemes/',
 			path: {
 				workspace_id: workspaceId
 			},
@@ -2692,6 +2832,52 @@ limit = 100,
 		});
 	}
 
+	/**
+	 * Get Results By Run
+	 * Retrieve all classification results for a specific run ID.
+	 * @returns ClassificationResultRead Successful Response
+	 * @throws ApiError
+	 */
+	public static getResultsByRun(data: ClassificationResultsData['GetResultsByRun']): CancelablePromise<Array<ClassificationResultRead>> {
+		const {
+workspaceId,
+runId,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/workspaces/{workspace_id}/classification_results/by_run/{run_id}',
+			path: {
+				workspace_id: workspaceId, run_id: runId
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Get Results By Run
+	 * Retrieve all classification results for a specific run ID.
+	 * @returns ClassificationResultRead Successful Response
+	 * @throws ApiError
+	 */
+	public static getResultsByRun1(data: ClassificationResultsData['GetResultsByRun1']): CancelablePromise<Array<ClassificationResultRead>> {
+		const {
+workspaceId,
+runId,
+} = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/workspaces/{workspace_id}/classification_results/by_run/{run_id}',
+			path: {
+				workspace_id: workspaceId, run_id: runId
+			},
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
 }
 
 export class DocumentsService {
@@ -3028,6 +3214,55 @@ fileId,
 		});
 	}
 
+	/**
+	 * Bulk Upload Documents
+	 * Bulk upload multiple PDF documents with optional metadata autofill.
+ * 
+ * If autofill is True, the system will attempt to extract metadata from each PDF.
+	 * @returns DocumentRead Successful Response
+	 * @throws ApiError
+	 */
+	public static bulkUploadDocuments(data: DocumentsData['BulkUploadDocuments']): CancelablePromise<Array<DocumentRead>> {
+		const {
+workspaceId,
+formData,
+} = data;
+		return __request(OpenAPI, {
+			method: 'POST',
+			url: '/api/v1/workspaces/{workspace_id}/documents/bulk-upload',
+			path: {
+				workspace_id: workspaceId
+			},
+			formData: formData,
+			mediaType: 'multipart/form-data',
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	/**
+	 * Extract Document Metadata From Pdf
+	 * Extract metadata from a PDF file to pre-fill document creation form.
+ * Returns title, text content, summary, etc. extracted from the PDF.
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static extractDocumentMetadataFromPdf(data: DocumentsData['ExtractDocumentMetadataFromPdf']): CancelablePromise<Record<string, unknown>> {
+		const {
+formData,
+} = data;
+		return __request(OpenAPI, {
+			method: 'POST',
+			url: '/api/v1/workspaces/{workspace_id}/documents/extract-pdf-metadata',
+			formData: formData,
+			mediaType: 'multipart/form-data',
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
 }
 
 export class FilestorageService {
@@ -3325,6 +3560,18 @@ date,
 export class ClassificationService {
 
 	/**
+	 * Get Providers
+	 * @returns unknown Successful Response
+	 * @throws ApiError
+	 */
+	public static getProviders(): CancelablePromise<unknown> {
+				return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v2/classification/available_providers',
+		});
+	}
+
+	/**
 	 * Get Location From Query
 	 * @returns unknown Successful Response
 	 * @throws ApiError
@@ -3354,12 +3601,24 @@ query,
 		const {
 schemeId,
 documentId,
+provider,
+model,
+runId,
+runName,
+runDescription,
+xApiKey,
 } = data;
 		return __request(OpenAPI, {
 			method: 'POST',
 			url: '/api/v2/classification/{scheme_id}/classify/{document_id}',
 			path: {
 				scheme_id: schemeId, document_id: documentId
+			},
+			headers: {
+				'X-API-Key': xApiKey
+			},
+			query: {
+				provider, model, run_id: runId, run_name: runName, run_description: runDescription
 			},
 			errors: {
 				422: `Validation Error`,
@@ -3376,10 +3635,14 @@ documentId,
 		const {
 text,
 schemeId,
+xApiKey,
 } = data;
 		return __request(OpenAPI, {
 			method: 'POST',
 			url: '/api/v2/classification/classify',
+			headers: {
+				'X-API-Key': xApiKey
+			},
 			query: {
 				text, scheme_id: schemeId
 			},
@@ -3402,7 +3665,7 @@ export class ScoresService {
 		const {
 entity,
 timeframeFrom = '2000-01-01',
-timeframeTo = '2025-02-14',
+timeframeTo = '2025-03-03',
 } = data;
 		return __request(OpenAPI, {
 			method: 'GET',

@@ -145,7 +145,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="w-full max-w-4xl mx-auto p-6 space-y-6 bg-gray-900 text-white rounded-lg shadow-lg">
       <h1 className="text-2xl font-bold">Article Dashboard</h1>
-      <Button onClick={testGeojsonFetch} className="bg-blue-600 hover:bg-blue-700">Test GeoJSON API</Button>
+      <Button onClick={testGeojsonFetch} className="bg-highlighted">Test GeoJSON API</Button>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {scoreFields.map((field) => (
           <div key={field} className="space-y-2 flex flex-col items-center">

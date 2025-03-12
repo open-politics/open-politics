@@ -2,18 +2,26 @@ import { create } from 'zustand';
 import {
   ClassificationSchemesService,
   DocumentsService,
+  ClassificationResultsService,
   // SavedResultsService, // Removed as it's not in the provided services.ts
 } from '@/client/services';
 import { useWorkspaceStore } from '@/zustand_stores/storeWorkspace';
 import { useDocumentStore } from '@/zustand_stores/storeDocuments';
 import { useClassificationSchemeStore } from '@/zustand_stores/storeSchemas';
-import { ClassificationSchemeRead, DocumentRead } from '@/client/models';
+import {
+  ClassificationSchemeRead,
+  DocumentRead,
+  SavedResultSetRead,
+  SavedResultSetCreate,
+  ClassificationResultRead
+} from '@/client/models';
+import { useClassificationResultStore } from '@/zustand_stores/storeClassificationResults';
 
 interface SavedResultSetState {
-  savedResults: any[]; // Replace 'any' with the correct type if available
+  savedResults: SavedResultSetRead[];
   error: string | null;
   fetchSavedResults: () => Promise<void>;
-  saveResultSet: (resultSet: any) => Promise<void>; // Replace 'any' with the correct type if available
+  saveResultSet: (name: string, runId: number) => Promise<void>;
   loadResultSet: (resultSetId: number) => Promise<void>;
 }
 
@@ -39,15 +47,30 @@ export const useSavedResultSetStore = create<SavedResultSetState>((set, get) => 
     }
   },
 
-  saveResultSet: async (resultSet: any) => {
+  saveResultSet: async (name: string, runId: number) => {
     const activeWorkspace = useWorkspaceStore.getState().activeWorkspace;
     if (!activeWorkspace) return;
+    
     try {
-      // Assuming there's a method to create a saved result set
-      // await SavedResultsService.createSavedResultSet({ // Assuming such method exists
-      //   workspaceId: activeWorkspace.uid,
-      //   requestBody: resultSet,
-      // });
+      const results = await ClassificationResultsService.getResultsByRun({
+        workspaceId: activeWorkspace.uid,
+        runId,
+      });
+      
+      const documentIds = [...new Set(results.map(r => r.document_id))];
+      const schemeIds = [...new Set(results.map(r => r.scheme_id))];
+      
+      const resultSetData: SavedResultSetCreate = {
+        name,
+        document_ids: documentIds,
+        scheme_ids: schemeIds,
+      };
+
+      await ClassificationSchemesService.createSavedResultSet({
+        workspaceId: activeWorkspace.uid,
+        requestBody: resultSetData
+      });
+      
       await get().fetchSavedResults();
     } catch (error: any) {
       set({ error: "Error saving result set" });
@@ -58,36 +81,21 @@ export const useSavedResultSetStore = create<SavedResultSetState>((set, get) => 
   loadResultSet: async (resultSetId: number) => {
     const activeWorkspace = useWorkspaceStore.getState().activeWorkspace;
     if (!activeWorkspace) return;
+    
     try {
-      // Assuming there's a method to read a saved result set
-      // const resultSet = await SavedResultsService.readSavedResultSet({ // Assuming such method exists
-      //   workspaceId: activeWorkspace.uid,
-      //   savedResultSetId: resultSetId
-      // });
-
-      // Fetch documents and schemes based on the result set
-      const documents = await DocumentsService.readDocuments({
+      const resultSet = await ClassificationSchemesService.getSavedResultSet({
         workspaceId: activeWorkspace.uid,
-        skip: 0,
-        limit: 100,
+        resultSetId,
       });
-
-      const classificationSchemes = await ClassificationSchemesService.readClassificationSchemes({
-        workspaceId: activeWorkspace.uid,
-        skip: 0,
-        limit: 100,
-      });
-
-      // Filter documents and schemes based on the result set
-      // const filteredDocuments = documents.filter((doc: DocumentRead) => resultSet.document_ids.includes(doc.id));
-      // const filteredSchemes = classificationSchemes.filter((scheme: ClassificationSchemeRead) => resultSet.scheme_ids.includes(scheme.id));
-
-      // Update the document and scheme stores
-      // useDocumentStore.setState({ documents: filteredDocuments });
-      // useClassificationSchemeStore.setState({ classificationSchemes: filteredSchemes });
-
-      // TODO: Fetch ONLY the relevant classification results
-      // For now, we are not fetching classification results here
+      
+      // Update stores with the loaded data
+      useDocumentStore.getState().fetchDocuments();
+      useClassificationSchemeStore.getState().fetchClassificationSchemes(activeWorkspace.uid);
+      
+      // Set the run ID in the classification results store
+      if (resultSet.results?.[0]?.run_id) {
+        useClassificationResultStore.getState().setSelectedRunId(resultSet.results[0].run_id);
+      }
     } catch (error: any) {
       set({ error: "Error loading result set" });
       console.error(error);

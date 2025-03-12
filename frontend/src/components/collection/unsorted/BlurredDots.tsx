@@ -22,32 +22,32 @@ const BlurredDot = ({ color, x, y, size }) => {
 
 const dotsConfig = {
   '/': [
-    { color: '#7AEFFF', size: '30vw' }, // Light blue at 0%
-    { color: '#7CFF7A', size: '40vw' }, // Light green at 18%
+    { color: 'var(--dot-color-1)', size: '30vw' }, // Light blue at 0%
+    { color: 'var(--dot-color-2)', size: '40vw' }, // Light green at 18%
   ],
   '/blog': [
-    { color: '#FEEC90', size: '35vw' }, // Light yellow at 40%
-    { color: '#FFC978', size: '30vw' }, // Light orange at 60%
+    { color: 'var(--dot-color-3)', size: '35vw' }, // Light yellow at 40%
+    { color: 'var(--dot-color-4)', size: '30vw' }, // Light orange at 60%
   ],
   '/webpages/about': [
-    { color: '#E478FF', size: '35vw' }, // Light purple at 92%
-    { color: '#7AEFFF', size: '30vw' }, // Light blue at 0%
+    { color: 'var(--dot-color-5)', size: '35vw' }, // Light purple at 92%
+    { color: 'var(--dot-color-1)', size: '30vw' }, // Light blue at 0%
   ],
-  '/login': [
-    { color: '#7CFF7A', size: '40vw' }, // Light green at 18%
-    { color: '#FEEC90', size: '20vw' }, // Light yellow at 40%
+  '/accounts/login': [
+    { color: 'var(--dot-color-2)', size: '40vw' }, // Light green at 18%
+    { color: 'var(--dot-color-3)', size: '20vw' }, // Light yellow at 40%
   ],
   '/documentation': [
-    { color: '#FFC978', size: '40vw' }, // Light orange at 60%
-    { color: '#E478FF', size: '20vw' }, // Light purple at 92%
+    { color: 'var(--dot-color-4)', size: '40vw' }, // Light orange at 60%
+    { color: 'var(--dot-color-5)', size: '20vw' }, // Light purple at 92%
   ],
   '/desk_synthese': [
-    { color: '#7AEFFF', size: '40vw' }, // Light blue at 0%
-    { color: '#7CFF7A', size: '20vw' }, // Light green at 18%
+    { color: 'var(--dot-color-1)', size: '40vw' }, // Light blue at 0%
+    { color: 'var(--dot-color-2)', size: '20vw' }, // Light green at 18%
   ],
   '/webpages/*': [
-    { color: '#FEEC90', size: '40vw' }, // Light yellow at 40%
-    { color: '#FFC978', size: '20vw' }, // Light orange at 60%
+    { color: 'var(--dot-color-3)', size: '40vw' }, // Light yellow at 40%
+    { color: 'var(--dot-color-4)', size: '20vw' }, // Light orange at 60%
   ],
 };
 

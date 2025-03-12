@@ -210,11 +210,11 @@ const GlobePage = () => {
           {/* Add a button to open the documents overlay */}
           <button
             onClick={() => setIsDocumentsOpen(true)}
-            className="fixed bottom-4 right-4 p-3 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
+            className="fixed bottom-4 right-4 p-3 bg-highlighted text-white rounded-full shadow-lg transition-colors flex items-center gap-2"
           >
             <FileText className="w-6 h-6" />
             {documents.length > 0 && (
-              <span className="bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+              <span className="bg-highlighted text-white text-xs px-1.5 py-0.5 rounded-full">
                 {documents.length}
               </span>
             )}

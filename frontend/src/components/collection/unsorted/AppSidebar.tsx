@@ -33,7 +33,7 @@ import { NavMain } from "@/components/ui/nav-main"
 import { NavProjects } from "@/components/ui/nav-projects"
 import { Separator } from "@/components/ui/separator"
 import { NavUser } from "@/components/ui/nav-user"
-import WorkspaceSwitcher from "@/components/ui/team-switcher"
+import WorkspaceSwitcher from "@/components/ui/workspace-switcher"
 import useAuth from "@/hooks/useAuth"
 import {
   Sidebar,
@@ -91,11 +91,11 @@ export function AppSidebar({ ...props }: AppSidebarProps) {
           url: "/desks/home/workspaces/classification-runner",
           icon: SquareTerminal,
         },
-        {
-          title: "Chat",
-          url: "/desks/home/chat",
-          icon: MessageSquare,
-        },
+        // {
+        //   title: "Chat",
+        //   url: "/desks/home/chat",
+        //   icon: MessageSquare,
+        // },
       ],
     },
     {

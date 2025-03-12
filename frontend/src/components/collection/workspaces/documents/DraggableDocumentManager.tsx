@@ -6,15 +6,18 @@ import DraggableWrapper from '../../wrapper/draggable-wrapper';
 import { X, Maximize2, Square, Layout } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import DocumentDetailProvider from './DocumentDetailProvider';
 
 interface DraggableDocumentManagerProps {
   isOpen: boolean;
   onClose: () => void;
+  onLoadIntoRunner?: (runId: number, runName: string) => void;
 }
 
 const DraggableDocumentManager: React.FC<DraggableDocumentManagerProps> = ({
   isOpen,
-  onClose
+  onClose,
+  onLoadIntoRunner
 }) => {
   if (!isOpen) return null;
 
@@ -60,64 +63,66 @@ const DraggableDocumentManager: React.FC<DraggableDocumentManagerProps> = ({
   const responsiveSize = getResponsiveSize();
 
   return (
-    <div className="fixed inset-0 z-[100] bg-background/80 backdrop-blur-sm">
-      <DraggableWrapper
-        title="Document Manager"
-        width="w-[1200px]"
-        height="h-[800px]"
-        defaultPosition={{ x: 50, y: 50 }}
-        className="z-[101] bg-background"
-        onMinimizeChange={(isMinimized) => {
-          if (isMinimized) onClose();
-        }}
-        customSize={responsiveSize}
-        headerContent={
-          <div className="flex items-center justify-between w-full px-6 py-2 border-b">
-            <span className="text-base font-semibold">Document Manager</span>
-            <div className="flex items-center space-x-2">
-              <div className="flex items-center mr-4 space-x-1">
+    <DocumentDetailProvider>
+      <div className="fixed inset-0 z-[100] bg-background/80 backdrop-blur-sm">
+        <DraggableWrapper
+          title="Document Manager"
+          width="w-[1200px]"
+          height="h-[800px]"
+          defaultPosition={{ x: 50, y: 50 }}
+          className="z-[101] bg-background"
+          onMinimizeChange={(isMinimized) => {
+            if (isMinimized) onClose();
+          }}
+          customSize={responsiveSize}
+          headerContent={
+            <div className="flex items-center justify-between w-full px-6 py-2 border-b">
+              <span className="text-base font-semibold">Document Manager</span>
+              <div className="flex items-center space-x-2">
+                <div className="flex items-center mr-4 space-x-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 hover:bg-muted"
+                    onClick={() => handleLayoutChange('default')}
+                  >
+                    <Square className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 hover:bg-muted"
+                    onClick={() => handleLayoutChange('wide')}
+                  >
+                    <Maximize2 className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 hover:bg-muted"
+                    onClick={() => handleLayoutChange('tall')}
+                  >
+                    <Layout className="h-4 w-4" />
+                  </Button>
+                </div>
                 <Button
                   variant="ghost"
                   size="icon"
+                  onClick={onClose}
                   className="h-8 w-8 hover:bg-muted"
-                  onClick={() => handleLayoutChange('default')}
                 >
-                  <Square className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 hover:bg-muted"
-                  onClick={() => handleLayoutChange('wide')}
-                >
-                  <Maximize2 className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 hover:bg-muted"
-                  onClick={() => handleLayoutChange('tall')}
-                >
-                  <Layout className="h-4 w-4" />
+                  <X className="h-4 w-4" />
                 </Button>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onClose}
-                className="h-8 w-8 hover:bg-muted"
-              >
-                <X className="h-4 w-4" />
-              </Button>
             </div>
+          }
+        >
+          <div className="h-[calc(100%-3rem)] overflow-hidden">
+            <DocumentManager onLoadIntoRunner={onLoadIntoRunner} />
           </div>
-        }
-      >
-        <div className="h-[calc(100%-3rem)] overflow-hidden">
-          <DocumentManager />
-        </div>
-      </DraggableWrapper>
-    </div>
+        </DraggableWrapper>
+      </div>
+    </DocumentDetailProvider>
   );
 };
 

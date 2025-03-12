@@ -1,58 +1,35 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ClassificationSchemesService, ClassificationResultsService } from "@/client/services";
-import { ClassificationSchemeRead, ClassificationResultRead } from "@/client/models";
-import { useWorkspaceStore } from "@/zustand_stores/storeWorkspace";
+import { useState } from 'react';
+import { useClassificationSystem } from './useClassificationSystem';
 
-const fetchClassificationSchemes = async (workspaceId: number): Promise<ClassificationSchemeRead[]> => {
-  const response = await ClassificationSchemesService.readClassificationSchemes({ workspaceId });
-  return response;
-};
-
-const runClassification = async ({
-  workspaceId,
-  documentId,
-  schemeId,
-}: {
-  workspaceId: number;
-  documentId: number;
-  schemeId: number;
-}): Promise<ClassificationResultRead> => {
-  const response = await ClassificationResultsService.createClassificationResult({
-    workspaceId,
-    requestBody: {
-      document_id: documentId,
-      scheme_id: schemeId,
-      value: {}, 
-      timestamp: new Date().toISOString(),
-    },
-  });
-  return response;
-};
-
+/**
+ * @deprecated Use useClassificationSystem instead
+ * This is a compatibility layer for the old useClassificationSchemes hook.
+ * It will be removed in a future version.
+ * 
+ * IMPORTANT: Please migrate to useClassificationSystem for all new code.
+ */
 const useClassificationSchemes = () => {
-  const queryClient = useQueryClient();
-  const { activeWorkspace } = useWorkspaceStore();
-
-  const classificationSchemesQuery = useQuery({
-    queryKey: ["classificationSchemes", activeWorkspace?.uid],
-    queryFn: () => activeWorkspace ? fetchClassificationSchemes(activeWorkspace.uid) : [],
-    enabled: !!activeWorkspace,
-  });
-
-  const runClassificationMutation = useMutation({
-    mutationFn: ({ documentId, schemeId }: { documentId: number; schemeId: number }) =>
-      runClassification({ workspaceId: activeWorkspace!.uid, documentId, schemeId }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["classificationSchemes", activeWorkspace?.uid] });
-    },
-    onError: (error) => {
-      console.error("Error in runClassificationMutation:", error);
-    },
-  });
-
+  console.warn(
+    'useClassificationSchemes is deprecated and will be removed in a future version. ' +
+    'Please use useClassificationSystem instead.'
+  );
+  
+  const { 
+    classifyContent, 
+    loadResults, 
+    schemes,
+    isLoadingSchemes
+  } = useClassificationSystem({ autoLoadSchemes: true });
+  
+  // Provide a compatible interface
   return {
-    classificationSchemesQuery,
-    runClassification: runClassificationMutation.mutateAsync,
+    classificationSchemesQuery: { 
+      data: schemes,
+      isLoading: isLoadingSchemes
+    },
+    runClassification: ({ schemeId, documentId }: { schemeId: number, documentId: number }) => {
+      return classifyContent({ id: documentId }, schemeId);
+    }
   };
 };
 

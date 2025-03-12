@@ -1,6 +1,6 @@
 'use client'
 
-import { LogOut, User, Settings } from "lucide-react"
+import { LogOut, User, Settings, Shield, FolderCog } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/sidebar"
 import useAuth from "@/hooks/useAuth"
 import { useState, useEffect } from 'react'
+import Link from "next/link"
 
 export interface NavUserProps {
   user: {
@@ -86,13 +87,11 @@ export function NavUser({ user }: NavUserProps) {
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
+              <DropdownMenuItem asChild>
+                <Link href="/accounts/settings">
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Account Settings</span>
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

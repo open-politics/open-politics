@@ -4,6 +4,16 @@ export type ArticleResponse = {
 
 
 
+export type Body_documents_bulk_upload_documents = {
+	autofill?: boolean;
+	files: Array<Blob | File>;
+	content_type?: string;
+	source?: string | null;
+	use_filenames_as_titles?: boolean;
+};
+
+
+
 export type Body_documents_create_document = {
 	title: string;
 	url?: string | null;
@@ -14,6 +24,12 @@ export type Body_documents_create_document = {
 	top_image?: string | null;
 	insertion_date?: string | null;
 	files?: Array<Blob | File> | null;
+};
+
+
+
+export type Body_documents_extract_document_metadata_from_pdf = {
+	file: Blob | File;
 };
 
 
@@ -38,13 +54,33 @@ export type Body_login_login_access_token = {
 
 
 
+export type Body_utils_extract_pdf_metadata = {
+	file: Blob | File;
+};
+
+
+
 export type Body_utils_extract_pdf_text = {
 	file: Blob | File;
 };
 
 
 
+export type ClassificationFieldCreate = {
+	name: string;
+	description: string;
+	type: FieldType;
+	scale_min?: number | null;
+	scale_max?: number | null;
+	is_set_of_labels?: boolean | null;
+	labels?: Array<string> | null;
+	dict_keys?: Array<DictKeyDefinition> | null;
+};
+
+
+
 export type ClassificationResultCreate = {
+	run_id: number;
 	document_id: number;
 	scheme_id: number;
 	value?: Record<string, unknown>;
@@ -56,6 +92,7 @@ export type ClassificationResultCreate = {
 
 
 export type ClassificationResultRead = {
+	run_id: number;
 	document_id: number;
 	scheme_id: number;
 	value?: Record<string, unknown>;
@@ -72,18 +109,9 @@ export type ClassificationResultRead = {
 export type ClassificationSchemeCreate = {
 	name: string;
 	description: string;
-	/**
-	 * Type of classification scheme
-	 */
-	type: string;
-	scale_min?: number | null;
-	scale_max?: number | null;
-	is_set_of_labels?: boolean | null;
-	max_labels?: number | null;
-	labels?: Array<string> | null;
-	dict_keys?: Array<Record<string, string>> | null;
 	model_instructions?: string | null;
 	validation_rules?: Record<string, unknown> | null;
+	fields: Array<ClassificationFieldCreate>;
 };
 
 
@@ -91,21 +119,12 @@ export type ClassificationSchemeCreate = {
 export type ClassificationSchemeRead = {
 	name: string;
 	description: string;
-	/**
-	 * Type of classification scheme
-	 */
-	type: string;
-	scale_min?: number | null;
-	scale_max?: number | null;
-	is_set_of_labels?: boolean | null;
-	max_labels?: number | null;
-	labels?: Array<string> | null;
-	dict_keys?: Array<Record<string, string>> | null;
 	model_instructions?: string | null;
 	validation_rules?: Record<string, unknown> | null;
 	id: number;
 	created_at: string;
 	updated_at: string;
+	fields: Array<ClassificationFieldCreate>;
 	classification_count?: number | null;
 	document_count?: number | null;
 };
@@ -115,18 +134,16 @@ export type ClassificationSchemeRead = {
 export type ClassificationSchemeUpdate = {
 	name: string;
 	description: string;
-	/**
-	 * Type of classification scheme
-	 */
-	type: string;
-	scale_min?: number | null;
-	scale_max?: number | null;
-	is_set_of_labels?: boolean | null;
-	max_labels?: number | null;
-	labels?: Array<string> | null;
-	dict_keys?: Array<Record<string, string>> | null;
 	model_instructions?: string | null;
 	validation_rules?: Record<string, unknown> | null;
+	fields: Array<ClassificationFieldCreate>;
+};
+
+
+
+export type DictKeyDefinition = {
+	name: string;
+	type: string;
 };
 
 
@@ -162,6 +179,7 @@ export type DocumentUpdate = {
 
 
 export type EnhancedClassificationResultRead = {
+	run_id: number;
 	document_id: number;
 	scheme_id: number;
 	value?: Record<string, unknown>;
@@ -173,6 +191,10 @@ export type EnhancedClassificationResultRead = {
 	scheme: ClassificationSchemeRead;
 	display_value?: number | string | Record<string, unknown> | null;
 };
+
+
+
+export type FieldType = 'int' | 'str' | 'List[str]' | 'List[Dict[str, any]]';
 
 
 

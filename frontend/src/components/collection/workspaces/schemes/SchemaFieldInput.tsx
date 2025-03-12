@@ -1,28 +1,74 @@
-import { FieldType, IntType, SchemeFormData } from "@/lib/abstract-classification-schema";
+import { DictKeyDefinition, FieldType, SchemeField } from "@/lib/classification/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Slider } from "@/components/ui/slider"
+import { PlusIcon, XIcon } from "lucide-react";
+import { useEffect } from "react";
 
-import { ClassificationSchemeRead } from "@/client/models";
 interface SchemaFieldInputProps {
-  field: FieldType;
-  value: SchemeFormData;
-  onChange: (value: SchemeFormData) => void;
-  scheme: ClassificationSchemeRead;
+  field: SchemeField;
+  onChange: (field: SchemeField) => void;
+  onRemove: () => void;
+  readOnly?: boolean;
 }
 
-export const SchemaFieldInput = ({ field, value, onChange, scheme }: SchemaFieldInputProps) => {
-  const handleDictKeyChange = (index: number, keyChange: { name: string; type: string }) => {
-    const newKeys = [...(value.dict_keys || [])];
-    newKeys[index] = keyChange;
-    onChange({ ...value, dict_keys: newKeys });
+export function SchemaFieldInput({ field, onChange, onRemove, readOnly = false }: SchemaFieldInputProps) {
+  // Debug log to see what field configuration is being passed
+  useEffect(() => {
+    console.log("SchemaFieldInput received field:", field);
+    console.log("Field config:", field.config);
+    console.log("is_set_of_labels:", field.config.is_set_of_labels);
+    console.log("labels:", field.config.labels);
+    console.log("dict_keys:", field.config.dict_keys);
+  }, [field]);
+
+  const handleConfigChange = (config: Partial<SchemeField['config']>) => {
+    console.log("Updating field config:", config);
+    onChange({
+      ...field,
+      config: {
+        ...field.config,
+        ...config
+      }
+    });
   };
 
-  switch (field) {
+  const handleDictKeyChange = (index: number, key: Partial<DictKeyDefinition>) => {
+    const newDictKeys: DictKeyDefinition[] = [...(field.config.dict_keys || [])];
+    newDictKeys[index] = { ...newDictKeys[index], ...key } as DictKeyDefinition;
+    console.log("Updating dict_keys:", newDictKeys);
+    onChange({
+      ...field,
+      config: { ...field.config, dict_keys: newDictKeys }
+    });
+  };
+
+  const addDictKey = () => {
+    const newKey: DictKeyDefinition = { name: '', type: 'str' };
+    const newDictKeys: DictKeyDefinition[] = [...(field.config.dict_keys || []), newKey];
+    console.log("Adding dict_key, new dict_keys:", newDictKeys);
+    onChange({
+      ...field,
+      config: {
+        ...field.config,
+        dict_keys: newDictKeys
+      }
+    });
+  };
+
+  const removeDictKey = (index: number) => {
+    const newDictKeys: DictKeyDefinition[] = [...(field.config.dict_keys || [])];
+    newDictKeys.splice(index, 1);
+    console.log("Removing dict_key, new dict_keys:", newDictKeys);
+    onChange({
+      ...field,
+      config: { ...field.config, dict_keys: newDictKeys }
+    });
+  };
+
+  switch (field.type) {
     case "int":
       return (
         <div className="space-y-2">
@@ -32,26 +78,24 @@ export const SchemaFieldInput = ({ field, value, onChange, scheme }: SchemaField
               <Label>Minimum Value</Label>
               <Input
                 type="number"
-                value={value.scale_min ?? 0}
-                onChange={(e) =>
-                  onChange({
-                    ...value,
-                    scale_min: parseInt(e.target.value),
-                  })
-                }
+                value={field.config.scale_min ?? 0}
+                onChange={(e) => {
+                  const value = e.target.value === '' ? 0 : parseInt(e.target.value);
+                  handleConfigChange({ scale_min: isNaN(value) ? 0 : value });
+                }}
+                readOnly={readOnly}
               />
             </div>
             <div className="space-y-2">
               <Label>Maximum Value</Label>
               <Input
                 type="number"
-                value={value.scale_max ?? 1}
-                onChange={(e) =>
-                  onChange({
-                    ...value,
-                    scale_max: parseInt(e.target.value),
-                  })
-                }
+                value={field.config.scale_max ?? 1}
+                onChange={(e) => {
+                  const value = e.target.value === '' ? 1 : parseInt(e.target.value);
+                  handleConfigChange({ scale_max: isNaN(value) ? 1 : value });
+                }}
+                readOnly={readOnly}
               />
             </div>
           </div>
@@ -60,109 +104,83 @@ export const SchemaFieldInput = ({ field, value, onChange, scheme }: SchemaField
 
     case "List[str]":
       return (
-        <div className="space-y-4" onClick={(e) => e.stopPropagation()}>
+        <div className="space-y-4">
           <div className="flex items-center gap-2">
             <Switch
-              checked={value.is_set_of_labels || false}
-              onCheckedChange={(checked) =>
-                onChange({
-                  ...value,
-                  is_set_of_labels: checked,
-                })
-              }
+              checked={field.config.is_set_of_labels === true}
+              onCheckedChange={(checked) => {
+                console.log("Setting is_set_of_labels to:", checked);
+                handleConfigChange({ is_set_of_labels: checked });
+              }}
+              disabled={readOnly}
             />
             <Label>Use predefined labels</Label>
           </div>
-
-          {value.is_set_of_labels ? (
+          
+          {field.config.is_set_of_labels === true ? (
             <div className="space-y-2">
-              {value.labels?.map((label, index) => (
-                <div key={index} className="flex gap-2">
-                  <Input
-                    value={label}
-                    onChange={(e) => {
-                      const newLabels = [...(value.labels || [])];
-                      newLabels[index] = e.target.value;
-                      onChange({ ...value, labels: newLabels });
-                    }}
-                  />
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => {
-                      const newLabels = [...(value.labels || [])];
-                      newLabels.splice(index, 1);
-                      onChange({ ...value, labels: newLabels });
-                    }}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              ))}
-              <Button
-                variant="outline"
-                onClick={() =>
-                  onChange({
-                    ...value,
-                    labels: [...(value.labels || []), ""],
-                  })
-                }
-              >
-                Add Label
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <Label>Enter labels (comma separated)</Label>
-              <Input
-                value={value.labels ? value.labels.join(", ") : ""}
+              <Label>Labels (one per line)</Label>
+              <textarea
+                value={(field.config.labels || []).join('\n')}
                 onChange={(e) => {
-                  const labels = e.target.value
-                    .split(",")
-                    .map((s) => s.trim())
-                    .filter(Boolean);
-                  onChange({ ...value, labels });
+                  const newLabels = e.target.value.split('\n').filter(l => l.trim());
+                  console.log("Setting labels to:", newLabels);
+                  handleConfigChange({ labels: newLabels });
                 }}
+                className="w-full min-h-[100px] p-2 border rounded"
+                readOnly={readOnly}
               />
             </div>
-          )}
+          ) : null}
         </div>
       );
 
     case "List[Dict[str, any]]":
       return (
         <div className="space-y-4">
-          {value.dict_keys?.map((key, index) => (
-            <div key={index} className="grid grid-cols-2 gap-4">
+          <Label>Structure Definition</Label>
+          {(field.config.dict_keys || []).map((key, index) => (
+            <div key={index} className="grid grid-cols-[1fr,1fr,auto] gap-2 mb-2">
               <Input
-                value={key.name}
-                onChange={(e) => handleDictKeyChange(index, { ...key, name: e.target.value })}
                 placeholder="Key name"
+                value={key.name || ''}
+                onChange={(e) => handleDictKeyChange(index, { name: e.target.value })}
+                readOnly={readOnly}
               />
               <Select
                 value={key.type}
-                onValueChange={(type) => handleDictKeyChange(index, { ...key, type })}
+                onValueChange={(value: "str" | "int" | "float" | "bool") => handleDictKeyChange(index, { type: value })}
+                disabled={readOnly}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="str">String</SelectItem>
-                  <SelectItem value="int">Integer</SelectItem>
-                  <SelectItem value="List[str]">List of Strings</SelectItem>
+                  <SelectItem value="str">Text</SelectItem>
+                  <SelectItem value="int">Number</SelectItem>
+                  <SelectItem value="float">Decimal</SelectItem>
+                  <SelectItem value="bool">Yes/No</SelectItem>
                 </SelectContent>
               </Select>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => removeDictKey(index)}
+                disabled={readOnly}
+              >
+                <XIcon className="h-4 w-4" />
+              </Button>
             </div>
           ))}
           <Button
+            type="button"
             variant="outline"
-            onClick={() =>
-              onChange({
-                ...value,
-                dict_keys: [...(value.dict_keys || []), { name: "", type: "str" }],
-              })
-            }
+            size="sm"
+            onClick={addDictKey}
+            disabled={readOnly}
           >
+            <PlusIcon className="h-4 w-4 mr-2" />
             Add Key
           </Button>
         </div>
@@ -171,4 +189,4 @@ export const SchemaFieldInput = ({ field, value, onChange, scheme }: SchemaField
     default:
       return null;
   }
-}; 
+} 

@@ -13,6 +13,7 @@ frontend/.env
 frontend/.env.local
 frontend/.next/
 frontend/node_modules/
+.pytest_cache
 run_backup.sh
 2docker-compose.staging.yml
 .idea

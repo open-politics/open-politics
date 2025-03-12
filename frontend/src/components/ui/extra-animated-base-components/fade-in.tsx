@@ -1,7 +1,6 @@
 "use client";
-import React, { useEffect } from "react";
-import { motion, useAnimation, Variants } from "framer-motion";
-import { useInView } from "react-intersection-observer";
+import React, { useEffect, useRef, useState } from "react";
+import { motion, Variants } from "framer-motion";
 
 interface FadeInProps {
   children: React.ReactNode;
@@ -18,19 +17,33 @@ const FadeIn: React.FC<FadeInProps> = ({
   className = "",
   once = true,
 }) => {
-  const controls = useAnimation();
-  const [ref, inView] = useInView({
-    triggerOnce: once,
-    threshold: 0.1,
-  });
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (inView) {
-      controls.start("visible");
-    } else if (!once) {
-      controls.start("hidden");
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        } else if (!once) {
+          setIsVisible(false);
+        }
+      },
+      {
+        threshold: 0.1,
+      }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
     }
-  }, [controls, inView, once]);
+
+    return () => {
+      if (ref.current) {
+        observer.unobserve(ref.current);
+      }
+    };
+  }, [once]);
 
   const variants: Variants = {
     hidden: { opacity: 0 },
@@ -48,7 +61,7 @@ const FadeIn: React.FC<FadeInProps> = ({
     <motion.div
       ref={ref}
       initial="hidden"
-      animate={controls}
+      animate={isVisible ? "visible" : "hidden"}
       variants={variants}
       className={className}
     >

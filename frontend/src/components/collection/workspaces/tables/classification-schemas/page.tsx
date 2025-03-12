@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { DataTable } from '@/components/collection/workspaces/tables/data-table';
 import { columns } from './columns';
 import { ClassificationSchemeRead } from "@/client/models";
-import { useClassificationSchemeStore } from '@/zustand_stores/storeSchemas';
+import { useSchemes } from '@/hooks/useSchemes';
 import { useWorkspaceStore } from '@/zustand_stores/storeWorkspace';
 import ClassificationSchemeEditor from '@/components/collection/workspaces/classifications/ClassificationSchemeEditor';
-import { transformApiToFormData } from '@/lib/abstract-classification-schema';
+import { transformApiToFormData } from '@/lib/classification/service';
 import { Button } from "@/components/ui/button";
 import { SchemePreview } from '@/components/collection/workspaces/schemes/SchemePreview';
 import {
@@ -16,13 +16,17 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { flexRender } from '@tanstack/react-table';
+import { schemesToSchemeReads } from '@/lib/classification/adapters';
 
 export default function ClassificationSchemesTablePage({ onCreateClick }: { onCreateClick: () => void }) {
   const { activeWorkspace } = useWorkspaceStore();
   const { 
-    classificationSchemes,
-    deleteClassificationScheme,
-  } = useClassificationSchemeStore();
+    schemes,
+    deleteScheme
+  } = useSchemes();
+
+  // Convert schemes to ClassificationSchemeRead[] for compatibility
+  const classificationSchemes = schemesToSchemeReads(schemes);
 
   const [editorState, setEditorState] = useState<{
     isOpen: boolean;
@@ -53,7 +57,7 @@ export default function ClassificationSchemesTablePage({ onCreateClick }: { onCr
     if (!activeWorkspace?.uid) return;
     if (confirm('Are you sure you want to delete this classification scheme?')) {
       try {
-        await deleteClassificationScheme(scheme.id, activeWorkspace.uid);
+        await deleteScheme(scheme.id);
       } catch (error) {
         console.error('Error deleting classification scheme:', error);
       }

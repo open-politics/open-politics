@@ -16,6 +16,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing_extensions import Self
 
 
+
+
 def parse_cors(v: Any) -> list[str] | str:
     if isinstance(v, str) and not v.startswith("["):
         return [i.strip() for i in v.split(",")]
@@ -36,9 +38,11 @@ class Settings(BaseSettings):
     DOMAIN: str = "localhost"
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"
     OPOL_DEV_MODE: bool = os.environ.get("OPOL_DEV_MODE", "False") == "True"
+    OPOL_MODE: str = os.environ.get("OPOL_MODE", "container")
+    OPOL_API_KEY: str | None = os.environ.get("OPOL_API_KEY")
+    
     if OPOL_DEV_MODE:
         os.environ["PYTHONPATH"] = "/app/opol:/app"
-    
 
     @computed_field  # type: ignore[misc]
     @property
@@ -134,3 +138,4 @@ class Settings(BaseSettings):
 
 
 settings = Settings()  # type: ignore
+

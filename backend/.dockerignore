@@ -6,3 +6,10 @@ app.egg-info
 .coverage
 htmlcov
 .venv
+
+# Docker
+*.log
+*.log.*
+*.log.*.*
+*.log.*.*.*
+*.log.*.*.*.*

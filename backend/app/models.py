@@ -146,62 +146,80 @@ class SearchHistoriesOut(SQLModel):
     count: int
 
 
+# First, create a new model for fields
+class FieldType(str, enum.Enum):
+    INT = "int"
+    STR = "str"
+    LIST_STR = "List[str]"
+    LIST_DICT = "List[Dict[str, any]]"
+
+
+# First, create models for the API
+class DictKeyDefinition(SQLModel):
+    name: str
+    type: str
+
+
+class ClassificationFieldCreate(SQLModel):
+    name: str
+    description: str
+    type: FieldType
+    scale_min: Optional[int] = None
+    scale_max: Optional[int] = None
+    is_set_of_labels: Optional[bool] = None
+    labels: Optional[List[str]] = None
+    dict_keys: Optional[List[DictKeyDefinition]] = None
+
+
+# Base model for API
 class ClassificationSchemeBase(SQLModel):
     name: str
     description: str
-    type: str = Field(
-        sa_column=Column(Enum(
-            'int', 
-            'str', 
-            'List[str]', 
-            'List[Dict[str, any]]', 
-            name="scheme_type"
-        )),
-        description="Type of classification scheme"
-    )
-    scale_min: Optional[int] = Field(default=0)
-    scale_max: Optional[int] = Field(default=10)
-    is_set_of_labels: Optional[bool] = Field(default=False)
-    max_labels: Optional[int] = Field(default=None)
-    labels: Optional[List[str]] = Field(default=None, sa_column=Column(ARRAY(String)))
-    dict_keys: Optional[List[Dict[str, str]]] = Field(default=None, sa_column=Column(JSON))
-    model_instructions: Optional[str] = Field(None)
+    model_instructions: Optional[str] = None
     validation_rules: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSON))
 
 
+# Add this after the FieldType enum definition
+class ClassificationField(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    scheme_id: int = Field(foreign_key="classificationscheme.id")
+    name: str
+    description: str
+    type: FieldType = Field(sa_column=Column(Enum(FieldType)))
+    scale_min: Optional[int] = None
+    scale_max: Optional[int] = None
+    is_set_of_labels: Optional[bool] = None
+    labels: Optional[List[str]] = Field(default=None, sa_column=Column(ARRAY(String)))
+    dict_keys: Optional[List[Dict[str, str]]] = Field(default=None, sa_column=Column(JSON))
+    scheme: Optional["ClassificationScheme"] = Relationship(back_populates="fields")
+
+
+# Database table model
 class ClassificationScheme(ClassificationSchemeBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     workspace_id: int = Field(foreign_key="workspace.uid")
     user_id: int = Field(foreign_key="user.id")
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    fields: List[ClassificationField] = Relationship(back_populates="scheme")
     workspace: Optional["Workspace"] = Relationship(back_populates="classification_schemes")
     classification_results: List["ClassificationResult"] = Relationship(back_populates="scheme")
-    type: str = Field(sa_column=Column(Enum(
-        'int',
-        'str',
-        'List[str]',  
-        'List[Dict[str, any]]',
-        name="scheme_type"
-    )))
-    scale_min: Optional[int] = Field(default=0)
-    scale_max: Optional[int] = Field(default=10)
-    labels: Optional[List[str]] = Field(default=None, sa_column=Column(ARRAY(String), nullable=True))
-    dict_keys: Optional[List[Dict[str, str]]] = Field(default=None, sa_column=Column(JSON))
 
 
+# API models
 class ClassificationSchemeCreate(ClassificationSchemeBase):
-    pass
+    fields: List[ClassificationFieldCreate]
 
 
 class ClassificationSchemeUpdate(ClassificationSchemeBase):
-    pass
+    fields: List[ClassificationFieldCreate]
 
 
 class ClassificationSchemeRead(ClassificationSchemeBase):
     id: int
     created_at: datetime
     updated_at: datetime
+    fields: List[ClassificationFieldCreate]
     classification_count: Optional[int] = None
     document_count: Optional[int] = None
 
@@ -252,14 +270,14 @@ class DocumentBase(SQLModel):
 
 class Document(DocumentBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    insertion_date: datetime = Field(default_factory=datetime.utcnow)
+    insertion_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     workspace_id: int = Field(foreign_key="workspace.uid")
     user_id: int = Field(foreign_key="user.id")
 
     workspace: Optional["Workspace"] = Relationship(back_populates="documents")
     user: Optional["User"] = Relationship(back_populates="documents")
-    files: List["File"] = Relationship(back_populates="document")
-    classification_results: List["ClassificationResult"] = Relationship(back_populates="document")
+    files: List["File"] = Relationship(back_populates="document", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
+    classification_results: List["ClassificationResult"] = Relationship(back_populates="document", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
 
 
 class DocumentCreate(DocumentBase):
@@ -321,6 +339,7 @@ class WorkspacesOut(SQLModel):
 
 
 class ClassificationResultBase(SQLModel):
+    run_id: int
     document_id: int = Field(foreign_key="document.id")
     scheme_id: int = Field(foreign_key="classificationscheme.id")
     value: Dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON))
@@ -333,6 +352,9 @@ class ClassificationResult(ClassificationResultBase, table=True):
     id: int = Field(default=None, primary_key=True)
     document: Document = Relationship(back_populates="classification_results")
     scheme: ClassificationScheme = Relationship(back_populates="classification_results")
+    run_id: int
+    document_id: int = Field(foreign_key="document.id")
+    scheme_id: int = Field(foreign_key="classificationscheme.id")
 
 
 class ClassificationResultRead(ClassificationResultBase):
@@ -342,6 +364,7 @@ class ClassificationResultRead(ClassificationResultBase):
 
 
 class ClassificationResultCreate(SQLModel):
+    run_id: int
     document_id: int
     scheme_id: int
     value: Dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON))
@@ -390,20 +413,58 @@ class EnhancedClassificationResultRead(ClassificationResultRead):
         scheme = data.get('scheme')
         value = data.get('value')
         
-        if not scheme or not value:
+        if scheme is None or value is None:
+            return data
+        
+        # Handle different value types
+        if isinstance(value, str):
+            # Special case for "N/A"
+            if value.lower() == "n/a":
+                data['display_value'] = "N/A"
+                return data
+            
+            # For simple string values
+            data['display_value'] = value
             return data
             
-        if scheme.type == 'int':
-            # Check for binary classification (0-1 scale)
-            if scheme.scale_min == 0 and scheme.scale_max == 1:
-                data['display_value'] = 'True' if value > 0.5 else 'False'
-            else:
-                data['display_value'] = value
+        # Handle numeric values
+        if isinstance(value, (int, float)):
+            # Check if we have fields to determine if this is binary
+            if hasattr(scheme, 'fields') and scheme.fields and len(scheme.fields) > 0:
+                field = scheme.fields[0]
+                if hasattr(field, 'scale_min') and hasattr(field, 'scale_max'):
+                    if field.scale_min == 0 and field.scale_max == 1:
+                        data['display_value'] = 'True' if value > 0.5 else 'False'
+                        return data
+            
+            # Regular numeric value
+            data['display_value'] = value
+            return data
+            
+        # Handle object values
+        if isinstance(value, dict) and value:
+            # If we have fields defined, try to extract values based on field names
+            if hasattr(scheme, 'fields') and scheme.fields:
+                field_names = [field.name for field in scheme.fields]
+                extracted_values = {}
                 
-        elif scheme.type == 'List[str]':
-            data['display_value'] = value
+                for field_name in field_names:
+                    if field_name in value:
+                        extracted_values[field_name] = value[field_name]
+                
+                if extracted_values:
+                    data['display_value'] = extracted_values
+                    return data
             
-        elif scheme.type == 'str':
+            # If no fields match or no fields defined, use the whole object
             data['display_value'] = value
+            return data
             
+        # Handle array values
+        if isinstance(value, list):
+            data['display_value'] = value
+            return data
+            
+        # Default case
+        data['display_value'] = str(value) if value is not None else None
         return data

@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useWorkspaceStore } from "@/zustand_stores/storeWorkspace";
-import { useClassificationSchemeStore } from "@/zustand_stores/storeSchemas";
+import { useSchemes } from "@/hooks/useSchemes";
 import { SchemeForm } from "@/components/collection/workspaces/schemes/SchemeForm";
-import { SchemeFormData } from "@/lib/abstract-classification-schema";
+import { SchemeFormData } from "@/lib/classification/types";
 import { useTutorialStore } from "@/zustand_stores/storeTutorial";
 import { Switch } from "@/components/ui/switch";
 import ClassificationSchemeCard from "./ClassificationSchemeCard";
@@ -21,13 +21,7 @@ interface ClassificationSchemeEditorProps {
 const defaultSchemeFormData: SchemeFormData = {
   name: '',
   description: '',
-  type: 'str',
-  scale_min: 1,
-  scale_max: 10,
-  is_set_of_labels: false,
-  max_labels: null,
-  labels: [],
-  dict_keys: [],
+  fields: [],
   model_instructions: '',
   validation_rules: {}
 };
@@ -40,7 +34,7 @@ export default function ClassificationSchemeEditor({
   defaultValues = defaultSchemeFormData,
 }: ClassificationSchemeEditorProps) {
   const { activeWorkspace } = useWorkspaceStore();
-  const { createClassificationScheme, updateClassificationScheme } = useClassificationSchemeStore();
+  const { createScheme, updateScheme } = useSchemes();
   const { showSchemaBuilderTutorial, toggleSchemaBuilderTutorial } = useTutorialStore();
 
   const [formData, setFormData] = useState<SchemeFormData>({
@@ -52,6 +46,14 @@ export default function ClassificationSchemeEditor({
 
   useEffect(() => {
     if (defaultValues) {
+      console.log("Setting default values:", defaultValues);
+      console.log("Default values fields:", defaultValues.fields);
+      if (defaultValues.fields && defaultValues.fields.length > 0) {
+        defaultValues.fields.forEach((field, index) => {
+          console.log(`Field ${index}:`, field);
+          console.log(`Field ${index} dict_keys:`, field.config?.dict_keys);
+        });
+      }
       setFormData(prev => ({
         ...prev,
         ...defaultValues
@@ -59,20 +61,37 @@ export default function ClassificationSchemeEditor({
     }
   }, [defaultValues]);
 
+  // Add debugging for form data changes
+  useEffect(() => {
+    console.log("Form data updated:", formData);
+    console.log("Fields count:", formData.fields?.length || 0);
+  }, [formData]);
+
   const handleSubmit = async () => {
     if (!activeWorkspace?.uid) return;
+    
+    // Validate that we have at least one field
+    if (!formData.fields || formData.fields.length === 0) {
+      setErrorMessage("Please add at least one field to your classification scheme");
+      return;
+    }
+    
+    console.log("Submitting form data:", formData);
+    console.log("Fields:", formData.fields);
     
     setErrorMessage("");
     try {
       if (mode === 'create') {
-        await createClassificationScheme(formData, activeWorkspace.uid);
+        const response = await createScheme(formData);
+        console.log("Classification scheme created successfully:", response);
       } else if (mode === 'edit' && schemeId) {
-        await updateClassificationScheme(schemeId, formData, activeWorkspace.uid);
+        await updateScheme(schemeId, formData);
+        console.log("Classification scheme updated successfully");
       }
       onClose();
     } catch (error: any) {
-      setErrorMessage("Error saving classification scheme");
-      console.error(error);
+      console.error("Error saving classification scheme:", error);
+      setErrorMessage(error.message || "Error saving classification scheme");
     }
   };
 
@@ -120,8 +139,8 @@ export default function ClassificationSchemeEditor({
               Cancel
             </Button>
             <Button
-              type="submit"
-              form="scheme-form"
+              type="button"
+              onClick={handleSubmit}
               className="bg-green-600 hover:bg-green-500 text-primary-950"
             >
               {mode === 'create' ? 'Create Scheme' : 'Save Changes'}

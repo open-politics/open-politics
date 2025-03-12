@@ -12,12 +12,8 @@ import {
 } from "../client"
 import { AxiosError } from 'axios';
 
-type User = {
-  email: string;
-  id: number;
-  is_active: boolean;
-  is_superuser: boolean;
-  full_name?: string;
+type User = UserOut & {
+  avatar?: string;
 };
 
 const isLoggedIn = () => {
@@ -45,7 +41,7 @@ const useAuth = () => {
   }, []);
 
   // This query runs only if isLoggedIn() is true
-  const { data: user, isLoading } = useQuery<UserOut | null, Error>({
+  const { data: user, isLoading } = useQuery<User | null, Error>({
     queryKey: ["CurrentUser"],
     queryFn: UsersService.readUserMe,
     enabled: isLoggedIn(),
@@ -78,7 +74,7 @@ const useAuth = () => {
   const logout = () => {
     console.log('Logging out, removing access token.');
     localStorage.removeItem('access_token');
-    router.push('/login');
+    router.push('/accounts/login');
     setError(null);
   };
 
