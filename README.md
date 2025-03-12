@@ -60,9 +60,18 @@ mv .env.example .env
 docker compose up
 ```
 
-## Go to the dashboard
+## Go to the app
 ```bash
 http://localhost:3000/desk_synthese
+```
+
+## Log in with the .env account set as superuser:
+```bash
+http://localhost:3000/acctounts/login
+```
+```bash 
+FIRST_SUPERUSER=example@example.com
+FIRST_SUPERUSER_PASSWORD=example
 ```
 
 Run this in combination with a [local opol stack](https://github.com/open-politics/opol/blob/main/opol/stack/README.md).
