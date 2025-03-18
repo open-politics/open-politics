@@ -16,24 +16,15 @@ Documentation for this repository, which concentrates heavily on the Typescript 
 
 ## Table of Contents
 - [Why Open Politics Exists](#why-open-politics-exists)
-- [Update: opol Release](#update-opol-release)
 - [The Webapp](#the-webapp)
-- [Engage! Developer Jour Fixe](#engage-developer-jour-fixe)
-- [Tasks](#tasks)
-- [AI Models](#ai-models)
-- [Data Challenges](#data-challenges)
-- [Journalistic Challenges](#journalistic-challenges)
-- [Quality Assurance](#quality-assurance)
-- [Architecture](#architecture)
-- [Usage](#usage)
-- [Necessary API Keys/Environment Variables](#necessary-api-keysenvironment-variables)
+- [Usage/Installation](#usageinstallation)
 - [Contributing](#contributing)
 - [Contact](#contact)
 - [License](#license)
 
 As a quick pitch element to get you interested; this is where we are:
 ![Open Politics Vision](.github/assets/images/opol-data-on-globe.png)
-[Opol](https://github.com/open-politics/opol) serves the data for the interactive globe visualization of this webapp displaying news articles processed through LLM classification, entity extraction, and geocoding for spatial representation
+[Opol](https://github.com/open-politics/opol) serves the data for the interactive globe visualisation of this webapp displaying news articles processed through LLM classification, entity extraction, and geocoding for spatial representation
 
 # Why Open Politics Exists
 - All things regarding politics, be they news, conflicts or legislative procedures, are hard to keep track of. It's hard to find the time to read through all the documents and news articles necessary to gain a broad and well-informed understanding of political situations. Technology offers great possibilities to make such processes more accessible. Recently, the advent of Large Language Models has extended the capabilities of textual analysis and understanding. Especially the ability to formulate tasks in natural language opens up new possibilities for analysing text data. Potentially revolutionising the way qualitative and quantitative research can be combined.
@@ -43,7 +34,7 @@ As a quick pitch element to get you interested; this is where we are:
 
 
 
-## Usage/ Installation
+## Usage/Installation
 ## Clone the repository
 ```bash
 git clone https://github.com/open-politics/open-politics.git
