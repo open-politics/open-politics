@@ -61,7 +61,8 @@ docker compose up
 ```
 
 ## Go to the app
-### Log in 
+### Log in
+
 With the .env account set as superuser:
 ```bash 
 http://localhost:3000/accounts/login
