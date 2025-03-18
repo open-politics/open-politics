@@ -61,9 +61,11 @@ docker compose up
 ```
 
 ## Go to the app
-```bash
-http://localhost:3000/desk_synthese
+Log in with the account specified in the .env file at:
+```bash 
+http://localhost:3000/accounts/login
 ```
+
 
 ## Log in with the .env account set as superuser:
 ```bash
@@ -74,4 +76,12 @@ FIRST_SUPERUSER=example@example.com
 FIRST_SUPERUSER_PASSWORD=example
 ```
 
-Run this in combination with a [local opol stack](https://github.com/open-politics/opol/blob/main/opol/stack/README.md).
+Click on "Desk" in the header or go to
+```bash
+http://localhost:3000/desks/home
+```
+
+If you run this in combination with a [local opol stack](https://github.com/open-politics/opol/blob/main/opol/stack/README.md) and your opol had a few minutes to boot up you can visit the globe interface on:
+```bash 
+http://localhost:3000/desks/home/globe
+```
