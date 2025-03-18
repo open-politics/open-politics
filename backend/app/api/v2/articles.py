@@ -1,8 +1,12 @@
 import os
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, HTTPException
 from typing import Optional, List, Dict
 from pydantic import BaseModel
 from app.core.opol_config import opol
+
+
+import logging
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -37,3 +41,17 @@ async def articles_by_entity(
                                        date if date else None
                                        )
     return {"contents": contents}
+
+@router.get("/by_id", response_model=Dict)
+async def article_by_id(
+    id: str = Query(..., description="Content ID of the article"),
+):
+    """Fetch a single article by its content ID."""
+    try:
+        article = opol.articles.by_id(id)
+        if not article:
+            raise HTTPException(status_code=404, detail="Article not found")
+        return article
+    except Exception as e:
+        logger.error(f"Error fetching article by ID {id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch article: {str(e)}")

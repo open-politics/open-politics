@@ -33,13 +33,14 @@ def init_db(session: Session) -> None:
     # But if you don't want to use migrations, create
     # the tables un-commenting the next lines
 
+    SQLModel.metadata.create_all(engine)
 
     if os.environ.get("WIPE_DB") == "True":
         logger.info("Wiping DB")
         # Wipe DB table "alembic_version"
         session.exec(text("DROP TABLE IF EXISTS alembic_version"))
         SQLModel.metadata.drop_all(engine)
-        SQLModel.metadata.create_all(engine)
+        
 
         # from app.core.engine import engine
         # This works because the models are already imported and registered from app.models
