@@ -1,18 +1,40 @@
-#### 🚧 UNDER CONSTRUCTION 🚧
-# 🌐 Open Politics 
+# 🌐 Open Politics
+
 > "Open Source Political Intelligence" - What is that and why do we need it?  
-🎬 [Watch Presentation](https://media.ccc.de/v/dg-111)
-### Webapp of the Open Politics Project
- 
+> 🎬 [Watch Presentation](https://media.ccc.de/v/dg-111)
 
-### Onboarding
-Open Politics' vision is to democratise political intelligence. 
+## About
 
-We are on a mission to decode the globe by creating an open-source data science and AI toolkit to analyse, summarise, and visualise political information.
+### Our Vision
+Open Politics' vision is to democratise political intelligence.
 
-For our data engine **opol** please look [here](https://github.com/open-politics/opol)
+### Our Mission
+We aim to create the first Open Source Intelligence HQ for civic research - helping citizens understand and navigate complex political information through a high-tech stack of efficiently operationalised data science tools to gather, analyse and visualise data.
 
-Documentation for this repository, which concentrates heavily on the Typescript NextJS (OP-APP) app will be updated soon. Until then please read into the opol repository.
+### Our Goal
+To fulfill a wide bandwidth of analysis capabilities that enable citizens and organisations alike to work more efficiently on matters of public interest.
+
+### Project Structure
+- **This Repository**: The "UX side of things" - making information accessible via visual interfaces
+- **Data Engine**: Our ["opol"](https://github.com/open-politics/opol) repository handles the "data side of things" including:
+  - Data ingestion
+  - Geo-tooling
+  - AI capabilities
+
+### Approach
+Our scope aims to research and implement multiple ways to make Open Source Political Intelligence accessible, which is why we are exploring different output modalities. 
+
+
+
+## Project Status
+- 📝 **Development**: In late Beta
+- 🛜 **Hosted Platform**: Coming soon at [https://open-politics.org](https://open-politics.org)
+
+## Resources
+- **Data Engine**: Our [opol](https://github.com/open-politics/opol) repository contains the core data processing tools
+- **Documentation**: [https://docs.open-politics.org](https://docs.open-politics.org) for user guides & tutorials
+- **Technical Docs**: Documentation for this TypeScript NextJS (OP-APP) repository will be updated soon
+
 
 ## Table of Contents
 - [Why Open Politics Exists](#why-open-politics-exists)
