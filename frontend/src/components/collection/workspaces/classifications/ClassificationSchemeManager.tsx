@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
@@ -36,8 +36,9 @@ export default function ClassificationSchemeManager() {
     createScheme,
     deleteScheme,
     schemes,
-    loadSchemes
-  } = useSchemes();
+    loadSchemes,
+    isLoading
+  } = useSchemes({ autoLoad: true });
 
   // State variables
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -116,6 +117,8 @@ export default function ClassificationSchemeManager() {
         workspaceId: activeWorkspace.uid,
       });
       alert('All classification schemes deleted successfully.');
+      // Reload schemes after deletion
+      loadSchemes(activeWorkspace.uid);
     } catch (error) {
       console.error('Error deleting all classification schemes:', error);
     } finally {
@@ -139,15 +142,29 @@ export default function ClassificationSchemeManager() {
     );
   }
 
-  console.log(schemes);
-
   return (
     <div className="grid grid-cols-1 gap-4 w-full">
       <Card className="h-full p-4 px-0">
+        <CardHeader>
+          <div className="flex justify-between w-full">
+            <CardTitle>Classification Schemes</CardTitle>
+            <Button variant="outline" onClick={() => loadSchemes(activeWorkspace.uid)}>Reload Schemes</Button>
+          </div>
+        </CardHeader>
         <CardContent>
-          <ClassificationSchemesTablePage 
-            onCreateClick={() => setIsSheetOpen(true)}
-          />
+          {isLoading ? (
+            <div className="flex justify-center items-center h-40">
+              <p className="text-muted-foreground">Loading schemes...</p>
+            </div>
+          ) : schemes.length === 0 ? (
+            <div className="flex justify-center items-center h-40">
+              <p className="text-muted-foreground">No classification schemes found. Create one to get started.</p>
+            </div>
+          ) : (
+            <ClassificationSchemesTablePage 
+              onCreateClick={() => setIsSheetOpen(true)}
+            />
+          )}
         </CardContent>
         <div className="flex justify-end p-4">  
           <AlertDialog>

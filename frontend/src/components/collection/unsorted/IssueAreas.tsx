@@ -43,6 +43,7 @@ import { useArticleTabNameStore } from '@/hooks/useArticleTabNameStore';
 import axios from 'axios';
 import Image from 'next/image';
 import ContentsView from './ContentsView';
+import { useGeoDataStore } from '@/zustand_stores/storeGeodata';
 
 // Entity interface that matches the one expected by EntitiesView
 interface Entity {
@@ -72,6 +73,7 @@ export function IssueAreas({ locationName, results, summary, includeSummary, hig
   const { activeTab, setActiveTab } = useArticleTabNameStore(); // Use Zustand store
   const [isMobile, setIsMobile] = useState(false);
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const { activeContents, activeContentLoading, selectedContentId } = useGeoDataStore();
 
   // Fetch image from Wikipedia
   useEffect(() => {
@@ -238,6 +240,14 @@ export function IssueAreas({ locationName, results, summary, includeSummary, hig
     fetchContents({ skip: 0 });
   }, [fetchContents]);
 
+  // Add this effect to handle when a specific content is selected
+  useEffect(() => {
+    if (selectedContentId) {
+      // Automatically switch to the articles tab when a content is selected
+      setActiveTab('articles');
+    }
+  }, [selectedContentId, setActiveTab]);
+
   return (
     <div className="h-full flex flex-col">
       <div className="flex justify-between mb-2">
@@ -295,13 +305,14 @@ export function IssueAreas({ locationName, results, summary, includeSummary, hig
                 <div className="">
                   <ContentsView 
                     locationName={locationName} 
-                    contents={data.contents}
-                    isLoading={isLoading.contents}
+                    contents={activeContents.length > 0 ? activeContents : data.contents}
+                    isLoading={activeContentLoading || isLoading.contents}
                     error={error.contents}
                     fetchContents={handleFetchContents}
                     resetContents={resetContents}
                     highlightedEventType={highlightedEventType}
                     loadMore={() => fetchContents({ skip: data.contents.length })}
+                    selectedContentId={selectedContentId}
                   />
                 </div>
               </CardContent>

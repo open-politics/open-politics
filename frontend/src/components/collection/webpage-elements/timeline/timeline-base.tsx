@@ -4,9 +4,9 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { motion, HTMLMotionProps } from 'framer-motion';
-import { AlertCircle, Loader2, ExternalLink } from 'lucide-react';
+import { AlertCircle, Loader2, ExternalLink, LinkIcon } from 'lucide-react';
 import type { TimelineColor } from '@/lib/types/timeline';
-
+import { ReactNode } from 'react';
 const timelineVariants = cva('flex flex-col relative', {
   variants: {
     size: {
@@ -106,6 +106,14 @@ interface TimelineItemProps extends Omit<HTMLMotionProps<'li'>, 'ref'> {
   loading?: boolean;
   /** Error message */
   error?: string;
+  /** Video title */
+  videoTitle?: string;
+  /** Video description */
+  videoDescription?: string | ReactNode;
+  /** Video embed link */
+  videoEmbedLink?: string;
+  /** Color theme for the item */
+  color?: TimelineColor;
 }
 
 const TimelineItem = React.forwardRef<HTMLLIElement, TimelineItemProps>(
@@ -124,6 +132,10 @@ const TimelineItem = React.forwardRef<HTMLLIElement, TimelineItemProps>(
       iconsize,
       loading,
       error,
+      videoEmbedLink,
+      videoTitle,
+      videoDescription,
+      color,
       // Omit unused Framer Motion props
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       initial,
@@ -210,7 +222,7 @@ const TimelineItem = React.forwardRef<HTMLLIElement, TimelineItemProps>(
 
     const content = (
       <div
-        className="grid grid-cols-[1fr_auto_1fr] gap-4 items-start"
+        className="grid grid-cols-[0.5fr_auto_1.5fr] gap-4 items-start"
         {...(status === 'in-progress' ? { 'aria-current': 'step' } : {})}
       >
         {/* Date */}
@@ -234,10 +246,24 @@ const TimelineItem = React.forwardRef<HTMLLIElement, TimelineItemProps>(
             <TimelineTitle>{title}</TimelineTitle>
           </TimelineHeader>
           <TimelineDescription>{description}</TimelineDescription>
-          {link && (
-            <TimelineLink href={link} >
-              <ExternalLink className="h-4 w-4" />
-            </TimelineLink>
+          
+          {/* Regular link for non-video items */}
+          {link && !videoEmbedLink && (
+            <div className="mt-2">
+              <TimelineLink href={link}>
+                <span className="whitespace-nowrap">View Resource</span>
+              </TimelineLink>
+            </div>
+          )}
+
+          {/* Video section without separate description */}
+          {videoEmbedLink && (
+            <TimelineVideo 
+              src={videoEmbedLink}
+              title={videoTitle}
+              description={videoDescription as string}
+              link={link}
+            />
           )}
         </TimelineContent>
       </div>
@@ -342,7 +368,7 @@ const TimelineConnector = React.forwardRef<
         'bg-primary': color === 'primary' || (!color && status === 'completed'),
         'bg-muted': color === 'muted' || (!color && status === 'pending'),
         'bg-secondary': color === 'secondary',
-        'bg-accent': color === 'accent',
+        'bg-black': color === 'accent',
         'bg-gradient-to-b from-primary to-muted': !color && status === 'in-progress',
       },
       className,
@@ -380,12 +406,154 @@ interface TimelineLinkProps extends React.HTMLAttributes<HTMLAnchorElement> {
 
 const TimelineLink = React.forwardRef<HTMLAnchorElement, TimelineLinkProps>(
   ({ className, href, children, ...props }, ref) => (
-    <a ref={ref} href={href} className={cn('text-primary', className)} {...props}>
-      {children}
+    <a 
+      ref={ref} 
+      href={href} 
+      className={cn(
+        'inline-flex items-center gap-2 text-primary hover:text-primary/80',
+        'bg-primary/5 hover:bg-primary/10',
+        'px-3 py-1.5 rounded-md transition-colors',
+        'text-sm font-medium',
+        className
+      )} 
+      target="_blank"
+      rel="noopener noreferrer"
+      {...props}
+    >
+      <ExternalLink className="h-4 w-4" />
+      {children || 'View Resource'}
     </a>
   ),
 );
 TimelineLink.displayName = 'TimelineLink';
+
+/**
+ * TimelineVideo component props interface
+ * @interface TimelineVideoProps
+ * @extends {React.HTMLAttributes<HTMLDivElement>}
+ */
+interface TimelineVideoProps extends React.HTMLAttributes<HTMLDivElement> {
+  src: string;
+  title?: string;
+  description?: string;
+  link?: string;
+  aspectRatio?: '16:9' | '4:3' | '1:1';
+  width?: number;
+  height?: number;
+}
+
+const TimelineVideo = React.forwardRef<HTMLDivElement, TimelineVideoProps>(
+  ({ 
+    className, 
+    src, 
+    title, 
+    description,
+    link,
+    aspectRatio = '16:9', 
+    width = 560, 
+    height = 315,
+    ...props 
+  }, ref) => {
+    const isYouTube = src.includes('youtube.com') || src.includes('youtu.be');
+    const isVimeo = src.includes('vimeo.com');
+    const isOEmbed = src.includes('oembed');
+    
+    const aspectRatioClass = {
+      '16:9': 'aspect-video',
+      '4:3': 'aspect-4/3',
+      '1:1': 'aspect-square',
+    }[aspectRatio];
+
+    return (
+      <div ref={ref} className={cn(
+        'mt-3 mb-4 overflow-hidden rounded-lg border border-border bg-muted shadow-sm',
+        className
+      )} {...props}>
+        {/* Header with title and button */}
+        {(title || link) && (
+          <div className="flex items-center justify-between px-3 py-2 bg-background border-b border-border">
+            {title && <h4 className="text-sm font-medium">{title}</h4>}
+            {link && (
+              <a 
+                href={link} 
+                className="flex items-center gap-1.5 text-primary hover:underline px-2 py-1 rounded-md hover:bg-primary/10 text-sm transition-colors shrink-0" 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                <ExternalLink className="h-4 w-4" />
+                <span>Watch video</span>
+              </a>
+            )}
+          </div>
+        )}
+
+        {/* Video container with aspect ratio */}
+        <div className={cn(aspectRatioClass)}>          
+          {isYouTube && (
+            <iframe
+              className="h-full w-full"
+              width={width}
+              height={height}
+              src={src.includes('?') ? src : `${src}?rel=0&showinfo=0`}
+              title={title || 'YouTube video player'}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          )}
+          
+          {isVimeo && (
+            <iframe
+              className="h-full w-full"
+              width={width}
+              height={height}
+              src={src.includes('?') ? src : `${src}?title=0&byline=0&portrait=0`}
+              title={title || 'Vimeo video player'}
+              frameBorder="0"
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+            />
+          )}
+          
+          {isOEmbed && (
+            <iframe
+              className="h-full w-full"
+              width={width}
+              height={height}
+              src={src}
+              title={title || 'Embedded content'}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          )}
+          
+          {!isYouTube && !isVimeo && !isOEmbed && (
+            <video
+              className="h-full w-full"
+              controls
+              width={width}
+              height={height}
+            >
+              <source src={src} />
+              Your browser does not support the video tag.
+            </video>
+          )}
+        </div>
+
+        {/* Footer with description only */}
+        {description && (
+          <div className="border-t border-border bg-background/50">
+            <div className="p-3">
+              <p className="text-sm text-muted-foreground">{description}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+TimelineVideo.displayName = 'TimelineVideo';
 
 const TimelineIcon = ({
   icon,
@@ -476,4 +644,6 @@ export {
   TimelineContent,
   TimelineTime,
   TimelineEmpty,
+  TimelineVideo,
+  TimelineLink,
 };

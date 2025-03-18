@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { ContentCard } from './ContentCard';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -61,6 +61,7 @@ interface ContentsViewProps {
   loadMore: () => void;
   resetContents: () => void;
   highlightedEventType?: string;
+  selectedContentId?: string | null;
 }
 
 interface ContentEvaluation {
@@ -110,6 +111,7 @@ export function ContentsView({
   loadMore,
   resetContents,
   highlightedEventType,
+  selectedContentId,
 }: ContentsViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -142,6 +144,8 @@ export function ContentsView({
   const [showFilters, setShowFilters] = useState(false);
   const [activeTab, setActiveTab] = useState<'search' | 'filters' | 'actions'>('search');
 
+  const selectedContentRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     setSelectedEventType(highlightedEventType || 'all');
   }, [highlightedEventType]);
@@ -165,6 +169,15 @@ export function ContentsView({
       loadLegacySchemes(activeWorkspace.uid);
     }
   }, [activeWorkspace?.uid, loadSchemes, loadLegacySchemes]);
+
+  useEffect(() => {
+    if (selectedContentId && selectedContentRef.current) {
+      selectedContentRef.current.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+      });
+    }
+  }, [selectedContentId]);
 
   const getContentDate = (content: any): Date | null => {
     const dateString = content.publication_date || content.insertion_date || content.created_at;
@@ -1082,7 +1095,11 @@ export function ContentsView({
                   </h2>
                   <div className="grid grid-cols-1 gap-4">
                     {(groupContents as Content[]).map((content: Content) => (
-                      <div key={content.url} className="relative group">
+                      <div 
+                        key={content.url} 
+                        ref={content.id === selectedContentId ? selectedContentRef : null}
+                        className="relative group"
+                      >
                         <div 
                           className={cn(
                             "absolute top-2 left-2 z-30 p-1.5 rounded-md transition-all",
@@ -1136,9 +1153,7 @@ export function ContentsView({
                         <ContentCard
                           key={content.url}
                           {...content as unknown as ContentCardProps}
-                          isHighlighted={
-                            selectedEventType !== 'all' && content.evaluation?.event_type === selectedEventType
-                          }
+                          isHighlighted={content.id === selectedContentId}
                           preloadedSchemes={schemes}
                         />
                       </div>

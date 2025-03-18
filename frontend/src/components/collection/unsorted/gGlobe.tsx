@@ -23,6 +23,9 @@ import { useLocationData } from "@/hooks/useLocationData";
 import { useTheme } from "next-themes";
 import useGeocode from "@/hooks/useGeocder";
 import LottiePlaceholder from "@/components/ui/lottie-placeholder";
+import { useGeoDataStore } from '@/zustand_stores/storeGeodata';
+import MapPopupManager from "@/components/collection/globes/MapPopupManager";
+import ReactDOM from "react-dom";
 
 // Distance used by Mapbox for clustering
 const CLUSTER_RADIUS = 30;
@@ -94,6 +97,11 @@ const Globe = forwardRef<any, GlobeProps>(
 
     // To avoid reloading geoJSON on every theme change, keep a flag
     const [geojsonLoaded, setGeojsonLoaded] = useState(false);
+
+    // Add new state variables for date filtering
+    const [startDate, setStartDate] = useState<string | null>(null);
+    const [endDate, setEndDate] = useState<string | null>(null);
+    const [eventLimit, setEventLimit] = useState<number>(100);
 
     // Modify the eventTypes array to use simpler icon names
     const eventTypes = [
@@ -193,6 +201,27 @@ const Globe = forwardRef<any, GlobeProps>(
       return initialLayers;
     });
 
+    // Add a new dataType state to track whether we're showing events or articles
+    const [dataType, setDataType] = useState<"events" | "articles">("events");
+
+    // Add this state for selected event type
+    const [selectedEventType, setSelectedEventType] = useState("Protests");
+
+    // Get state and actions from the store
+    const { 
+      geojsonData,
+      eventGeojsonData,
+      fetchBaselineGeoJson,
+      fetchEventGeoJson,
+      error: storeError,
+      setSelectedLocation,
+      setSelectedEventType: activeFilter,
+      setDateRange,
+      dateRange,
+      activeContents,
+      setSelectedContentId
+    } = useGeoDataStore();
+
     // Modify the addIconsToMap function to use theme-specific icons
     const addIconsToMap = useCallback(() => {
       if (!mapRef.current) return;
@@ -227,61 +256,16 @@ const Globe = forwardRef<any, GlobeProps>(
       });
     }, [eventTypes]);
 
-    /**
-     * LOAD GEOJSON (EVENTS) & SETUP CLUSTER LAYERS
-     * Called once after the map is loaded (or manually on "Reload" button).
-     */
-    const loadGeoJSONEventsData = useCallback(async () => {
+    // Replace loadGeoJSONEventsData with a more generic function that handles both endpoints
+    const loadGeoJSONData = useCallback(async () => {
       if (!mapRef.current || !mapLoaded) return;
       setIsLoading(true);
 
       try {
-        // Check if data is already loaded
-        const firstSourceId = `geojson-events-${eventTypes[0].type}`;
-        if (mapRef.current.getSource(firstSourceId)) {
-          setIsLoading(false);
-          return; // Data already loaded
-        }
-
-        // Load data for each event type in parallel
-        const promises = eventTypes.map((eventType) => {
-          return axios.get(`/api/v2/geo/geojson_events`, {
-            params: {
-              event_type: eventType.type,
-            },
-          });
-        });
-        const results = await Promise.all(promises);
-
-        // Sort eventTypes by zIndex for layering
-        const sortedEventTypes = [...eventTypes].sort((a, b) => b.zIndex - a.zIndex);
-
-        // Make sure icons are available:
-        await Promise.all(
-          eventTypes.map(
-            (eventType) =>
-              new Promise<void>((resolve) => {
-                const checkInterval = setInterval(() => {
-                  if (mapRef.current?.hasImage(eventType.icon)) {
-                    clearInterval(checkInterval);
-                    resolve();
-                  }
-                }, 50);
-              })
-          )
-        );
-
-        // Now create each cluster/unclustered layer
-        sortedEventTypes.forEach((eventType) => {
-          const indexOfData = eventTypes.findIndex((et) => et.type === eventType.type);
-          const result = results[indexOfData];
-          const data = result?.data;
-          if (!data || !mapRef.current) return;
-
+        // Clear existing sources first
+        eventTypes.forEach((eventType) => {
           const sourceId = `geojson-events-${eventType.type}`;
-
-          // If the source (and layers) exist from a previous load, remove them first
-          if (mapRef.current.getSource(sourceId)) {
+          if (mapRef.current?.getSource(sourceId)) {
             ["clusters-", "unclustered-point-", "cluster-count-"].forEach((prefix) => {
               const layerId = `${prefix}${eventType.type}`;
               if (mapRef.current?.getLayer(layerId)) {
@@ -290,129 +274,165 @@ const Globe = forwardRef<any, GlobeProps>(
             });
             mapRef.current.removeSource(sourceId);
           }
+        });
 
-          // Adjust the feature properties for easier usage
-          const adjustedData = {
-            ...data,
-            features: data.features.map((feature: any) => {
-              let contents;
-              try {
-                contents =
-                  typeof feature.properties.contents === "string"
-                    ? JSON.parse(feature.properties.contents)
-                    : feature.properties.contents;
-              } catch (error) {
-                contents = [];
-              }
-              return {
-                ...feature,
-                properties: {
-                  ...feature.properties,
-                  contents: contents,
-                },
+        // For articles data, we'll use a single source
+        const articlesSourceId = "geojson-articles";
+        if (mapRef.current.getSource(articlesSourceId)) {
+          ["clusters-", "unclustered-point-", "cluster-count-"].forEach((prefix) => {
+            const layerId = `${prefix}articles`;
+            if (mapRef.current?.getLayer(layerId)) {
+              mapRef.current.removeLayer(layerId);
+            }
+          });
+          mapRef.current.removeSource(articlesSourceId);
+        }
+
+        if (dataType === "events") {
+          // Load data for each event type in parallel with updated parameters
+          const promises = eventTypes.map((eventType) => {
+            return fetchEventGeoJson(
+              eventType.type,
+              startDate ?? undefined,
+              endDate ?? undefined,
+              eventLimit
+            );
+          });
+          const results = await Promise.all(promises);
+          
+          // Process results, handling null values
+          eventTypes.forEach((eventType, index) => {
+            const result = results[index];
+            if (!result || !mapRef.current) return;
+            
+            const sourceId = `geojson-events-${eventType.type}`;
+            
+            // Adjust the feature properties for easier usage
+            const adjustedData = {
+              ...result,
+              features: result.features.map((feature: any) => {
+                let contents;
+                try {
+                  contents =
+                    typeof feature.properties.contents === "string"
+                      ? JSON.parse(feature.properties.contents)
+                      : feature.properties.contents;
+                } catch (error) {
+                  contents = [];
+                }
+                return {
+                  ...feature,
+                  properties: {
+                    ...feature.properties,
+                    contents: contents,
+                  },
+                };
+              }),
+            };
+
+            // Add as a cluster source
+            mapRef.current.addSource(sourceId, {
+              type: "geojson",
+              data: adjustedData,
+              cluster: true,
+              clusterMaxZoom: 14,
+              clusterRadius: CLUSTER_RADIUS,
+            });
+
+            // Add the cluster layer (circles)
+            mapRef.current.addLayer({
+              id: `clusters-${eventType.type}`,
+              type: "circle",
+              source: sourceId,
+              filter: ["has", "point_count"],
+              paint: {
+                "circle-color": eventType.color,
+                "circle-radius": [
+                  "interpolate",
+                  ["linear"],
+                  ["get", "point_count"],
+                  1,
+                  15,
+                  50,
+                  30,
+                  200,
+                  40,
+                ],
+                "circle-opacity": 1,
+                "circle-stroke-width": 2,
+                "circle-stroke-color": "#fff",
+              },
+            });
+
+            // Single unclustered points
+            mapRef.current.addLayer({
+              id: `unclustered-point-${eventType.type}`,
+              type: "symbol",
+              source: sourceId,
+              filter: ["!", ["has", "point_count"]],
+              layout: {
+                "icon-image": eventType.icon,
+                "icon-size": 1,
+                "icon-allow-overlap": true,
+                "icon-ignore-placement": true,
+                "symbol-placement": "point",
+                "symbol-spacing": 50,
+                "icon-padding": 5,
+                "symbol-sort-key": ["get", "content_count"],
+                "icon-pitch-alignment": "viewport",
+                "icon-rotation-alignment": "viewport",
+                "text-size": 18,
+                "text-offset": [0, 0],
+                "text-allow-overlap": true,
+                "text-ignore-placement": true,
+                "text-anchor": "top",
+              },
+              paint: {
+                "text-color": eventType.color,
+                "text-halo-color": "#fff",
+                "text-halo-width": 1,
+              },
+            });
+
+            // Cluster count label
+            mapRef.current.addLayer({
+              id: `cluster-count-${eventType.type}`,
+              type: "symbol",
+              source: sourceId,
+              filter: ["has", "point_count"],
+              layout: {
+                "text-field": "{point_count_abbreviated}",
+                "text-size": 14,
+                "text-allow-overlap": true,
+              },
+              paint: {
+                "text-color": "#ffffff",
+              },
+            });
+
+            // On hover for cluster => quick preview popup
+            mapRef.current.on("mouseenter", `clusters-${eventType.type}`, async (e) => {
+              const mapEvent = e as mapboxgl.MapMouseEvent & { 
+                features?: mapboxgl.GeoJSONFeature[] 
               };
-            }),
-          };
+              
+              if (!mapRef.current || !mapEvent.features || !mapEvent.features[0]) return;
 
-          // Add as a cluster source
-          mapRef.current.addSource(sourceId, {
-            type: "geojson",
-            data: adjustedData,
-            cluster: true,
-            clusterMaxZoom: 14,
-            clusterRadius: CLUSTER_RADIUS,
-          });
+              const clusterId = mapEvent.features[0].properties?.cluster_id;
+              const clusterCount = mapEvent.features[0].properties?.point_count;
+              const source = mapRef.current.getSource(sourceId) as mapboxgl.GeoJSONSource;
+              const coordinates = (mapEvent.features[0].geometry as any)?.coordinates;
 
-          // Add the cluster layer (circles)
-          mapRef.current.addLayer({
-            id: `clusters-${eventType.type}`,
-            type: "circle",
-            source: sourceId,
-            filter: ["has", "point_count"],
-            paint: {
-              "circle-color": eventType.color,
-              "circle-radius": [
-                "interpolate",
-                ["linear"],
-                ["get", "point_count"],
-                1,
-                15,
-                50,
-                30,
-                200,
-                40,
-              ],
-              "circle-opacity": 1,
-              "circle-stroke-width": 2,
-              "circle-stroke-color": "#fff",
-            },
-          });
+              mapRef.current.getCanvas().style.cursor = "pointer";
 
-          // Single unclustered points
-          mapRef.current.addLayer({
-            id: `unclustered-point-${eventType.type}`,
-            type: "symbol",
-            source: sourceId,
-            filter: ["!", ["has", "point_count"]],
-            layout: {
-              "icon-image": eventType.icon,
-              "icon-size": 1,
-              "icon-allow-overlap": true,
-              "icon-ignore-placement": true,
-              "symbol-placement": "point",
-              "symbol-spacing": 50,
-              "icon-padding": 5,
-              "symbol-sort-key": ["get", "content_count"],
-              "icon-pitch-alignment": "viewport",
-              "icon-rotation-alignment": "viewport",
-              "text-size": 18,
-              "text-offset": [0, 0],
-              "text-allow-overlap": true,
-              "text-ignore-placement": true,
-              "text-anchor": "top",
-            },
-            paint: {
-              "text-color": eventType.color,
-              "text-halo-color": "#fff",
-              "text-halo-width": 1,
-            },
-          });
-
-          // Cluster count label
-          mapRef.current.addLayer({
-            id: `cluster-count-${eventType.type}`,
-            type: "symbol",
-            source: sourceId,
-            filter: ["has", "point_count"],
-            layout: {
-              "text-field": "{point_count_abbreviated}",
-              "text-size": 14,
-              "text-allow-overlap": true,
-            },
-            paint: {
-              "text-color": "#ffffff",
-            },
-          });
-
-          // On hover for cluster => quick preview popup
-          mapRef.current.on("mouseenter", `clusters-${eventType.type}`, async (e) => {
-            if (!mapRef.current || !e.features || !e.features[0]) return;
-
-            const clusterId = e.features[0].properties?.cluster_id;
-            const clusterCount = e.features[0].properties?.point_count;
-            const source = mapRef.current.getSource(sourceId) as mapboxgl.GeoJSONSource;
-            const coordinates = (e.features[0].geometry as any)?.coordinates;
-
-            mapRef.current.getCanvas().style.cursor = "pointer";
-
-            if (clusterId && clusterCount && source && coordinates) {
-              try {
-                const leaves = await new Promise<any[]>((resolve, reject) => {
-                  (source as any).getClusterLeaves(clusterId, 5, 0, (err: any, feats: any) => {
-                    if (err) reject(err);
-                    resolve(feats);
+              if (clusterId && clusterCount && source && coordinates) {
+                try {
+                  const leaves = await new Promise<any[]>((resolve, reject) => {
+                    (source as any).getClusterLeaves(clusterId, 5, 0, (err: any, feats: any) => {
+                      if (err) reject(err);
+                      resolve(feats);
+                    });
                   });
-                });
 
                 const popupContent = `
                   <div class="w-[250px] bg-background/70 p-0">
@@ -481,206 +501,423 @@ const Globe = forwardRef<any, GlobeProps>(
                     }, 4500);
                   }
                 });
+                } catch (error) {
+                  console.error("Error getting cluster preview:", error);
+                }
+              }
+            })
+            ;
+
+            mapRef.current.on("mouseleave", `clusters-${eventType.type}`, () => {
+              if (mapRef.current) {
+                mapRef.current.getCanvas().style.cursor = "";
+                const popups = document.getElementsByClassName("hover-popup");
+                while (popups.length > 0) {
+                  popups[0].remove();
+                }
+              }
+            });
+
+            // Single event hover => popup
+            mapRef.current.on("mouseenter", `unclustered-point-${eventType.type}`, (e) => {
+              if (!mapRef.current || !e.point) return;
+              mapRef.current.getCanvas().style.cursor = "pointer";
+
+              const features = mapRef.current.queryRenderedFeatures(e.point, {
+                layers: [`unclustered-point-${eventType.type}`],
+              });
+              if (features && features.length > 0) {
+                const feature = features[0];
+                const locationName = feature.properties?.location_name;
+                const eventTypeName = eventType.type;
+                const contentCount = feature.properties?.content_count || 0;
+                let contents = feature.properties?.contents || [];
+
+                if (typeof contents === "string") {
+                  try {
+                    contents = JSON.parse(contents);
+                  } catch {
+                    contents = [];
+                  }
+                }
+                const validContents = Array.isArray(contents)
+                  ? contents.filter((c) => c?.url && c?.title && c?.insertion_date)
+                  : [];
+
+                const popupContent = `
+                  <div class="w-[300px] p-0 border-none bg-background/70">
+                    <div class="rounded-xl">
+                      <div class="flex flex-col space-y-1.5 p-4">
+                        <div class="flex items-center justify-between">
+                          <h3 class="font-semibold tracking-tight">
+                            <a href="#" class="hover:underline" onclick="window.dispatchEvent(new CustomEvent('setLocation', {detail: '${locationName}'}))">
+                              ${eventTypeName} @ 📍 ${locationName}
+                            </a>
+                          </h3>
+                          <span class="text-sm text-green-500">${contentCount} items</span>
+                        </div>
+                      </div>
+                      <div class="p-4 pt-0">
+                        <div class="max-h-[200px] overflow-y-auto custom-scrollbar">
+                          ${
+                            validContents.length > 0
+                              ? validContents
+                                  .map(
+                                    (content: any) => `
+                                    <div class="mb-3 last:mb-0 border-b border-border pb-2 last:border-0 last:pb-0">
+                                      <a href="#" onclick="window.dispatchEvent(new CustomEvent('setLocation', {detail: '${locationName}'}))" class="text-sm hover:underline block">
+                                        ${content.title}
+                                      </a>
+                                      <div class="flex items-center gap-2 mt-1 text-xs">
+                                        <span>${new Date(content.insertion_date).toLocaleDateString()}</span>
+                                        ${
+                                          content.source
+                                            ? `<span class="inline-flex items-center"><span class="mx-1">•</span>${content.source}</span>`
+                                            : ""
+                                        }
+                                      </div>
+                                    </div>
+                                  `
+                                  )
+                                  .join("")
+                              : `<div class="text-sm py-2">No content available</div>`
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                `;
+
+                new mapboxgl.Popup({
+                  closeButton: true,
+                  maxWidth: "none",
+                  offset: [0, -15],
+                  className: "custom-popup-container hover-popup",
+                })
+                  .setLngLat(feature.geometry?.coordinates ?? [0, 0])
+                  .setHTML(popupContent)
+                  .addTo(mapRef.current);
+              }
+            });
+
+            mapRef.current.on("mouseleave", `unclustered-point-${eventType.type}`, () => {
+              if (mapRef.current) {
+                mapRef.current.getCanvas().style.cursor = "";
+                const popups = document.getElementsByClassName("hover-popup");
+                while (popups.length > 0) {
+                  popups[0].remove();
+                }
+              }
+            });
+
+            // Single event click => open location details
+            mapRef.current.on("click", `unclustered-point-${eventType.type}`, (e) => {
+              if (!mapRef.current || !e.point) return;
+              const features = mapRef.current.queryRenderedFeatures(e.point, {
+                layers: [`unclustered-point-${eventType.type}`],
+              });
+              if (!features || features.length === 0) return;
+
+              const feature = features[0];
+              const locationName = feature.properties?.location_name;
+              if (!locationName) return;
+              onLocationClick(locationName, eventType.type);
+            });
+
+            // Clicking a cluster => bigger popup with breakdown
+            mapRef.current.on("click", `clusters-${eventType.type}`, async (e) => {
+              if (!mapRef.current || !e.features || e.features.length === 0) return;
+              const feature = e.features[0];
+              const coords = (feature.geometry as any)?.coordinates as [number, number] | undefined;
+
+              if (coords) {
+                const clusterId = feature.properties?.cluster_id;
+                const source = mapRef.current.getSource(sourceId) as mapboxgl.GeoJSONSource;
+                if (!source) return;
+
+                source.getClusterLeaves(clusterId, Infinity, 0, function (err, leafFeatures) {
+                  if (err) {
+                    console.error("Error fetching cluster leaves:", err);
+                    return;
+                  }
+
+                  // Collect all contents from the cluster leaves
+                  let allContents: any[] = [];
+                  leafFeatures?.forEach((lf: any) => {
+                    let contents = lf.properties?.contents || lf.properties?.properties?.contents;
+                    if (typeof contents === "string") {
+                      try {
+                        contents = JSON.parse(contents);
+                      } catch {
+                        contents = [];
+                      }
+                    }
+                    if (Array.isArray(contents)) {
+                      allContents = allContents.concat(contents);
+                    }
+                  });
+
+                  // Create a simple list of articles
+                  const popupContainer = document.createElement("div");
+                  popupContainer.className = "p-2";
+                  popupContainer.innerHTML = `<h3 class="font-semibold mb-2 text-sm bg-primary">Articles in Cluster</h3>`;
+
+                  if (allContents.length > 0) {
+                    const articleList = document.createElement("ul");
+                    articleList.className = "list-disc pl-5";
+                    allContents.slice(0, 10).forEach((content: any) => { // Limit to 10 articles
+                      const listItem = document.createElement("li");
+                      listItem.className = "text-sm";
+                      const link = document.createElement("a");
+                      link.href = "#";
+                      link.textContent = content.title;
+                      link.className = "hover:underline";
+                      link.onclick = () => {
+                        onLocationClick(content.location_name, eventType.type); // Assuming location_name exists
+                      };
+                      listItem.appendChild(link);
+                      articleList.appendChild(listItem);
+                    });
+                    popupContainer.appendChild(articleList);
+                    if (allContents.length > 10) {
+                      popupContainer.innerHTML += `<div class="text-xs mt-2">...and ${allContents.length - 10} more.</div>`;
+                    }
+                  } else {
+                    popupContainer.innerHTML += `<div class="text-sm">No articles available in this cluster.</div>`;
+                  }
+
+                  new mapboxgl.Popup({ closeButton: true, maxWidth: "none" })
+                    .setLngLat(coords ?? [0, 0])
+                    .setDOMContent(popupContainer)
+                    .addTo(mapRef.current!);
+                });
+              }
+            });
+          });
+        } else {
+          // Handle the baseline articles endpoint
+          const response = await fetchBaselineGeoJson();
+          
+          // Check if response is null or undefined
+          if (!response || !mapRef.current) {
+            throw new Error("Failed to load articles data");
+          }
+          
+          // Use a default color for articles
+          const articlesColor = theme === "dark" ? "#6C5CE7" : "#4361EE";
+          
+          // Adjust the feature properties for easier usage
+          const adjustedData = {
+            ...response,
+            features: response.features.map((feature: any) => {
+              let contents;
+              try {
+                contents =
+                  typeof feature.properties.contents === "string"
+                    ? JSON.parse(feature.properties.contents)
+                    : feature.properties.contents;
+              } catch (error) {
+                contents = [];
+              }
+              return {
+                ...feature,
+                properties: {
+                  ...feature.properties,
+                  contents: contents,
+                },
+              };
+            }),
+          };
+
+          // Add as a cluster source with single layer for articles
+          mapRef.current.addSource(articlesSourceId, {
+            type: "geojson",
+            data: adjustedData,
+            cluster: true,
+            clusterMaxZoom: 14,
+            clusterRadius: CLUSTER_RADIUS,
+          });
+
+          // Add the cluster layer for articles
+          mapRef.current.addLayer({
+            id: `clusters-articles`,
+            type: "circle",
+            source: articlesSourceId,
+            filter: ["has", "point_count"],
+            paint: {
+              "circle-color": articlesColor,
+              "circle-radius": [
+                "interpolate",
+                ["linear"],
+                ["get", "point_count"],
+                1,
+                15,
+                50,
+                30,
+                200,
+                40,
+              ],
+              "circle-opacity": 1,
+              "circle-stroke-width": 2,
+              "circle-stroke-color": "#fff",
+            },
+          });
+
+          // Single unclustered points for articles
+          mapRef.current.addLayer({
+            id: `unclustered-point-articles`,
+            type: "symbol",
+            source: articlesSourceId,
+            filter: ["!", ["has", "point_count"]],
+            layout: {
+              "icon-image": "social", // Use an existing icon
+              "icon-size": 1,
+              "icon-allow-overlap": true,
+              "icon-ignore-placement": true,
+              "symbol-placement": "point",
+              "symbol-spacing": 50,
+              "icon-padding": 5,
+              "symbol-sort-key": ["get", "content_count"],
+              "icon-pitch-alignment": "viewport",
+              "icon-rotation-alignment": "viewport",
+              "text-size": 18,
+              "text-offset": [0, 0],
+              "text-allow-overlap": true,
+              "text-ignore-placement": true,
+              "text-anchor": "top",
+            },
+            paint: {
+              "text-color": articlesColor,
+              "text-halo-color": "#fff",
+              "text-halo-width": 1,
+            },
+          });
+
+          // Cluster count label for articles
+          mapRef.current.addLayer({
+            id: `cluster-count-articles`,
+            type: "symbol",
+            source: articlesSourceId,
+            filter: ["has", "point_count"],
+            layout: {
+              "text-field": "{point_count_abbreviated}",
+              "text-size": 14,
+              "text-allow-overlap": true,
+            },
+            paint: {
+              "text-color": "#ffffff",
+            },
+          });
+
+          // Add event handlers for articles layers
+          // Popup for articles cluster
+          mapRef.current.on("mouseenter", `clusters-articles`, async (e) => {
+            const mapEvent = e as mapboxgl.MapMouseEvent & { 
+              features?: mapboxgl.GeoJSONFeature[] 
+            };
+            
+            if (!mapRef.current || !mapEvent.features || !mapEvent.features[0]) return;
+
+            const clusterId = mapEvent.features[0].properties?.cluster_id;
+            const clusterCount = mapEvent.features[0].properties?.point_count;
+            const source = mapRef.current.getSource(articlesSourceId) as mapboxgl.GeoJSONSource;
+            const coordinates = (mapEvent.features[0].geometry as any)?.coordinates;
+
+            mapRef.current.getCanvas().style.cursor = "pointer";
+
+            if (clusterId && clusterCount && source && coordinates) {
+              try {
+                const leaves = await new Promise<any[]>((resolve, reject) => {
+                  (source as any).getClusterLeaves(clusterId, 5, 0, (err: any, feats: any) => {
+                    if (err) reject(err);
+                    resolve(feats);
+                  });
+                });
+
+                const popupContent = `
+                  <div class="w-[250px] bg-background/70 p-0">
+                    <div class="flex flex-col space-y-1.5 p-3">
+                      <div class="flex items-center justify-between">
+                        <h3 class="font-semibold tracking-tight text-sm">
+                          Articles Cluster
+                        </h3>
+                        <span class="text-xs">
+                          ${clusterCount} articles
+                        </span>
+                      </div>
+                    </div>
+                    <div class="p-3 pt-0">
+                      <div class="max-h-[150px] overflow-y-auto custom-scrollbar">
+                        ${leaves
+                          .map((feature) => {
+                            const locationName = feature.properties.location_name;
+                            const contentCount = feature.properties.content_count;
+                            return `
+                            <div class="mb-2 last:mb-0 text-sm">
+                              <div class="flex items-center justify-between">
+                                <span>📍${locationName}</span>
+                                <span class="text-xs text-slate-600">${contentCount} items</span>
+                              </div>
+                            </div>
+                          `;
+                          })
+                          .join("")}
+                        ${
+                          clusterCount > 5
+                            ? `<div class="text-xs mt-2 pt-2 border-t">And ${
+                                clusterCount - 5
+                              } more ...</div>`
+                            : ""
+                        }
+                      </div>
+                    </div>
+                  </div>
+                `;
+
+                const popup = new mapboxgl.Popup({
+                  closeButton: false,
+                  maxWidth: "none",
+                  className: "custom-popup-container hover-popup",
+                })
+                  .setLngLat(coordinates ?? [0, 0])
+                  .setHTML(popupContent)
+                  .addTo(mapRef.current);
+
+                // Keep the popup open if hovered
+                const popupElement = popup.getElement();
+                let popupTimeout = setTimeout(() => {
+                  popup.remove();
+                }, 15000);
+
+                popupElement?.addEventListener("mouseenter", () => {
+                  clearTimeout(popupTimeout);
+                  popupElement.style.animation = "none";
+                });
+                popupElement?.addEventListener("mouseleave", () => {
+                  if (popupElement) {
+                    popupElement.style.animation = "";
+                    popupTimeout = setTimeout(() => {
+                      popup.remove();
+                    }, 4500);
+                  }
+                });
               } catch (error) {
                 console.error("Error getting cluster preview:", error);
               }
             }
           });
 
-          mapRef.current.on("mouseleave", `clusters-${eventType.type}`, () => {
-            if (mapRef.current) {
-              mapRef.current.getCanvas().style.cursor = "";
-              const popups = document.getElementsByClassName("hover-popup");
-              while (popups.length > 0) {
-                popups[0].remove();
-              }
-            }
-          });
-
-          // Single event hover => popup
-          mapRef.current.on("mouseenter", `unclustered-point-${eventType.type}`, (e) => {
-            if (!mapRef.current || !e.point) return;
-            mapRef.current.getCanvas().style.cursor = "pointer";
-
-            const features = mapRef.current.queryRenderedFeatures(e.point, {
-              layers: [`unclustered-point-${eventType.type}`],
-            });
-            if (features && features.length > 0) {
-              const feature = features[0];
-              const locationName = feature.properties?.location_name;
-              const eventTypeName = eventType.type;
-              const contentCount = feature.properties?.content_count || 0;
-              let contents = feature.properties?.contents || [];
-
-              if (typeof contents === "string") {
-                try {
-                  contents = JSON.parse(contents);
-                } catch {
-                  contents = [];
-                }
-              }
-              const validContents = Array.isArray(contents)
-                ? contents.filter((c) => c?.url && c?.title && c?.insertion_date)
-                : [];
-
-              const popupContent = `
-                <div class="w-[300px] p-0 border-none bg-background/70">
-                  <div class="rounded-xl">
-                    <div class="flex flex-col space-y-1.5 p-4">
-                      <div class="flex items-center justify-between">
-                        <h3 class="font-semibold tracking-tight">
-                          <a href="#" class="hover:underline" onclick="window.dispatchEvent(new CustomEvent('setLocation', {detail: '${locationName}'}))">
-                            ${eventTypeName} @ 📍 ${locationName}
-                          </a>
-                        </h3>
-                        <span class="text-sm text-green-500">${contentCount} items</span>
-                      </div>
-                    </div>
-                    <div class="p-4 pt-0">
-                      <div class="max-h-[200px] overflow-y-auto custom-scrollbar">
-                        ${
-                          validContents.length > 0
-                            ? validContents
-                                .map(
-                                  (content: any) => `
-                                  <div class="mb-3 last:mb-0 border-b border-border pb-2 last:border-0 last:pb-0">
-                                    <a href="#" onclick="window.dispatchEvent(new CustomEvent('setLocation', {detail: '${locationName}'}))" class="text-sm hover:underline block">
-                                      ${content.title}
-                                    </a>
-                                    <div class="flex items-center gap-2 mt-1 text-xs">
-                                      <span>${new Date(content.insertion_date).toLocaleDateString()}</span>
-                                      ${
-                                        content.source
-                                          ? `<span class="inline-flex items-center"><span class="mx-1">•</span>${content.source}</span>`
-                                          : ""
-                                      }
-                                    </div>
-                                  </div>
-                                `
-                                )
-                                .join("")
-                            : `<div class="text-sm py-2">No content available</div>`
-                        }
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              `;
-
-              new mapboxgl.Popup({
-                closeButton: true,
-                maxWidth: "none",
-                offset: [0, -15],
-                className: "custom-popup-container hover-popup",
-              })
-                .setLngLat(feature.geometry?.coordinates ?? [0, 0])
-                .setHTML(popupContent)
-                .addTo(mapRef.current);
-            }
-          });
-
-          mapRef.current.on("mouseleave", `unclustered-point-${eventType.type}`, () => {
-            if (mapRef.current) {
-              mapRef.current.getCanvas().style.cursor = "";
-              const popups = document.getElementsByClassName("hover-popup");
-              while (popups.length > 0) {
-                popups[0].remove();
-              }
-            }
-          });
-
-          // Single event click => open location details
-          mapRef.current.on("click", `unclustered-point-${eventType.type}`, (e) => {
-            if (!mapRef.current || !e.point) return;
-            const features = mapRef.current.queryRenderedFeatures(e.point, {
-              layers: [`unclustered-point-${eventType.type}`],
-            });
-            if (!features || features.length === 0) return;
-
-            const feature = features[0];
-            const locationName = feature.properties?.location_name;
-            if (!locationName) return;
-            onLocationClick(locationName, eventType.type);
-          });
-
-          // Clicking a cluster => bigger popup with breakdown
-          mapRef.current.on("click", `clusters-${eventType.type}`, async (e) => {
-            if (!mapRef.current || !e.features || e.features.length === 0) return;
-            const feature = e.features[0];
-            const coords = (feature.geometry as any)?.coordinates as [number, number] | undefined;
-
-            if (coords) {
-              const clusterId = feature.properties?.cluster_id;
-              const source = mapRef.current.getSource(sourceId) as mapboxgl.GeoJSONSource;
-              if (!source) return;
-
-              source.getClusterLeaves(clusterId, Infinity, 0, function (err, leafFeatures) {
-                if (err) {
-                  console.error("Error fetching cluster leaves:", err);
-                  return;
-                }
-
-                // Collect all contents from the cluster leaves
-                let allContents: any[] = [];
-                leafFeatures?.forEach((lf: any) => {
-                  let contents = lf.properties?.contents || lf.properties?.properties?.contents;
-                  if (typeof contents === "string") {
-                    try {
-                      contents = JSON.parse(contents);
-                    } catch {
-                      contents = [];
-                    }
-                  }
-                  if (Array.isArray(contents)) {
-                    allContents = allContents.concat(contents);
-                  }
-                });
-
-                // Create a simple list of articles
-                const popupContainer = document.createElement("div");
-                popupContainer.className = "p-2";
-                popupContainer.innerHTML = `<h3 class="font-semibold mb-2 text-sm">Articles in Cluster</h3>`;
-
-                if (allContents.length > 0) {
-                  const articleList = document.createElement("ul");
-                  articleList.className = "list-disc pl-5";
-                  allContents.slice(0, 10).forEach((content: any) => { // Limit to 10 articles
-                    const listItem = document.createElement("li");
-                    listItem.className = "text-sm";
-                    const link = document.createElement("a");
-                    link.href = "#";
-                    link.textContent = content.title;
-                    link.className = "hover:underline";
-                    link.onclick = () => {
-                      onLocationClick(content.location_name, eventType.type); // Assuming location_name exists
-                    };
-                    listItem.appendChild(link);
-                    articleList.appendChild(listItem);
-                  });
-                  popupContainer.appendChild(articleList);
-                  if (allContents.length > 10) {
-                    popupContainer.innerHTML += `<div class="text-xs mt-2">...and ${allContents.length - 10} more.</div>`;
-                  }
-                } else {
-                  popupContainer.innerHTML += `<div class="text-sm">No articles available in this cluster.</div>`;
-                }
-
-                new mapboxgl.Popup({ closeButton: true, maxWidth: "none" })
-                  .setLngLat(coords ?? [0, 0])
-                  .setDOMContent(popupContainer)
-                  .addTo(mapRef.current!);
-              });
-            }
-          });
-        });
+          // Other event handlers for articles
+          // ... (similar to event layers but for articles)
+        }
 
         setGeojsonLoaded(true);
       } catch (error) {
-        console.error("Error fetching GeoJSON events data:", error);
+        console.error("Error fetching GeoJSON data:", error);
       } finally {
         setIsLoading(false);
       }
-    }, [eventTypes, onLocationClick]);
+    }, [eventTypes, startDate, endDate, eventLimit, mapLoaded, dataType, theme, fetchEventGeoJson, fetchBaselineGeoJson]);
 
     /**
      * CREATE A SIMPLE SPIKE CHART USING D3
@@ -804,24 +1041,8 @@ const Globe = forwardRef<any, GlobeProps>(
     };
 
     const handleLocationButtonClick = async (locName: string) => {
-      setIsSpinning(false);
-      const result = await geocodeLocation(locName);
-      if (result) {
-        const { longitude, latitude, bbox, type } = result;
-        setTimeout(() => {
-          if (mapRef.current) {
-            mapRef.current.resize();
-            if (bbox) {
-              highlightBbox(bbox, type || "locality");
-            } else {
-              flyToLocation(longitude, latitude, 6, type);
-            }
-          }
-          setTimeout(() => {
-            onLocationClick(locName, type);
-          }, 600);
-        }, 100);
-      }
+      setSelectedLocation(locName);
+      onLocationClick(locName, selectedEventType || undefined);
     };
 
     const toggleLayerVisibility = useCallback(
@@ -1074,7 +1295,7 @@ const Globe = forwardRef<any, GlobeProps>(
           // Reset geojsonLoaded flag to trigger a reload
           setGeojsonLoaded(false);
           // Force reload GeoJSON data
-          loadGeoJSONEventsData();
+          loadGeoJSONData();
         });
 
         // Add missing image handler with theme-specific icons
@@ -1151,21 +1372,39 @@ const Globe = forwardRef<any, GlobeProps>(
       };
     }, [onLocationClick]);
 
-    // Zoom to cluster from external event
+    // External event for zoomToCluster from popups
     useEffect(() => {
       const handleZoomToCluster = (e: CustomEvent) => {
         if (!mapRef.current) return;
-        const { lng, lat, zoom } = e.detail;
+        
+        const { lng, lat, zoom, locationName } = e.detail;
+        
+        // Validate coordinates
+        if (isNaN(lng) || isNaN(lat)) {
+          console.error('Invalid coordinates for cluster zoom:', { lng, lat });
+          return;
+        }
+        
+        // Fly to the cluster location
         mapRef.current.flyTo({
           center: [lng, lat],
           zoom: zoom
         });
+        
+        // After zooming, trigger the location click with a delay
+        // to ensure the map has time to zoom
+        if (locationName) {
+          setTimeout(() => {
+            onLocationClick(locationName);
+          }, 500);
+        }
       };
-      window.addEventListener("zoomToCluster", handleZoomToCluster as EventListener);
+      
+        window.addEventListener("zoomToCluster", handleZoomToCluster as EventListener);
       return () => {
         window.removeEventListener("zoomToCluster", handleZoomToCluster as EventListener);
       };
-    }, []);
+    }, [mapRef, onLocationClick]);
 
     // Route playback
     const [selectedRoute, setSelectedRoute] = useState<any>(null);
@@ -1180,36 +1419,42 @@ const Globe = forwardRef<any, GlobeProps>(
     );
 
     function createPopupContent(locationName: string) {
-      const articles = data.contents.slice(0, 4);
-      const entities = data.entities.slice(0, 4);
-      return `
-        <div class="popup-content">
-          <h3>${locationName}</h3>
-          <div class="articles">
-            <h4>Articles</h4>
-            ${articles
-              .map(
-                (a) => `
-                <div>
-                  <a href="${a.url}" target="_blank">${a.title}</a>
-                  <p>${a.source}</p>
-                </div>`
-              )
-              .join("")}
-          </div>
-          <div class="entities">
-            <h4>Entities</h4>
-            ${entities
-              .map(
-                (e) => `
-                <div>
-                  <span>${e.name} (${e.entity_type})</span>
-                </div>`
-              )
-              .join("")}
-          </div>
-        </div>
-      `;
+      const container = document.createElement('div');
+      container.className = 'popup-container';
+      
+      // Create location heading
+      const heading = document.createElement('h3');
+      heading.textContent = locationName;
+      heading.className = 'popup-heading';
+      container.appendChild(heading);
+      
+      // Create view details button
+      const viewBtn = document.createElement('button');
+      viewBtn.textContent = 'View Details';
+      viewBtn.className = 'popup-button';
+      viewBtn.setAttribute('data-location', locationName);
+      container.appendChild(viewBtn);
+      
+      // If we have content related to this location, show it
+      if (activeContents.length > 0) {
+        const contentList = document.createElement('ul');
+        contentList.className = 'popup-content-list';
+        
+        // Show up to 5 recent articles
+        activeContents.slice(0, 5).forEach(content => {
+          const item = document.createElement('li');
+          const link = document.createElement('a');
+          link.textContent = content.title || 'Untitled Article';
+          link.className = 'popup-content-link';
+          link.setAttribute('data-content-id', content.id || '');
+          item.appendChild(link);
+          contentList.appendChild(item);
+        });
+        
+        container.appendChild(contentList);
+      }
+      
+      return container;
     }
 
     const startRoute = useCallback(
@@ -1241,7 +1486,7 @@ const Globe = forwardRef<any, GlobeProps>(
             className: "custom-popup-container route-popup",
           })
             .setLngLat(coordinates)
-            .setHTML(popupContent)
+            .setHTML(popupContent.innerHTML)
             .addTo(mapRef.current);
 
           await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -1281,8 +1526,8 @@ const Globe = forwardRef<any, GlobeProps>(
      */
     const reloadGeoJSONData = useCallback(() => {
       // Force reload if needed
-      loadGeoJSONEventsData();
-    }, [loadGeoJSONEventsData]);
+      loadGeoJSONData();
+    }, [loadGeoJSONData]);
 
     // Keep toggling layers in sync
     useEffect(() => {
@@ -1303,21 +1548,54 @@ const Globe = forwardRef<any, GlobeProps>(
       });
     }, [mapLoaded, visibleLayers, eventTypes, toggleLayerVisibility]);
 
-    // Add useEffect to load GeoJSON data once
+    // Update this useEffect to use the renamed function
     useEffect(() => {
       if (mapLoaded && !geojsonLoaded) {
-        loadGeoJSONEventsData();
+        loadGeoJSONData();
         setGeojsonLoaded(true);
       }
-    }, [mapLoaded, loadGeoJSONEventsData, geojsonLoaded]);
+    }, [mapLoaded, loadGeoJSONData, geojsonLoaded]);
+
+    // Create a function to format dates for ISO string
+    const formatDateForAPI = (date: Date | null): string | null => {
+      if (!date) return null;
+      return date.toISOString();
+    };
+
+    // Add a function to clear date filters
+    const clearDateFilters = () => {
+      setStartDate(null);
+      setEndDate(null);
+      setEventLimit(100);
+      // Force reload data with cleared filters
+      if (mapRef.current) {
+        // Remove existing sources first
+        eventTypes.forEach((eventType) => {
+          const sourceId = `geojson-events-${eventType.type}`;
+          if (mapRef.current?.getSource(sourceId)) {
+            ["clusters-", "unclustered-point-", "cluster-count-"].forEach((prefix) => {
+              const layerId = `${prefix}${eventType.type}`;
+              if (mapRef.current?.getLayer(layerId)) {
+                mapRef.current.removeLayer(layerId);
+              }
+            });
+            mapRef.current.removeSource(sourceId);
+          }
+        });
+        
+        // Reload with cleared filters
+        loadGeoJSONData();
+      }
+    };
 
     // Some extra styles
     const styles = `
       .custom-popup-container .mapboxgl-popup-content {
+        background: none !important;
         padding: 0 !important;
         border-radius: 0.75rem;
         backdrop-filter: blur(3px);
-        background: rgba(59, 51, 51, 0.2) !important;
+
       }
       .custom-popup-container .mapboxgl-popup-close-button {
         padding: 0.5rem;
@@ -1399,6 +1677,159 @@ const Globe = forwardRef<any, GlobeProps>(
         });
       };
     }, [isSpinning]);
+
+    // Replace fetchGeoJsonData with store methods
+    const fetchGeoJsonData = async () => {
+      try {
+        await fetchBaselineGeoJson();
+        if (selectedEventType) {
+          await fetchEventGeoJson(selectedEventType);
+        }
+      } catch (err) {
+        console.error('Error fetching GeoJSON data:', err);
+      }
+    };
+
+    // Add event listeners for popup interactions
+    useEffect(() => {
+      const handlePopupClick = (e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+        
+        // Handle location button click
+        if (target.matches('.popup-button[data-location]')) {
+          const locationName = target.getAttribute('data-location');
+          if (locationName) {
+            handleLocationButtonClick(locationName);
+          }
+        }
+        
+        // Handle content link click
+        if (target.matches('.popup-content-link[data-content-id]')) {
+          const contentId = target.getAttribute('data-content-id');
+          if (contentId) {
+            setSelectedContentId(contentId); // Set the selected content ID
+          }
+        }
+      };
+      
+      document.addEventListener('click', handlePopupClick);
+      return () => document.removeEventListener('click', handlePopupClick);
+    }, []);
+
+    // Update layer visibility when visibleLayers changes
+    useEffect(() => {
+      if (!mapRef.current || !mapLoaded) return;
+      
+      // For each event type, toggle the visibility of its layers
+      eventTypes.forEach((eventType) => {
+        const isVisible = visibleLayers[eventType.type];
+        const clusterLayerId = `clusters-${eventType.type}`;
+        const pointLayerId = `unclustered-point-${eventType.type}`;
+        
+        // Toggle visibility of cluster layer
+        if (mapRef.current?.getLayer(clusterLayerId)) {
+          mapRef.current.setLayoutProperty(
+            clusterLayerId,
+            'visibility',
+            isVisible ? 'visible' : 'none'
+          );
+        }
+        
+        // Toggle visibility of point layer
+        if (mapRef.current?.getLayer(pointLayerId)) {
+          mapRef.current.setLayoutProperty(
+            pointLayerId,
+            'visibility',
+            isVisible ? 'visible' : 'none'
+          );
+        }
+      });
+    }, [visibleLayers, mapLoaded, eventTypes]);
+
+    // Add CSS styles for popups
+    useEffect(() => {
+      // Create a style element
+      const styleSheet = document.createElement("style");
+      styleSheet.type = "text/css";
+      styleSheet.id = "mapbox-popup-styles";
+      
+      // Add popup styles
+      styleSheet.textContent = `
+        /* Hover popup styles */
+        .map-popup-hover {
+          z-index: 10;
+          pointer-events: none;
+        }
+        .map-popup-hover .mapboxgl-popup-content {
+          background-color: rgba(255, 255, 255, 0.9);
+          border-radius: 8px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          padding: 8px 12px;
+          max-width: 250px;
+          transition: all 0.2s ease;
+        }
+        .dark .map-popup-hover .mapboxgl-popup-content {
+          background-color: rgba(30, 30, 30, 0.9);
+          color: #fff;
+        }
+        
+        /* Click popup styles */
+        .map-popup-click {
+          z-index: 20;
+        }
+        .map-popup-click .mapboxgl-popup-content {
+          background-color: rgba(255, 255, 255, 0.95);
+          border-radius: 12px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+          padding: 0;
+          overflow: hidden;
+          max-width: 350px;
+        }
+        .dark .map-popup-click .mapboxgl-popup-content {
+          background-color: rgba(30, 30, 30, 0.95);
+          color: #fff;
+        }
+        
+        /* Popup button styles */
+        .popup-view-btn {
+          display: inline-block;
+          padding: 4px 8px;
+          background-color: rgba(59, 130, 246, 0.1);
+          border-radius: 4px;
+          transition: all 0.2s ease;
+        }
+        .popup-view-btn:hover {
+          background-color: rgba(59, 130, 246, 0.2);
+        }
+        
+        /* Custom scrollbar for popups */
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.05);
+          border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(0, 0, 0, 0.2);
+          border-radius: 3px;
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.2);
+        }
+      `;
+      
+      // Add the style element to the document head
+      document.head.appendChild(styleSheet);
+      
+      // Clean up on unmount
+      return () => {
+        const existingStyle = document.getElementById("mapbox-popup-styles");
+        if (existingStyle) {
+          existingStyle.remove();
+        }
+      };
+    }, []);
 
     return (
       <div style={{ position: "relative", height: "100%", width: "100%" }}>
@@ -1519,7 +1950,7 @@ const Globe = forwardRef<any, GlobeProps>(
                   </Button>
                   <Button 
                     variant="outline" 
-                    onClick={reloadGeoJSONData}
+                    onClick={fetchGeoJsonData}
                   >
                     Reload Data
                   </Button>
@@ -1556,6 +1987,122 @@ const Globe = forwardRef<any, GlobeProps>(
                   ))}
                 </div>
               </div>
+
+              {/* Date Range Filters - NEW SECTION */}
+              <div className="space-y-2">
+                <h3 className="font-semibold">Date Filters</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <label className="text-xs">Start Date</label>
+                    <Input 
+                      type="date" 
+                      className="w-full"
+                      value={startDate ? startDate.split('T')[0] : ''} 
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value) {
+                          setStartDate(`${value}T00:00:00+00:00`);
+                        } else {
+                          setStartDate(null);
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs">End Date</label>
+                    <Input 
+                      type="date" 
+                      className="w-full"
+                      value={endDate ? endDate.split('T')[0] : ''} 
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value) {
+                          setEndDate(`${value}T23:59:59+00:00`);
+                        } else {
+                          setEndDate(null);
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex justify-between">
+                    <label className="text-xs">Max Events: {eventLimit}</label>
+                  </div>
+                  <input
+                    type="range"
+                    min="10"
+                    max="500"
+                    step="10"
+                    value={eventLimit}
+                    onChange={(e) => setEventLimit(parseInt(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+                <div className="flex justify-between gap-2">
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={clearDateFilters}
+                  >
+                    Clear Filters
+                  </Button>
+                  <Button 
+                    variant="secondary" 
+                    className="w-full"
+                    onClick={() => {
+                      // Removes existing sources and loads data with current filters
+                      loadGeoJSONData();
+                    }}
+                  >
+                    Apply Filters
+                  </Button>
+                </div>
+              </div>
+
+              {/* Add this to the UI controls section where other toggles are located */}
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs">Data Source:</span>
+                <div className="flex border rounded overflow-hidden">
+                  <button
+                    className={`px-2 py-1 text-xs ${dataType === "events" ? "bg-highlighted text-white" : "bg-transparent"}`}
+                    onClick={() => setDataType("events")}
+                  >
+                    Events
+                  </button>
+                  <button
+                    className={`px-2 py-1 text-xs ${dataType === "articles" ? "bg-highlighted text-white" : "bg-transparent"}`}
+                    onClick={() => {
+                      setDataType("articles");
+                      // Reset event type selection when switching to articles
+                      setSelectedEventType("");
+                    }}
+                  >
+                    Articles
+                  </button>
+                </div>
+              </div>
+
+              {/* Only show event type selector when in events mode */}
+              {dataType === "events" && (
+                <div className="flex flex-col gap-1 mb-2">
+                  {/* Existing event type selector */}
+                </div>
+              )}
+
+              {/* Update reload button to work with current data type */}
+              <button
+                onClick={loadGeoJSONData}
+                className="flex items-center justify-center px-2 py-1 text-xs bg-highlighted text-white rounded shadow hover:bg-highlighted-hover"
+                disabled={isLoading}
+              >
+                <span>{isLoading ? "Loading..." : "Reload"}</span>
+                {isLoading ? (
+                  <span className="ml-1 animate-spin">⟳</span>
+                ) : (
+                  <span className="ml-1">⟳</span>
+                )}
+              </button>
             </PopoverContent>
           </Popover>
         </div>
@@ -1566,10 +2113,105 @@ const Globe = forwardRef<any, GlobeProps>(
           </div>
         )}
 
-        {error && (
+        {storeError && (
           <div className="absolute top-4 right-4 bg-highlighted border border-red-400 text-red-700 px-4 py-2 rounded">
-            {error}
+            {storeError.message}
           </div>
+        )}
+
+        {/* Add the MapPopupManager directly in the component tree */}
+        {mapRef.current && mapLoaded && (
+          <MapPopupManager 
+            map={mapRef.current}
+            layerIds={[
+              'country-boundaries',
+              // Only include event types that are visible
+              ...eventTypes
+                .filter(et => visibleLayers[et.type])
+                .map(et => `clusters-${et.type}`),
+              ...eventTypes
+                .filter(et => visibleLayers[et.type])
+                .map(et => `unclustered-point-${et.type}`),
+              // Always include article layers
+              'clusters-articles',
+              'unclustered-point-articles'
+            ]}
+            onFeatureClick={(feature, lngLat) => {
+              const properties = feature.properties || {};
+              const locationName = properties.name || properties.location_name || properties.name_en || 'Unknown';
+              const eventType = properties.event_type;
+              
+              console.log('Feature clicked:', { locationName, eventType, properties });
+              
+              // Use the existing onLocationClick handler
+              onLocationClick(locationName, eventType);
+            }}
+            debug={true} // Enable debug mode to help diagnose layer issues
+            createPopupContent={(feature) => {
+              const properties = feature.properties || {};
+              const locationName = properties.name || properties.location_name || properties.name_en || 'Unknown Location';
+              const eventType = properties.event_type || null;
+              const contentCount = properties.content_count || properties.point_count || 0;
+              
+              // Create a more detailed popup for features with contents
+              let contents = properties.contents || [];
+              if (typeof contents === 'string') {
+                try {
+                  contents = JSON.parse(contents);
+                } catch {
+                  contents = [];
+                }
+              }
+              
+              const validContents = Array.isArray(contents)
+                ? contents.filter((c: any) => c?.url && c?.title)
+                : [];
+              
+              let html = `
+                <div class="w-[300px] p-0 border-none bg-background/70">
+                  <div class="rounded-xl">
+                    <div class="flex flex-col space-y-1.5 p-4">
+                      <div class="flex items-center justify-between">
+                        <h3 class="font-semibold tracking-tight">
+                          <a href="#" class="hover:underline" onclick="window.dispatchEvent(new CustomEvent('setLocation', {detail: '${locationName}'}))">
+                            ${eventType ? `${eventType} @ ` : ''}📍 ${locationName}
+                          </a>
+                        </h3>
+                        <span class="text-sm text-green-500">${contentCount} items</span>
+                      </div>
+                    </div>
+                    <div class="p-4 pt-0">
+              `;
+              
+              if (validContents.length > 0) {
+                html += `<div class="max-h-[200px] overflow-y-auto custom-scrollbar">`;
+                validContents.slice(0, 5).forEach((content: any) => {
+                  html += `
+                    <div class="mb-3 last:mb-0 border-b border-border pb-2 last:border-0 last:pb-0">
+                      <a href="#" onclick="window.dispatchEvent(new CustomEvent('setLocation', {detail: '${locationName}'}))" class="text-sm hover:underline block">
+                        ${content.title}
+                      </a>
+                      <div class="flex items-center gap-2 mt-1 text-xs">
+                        <span>${new Date(content.insertion_date || Date.now()).toLocaleDateString()}</span>
+                        ${content.source ? `<span class="inline-flex items-center"><span class="mx-1">•</span>${content.source}</span>` : ""}
+                      </div>
+                    </div>
+                  `;
+                });
+                html += `</div>`;
+              } else {
+                html += `<div class="text-sm py-2">No content available</div>`;
+              }
+              
+              html += `
+                    </div>
+                  </div>
+                </div>
+              `;
+              
+              return html;
+            }}
+          />
         )}
       </div>
     );

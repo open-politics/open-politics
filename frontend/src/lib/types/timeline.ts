@@ -15,6 +15,10 @@ export interface TimelineElement {
   size?: TimelineSize;
   loading?: boolean;
   error?: string;
+  link?: string;  // Regular URL to the content
+  videoTitle?: string;  // Title specific to the video
+  videoDescription?: string | ReactNode;  // Description specific to the video
+  videoEmbedLink?: string;  // URL for the embedded video player
 }
 
 export interface TimelineProps {

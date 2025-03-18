@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Timeline, TimelineItem } from './timeline';
+import { Timeline, TimelineItem } from './timeline-base';
 import { motion } from 'framer-motion';
 import type { TimelineElement } from '@/lib/types/timeline';
 
@@ -13,6 +13,11 @@ interface TimelineLayoutProps {
   animate?: boolean;
   connectorColor?: 'primary' | 'secondary' | 'muted' | 'accent';
   className?: string;
+  video?: string;
+  link?: string;
+  videoTitle?: string;
+  videoLink?: string;
+  videoDescription?: string;
 }
 
 export const TimelineLayout = ({
@@ -23,6 +28,11 @@ export const TimelineLayout = ({
   animate = true,
   connectorColor,
   className,
+  video,
+  link,
+  videoTitle,
+  videoLink,
+  videoDescription,
 }: TimelineLayoutProps) => {
   return (
     <Timeline size={size} className={className}>
@@ -45,6 +55,10 @@ export const TimelineLayout = ({
             iconColor={item.color || iconColor}
             connectorColor={item.color || connectorColor}
             showConnector={index !== items.length - 1}
+            videoEmbedLink={item.videoEmbedLink}
+            link={item.link}
+            videoTitle={item.videoTitle}
+            videoDescription={item.videoDescription}
           />
         </motion.div>
       ))}

@@ -18,11 +18,11 @@ export type CoreContentModel = {
         name: string;
         entity_type: string;
         locations: Array<{
-        id: string;
-        name: string;
-        location_type: string;
-        coordinates: number[] | null;
-        weight: number;
+            id: string;
+            name: string;
+            location_type: string;
+            coordinates: number[] | null;
+            weight: number;
         }>;
     }>;
     tags?: Array<{
