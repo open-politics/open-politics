@@ -185,12 +185,19 @@ async def classify_document(
     ModelClass = generate_pydantic_model(scheme)
     
     # Get fastclass instance with provided API key
-    fastclass = get_fastclass(
-        provider=provider,
-        model_name=model,
-        api_key=x_api_key
-    )
-    
+    if os.environ["LOCAL_LLM"] == "True":
+        fastclass = opol.classification(
+            provider="ollama", 
+            model_name=os.environ.get("LOCAL_LLM_MODEL", "llama3.2:latest"), 
+            llm_api_key=""
+        )
+    else:
+        fastclass = get_fastclass(
+            provider=provider,
+            model_name=model,
+            api_key=x_api_key
+        )
+
     # Classify using OPOL
     result = fastclass.classify(ModelClass, "", document.text_content)
     
